@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  {% spaceless %}
+    <title>
+      Hello World
+    </title>
+  {% endspaceless %}
+
+  {% block viewport %}
+    <meta name="viewport" content="width=480, maximum-scale=1.0, user-scalable=no" />
+  {% endblock viewport %}
+
+  <!---META TAGS--->
+  {% block additional_meta_tags %}{% endblock additional_meta_tags %}
+
+  <!--favicon-->
+{#  <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico" />#}
+  <!--iOS and Android icons-->
+{#  <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}images/apple-touch-icon-152x152.png">#}
+
+  {% if settings.LOCAL %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}vendor/font-awesome/css/font-awesome.min.css">
+    <script src="{{ STATIC_URL }}vendor/jquery/js/jquery-2.2.3.min.js"></script>
+    <script src="{{ STATIC_URL }}vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  {% else %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  {% endif %}
+
+  <link href="{{ STATIC_URL }}css/base.css?v=0" rel="stylesheet">
+
+  {% block css %}
+  {% endblock css %}
+
+</head>
+
+<body>{% load user_inclusion_tags %}
+
+  <div id="navbar" class="navbar navbar-default">
+
+  </div>
+
+  <div id="main-container" class="main-container">
+
+    <h1>
+      Hello World
+    </h1>
+
+    <div class="footer">
+
+    </div>
+
+    <!--Javascript Placed at the end of the document so the pages load faster -->
+    {% block javascript %}
+    {% endblock javascript %}
+
+  </div>
+</body>
+</html>
