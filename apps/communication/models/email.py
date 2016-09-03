@@ -57,7 +57,6 @@ class Email(Timestampable, models.Model):
       #createSubject and createBody require self.url_base
       self.subject = self.subject or self.createSubject()
       self.body = self.body or self.createBody()
-      self.body = clean_text(self.body)
 
       #these actions requires the body to already be constructed
       # if STAGE or DEBUG: #non-production emails
