@@ -19,7 +19,7 @@ class Publishable(models.Model):
       return False
 
 
-from .tests import BehaviorTestCaseMixin
+from apps.common.tests.test_behaviors import BehaviorTestCaseMixin
 
 class PublishableTests(BehaviorTestCaseMixin):
   def test_published_blogpost(self):

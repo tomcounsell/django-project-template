@@ -4,4 +4,3 @@ class BehaviorTestCaseMixin(object):
 
   def create_instance(self, **kwargs):
     raise NotImplementedError("Implement me")
-
