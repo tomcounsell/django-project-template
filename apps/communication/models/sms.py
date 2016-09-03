@@ -3,7 +3,7 @@ from apps.common.models import Upload
 from apps.common.behaviors import Timestampable
 
 
-class Email(Timestampable, models.Model):
+class SMS(Timestampable, models.Model):
   to_number     = models.CharField(max_length=15)
   from_number   = models.CharField(max_length=15, null=True, blank=True)
   body          = models.TextField(default="")
