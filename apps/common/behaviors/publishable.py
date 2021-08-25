@@ -1,29 +1,29 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Publishable(models.Model):
 
-  published_at    = models.DateTimeField(null=True, blank=True)
-  unpublished_at  = models.DateTimeField(null=True, blank=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+    edited_at = models.DateTimeField(null=True, blank=True)
+    unpublished_at = models.DateTimeField(null=True, blank=True)
 
-  class Meta:
-    abstract = True
+    class Meta:
+        abstract = True
 
-  @property
-  def is_published(self):
-    from django.utils.timezone import now
-    if self.published_at and self.published_at < now() \
-        and not (self.unpublished_at and self.unpublished_at < now()):
-      return True
-    else:
-      return False
+    @property
+    def is_published(self):
+        now = timezone.now()
+        if (self.published_at and self.published_at < now
+                and not (self.unpublished_at and self.unpublished_at < now)):
+            return True
+        else:
+            return False
 
-
-from apps.common.tests.test_behaviors import BehaviorTestCaseMixin
-
-class PublishableTests(BehaviorTestCaseMixin):
-  def test_published_blogpost(self):
-    from django.utils import timezone
-    obj = self.create_instance(publish_date=timezone.now())
-    self.assertTrue(obj.is_published)
-    self.assertIn(obj, self.model.objects.published())
+    @is_published.setter
+    def is_published(self, value):
+        if value and not self.is_published:
+            self.unpublished_at = None
+            self.published_at = timezone.now()
+        elif not value and self.is_published:
+            self.unpublished_at = timezone.now()

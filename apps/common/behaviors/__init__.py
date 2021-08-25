@@ -1,7 +1,18 @@
-from apps.common.behaviors.expirable import Expirable
-from apps.common.behaviors.permalinkable import Permalinkable
-from apps.common.behaviors.publishable import Publishable
-from apps.common.behaviors.timestampable import Timestampable
-from apps.common.behaviors.locatable import Locatable
-from apps.common.behaviors.authorable import Authorable
-from apps.common.behaviors.annotatable import Annotatable
+from .annotatable import Annotatable
+from .authorable import Authorable
+from .expirable import Expirable
+from .locatable import Locatable
+from .permalinkable import Permalinkable
+from .timestampable import Timestampable
+from .publishable import Publishable
+
+
+__all__ = [
+    'Annotatable',
+    'Authorable',
+    'Expirable',
+    'Locatable',
+    'Permalinkable',
+    'Timestampable',
+    'Publishable'
+]
