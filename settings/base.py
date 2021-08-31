@@ -84,10 +84,10 @@ THIRD_PARTY_APPS = [
 
 APPS = [
     'apps.common',
+    'apps.user',
     'apps.communication',
-    'apps.auth',
-    # 'apps.public',
     # 'apps.api',
+    # 'apps.public',
     # 'apps.dashboard',
 ]
 
