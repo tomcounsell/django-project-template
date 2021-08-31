@@ -26,6 +26,9 @@ msgpack
 msgpack-numpy
 numpy
 pandas
+popoto==0.0.3
+# psycopg2
+psycopg2-binary
 pytz
 PyYAML
 redis==3.5.3

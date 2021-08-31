@@ -107,7 +107,7 @@ MIDDLEWARE = [
 ] + [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'request.middleware.RequestMiddleware',
+    # 'request.middleware.RequestMiddleware',
     # 'simple_history.middleware.HistoryRequestMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -226,7 +226,7 @@ USE_I18N = False
 USE_L10N = False
 USE_TZ = True
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'user.User'
 
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

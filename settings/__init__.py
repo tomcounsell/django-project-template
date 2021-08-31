@@ -10,6 +10,11 @@ INTERNAL_IPS = [
 ]
 
 LOGGING_CONFIG = None
+LOGGING = {
+    'django.utils.autoreload': {
+        'level': 'INFO',
+    }
+}
 
 # DEFINE THE ENVIRONMENT TYPE
 PRODUCTION = STAGE = DEMO = LOCAL = False
@@ -25,7 +30,7 @@ elif dt_key == 'STAGE':
     log_level = logging.DEBUG
 else:
     LOCAL = True
-    log_level = logging.DEBUG
+    log_level = logging.INFO
 
 logging.basicConfig(level=log_level)
 logger = logging.getLogger(__name__)

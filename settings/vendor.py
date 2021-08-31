@@ -1,10 +1,7 @@
 import os
 
 from settings import LOCAL, STAGE, DEMO, PRODUCTION
-
-# STATIC FILES
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # AWS
@@ -21,8 +18,12 @@ AWS_SNS_NAME = os.environ.get('AWS_SNS_NAME', "")
 AWS_STATIC_URL = 'https://' + AWS_S3_BUCKET_NAME + '.s3.amazonaws.com/'
 
 
+# STATIC FILES
 if not LOCAL:
     STATIC_URL = AWS_STATIC_URL
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
+
 
 CACHES = {
     "default": {
@@ -30,7 +31,6 @@ CACHES = {
          "LOCATION": os.environ.get('REDIS_URL'),
     }
 }
-
 
 
 DATABASES = {

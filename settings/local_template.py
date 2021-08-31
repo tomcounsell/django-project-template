@@ -5,17 +5,24 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ProjectDatabaseName',
-        'USER': 'local-username',
-        'PASSWORD': '',
+        'NAME':     'local_postgres_db_name',
+        'USER':     'local_postgres_username',
+        'PASSWORD': 'local_postgres_password',
         'HOST':     'localhost',
         'PORT':     '5432',
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
 # AWS
 AWS_ACCESS_KEY_ID = ''
@@ -28,15 +35,6 @@ AWS_OPTIONS = {
 }
 AWS_SNS_NAME = ''
 AWS_STATIC_URL = 'https://' + AWS_S3_BUCKET_NAME + '.s3.amazonaws.com/'
-
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-    }
-}
-
 
 # OAUTH AND SOCIAL
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
