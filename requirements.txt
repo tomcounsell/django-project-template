@@ -1,39 +1,35 @@
 boto3
-# celery
-# celery-redbeat
+celery
 decorator
 dj-database-url
 dj-static
-Django==3.2.5
-# django-cache-memoize
-# django-cors-headers
+Django
+django-cors-headers
 django-debug-toolbar
 django-extensions
 django-filter
-django-redis-cache
-# django-rest-auth
-django-rest-swagger
-# django-request
-# django-simple-history
+django-htmx
+django-rest-auth
 django-storages
-# django-timezone-field
-# django-user-agents
-# django-widget-tweaks
+django-widget-tweaks
 djangorestframework
-# djangorestframework-simplejwt
+djangorestframework-api-key
+flake8
+gunicorn
+icecream
 ipython
-msgpack
-msgpack-numpy
+Markdown
 numpy
 pandas
-popoto==0.0.3
-# psycopg2
-psycopg2-binary
+popoto
+psycopg2
+pydantic
+pytest
 pytz
 PyYAML
-redis==3.5.3
+redis
 redisgraph
 requests
 six
 toolz
-waitress
+whitenoise
