@@ -14,16 +14,8 @@ class User(AbstractUser, Timestampable):
 
     is_email_verified = models.BooleanField(default=False)
     is_beta_tester = models.BooleanField(default=False)
-    is_premium_member = models.BooleanField(
-        default=False
-    )  # todo: create purchases or membership model for details
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
-    invited_by_user = models.ForeignKey(
-        "self", on_delete=models.SET_NULL, null=True, blank=True
-    )
 
-    organization_name = models.CharField(max_length=255, default="", blank=True)
-    api_keys = models.JSONField(default=dict, blank=True)
 
     # MODEL PROPERTIES
 
