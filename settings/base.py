@@ -138,23 +138,6 @@ TEMPLATES = [{
 }, ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-PASSWORD_RESET_TIMEOUT_DAYS = 7
-
-# PASSWORD VALIDATION
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -197,8 +180,7 @@ REST_FRAMEWORK = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
-
+PASSWORD_RESET_TIMEOUT_DAYS = 7
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
