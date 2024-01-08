@@ -1,50 +1,39 @@
 import json
 import uuid
-
-from django.contrib.postgres.fields import JSONField
 from django.db import models
+from typing import Optional
 
 
 class Uploadable(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    """
+    A mixin for use with models that require file upload functionality.
 
+    This abstract model encapsulates common attributes related to file uploads and can be used
+    in various models that require these features. It provides a unique identifier for each upload,
+    a URL to access the uploaded file, and a flexible JSON field to store any relevant metadata.
+
+    Attributes:
+        id (UUID): A unique identifier for the upload, generated automatically using UUID version 4.
+            This field is the primary key and is not editable.
+
+        url (str): A URL to access the uploaded file. It can be used to retrieve or display the file
+            in different parts of the application.
+
+        meta_data (Dict[str, Any]): A dictionary to store unstructured metadata related to the file.
+            This can include details like file size, compression type, resolution,
+            or any other that might be relevant to the specific use case.
+            Feel free to use this as a dumping grounds for meta_data
+            that a 3rd party image hosting or processing service might provide.
+            (just make sure that 3rd party data is json serializable)
+
+    Note:
+        This model is abstract and should be used as a mixin in other models.
+        The `meta_data` field is intentionally flexible to accommodate various metadata requirements.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     url = models.URLField(default="")
-    meta_data = JSONField(blank=True, null=True)
+    meta_data = models.JSONField(default=dict)  # type: Dict[str, Any]
 
     class Meta:
         abstract = True
-
-    # MODEL PROPERTIES
-    @property
-    def file_type(self):
-        if self.meta_data and isinstance(self.meta_data, str):
-            self.meta_data = json.loads(self.meta_data)
-        try:
-            return self.meta_data.get('type', "") if self.meta_data else ""
-        except:
-            return ""
-
-    @property
-    def name(self):
-        if self.meta_data and isinstance(self.meta_data, str):
-            self.meta_data = json.loads(self.meta_data)
-        return self.meta_data.get('name', "") if self.meta_data else ""
-
-    @property
-    def file_extension(self):
-        if self.meta_data and isinstance(self.meta_data, str):
-            self.meta_data = json.loads(self.meta_data)
-        return self.meta_data.get('ext', "") if self.meta_data else ""
-
-    @property
-    def link_title(self):
-        if self.name:
-            title = self.name
-        elif 'etc' in self.meta_data:
-            title = (self.meta_data['etc'] or "").upper()
-        else:
-            title = (self.meta_data['type'] or
-                     "").upper() if 'type' in self.meta_data else ""
-        if 'ext' in self.meta_data:
-            title = title + " .%s" % (self.meta_data['ext'] or "").upper()
-        return title

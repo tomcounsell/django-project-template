@@ -6,13 +6,15 @@ from django.utils.text import slugify
 
 
 class Permalinkable(models.Model):
-    slug = models.SlugField(null=True, blank=True, validators=[validate_slug])
+    slug = models.SlugField(
+        null=True, blank=True, validators=[validate_slug], unique=True
+    )
 
     class Meta:
         abstract = True
 
     def get_url_kwargs(self, **kwargs):
-        kwargs.update(getattr(self, 'url_kwargs', {}))
+        kwargs.update(getattr(self, "url_kwargs", {}))
         return kwargs
 
     # @models.permalink
@@ -21,10 +23,9 @@ class Permalinkable(models.Model):
     #     return (self.url_name, (), url_kwargs)
 
 
-
-@receiver(pre_save)
+@receiver(pre_save, sender=Permalinkable)
 def pre_save_slug(sender, instance, *args, **kwargs):
     if not issubclass(sender, Permalinkable):
-       return
-    if not instance.slug:
+        return
+    if not instance.slug and hasattr(instance, "slug_source"):
         instance.slug = slugify(instance.slug_source)

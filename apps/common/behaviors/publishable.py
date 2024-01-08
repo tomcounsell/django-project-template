@@ -3,7 +3,6 @@ from django.utils import timezone
 
 
 class Publishable(models.Model):
-
     published_at = models.DateTimeField(null=True, blank=True)
     edited_at = models.DateTimeField(null=True, blank=True)
     unpublished_at = models.DateTimeField(null=True, blank=True)
@@ -14,8 +13,11 @@ class Publishable(models.Model):
     @property
     def is_published(self):
         now = timezone.now()
-        if (self.published_at and self.published_at < now
-                and not (self.unpublished_at and self.unpublished_at < now)):
+        if (
+            self.published_at
+            and self.published_at < now
+            and not (self.unpublished_at and self.unpublished_at < now)
+        ):
             return True
         else:
             return False
@@ -27,3 +29,9 @@ class Publishable(models.Model):
             self.published_at = timezone.now()
         elif not value and self.is_published:
             self.unpublished_at = timezone.now()
+
+    def publish(self):
+        self.is_published = True
+
+    def unpublish(self):
+        self.is_published = False
