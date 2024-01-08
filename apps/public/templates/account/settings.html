@@ -1,0 +1,103 @@
+{% extends base_template %}
+{% load static %}
+
+{% block main_content %}
+
+<div class="card m-3">
+  <header class="card-header">
+    <p class="card-header-title">Basic Info</p>
+  </header>
+  <div class="card-content">
+    <form method="post">
+      {% csrf_token %}
+      <div class="columns is-multiline">
+        <div class="column is-one-third">
+          <div class="field">
+            <label class="label">First Name</label>
+            <div class="control">
+              {{ user_form.first_name }}
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="field">
+            <label class="label">Last Name</label>
+            <div class="control">
+              {{ user_form.last_name }}
+            </div>
+          </div>
+        </div>
+        <div class="column is-one-third">
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control has-icons-left has-icons-right">
+              {{ user_form.email }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <button type="submit" class="button is-success-dark">Save</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card m-3">
+  <header class="card-header">
+    <p class="card-header-title">Change Password</p>
+  </header>
+
+  <div class="card-content">
+    <form method="post">
+      {% load widget_tweaks %}{% csrf_token %}
+      <div class="field">
+        <label class="label">Current password</label>
+        <div class="control">
+          {{ password_form.old_password|add_class:"input" }}
+        </div>
+        {% if password_form.old_password.errors %}
+          <p class="help is-danger">{{ password_form.old_password.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">New password</label>
+        <div class="control">
+          {{ password_form.new_password1|add_class:"input" }}
+        </div>
+        {% if password_form.new_password1.errors %}
+          <p class="help is-danger">{{ password_form.new_password1.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label class="label">Confirm new password</label>
+        <div class="control">
+          {{ password_form.new_password2|add_class:"input" }}
+        </div>
+        {% if password_form.new_password2.errors %}
+          <p class="help is-danger">{{ password_form.new_password2.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-danger">Update password</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <footer class="card-footer">
+
+    {% if password_form.errors %}
+      {% for error in password_form.non_field_errors %}
+        <p class="card-footer-item text-warning">{{ error|escape }}</p>
+      {% endfor %}
+    {% endif %}
+
+  </footer>
+
+</div>
+
+{% endblock %}

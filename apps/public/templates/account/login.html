@@ -1,0 +1,57 @@
+{% extends "pages/onboarding.html" %}
+
+{% block main_content %}
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <div class="card has-background-danger p-6">
+            <form action="{% url 'public:account-login' %}" method="post">
+              {% load widget_tweaks %}{% csrf_token %}
+
+              <!-- Username Field -->
+              <div class="field">
+                <label class="label">Email</label>
+                <div class="control has-icons-left has-icons-right">
+                  {{ form.username|add_class:'input is-primary-dark' }}
+                  <span class="icon is-small is-left has-text-primary-dark">
+                    <i class="fas fa-envelope"></i>
+                  </span>
+                  <span class="icon is-small is-right">
+                    <!-- Conditional class for invalid email -->
+                    <i class="fas fa-check"></i>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Password Field -->
+              <div class="field">
+                <label class="label">Password</label>
+                <div class="control has-icons-left">
+                  {{ form.password|add_class:'input is-primary-dark' }}
+                  <span class="icon is-small is-left has-text-primary-dark">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Login Button -->
+              <div class="field">
+                <div class="control">
+                  <button class="button is-warning" type="submit">Login</button>
+                </div>
+              </div>
+
+              <!-- Error Messages -->
+              {% if form.errors %}
+              <p class="help is-danger has-text-centered">
+                {{ form.non_field_errors }}
+              </p>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock main_content %}

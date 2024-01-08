@@ -1,0 +1,49 @@
+{% load static %}
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="{% static 'assets/img/logo-yudame.png' %}" width="28" height="28"  alt="Yudame Logo"/>
+    </a>
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div
+      id="navMenu"
+      class="navbar-menu"
+  >
+    <div class="navbar-start">
+      {% if user.is_authenticated %}
+        {#      {% component "search" %}#}
+        {% component "brand_menu" active_brand=brand brands=request.user.brands.all %}
+        {% component "category_menu" categories=brand.categories.all active_category_id=request.session.active_category_id %}
+      {% endif  %}
+    </div>
+
+    <!-- middle zone between left and right -->
+
+    <div class="navbar-end">
+      {% if user.is_authenticated %}
+        {#      {% component "assistant_menu" %}#}
+        {#      {% component "search" %}#}
+      {% endif  %}
+      {% component "account_menu" %}
+    </div>
+
+  </div>
+</nav>
+
+<div
+    class="hidden"
+    hx-get="."
+    hx-swap="outerHTML"
+    hx-trigger="brand-name-change, category-name-change from:body"
+    hx-select="#navMenu"
+    hx-target="#navMenu"
+>
+</div>

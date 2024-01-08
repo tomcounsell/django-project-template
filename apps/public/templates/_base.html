@@ -1,0 +1,106 @@
+{% load django_htmx %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en" data-csrf_token="{{ csrf_token }}">
+  <head>
+    <meta charset="utf-8" />
+    {% block viewport %}
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% endblock viewport %}
+    <base href="/" />
+
+    <!--FAVICON-->
+    <!--iOS and Android icons-->
+    <link rel="icon" href="{{ STATIC_URL }}assets/favicon.png" />
+
+    <title id="tab_title">Yudame {% if debug %}DEBUG{% endif %}</title>
+
+    <!---META TAGS--->
+    {% block additional_meta_tags %} {% endblock additional_meta_tags %}
+
+    <!--Raleway Font-->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600&display=swap"
+    />
+
+    <!---Bulma CSS--->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css"
+      integrity="sha512-HqxHUkJM0SYcbvxUw5P60SzdOTy/QVwA1JJrvaXJv4q7lmbDZCmZaqz01UPOaQveoxfYRv1tHozWGPMcuTBuvQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://kit.fontawesome.com/c83e8fd695.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!--BASE CSS-->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css?v=2" />
+
+    <!-- COMPONENT'S CSS -->
+    {% component_css_dependencies %}
+    <!--FOR TEMPLATES TO LOAD MORE CSS-->
+    {% block css %} {% endblock css %}
+  </head>
+
+  <body {% if debug %} hx-ext="debug" {% endif %}>
+  {% block body_inner_html %}
+    <div style="height: 100vh">
+      <div class="wrapper background-style">
+        {% block navbar %}
+          {% component "navbar" active_brand_id=request.session.active_brand_id active_category_id=request.session.active_category_id %}
+        {% endblock navbar %}
+        <div class="container-fluid pb-3">
+          {% component "messages" %}
+
+          <div class="container-fluid">
+            <div class="columns m-3">
+              <div id="left_column" class="column is-1">
+                {% block left_side %}
+                  <!-- left column -->
+                {% endblock left_side %}
+              </div>
+
+              <div id="middle_column" class="column is-8">
+                <main id="main" hx-history-elt>
+                  {% block main_content %} {% endblock main_content %}
+                </main>
+              </div>
+
+              <div id="right_column" class="column is-3">
+                {% block right_side %}
+                  <!-- right column -->
+                {% endblock right_side %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% block footer %}
+          {% component "footer" %}
+        {% endblock footer %}
+      </div>
+    </div>
+    {% endblock body_inner_html %}
+
+    <!--Javascript Placed at the end of the document. Pages load faster. -->
+    <!--BASE JS-->
+    <script src="{{ STATIC_URL }}js/base.js?v=1"></script>
+    <script src="{{ STATIC_URL }}js/bulma.js?v=1"></script>
+
+    <!-- COMPONENT'S JS -->
+    {% component_js_dependencies %}
+    <!--FOR TEMPLATES TO LOAD MORE JS-->
+    {% block javascript %} {% endblock javascript %}
+    <!--HTMX-->
+    <script src="https://unpkg.com/htmx.org@1.1.0"></script>
+    {% if debug %}<script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>{% endif %}
+    {% django_htmx_script %}
+    <!-- HYPERSCRIPT -->
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+  </body>
+
+</html>
