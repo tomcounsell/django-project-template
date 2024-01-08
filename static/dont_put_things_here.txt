@@ -1,0 +1,2 @@
+use the dashboard/static dir instead
+or mess around with the settings because django isn't looking here after it finds a /static/ in the dashboard app
