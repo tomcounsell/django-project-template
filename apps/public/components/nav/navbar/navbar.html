@@ -20,8 +20,6 @@
     <div class="navbar-start">
       {% if user.is_authenticated %}
         {#      {% component "search" %}#}
-        {% component "brand_menu" active_brand=brand brands=request.user.brands.all %}
-        {% component "category_menu" categories=brand.categories.all active_category_id=request.session.active_category_id %}
       {% endif  %}
     </div>
 
@@ -29,7 +27,6 @@
 
     <div class="navbar-end">
       {% if user.is_authenticated %}
-        {#      {% component "assistant_menu" %}#}
         {#      {% component "search" %}#}
       {% endif  %}
       {% component "account_menu" %}
@@ -42,7 +39,7 @@
     class="hidden"
     hx-get="."
     hx-swap="outerHTML"
-    hx-trigger="brand-name-change, category-name-change from:body"
+    hx-trigger="something-change from:body"
     hx-select="#navMenu"
     hx-target="#navMenu"
 >
