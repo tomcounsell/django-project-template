@@ -1,10 +1,11 @@
 from django.db import models
-from apps.common.behaviors import Uploadable, Timestampable
+
+from apps.common.models import Upload
 
 ACCEPTED_FILE_TYPES = ["jpg", "gif", "png"]
 
 
-class Image(Uploadable, Timestampable):
+class Image(Upload, models.Model):
     thumbnail_url = models.URLField(default="", null=True, blank=True)
 
     # INCLUDED BY MIXINS

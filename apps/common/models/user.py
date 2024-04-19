@@ -5,7 +5,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
-from apps.assistant.models.conversation_block import Author, Ilk
 from apps.common.behaviors import Timestampable
 
 
@@ -18,16 +17,6 @@ class User(AbstractUser, Timestampable):
 
 
     # MODEL PROPERTIES
-
-    @property
-    def author_repr(self) -> Author:
-        return Author(
-            id=str(self.id),
-            name=self.get_full_name() or self.username,
-            ilk=Ilk.HUMAN,
-            handle=self.username or self.email or "",
-        )
-
     @property
     def serialized(self):
         return {

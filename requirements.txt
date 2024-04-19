@@ -1,9 +1,12 @@
 boto3
+black
 celery
+coreapi
 decorator
 dj-database-url
 dj-static
 Django
+django-components
 django-cors-headers
 django-debug-toolbar
 django-extensions
@@ -27,7 +30,7 @@ pydantic
 pytest
 pytz
 PyYAML
-redis
+redis>=3.5.3
 redisgraph
 requests
 six

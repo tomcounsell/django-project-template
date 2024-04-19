@@ -1,9 +1,10 @@
-from ..behaviors import Uploadable, Timestampable
+from . import Upload
+from django.db import models
 
 accepted_file_types = ["pdf", "doc", "docx", "rtf", "pages"]
 
 
-class Document(Uploadable, Timestampable):
+class Document(Upload, models.Model):
     """
     Represents a generic document that can be uploaded.
 

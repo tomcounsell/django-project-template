@@ -1,10 +1,9 @@
 # from __future__ import absolute_import
+import mimetypes
 import os
+from pathlib import Path
 import socket
 from datetime import timedelta
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
 
 # DEFINE THE ENVIRONMENT TYPE
 PRODUCTION = STAGE = DEMO = LOCAL = False
@@ -19,6 +18,8 @@ else:
     LOCAL = True
 
 DEBUG = LOCAL or STAGE
+BASE_DIR = Path(__file__).resolve().parent.parent
+SITE_ROOT = BASE_DIR
 
 WSGI_APPLICATION = 'settings.wsgi.application'
 
@@ -94,13 +95,12 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
 SITE_ID = 1
 
 MIDDLEWARE = [
-    "apps.common.utilities.django_middleware.APIHeaderMiddleware",
+    "apps.common.utilities.database.django_middleware.APIHeaderMiddleware",
     # "django_user_agents.middleware.UserAgentMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     # "request_logging.middleware.LoggingMiddleware",
     # "corsheaders.middleware.CorsMiddleware",
-    "apps.public.middleware.user_state.AttachUserStateMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -125,7 +125,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            SITE_ROOT / "templates",
+            BASE_DIR / "templates",
             # BASE_DIR / "apps" / "public" / "templates",
         ],
         # "APP_DIRS": True,  # removed for django-components
@@ -170,6 +170,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 mimetypes.add_type("text/javascript", ".js", True)
 mimetypes.add_type("text/css", ".css", True)
+
 
 WSGI_APPLICATION = "settings.wsgi.application"
 
