@@ -24,7 +24,7 @@ def start(telegram_bot_membership, message: Message, context):
 
     return "\n".join(
         [
-            "This is the Telegram Bot for Yudame",
+            "This is the Telegram Bot for Django Project Template",
             # "Follow @aihelps on [Twitter](https://twitter.com/aihelps) " +
             # "and [YouTube](https://youtube.com/channel/UCh7iHrTU8GIGGUOhTvCM3Dg) to learn how to build AI bots like this.",
             # "Or get an email for new blog posts via [Substack](https://aihelps.substack.com)",

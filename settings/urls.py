@@ -7,7 +7,7 @@ from django.urls import include
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='home.html'), name="home"),
+    path('', TemplateView.as_view(template_name='pages/home.html'), name="home"),
 ]
 
 # Django Rest Framework API Docs

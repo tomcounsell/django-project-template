@@ -1,24 +1,10 @@
-from datetime import datetime
-
+from django import forms
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash, views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import AbstractUser
+
 from apps.public.views.main_content_view import MainContentView
-
-INVITE_CODES = {"cmhat", "steve"}
-
-
-from django import forms
-
-
-class AccountCreateForm(forms.Form):
-    email = forms.EmailField(label="Email", required=True)
-    password = forms.CharField(
-        label="Password", widget=forms.PasswordInput, required=True
-    )
-    invite_code = forms.CharField(label="Invite Code", required=False)
-
 
 class LoginView(auth_views.LoginView):
     template_name = "account/login.html"
@@ -32,10 +18,10 @@ class UserSettingsForm(forms.ModelForm):
         fields = ["first_name", "last_name", "email"]
         widgets = {
             "first_name": forms.TextInput(
-                attrs={"placeholder": "Friedrich", "class": "input"}
+                attrs={"placeholder": "John", "class": "input"}
             ),
             "last_name": forms.TextInput(
-                attrs={"placeholder": "Hayak", "class": "input"}
+                attrs={"placeholder": "Smith", "class": "input"}
             ),
             "email": forms.EmailInput(attrs={"disabled": True, "class": "input"}),
         }

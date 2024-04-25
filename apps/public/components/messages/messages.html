@@ -1,0 +1,14 @@
+<div id='messages' class='mx-5' style="{% if not messages|length %}display: none;{% endif %}">
+  <div class="tile is-ancestor" style="flex-direction: row-reverse;">
+    {% for message in messages %}
+      <div class="tile is-parent" style="max-width: 400px;">
+        <article class="tile is-child notification is-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+          <button class="delete"></button>
+          <p class="subtitle is-6">
+            {{ message|safe }}
+          </p>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+</div>
