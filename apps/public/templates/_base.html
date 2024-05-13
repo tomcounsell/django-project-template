@@ -51,33 +51,32 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
-          {% component "navbar" %}{% endcomponent %}
+          {% component "navbar"%}{% endcomponent %}
         {% endblock navbar %}
-        <div class="container-fluid pb-3">
+
+        {% block messages %}
           {% component "messages" %}{% endcomponent %}
+        {% endblock messages %}
 
-          <div class="container-fluid">
-            <div class="columns m-3">
-              <div id="left_column" class="column is-1">
-                {% block left_side %}
-                  <!-- left column -->
-                {% endblock left_side %}
-              </div>
+        <main id="main" class="container-fluid" hx-history-elt>
+          <div class="columns is-mobile m-3">
+            <section id="left_column" class="column is-2-tablet is-4-mobile">
+              {% block left_content %}
+                <!-- left column -->
+              {% endblock left_content %}
+            </section>
 
-              <div id="middle_column" class="column is-8">
-                <main id="main" hx-history-elt>
-                  {% block main_content %} {% endblock main_content %}
-                </main>
-              </div>
+            <section id="center_column" class="column is-8">
+              {% block center_content %} {% endblock center_content %}
+            </section>
 
-              <div id="right_column" class="column is-3">
-                {% block right_side %}
-                  <!-- right column -->
-                {% endblock right_side %}
-              </div>
-            </div>
+            <section id="right_column" class="column is-2-tablet is-0-mobile">
+              {% block right_content %}
+                <!-- right column -->
+              {% endblock right_content %}
+            </section>
           </div>
-        </div>
+        </main>
 
         {% block footer %}
           {% component "footer" %}{% endcomponent %}
