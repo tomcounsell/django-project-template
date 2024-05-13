@@ -7,8 +7,10 @@ from django.urls import include
 
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='pages/home.html'), name="home"),
+    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("", include("apps.public.urls", namespace="public")),
 ]
+
 
 # Django Rest Framework API Docs
 API_TITLE, API_DESCRIPTION = "django-project-template API", ""

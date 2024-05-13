@@ -35,9 +35,9 @@ urlpatterns += [
         account.SettingsView.as_view(),
         name="account-settings",
     ),
-    path(
-        "account/create",
-        account.AccountCreateView.as_view(),
-        name="account-create",
-    ),
+    # path(
+    #     "account/create",
+    #     account.AccountCreateView.as_view(),
+    #     name="account-create",
+    # ),
 ]

@@ -19,7 +19,7 @@
   >
     <div class="navbar-start">
       {% if user.is_authenticated %}
-        {#      {% component "search" %}#}
+        {#      {% component "search" %}{% endcomponent %}#}
       {% endif  %}
     </div>
 
@@ -27,9 +27,9 @@
 
     <div class="navbar-end">
       {% if user.is_authenticated %}
-        {#      {% component "search" %}#}
+        {#      {% component "search" %}{% endcomponent %}#}
       {% endif  %}
-      {% component "account_menu" %}
+      {% component "account_menu" %}{% endcomponent %}
     </div>
 
   </div>

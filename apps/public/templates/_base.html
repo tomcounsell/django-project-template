@@ -51,10 +51,10 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
-          {% component "navbar" active_brand_id=request.session.active_brand_id active_category_id=request.session.active_category_id %}
+          {% component "navbar" %}{% endcomponent %}
         {% endblock navbar %}
         <div class="container-fluid pb-3">
-          {% component "messages" %}
+          {% component "messages" %}{% endcomponent %}
 
           <div class="container-fluid">
             <div class="columns m-3">
@@ -80,7 +80,7 @@
         </div>
 
         {% block footer %}
-          {% component "footer" %}
+          {% component "footer" %}{% endcomponent %}
         {% endblock footer %}
       </div>
     </div>

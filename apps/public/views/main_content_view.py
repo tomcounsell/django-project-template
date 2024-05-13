@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Dict
 
 from django.shortcuts import render as django_render
@@ -15,6 +16,16 @@ class MainContentView(View):
         if not hasattr(self, "template_name"):
             cls_name_str = self.__class__.__name__.lower()
             self.template_name = f"{cls_name_str}/{cls_name_str}.html"
+
+    def get(self, request, *args, **kwargs):
+        logging.warning("GET method not implemented.")
+        if self.template_name:
+            logging.warning("Will attempt to render template as-is.")
+            return self.render()
+        raise NotImplementedError
+
+    def post(self, request, *args, **kwargs):
+        raise NotImplementedError
 
     def dispatch(self, request, *args, **kwargs):
         if request.htmx:
