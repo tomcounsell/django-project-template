@@ -18,17 +18,22 @@ class Address(Timestampable, models.Model):
         "common.Country", related_name="addresses", null=True, on_delete=models.SET_NULL
     )
 
+    google_map_link = models.URLField(null=True, blank=True)
+
     # MODEL PROPERTIES
     @property
-    def inline_string(self):
+    def inline_string(self) -> str:
         string = "%s " % self.line_1
         string += "%s" % self.city or ""
         string += ", %s " % self.region or ""
         return string
 
     @property
-    def google_map_url(self):
-        return "http://maps.google.com/?q=%s" % self.inline_string.replace(" ", "%20")
+    def google_map_url(self) -> str:
+        return (
+            self.google_map_link
+            or "http://maps.google.com/?q=%s" % self.inline_string.replace(" ", "%20")
+        )
 
     # MODEL FUNCTIONS
     def __str__(self):

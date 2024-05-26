@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from datetime import datetime
 import hashlib
 
@@ -11,10 +12,15 @@ from apps.common.behaviors import Timestampable
 class User(AbstractUser, Timestampable):
     phone_number = models.CharField(max_length=15, default="", blank=True)
 
+    # birthdate = models.DateField(null=True, blank=True)
+
     is_email_verified = models.BooleanField(default=False)
     is_beta_tester = models.BooleanField(default=False)
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
 
+    # stripe_customer = models.ForeignKey(
+    #     "djstripe.Customer", null=True, blank=True, on_delete=models.PROTECT
+    # )
 
     # MODEL PROPERTIES
     @property
