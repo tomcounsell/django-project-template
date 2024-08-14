@@ -34,5 +34,6 @@ redis>=3.5.3
 redisgraph
 requests
 six
+setuptools
 toolz
 whitenoise
