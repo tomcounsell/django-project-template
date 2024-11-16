@@ -1,3 +1,6 @@
 Temporary commands reference
 
+docker build -t django-dev .
+docker run -p 8000:8000 django-dev
+
 docker-compose exec web sh

@@ -1,39 +1,58 @@
-# Dockerfile for ScheduledTasks AI Service
-# This container runs a Python web application using Gunicorn and PostgreSQL
-# Required environment variables:
-#   - SECRET_KEY: Django secret key
-#   - DATABASE_URL: PostgreSQL connection string
-# Exposes port 8000 for the web service
+# Dockerfile for Scheduled Tasks for Generative AI
+# This container uses a multi-stage build process:
+#   1. Builder stage: Compiles Python packages with required system dependencies;
+#   2. Final stage: Creates a lean runtime image with only necessary components.
 
-# Use the Alpine base image for Python 3.8
+# Runtime Details:
+#   - Base: Python 3.8 Alpine
+#   - Web Server: Gunicorn
+#   - Database: PostgreSQL
+#   - Port: 8000
+
+# Build stage for compiling dependencies
+FROM python:3.8-alpine as builder
+
+# Set core environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install necessary build dependencies
+RUN apk add --no-cache \
+    build-base \
+    gcc \
+    libpq \
+    linux-headers \
+    musl-dev \
+    postgresql-dev
+
+# Set builder working directory
+WORKDIR /build
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Final stage - this will be your actual container
 FROM python:3.8-alpine
 
 # Set core environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies for PostgreSQL
-RUN apk update && apk add --no-cache \
-    build-base \
-    postgresql-dev \
-    libpq \
-    gcc \
-    musl-dev \
-    linux-headers
+# Install only runtime dependencies
+RUN apk add --no-cache \
+    libpq
 
 # Set container working directory
 WORKDIR /app
 
-# Copy requirements.txt to leverage Docker cached layer
-COPY requirements.txt /app/w
-
-# Install Python dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Copy only the compiled packages from builder
+COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/python3.8/site-packages/
 
 # Copy the application code
-COPY . /app/
+COPY . .
 
-# Collect static files
+# Gather all project static assets (CSS, JS, images, etc.) and place them in the STATIC_ROOT directory for production
 RUN python manage.py collectstatic --noinput
 
 # Set the default Gunicorn command for the web service and bind to port 8000
