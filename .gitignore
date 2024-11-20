@@ -1,4 +1,7 @@
 .vscode
+project.txt
+project.md
+
 *.pyc
 *.secret
 intelligenttrading-datastore.json
