@@ -7,7 +7,7 @@ from .services.data_validator import validate_columns
 from .services.data_cleaner import clean_data
 from .services.data_filter import filter_data
 from .services.data_overview import generate_overview
-from .services.openai.llm_integration import generate_summary  # Import new service
+from .services.openai.llm_integration import generate_summary  # Import updated service
 
 
 def main():
@@ -50,16 +50,16 @@ def main():
 
     # Step 8: Display LLM results
     print("\nLLM Summary - Week 1:")
-    print(week1_llm_summary.plain_english_summary)
+    print(week1_llm_summary.dataset_summary)  # Updated field name
     print("\nKey Metrics:")
     for metric in week1_llm_summary.key_metrics:
-        print(f"{metric.metric_name}: {metric.value}")
+        print(f"{metric.name}: {metric.value}")  # Updated field names
 
     print("\nLLM Summary - Week 2:")
-    print(week2_llm_summary.plain_english_summary)
+    print(week2_llm_summary.dataset_summary)  # Updated field name
     print("\nKey Metrics:")
     for metric in week2_llm_summary.key_metrics:
-        print(f"{metric.metric_name}: {metric.value}")
+        print(f"{metric.name}: {metric.value}")  # Updated field names
 
 
 if __name__ == "__main__":
