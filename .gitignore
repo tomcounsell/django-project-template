@@ -1,5 +1,6 @@
 # Paul's .gitignore
 .vscode/
+_archive/
 _docs/
 *.sqlite3
 project.txt

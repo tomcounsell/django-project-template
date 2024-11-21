@@ -1,4 +1,5 @@
-# Scheduled Tasks for Generative AI Dockerfile
+# Scheduled Tasks for Generative AI Project Dockerfile
+
 # This container uses a multi-stage build process:
 #   1. Builder stage: Compiles Python packages with required system dependencies;
 #   2. Final stage: Creates a lean runtime image with only the necessary components.
@@ -6,6 +7,7 @@
 # Runtime Details:
 #   - Base: Python 3.11 Alpine
 #   - Database: PostgreSQL
+#   - Cache: Redis
 #   - Web Server: Gunicorn
 #   - Port: 8000
 
@@ -36,7 +38,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir --default-timeout=100 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
-# Final stage - this will be your actual container
+# ---------------------------------------------------
+# Final stage for runtime image
 FROM python:3.11-alpine
 
 # Set core environment variables
