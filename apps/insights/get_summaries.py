@@ -1,9 +1,11 @@
-from insights.services.csv_reader import load_csv, validate_columns
+import os
+from .services.csv_reader import load_csv, validate_columns
 
 
 def main():
-    # Path to the CSV file
-    file_path = "insights/data/ga4_data.csv"
+    # Dynamically resolve the file path
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "./data/ga4_data.csv")
 
     # Step 1: Load CSV
     print("Loading CSV...")
