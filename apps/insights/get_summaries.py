@@ -7,7 +7,7 @@ from .services.data_validator import validate_columns
 from .services.data_cleaner import clean_data
 from .services.data_filter import filter_data
 from .services.data_overview import generate_overview
-from .services.llm_integration import generate_summary  # Import new service
+from .services.openai.llm_integration import generate_summary  # Import new service
 
 
 def main():

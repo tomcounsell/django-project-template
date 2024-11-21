@@ -1,4 +1,9 @@
 # apps/insights/services/openai/llm_integration.py
+# TODO: Add logic to truncate long outputs from describe()
+# TODO: Implement OpenAI error handling
+# TODO: Detect and handle refusals
+# ? Two-Phased Approach for Large Datasets?
+
 from decouple import config
 import instructor
 from openai import OpenAI
@@ -23,16 +28,8 @@ class SummaryOutput(BaseModel):
     key_metrics: List[KeyMetric]
 
 
+# Generate a structured summary using OpenAI API
 def generate_summary(statistical_summary: str) -> SummaryOutput:
-    """
-    Generate a structured summary using OpenAI API.
-
-    Args:
-        statistical_summary (str): The summary of the dataset from pandas.describe().
-
-    Returns:
-        SummaryOutput: The structured summary response.
-    """
     prompt = f"""
     The following is a statistical summary of a dataset:
 
