@@ -1,5 +1,5 @@
 # apps/insights/services/openai/schemas.py
-from pydantic import BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, ValidationError, model_validator
 from typing import List, Optional
 
 
@@ -16,15 +16,13 @@ class KeyMetric(BaseModel):
         None, description="Additional details about the key metric."
     )
 
-    @root_validator
-    def validate_key_metric(cls, values):
-        name = values.get("name")
-        value = values.get("value")
-        if not name.strip():
+    @model_validator(mode="after")
+    def validate_key_metric(self) -> "KeyMetric":
+        if not self.name.strip():
             raise ValueError("Key metric name cannot be empty.")
-        if value < 0:
+        if self.value < 0:
             raise ValueError("Key metric value cannot be negative.")
-        return values
+        return self
 
 
 class SummaryOutput(BaseModel):
@@ -39,13 +37,12 @@ class SummaryOutput(BaseModel):
         ..., description="List of key metrics extracted from the dataset."
     )
 
-    @root_validator
-    def validate_summary(cls, values):
-        summary = values.get("dataset_summary")
-        if len(summary) > 1000:
+    @model_validator(mode="after")
+    def validate_summary(self) -> "SummaryOutput":
+        if not self.dataset_summary.strip():
+            raise ValueError("Dataset summary cannot be empty.")
+        if len(self.dataset_summary) > 1000:
             raise ValueError(
                 "Dataset summary exceeds the maximum allowed length (1000 characters)."
             )
-        if not summary.strip():
-            raise ValueError("Dataset summary cannot be empty.")
-        return values
+        return self
