@@ -10,7 +10,7 @@
 #   - Port: 8000
 
 # Build stage for compiling dependencies
-FROM python:3.11-alpine as builder
+FROM python:3.11-alpine AS builder
 
 # Set core environment variables for Python optimization
 # Prevent Python from writing pyc files (compiled bytecode) to disk, reducing container size and improving startup time
@@ -31,8 +31,10 @@ WORKDIR /build
 
 # Install Python dependencies and upgrade Pip
 COPY requirements.txt .
+
+# Install Python dependencies using a local Asian mirror and increased timeout
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir --default-timeout=100 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 # Final stage - this will be your actual container
 FROM python:3.11-alpine
