@@ -1,4 +1,4 @@
-# apps/insights/services/csv_reader.py
+# apps/insights/services/csv/csv_reader.py
 import pandas as pd  # Missing import added
 
 

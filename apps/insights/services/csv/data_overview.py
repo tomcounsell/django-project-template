@@ -1,4 +1,4 @@
-# apps/insights/services/data_overview.py
+# apps/insights/services/csv/data_overview.py
 
 
 def generate_overview(df, label):

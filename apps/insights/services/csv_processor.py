@@ -1,4 +1,4 @@
-# services/csv_processor.py
+# apps/insights/services/csv_processor.py
 import logging
 from .csv.csv_reader import load_csv
 from .csv.data_validator import validate_columns
