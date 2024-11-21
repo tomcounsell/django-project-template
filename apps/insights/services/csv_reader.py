@@ -14,7 +14,9 @@ def load_csv(file_path: str) -> pd.DataFrame:
     """
     try:
         df = pd.read_csv(file_path)
-        print(f"Successfully loaded CSV: {len(df)} rows, {len(df.columns)} columns")
+        print(
+            f"Successfully loaded {file_path}: {len(df)} rows, {len(df.columns)} columns"
+        )
         return df
     except Exception as e:
         raise ValueError(f"Error loading CSV file: {e}")
