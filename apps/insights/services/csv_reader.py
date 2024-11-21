@@ -1,6 +1,5 @@
-import pandas as pd
-
-REQUIRED_COLUMNS = {"date", "source", "sessions", "users", "revenue"}
+# apps/insights/services/csv_reader.py
+import pandas as pd  # Missing import added
 
 
 def load_csv(file_path: str) -> pd.DataFrame:
@@ -19,19 +18,3 @@ def load_csv(file_path: str) -> pd.DataFrame:
         return df
     except Exception as e:
         raise ValueError(f"Error loading CSV file: {e}")
-
-
-def validate_columns(df: pd.DataFrame):
-    """
-    Validate that the DataFrame contains all required columns.
-
-    Args:
-        df (pd.DataFrame): DataFrame to validate.
-
-    Raises:
-        ValueError: If required columns are missing.
-    """
-    missing_columns = REQUIRED_COLUMNS - set(df.columns)
-    if missing_columns:
-        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
-    print("All required columns are present.")
