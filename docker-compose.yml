@@ -10,3 +10,4 @@ services:
       - "8000:8000"  # Map port 8000 to the host
     env_file: 
       - .env  # Load environment variables from .env
+    restart: unless-stopped
