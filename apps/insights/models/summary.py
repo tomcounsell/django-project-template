@@ -9,8 +9,8 @@ from common.behaviors.authorable import (
 )  # Adds an author field linked to User
 
 
+# Model representing a summary of a dataset with key metrics and a description.
 class DataSummary(UUIDable, Timestampable, Annotatable, Authorable):
-    # Model representing a summary of a dataset with key metrics and a description.
 
     label = models.CharField(
         max_length=50,
