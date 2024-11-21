@@ -2,6 +2,7 @@
 docs/
 project.txt
 project.md
+tmp_settings/
 venv
 
 *.pyc
