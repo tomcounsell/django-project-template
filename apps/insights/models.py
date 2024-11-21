@@ -1,0 +1,42 @@
+# apps/insights/models.py
+from django.db import models
+from django.utils.timezone import now
+
+
+class DataSummary(models.Model):
+    label = models.CharField(
+        max_length=50,
+        help_text="A label identifying the dataset (e.g., 'Week 1').",
+    )
+    plain_summary = models.TextField(help_text="An English summary of the dataset.")
+    key_metrics = models.JSONField(help_text="Structured key metrics from the dataset.")
+    created_at = models.DateTimeField(
+        default=now, help_text="The timestamp when this summary was created."
+    )
+
+    def __str__(self):
+        return f"DataSummary: {self.label}"
+
+
+class SummaryComparison(models.Model):
+    summary_1 = models.ForeignKey(
+        DataSummary,
+        on_delete=models.CASCADE,
+        related_name="compared_as_summary_1",
+        help_text="The first summary to be compared.",
+    )
+    summary_2 = models.ForeignKey(
+        DataSummary,
+        on_delete=models.CASCADE,
+        related_name="compared_as_summary_2",
+        help_text="The second summary to be compared.",
+    )
+    comparison_result = models.JSONField(
+        help_text="The results of the comparison in JSON format."
+    )
+    created_at = models.DateTimeField(
+        default=now, help_text="The timestamp when this comparison was created."
+    )
+
+    def __str__(self):
+        return f"Comparison: {self.summary_1.label} vs {self.summary_2.label}"
