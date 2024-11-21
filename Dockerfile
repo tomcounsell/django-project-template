@@ -4,18 +4,17 @@
 #   2. Final stage: Creates a lean runtime image with only the necessary components.
 
 # Runtime Details:
-#   - Base: Python 3.8 Alpine
+#   - Base: Python 3.11 Alpine
 #   - Database: PostgreSQL
 #   - Web Server: Gunicorn
 #   - Port: 8000
 
 # Build stage for compiling dependencies
-FROM python:3.8-alpine as builder
+FROM python:3.11-alpine as builder
 
 # Set core environment variables for Python optimization
 # Prevent Python from writing pyc files (compiled bytecode) to disk, reducing container size and improving startup time
 ENV PYTHONDONTWRITEBYTECODE=1
-# Ensure Python output is sent straight to terminal without being buffered
 ENV PYTHONUNBUFFERED=1
 
 # Install necessary build dependencies
@@ -30,12 +29,13 @@ RUN apk add --no-cache \
 # Set builder working directory
 WORKDIR /build
 
-# Install Python dependencies
+# Install Python dependencies and upgrade Pip
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Final stage - this will be your actual container
-FROM python:3.8-alpine
+FROM python:3.11-alpine
 
 # Set core environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -49,7 +49,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Copy only the compiled packages from builder
-COPY --from=builder /usr/local/lib/python3.8/site-packages/ /usr/local/lib/python3.8/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
 # Copy the application code
 COPY . .
