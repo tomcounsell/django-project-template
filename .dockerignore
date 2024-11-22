@@ -1,0 +1,68 @@
+# Ignore Python-specific files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ignore Django-specific files
+*.log
+local_settings.py
+staticfiles/
+
+# Ignore environment files
+.venv
+env/
+venv/
+ENV/
+.env
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+.ropeproject
+
+# Ignore other unnecessary files
+*.sqlite3
+*.dump
+*.pkl
+*.rdb
+*.tar.gz
+*.gz
+*.zip
+*.egg-info/
+.installed.cfg
+*.egg
+*.manifest
+*.spec
+*.cover
+*.mo
+*.pot
+*.sage.py
+
+# Ignore test and coverage files
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Ignore documentation files
+docs/_build/
+
+# Ignore other project-specific files
+Archive/
+_archive/
+_docs/
+tmp_settings/
+project.txt
+project.md
+intelligenttrading-datastore.json
+credentials.json
+Pipfile
+.gcloudignore
