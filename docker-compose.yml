@@ -1,11 +1,13 @@
 services:
   web:
+    container_name: scheduled-tasks-ai
     build: .
     command: python manage.py runserver 0.0.0.0:8000  # Development server
+    # command: gunicorn --bind :8000 settings.wsgi:application  # Switch to Gunicorn in production
     volumes:
       - .:/app  # Mount code for live reloading
     ports:
       - "8000:8000"  # Map port 8000 to the host
     env_file: 
       - .env  # Load environment variables from .env
-    restart: unless-stopped
+    restart: always
