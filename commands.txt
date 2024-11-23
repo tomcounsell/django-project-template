@@ -1,6 +1,6 @@
-Temporary commands reference
+# Command Reference
 
-docker build -t django-dev .
-docker run -p 8000:8000 django-dev
-
-docker-compose exec web sh
+1. export xlm=xlm
+2. docker-compose build
+3. docker-compose up
+4. docker-compose exec web sh   // to enter the container
