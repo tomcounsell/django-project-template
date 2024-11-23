@@ -14,7 +14,7 @@ def test_process_week():
     Prints the output for manual verification.
     """
     file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
-    start_date = "2024-01-01"
+    start_date = "2024-01-08"
     week_number = 1  # Testing for Week 1
 
     try:

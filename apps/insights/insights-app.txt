@@ -1,0 +1,982 @@
+
+==== tasks.py ====
+# apps/insights/tasks.py
+"""
+Task definitions for the Insights app.
+These tasks integrate with Django-Q to run asynchronously.
+"""
+
+import logging
+from datetime import timedelta
+from django.utils import timezone
+from django_q.models import Schedule
+from django_q.tasks import async_task, result_group
+
+from apps.insights.services.summary_service import process_week
+
+logger = logging.getLogger(__name__)
+
+
+def process_week_task(file_path: str, start_date: str, week: int):
+    """
+    Processes a single week's data and generates an LLM summary.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Start date for the week (YYYY-MM-DD).
+        week (int): Week number (1 or 2).
+    """
+    try:
+        logger.info(f"Processing Week {week} starting from {start_date}...")
+        result = process_week(file_path, start_date, week)
+        logger.info(f"Week {week} summary generated successfully.")
+        return {
+            "dataset_summary": result.dataset_summary,
+            "key_metrics": result.key_metrics,
+        }
+    except Exception as e:
+        logger.error(f"Failed to process Week {week}: {e}")
+        raise
+
+
+def schedule_two_summaries(file_path: str, start_date: str):
+    """
+    Schedules tasks to process Week 1 after a 1-minute delay,
+    followed by processing Week 2 in sequence using group logic.
+    """
+    try:
+        logger.info("Scheduling Week 1 task to run in 1 minute...")
+
+        # Create a group for dependent tasks
+        group_name = "process_summaries"
+
+        # Schedule Week 1
+        Schedule.objects.create(
+            func="apps.insights.tasks.process_week_task",
+            args=(file_path, start_date, 1),  # Pass arguments as a tuple
+            schedule_type=Schedule.ONCE,
+            next_run=timezone.now() + timedelta(minutes=1),
+            group=group_name,  # Assign task to a group
+        )
+        logger.info("Week 1 task scheduled successfully.")
+
+        # Calculate Week 2 start date
+        week2_start_date = pd.to_datetime(start_date) + pd.Timedelta(days=7)
+
+        # Add Week 2 to the group (ensures it runs after Week 1)
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            week2_start_date.strftime("%Y-%m-%d"),
+            2,
+            group=group_name,  # Ensure it runs as part of the same group
+        )
+        logger.info("Week 2 task added to the group successfully.")
+
+    except Exception as e:
+        logger.error(f"Failed to schedule two summaries: {e}")
+        raise
+
+
+def fetch_group_results(group_name: str):
+    """
+    Fetches the results of tasks in the specified group.
+
+    Args:
+        group_name (str): Name of the group to fetch results from.
+
+    Returns:
+        list: Results of all tasks in the group.
+    """
+    try:
+        logger.info(f"Fetching results for group: {group_name}")
+        results = result_group(group_name)
+        if not results:
+            logger.warning(f"No results found for group: {group_name}")
+        return results
+    except Exception as e:
+        logger.error(f"Failed to fetch results for group {group_name}: {e}")
+        raise
+
+
+# Example trigger for manual testing:
+# schedule_two_summaries("/path/to/ga4_data.csv", "2024-01-01")
+
+==== data_pipeline.py ====
+# apps/insights/data_pipeline.py
+"""
+Title: Data Pipeline for CSV Processing and LLM Integration
+Description:
+This script orchestrates the data pipeline for processing GA4 CSV data.
+It validates, cleans, filters, and generates statistical overviews,
+and optionally integrates with an LLM for dataset summaries.
+
+Usage:
+The `run_pipeline` function can be imported and called programmatically:
+    from apps.insights.data_pipeline import run_pipeline
+"""
+
+import logging
+import os
+import pandas as pd
+from apps.insights.services.csv_processor import CSVProcessor
+from apps.insights.services.openai.summary_generator import generate_summary
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def run_pipeline(file_path: str, start_date: str):
+    """
+    Orchestrates the CSV processing pipeline and outputs results.
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Starting date for data filtering (YYYY-MM-DD).
+    """
+    try:
+        logging.info("Initializing CSVProcessor...")
+        processor = CSVProcessor(file_path)
+
+        logging.info("Starting the CSV processing pipeline...")
+        processor.load()
+        processor.validate()
+        processor.clean()
+        week1_df, week2_df = processor.filter(start_date)
+
+        start_date_dt = pd.to_datetime(start_date)
+        week1_start = start_date_dt
+        week1_end = week1_start + pd.Timedelta(days=6)
+        week2_start = week1_end + pd.Timedelta(days=1)
+        week2_end = week2_start + pd.Timedelta(days=6)
+
+        logging.info("Generating statistical overviews...")
+        logging.info(
+            f"\nStatistical Overview - Week 1 (Start: {week1_start.date()}, End: {week1_end.date()}):"
+        )
+        print(week1_df.describe().to_string())
+
+        logging.info(
+            f"\nStatistical Overview - Week 2 (Start: {week2_start.date()}, End: {week2_end.date()}):"
+        )
+        print(week2_df.describe().to_string())
+
+        logging.info("Generating summaries with OpenAI...")
+        week1_summary = week1_df.describe().to_string()
+        week2_summary = week2_df.describe().to_string()
+
+        week1_llm_summary = generate_summary(week1_summary)
+        week2_llm_summary = generate_summary(week2_summary)
+
+        logging.info(
+            f"\nLLM Summary - Week 1 ({week1_start.date()} to {week1_end.date()}):"
+        )
+        print(week1_llm_summary.dataset_summary)
+        logging.info("Key Metrics:")
+        for metric in week1_llm_summary.key_metrics:
+            print(f"{metric.name}: {metric.value} ({metric.description})")
+
+        logging.info(
+            f"\nLLM Summary - Week 2 ({week2_start.date()} to {week2_end.date()}):"
+        )
+        print(week2_llm_summary.dataset_summary)
+        logging.info("Key Metrics:")
+        for metric in week2_llm_summary.key_metrics:
+            print(f"{metric.name}: {metric.value} ({metric.description})")
+
+        logging.info("Pipeline executed successfully!")
+
+    except Exception as e:
+        logging.error(f"Pipeline failed: {e}")
+        raise
+
+==== dump.txt ====
+
+==== __init__.py ====
+
+==== apps.py ====
+from django.apps import AppConfig
+
+
+class InsightsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.insights"
+
+==== dump_project.py ====
+import os
+
+output_file = "dump.txt"
+exclude_dir = "./env"
+file_types = (".py", ".js", ".css", ".html", ".yaml", ".json", ".conf", ".txt")
+
+with open(output_file, "w") as out:
+    for root, dirs, files in os.walk("."):
+        # Exclude the env directory and its subdirectories
+        dirs[:] = [d for d in dirs if os.path.join(root, d) != exclude_dir]
+
+        for file in files:
+            if file.endswith(file_types):
+                file_path = os.path.join(root, file)
+                out.write(f"\n==== {file} ====\n")
+                with open(file_path, "r", encoding="utf-8") as f:
+                    out.write(f.read())
+
+==== admin.py ====
+# apps/insights/admin.py
+from django.contrib import admin
+from .models import DataSummary
+from .forms.admin import DataSummaryAdminForm
+
+
+@admin.register(DataSummary)
+class DataSummaryAdmin(admin.ModelAdmin):
+    form = DataSummaryAdminForm
+    list_display = ("label",)
+    search_fields = ("label",)
+
+==== tests.py ====
+from django.test import TestCase
+
+# Create your tests here.
+
+==== views.py ====
+from django.shortcuts import render
+
+# Create your views here.
+
+==== __init__.py ====
+
+==== 0001_initial.py ====
+# Generated by Django 5.1.3 on 2024-11-23 13:12
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='DataSummary',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('label', models.CharField(help_text="A label identifying the dataset (e.g., 'Week 1').", max_length=50)),
+                ('plain_summary', models.TextField(help_text='An English summary of the dataset.')),
+                ('key_metrics', models.JSONField(help_text='Structured key metrics from the dataset.')),
+                ('metadata', models.JSONField(blank=True, help_text='Additional metadata about the summary (e.g., filters applied).', null=True)),
+            ],
+            options={
+                'verbose_name': 'Data Summary',
+                'verbose_name_plural': 'Data Summaries',
+            },
+        ),
+    ]
+
+==== __init__.py ====
+
+==== admin.py ====
+# app/insights/forms/admin.py
+from django import forms
+
+
+class DataSummaryAdminForm(forms.ModelForm):
+    start_date = forms.DateField(
+        widget=forms.widgets.DateInput(attrs={"type": "date"}),
+        required=False,
+        help_text="Select a start date for the analysis.",
+    )
+
+==== test_summary_service.py ====
+# apps/insights/tests/test_summary_service.py
+import os
+import pytest
+from apps.insights.services.summary_service import process_week
+from apps.insights.services.openai.schemas import SummaryOutput
+from django.conf import settings
+
+print(f"SECRET_KEY in Test: {settings.SECRET_KEY}")
+
+
+def test_process_week():
+    """
+    Test the summary service with the actual CSV file and a fixed start date.
+    Prints the output for manual verification.
+    """
+    file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
+    start_date = "2024-01-01"
+    week_number = 1  # Testing for Week 1
+
+    try:
+        # Process the week
+        result = process_week(file_path, start_date, week_number)
+
+        # Verify the output type
+        assert isinstance(
+            result, SummaryOutput
+        ), "Result is not a SummaryOutput object."
+
+        # Print dataset summary and key metrics for manual verification
+        print("Dataset Summary:")
+        print(result.dataset_summary)
+        print("\nKey Metrics:")
+        for metric in result.key_metrics:
+            print(f"{metric.name}: {metric.value} ({metric.description})")
+
+        print("Test completed successfully.")
+
+    except Exception as e:
+        pytest.fail(f"Summary service test failed: {e}")
+
+==== test_task_scheduler.py ====
+import os
+import pytest
+import time
+from django_q.tasks import async_task, result
+import redis
+
+
+# Ensure migrations are applied for the test database
+@pytest.fixture(autouse=True)
+def apply_migrations(db):
+    from django.core.management import call_command
+
+    call_command("migrate")
+
+
+@pytest.mark.django_db
+def test_process_week_task():
+    """
+    Test the process_week_task function via async_task and print the result.
+    """
+    # Ensure critical environment variables are set
+    os.environ.setdefault("DJANGO_SECRET_KEY", "test_secret_key")
+    os.environ.setdefault("REDIS_URL", "redis://redis:6379/5")
+    os.environ.setdefault("REDIS_HOST", "redis")
+    os.environ.setdefault("REDIS_PORT", "6379")
+    os.environ.setdefault("REDIS_DB", "5")
+
+    # Debug environment variables
+    print("DEBUG: Environment Variables:")
+    print(f"REDIS_URL: {os.getenv('REDIS_URL')}")
+    print(f"REDIS_HOST: {os.getenv('REDIS_HOST')}")
+    print(f"REDIS_PORT: {os.getenv('REDIS_PORT')}")
+    print(f"REDIS_DB: {os.getenv('REDIS_DB')}")
+
+    # Ensure the Redis client connects properly
+    try:
+        redis_client = redis.Redis.from_url(os.getenv("REDIS_URL"))
+        assert redis_client.ping(), "Redis connection failed!"
+        print("DEBUG: Redis connection successful.")
+    except Exception as redis_error:
+        pytest.fail(f"Redis setup failed: {redis_error}")
+
+    # Correctly resolve the file path for the input data
+    file_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
+    )
+    print(f"DEBUG: Resolved file path for GA4 data: {file_path}")
+    start_date = "2024-01-01"  # Example start date
+    week_number = 1  # Testing for Week 1
+
+    # Trigger the async task and wait for the result
+    try:
+        # Trigger the task via Django-Q
+        task_id = async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            start_date,
+            week_number,
+        )
+        print(f"DEBUG: Task {task_id} triggered successfully.")
+
+        # Wait for the result with retries
+        retries = 10
+        result_data = None
+        while retries > 0:
+            result_data = result(task_id)
+            if result_data is not None:
+                break
+            retries -= 1
+            time.sleep(1)  # Wait 1 second before retrying
+
+        # Validate and print the result
+        assert result_data is not None, "Task did not return a result."
+        print("DEBUG: Task Result:")
+        print(result_data)
+
+    except Exception as task_error:
+        pytest.fail(f"Task test failed: {task_error}")
+
+==== __init__.py ====
+from .summary import DataSummary
+
+__all__ = ["DataSummary"]
+
+==== summary.py ====
+# apps/insights/models/summary.py
+from django.db import models
+
+# Uncomment the necessary mixins once their import paths are fixed
+# from apps.common.behaviors.timestampable import Timestampable  # Adds created_at and updated_at fields
+# from apps.common.behaviors.uuidable import UUIDable  # Adds a UUID primary key field
+# from apps.common.behaviors.annotatable import Annotatable  # Adds annotation capabilities
+# from apps.common.behaviors.authorable import Authorable  # Adds an author field linked to User
+
+
+# Model representing a summary of a dataset with key metrics and a description.
+class DataSummary(
+    models.Model
+):  # Add Uuidable mixin, Timestampable, Annotatable, Authorable
+
+    # Short label for the dataset
+    label = models.CharField(
+        max_length=50,
+        help_text="A label identifying the dataset (e.g., 'Week 1').",
+    )
+
+    # Text summary generated by ChatGPT
+    plain_summary = models.TextField(help_text="An English summary of the dataset.")
+
+    # Key metrics in JSON format
+    key_metrics = models.JSONField(help_text="Structured key metrics from the dataset.")
+
+    # Optional metadata
+    metadata = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Additional metadata about the summary (e.g., filters applied).",
+    )
+
+    def __str__(self):
+        return f"DataSummary: {self.label}"
+
+    class Meta:
+        # ordering = ["-created_at"]  # Order by most recently created
+        verbose_name = "Data Summary"
+        verbose_name_plural = "Data Summaries"
+
+==== csv_processor.py ====
+# apps/insights/services/csv_processor.py
+import logging
+from .csv.csv_reader import load_csv
+from .csv.data_validator import validate_columns
+from .csv.data_cleaner import clean_data
+from .csv.data_filter import filter_data
+from .csv.data_overview import generate_overview
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+class CSVProcessor:
+    def __init__(self, file_path: str):
+        """
+        Initialize the CSVProcessor with the path to the CSV file.
+        """
+        self.file_path = file_path
+        self.df = None  # Placeholder for the loaded DataFrame
+
+    def load(self):
+        """
+        Load the CSV file into a Pandas DataFrame.
+        """
+        logging.info("Loading CSV...")
+        self.df = load_csv(self.file_path)
+
+    def validate(self):
+        """
+        Validate that the CSV contains all required columns.
+        """
+        logging.info("Validating CSV columns...")
+        validate_columns(self.df)
+
+    def clean(self):
+        """
+        Clean the DataFrame by standardizing and formatting columns.
+        """
+        logging.info("Cleaning data...")
+        self.df = clean_data(self.df)
+
+    def filter(self, start_date: str):
+        """
+        Filter the data into two weeks based on the start date.
+        """
+        logging.info("Filtering data into Week 1 and Week 2...")
+        return filter_data(self.df, start_date)
+
+    def generate_overviews(self, week1_df, week2_df):
+        """
+        Generate statistical overviews for the filtered DataFrames.
+        """
+        logging.info("Generating statistical overviews...")
+        generate_overview(week1_df, "Week 1")
+        generate_overview(week2_df, "Week 2")
+
+    def process(self, start_date: str):
+        try:
+            self.load()
+            self.validate()
+            self.clean()
+            week1_df, week2_df = self.filter(start_date)
+            self.generate_overviews(week1_df, week2_df)
+        except ValueError as e:
+            logging.error(f"Processing error: {e}")
+            raise
+
+==== __init__.py ====
+
+==== summary_service.py ====
+# apps/insights/services/summary_service.py
+"""
+Summary Service for Single-Week Data Processing
+Handles CSV data validation, processing, LLM summary generation, and key metric extraction for a single week.
+"""
+
+import logging
+import pandas as pd
+from apps.insights.services.csv_processor import CSVProcessor
+from apps.insights.services.openai.summary_generator import generate_summary
+from apps.insights.services.openai.schemas import SummaryOutput
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOutput:
+    """
+    Processes a single week's data and generates an LLM summary.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Start date for the week (YYYY-MM-DD).
+        week_number (int): Week number (1 or 2).
+
+    Returns:
+        SummaryOutput: LLM summary and key metrics for the week.
+    """
+    try:
+        logging.info(
+            f"Processing Week {week_number} data starting from {start_date}..."
+        )
+
+        # Initialize CSVProcessor and load data
+        processor = CSVProcessor(file_path)
+        processor.load()
+        processor.validate()
+        processor.clean()
+
+        # Filter data for the specified week
+        week_df = processor.filter(start_date)[week_number - 1]
+
+        # Log statistical overview
+        logging.info(f"Statistical Overview - Week {week_number}:")
+        print(week_df.describe().to_string())
+
+        # Generate LLM summary
+        logging.info("Requesting summary from OpenAI...")
+        statistical_summary = week_df.describe().to_string()
+        llm_summary = generate_summary(statistical_summary)
+
+        # Validate and log results
+        logging.info(f"LLM Summary - Week {week_number}: {llm_summary.dataset_summary}")
+        logging.info("Key Metrics:")
+        for metric in llm_summary.key_metrics:
+            logging.info(f"{metric.name}: {metric.value} ({metric.description})")
+
+        return llm_summary
+
+    except Exception as e:
+        logging.error(f"Failed to process Week {week_number}: {e}")
+        raise
+
+==== data_overview.py ====
+# apps/insights/services/csv/data_overview.py
+
+
+def generate_overview(df, label):
+    # Generate and print statistical overview for the given DataFrame
+    print(f"\nStatistical Overview - {label}:")
+    print(df.describe())
+
+==== data_validator.py ====
+# apps/insights/services/csv/data_validator.py
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+REQUIRED_COLUMNS = {
+    "date",
+    "source",
+    "sessions",
+    "users",
+    "new_users",
+    "pageviews",
+    "pages_per_session",
+    "avg_session_duration",
+    "bounce_rate",
+    "conversion_rate",
+    "transactions",
+    "revenue",
+}
+
+
+def validate_columns(df):
+    # Check for missing required columns
+    missing_columns = REQUIRED_COLUMNS - set(df.columns)
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+    logging.info("All required key columns are present.")
+
+==== data_filter.py ====
+# apps/insights/services/csv/data_filter.py
+import pandas as pd
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def filter_data(df, start_date):
+    """
+    Filter the DataFrame into two weeks based on the start_date.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame to filter.
+        start_date (str): Start date for filtering (YYYY-MM-DD).
+
+    Returns:
+        tuple: Two DataFrames (Week 1, Week 2).
+    """
+    logging.info("Filtering data for organic traffic...")
+    organic_df = df[df["source"] == "organic"]
+    if organic_df.empty:
+        raise ValueError("No data found for organic traffic.")
+
+    # Define date ranges
+    logging.info(f"Calculating date ranges from start_date: {start_date}")
+    start_date = pd.to_datetime(start_date)
+    end_date_week1 = start_date + pd.Timedelta(days=6)  # Week 1 range
+    start_date_week2 = start_date + pd.Timedelta(days=7)  # Week 2 range
+    end_date_week2 = start_date + pd.Timedelta(days=13)  # Week 2 range end
+
+    # Filter Week 1
+    logging.info(f"Filtering Week 1: {start_date.date()} to {end_date_week1.date()}")
+    week1_df = organic_df[
+        (organic_df["date"] >= start_date) & (organic_df["date"] <= end_date_week1)
+    ]
+    if week1_df.empty:
+        raise ValueError("No data found for Week 1.")
+
+    # Log filtered Week 1 data
+    logging.info(f"Week 1 Data (Rows: {len(week1_df)}):\n{week1_df}")
+
+    # Filter Week 2
+    logging.info(
+        f"Filtering Week 2: {start_date_week2.date()} to {end_date_week2.date()}"
+    )
+    week2_df = organic_df[
+        (organic_df["date"] >= start_date_week2)
+        & (organic_df["date"] <= end_date_week2)
+    ]
+    if week2_df.empty:
+        raise ValueError("No data found for Week 2.")
+
+    # Log filtered Week 2 data
+    logging.info(f"Week 2 Data (Rows: {len(week2_df)}):\n{week2_df}")
+
+    return week1_df, week2_df
+
+==== csv_reader.py ====
+# apps/insights/services/csv/csv_reader.py
+import pandas as pd  # Missing import added
+
+
+def load_csv(file_path: str) -> pd.DataFrame:
+    """
+    Load a CSV file into a Pandas DataFrame.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        pd.DataFrame: Loaded data.
+    """
+    try:
+        df = pd.read_csv(file_path)
+        print(
+            f"Successfully loaded {file_path}: {len(df)} rows, {len(df.columns)} columns"
+        )
+        return df
+    except Exception as e:
+        raise ValueError(f"Error loading CSV file: {e}")
+
+==== __init__.py ====
+
+==== data_cleaner.py ====
+# apps/insights/services/csv/data_cleaner.py
+import pandas as pd
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+# Detect the date column dynamically
+def detect_date_column(df):
+    date_columns = [col for col in df.columns if "date" in col.lower()]
+    if len(date_columns) == 0:
+        raise ValueError("No date column detected in the dataset.")
+    if len(date_columns) > 1:
+        raise ValueError(f"Multiple possible date columns found: {date_columns}")
+    logging.info(f"Date column detected: {date_columns[0]}")
+    return date_columns[0]
+
+
+# Standardize the format of the date column
+def standardize_date_format(df, date_column):
+    try:
+        df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+        if df[date_column].isna().any():
+            raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
+        df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
+        logging.info(
+            f"Dates standardized to 'YYYY-MM-DD' format in column '{date_column}'."
+        )
+        return df
+    except Exception as e:
+        raise ValueError(f"Error standardizing date column: {e}")
+
+
+# Ensure date column is in datetime format for filtering
+def ensure_datetime_format(df, date_column):
+    try:
+        df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+        if df[date_column].isna().any():
+            raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
+        logging.info(f"Date column '{date_column}' converted to datetime format.")
+        return df
+    except Exception as e:
+        raise ValueError(f"Error ensuring datetime format: {e}")
+
+
+# Perform the full data cleaning process
+def clean_data(df):
+    date_column = detect_date_column(df)
+    df = standardize_date_format(df, date_column)
+    df = ensure_datetime_format(df, date_column)
+    return df
+
+==== summary_generator.py ====
+# apps/insights/services/openai/summary_generator.py
+import os
+from instructor import from_openai
+from openai import OpenAI
+from .schemas import SummaryOutput
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+# Load OpenAI API key
+openai_api_key = os.environ.get("OPENAI_API_KEY")  # Use os.environ.get()
+
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
+
+# Initialize OpenAI client
+client = from_openai(OpenAI(api_key=openai_api_key))
+
+
+def generate_summary(statistical_summary: str) -> SummaryOutput:
+    """
+    Generates a structured dataset summary using OpenAI API.
+
+    Args:
+        statistical_summary (str): Statistical summary of the dataset.
+
+    Returns:
+        SummaryOutput: A structured summary containing dataset insights and key metrics.
+    """
+    prompt = f"""
+    The following is a statistical summary of a dataset:
+
+    {statistical_summary}
+
+    Please:
+    1. Write a concise plain English summary of the dataset.
+    2. Highlight the key metrics in a structured format.
+    """
+    try:
+        logging.info("Requesting dataset summary from OpenAI...")
+
+        # API call with structured output validation
+        response = client.chat.completions.create(
+            model="gpt-4o-2024-08-06",
+            messages=[{"role": "user", "content": prompt}],
+            response_model=SummaryOutput,
+        )
+
+        logging.info("Successfully received structured response.")
+        return response
+
+    except client.ValidationError as e:
+        logging.error(f"Validation error: {e}")
+        raise ValueError(f"Validation error: {e}")
+
+    except client.ApiError as e:
+        logging.error(f"API error: {e}")
+        raise ValueError(f"API error: {e}")
+
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        raise ValueError(f"Unexpected error: {e}")
+
+==== __init__.py ====
+
+==== comparison_generator.py ====
+
+==== schemas.py ====
+# apps/insights/services/openai/schemas.py
+from pydantic import BaseModel, Field, ValidationError
+from typing import List
+
+
+class KeyMetric(BaseModel):
+    """
+    Represents a single key metric extracted from the dataset summary.
+    """
+
+    name: str
+    value: float
+    description: str
+
+    @classmethod
+    def ordered_metrics(cls) -> List["KeyMetric"]:
+        """
+        Defines the exact order and expected names for key metrics.
+        """
+        return [
+            cls(
+                name="Average Sessions",
+                value=0,
+                description="The mean number of sessions per day.",
+            ),
+            cls(
+                name="Average Users",
+                value=0,
+                description="The mean number of users per day.",
+            ),
+            cls(
+                name="Average New Users",
+                value=0,
+                description="The mean number of new users per day.",
+            ),
+            cls(
+                name="Average Pageviews",
+                value=0,
+                description="The mean number of pageviews per day.",
+            ),
+            cls(
+                name="Average Pages per Session",
+                value=0,
+                description="The average number of pages viewed per session.",
+            ),
+            cls(
+                name="Average Session Duration",
+                value=0,
+                description="The average duration of a session in seconds.",
+            ),
+            cls(
+                name="Bounce Rate",
+                value=0,
+                description="The average percentage of visitors who leave the site after viewing only one page.",
+            ),
+            cls(
+                name="Conversion Rate",
+                value=0,
+                description="The average percentage of visitors who completed a desired action.",
+            ),
+            cls(
+                name="Average Transactions",
+                value=0,
+                description="The mean number of transactions per day.",
+            ),
+            cls(
+                name="Average Revenue",
+                value=0,
+                description="The average revenue generated per day.",
+            ),
+        ]
+
+    def validate_name(self) -> bool:
+        """
+        Ensures that the name of the metric matches one of the expected names.
+        """
+        expected_names = [metric.name for metric in self.ordered_metrics()]
+        if self.name not in expected_names:
+            raise ValueError(f"Unexpected metric name: {self.name}")
+        return True
+
+
+class SummaryOutput(BaseModel):
+    """
+    Structured output for a dataset summary response from the LLM.
+    """
+
+    dataset_summary: str = Field(
+        ..., description="A concise English summary of the dataset."
+    )
+    key_metrics: List[KeyMetric] = Field(
+        ..., description="List of key metrics extracted from the dataset."
+    )
+
+    def enforce_ordered_metrics(self):
+        """
+        Enforces that key metrics are in the exact order defined by `KeyMetric.ordered_metrics`.
+        """
+        ordered_names = [metric.name for metric in KeyMetric.ordered_metrics()]
+        self.key_metrics = sorted(
+            self.key_metrics,
+            key=lambda metric: (
+                ordered_names.index(metric.name)
+                if metric.name in ordered_names
+                else float("inf")
+            ),
+        )
+        # Ensure no unexpected metrics
+        for metric in self.key_metrics:
+            metric.validate_name()
+
+
+class ComparisonOutput(BaseModel):
+    """
+    Structured output for comparing two dataset summaries.
+    """
+
+    comparison_summary: str = Field(
+        ...,
+        description="A concise English summary highlighting differences and similarities.",
+    )
+    key_metrics_comparison: List[KeyMetric] = Field(
+        ...,
+        description="Key metrics with differences or trends observed between the two datasets.",
+    )
+    notable_trends: str = Field(
+        None, description="Any major trends or patterns observed during the comparison."
+    )
