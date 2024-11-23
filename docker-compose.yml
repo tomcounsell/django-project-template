@@ -1,21 +1,22 @@
 # docker-compose.yml
 services:
   web:
+    build:
+      context: .
+      args:
+        DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     container_name: scheduled-tasks-ai-django
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000  # Development server
-    # Switch to Gunicorn in production:
-    # command: gunicorn --bind :8000 settings.wsgi:application  
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app  # Mount code for live reloading
+      - .:/app
     ports:
-      - "8000:8000"  # Map port 8000 to the host
+      - "8000:8000"
     env_file: 
-      - .env  # Load environment variables from .env
+      - .env
     restart: always
     depends_on:
       - redis
-    # - db
+      # - db
 
   redis:
     image: redis:7-alpine  # Using the official Redis image with Alpine for smaller size

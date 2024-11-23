@@ -4,6 +4,7 @@
 2. docker-compose build
 3. docker-compose up
 4. docker-compose exec web sh   // to enter the container
+5. /app # python manage.py migrate
 
 Testing:
 python -m apps.insights.data_pipeline

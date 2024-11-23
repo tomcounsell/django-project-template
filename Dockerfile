@@ -42,6 +42,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Final stage for runtime image
 FROM python:3.11-alpine
 
+# Accept and set the SECRET_KEY
+ARG DJANGO_SECRET_KEY
+ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+
 # Set core environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
