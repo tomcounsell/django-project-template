@@ -1,9 +1,9 @@
 # apps/insights/tests/test_task_scheduler.py
 import os
 import pytest
-from django_q.tasks import async_task, result
-from apps.insights.tasks import process_week_task
 import time
+from django_q.tasks import async_task, result
+import redis
 
 
 @pytest.mark.django_db
@@ -11,7 +11,25 @@ def test_process_week_task():
     """
     Test the process_week_task function via async_task and print the result.
     """
-    # Correctly resolve the file path
+    # Ensure critical environment variables are set
+    os.environ.setdefault("DJANGO_SECRET_KEY", "test_secret_key")
+    os.environ.setdefault("REDIS_URL", "redis://redis:6379/5")
+    os.environ.setdefault("REDIS_HOST", "redis")
+    os.environ.setdefault("REDIS_PORT", "6379")
+    os.environ.setdefault("REDIS_DB", "5")
+
+    # Verify Redis connection before proceeding
+    try:
+        redis_client = redis.Redis(
+            host=os.environ["REDIS_HOST"],
+            port=int(os.environ["REDIS_PORT"]),
+            db=int(os.environ["REDIS_DB"]),
+        )
+        assert redis_client.ping(), "Redis connection failed!"
+    except Exception as redis_error:
+        pytest.fail(f"Redis setup failed: {redis_error}")
+
+    # Correctly resolve the file path for the input data
     file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
     start_date = "2024-01-01"  # Example start date
     week_number = 1  # Testing for Week 1
@@ -40,5 +58,5 @@ def test_process_week_task():
         print("Task Result:")
         print(result_data)
 
-    except Exception as e:
-        pytest.fail(f"Task test failed: {e}")
+    except Exception as task_error:
+        pytest.fail(f"Task test failed: {task_error}")

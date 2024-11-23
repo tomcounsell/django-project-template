@@ -6,7 +6,8 @@
 4. docker-compose exec web sh   // to enter the container
 5. /app # python manage.py migrate
 Running Tests:
-
+pytest apps/insights/tests/test_summary_service.py -s
+pytest apps/insights/tests/test_task_scheduler.py -s
 
 Testing:
 python -m apps.insights.data_pipeline

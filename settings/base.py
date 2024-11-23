@@ -6,6 +6,8 @@ from pathlib import Path
 import socket
 from datetime import timedelta
 
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "test_secret_key")
+
 # DEFINE THE ENVIRONMENT TYPE
 PRODUCTION = STAGE = DEMO = LOCAL = False
 dt_key = os.environ.get("DEPLOYMENT_TYPE", "LOCAL")
@@ -233,7 +235,7 @@ Q_CLUSTER = {
     "name": "scheduled-tasks-ai",
     "workers": 4,
     "timeout": 60,
-    "retry": 90,
+    "retry": 120,
     "compress": True,
     "queue_limit": 50,
     "bulk": 10,
