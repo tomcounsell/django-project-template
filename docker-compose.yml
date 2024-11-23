@@ -26,6 +26,20 @@ services:
       - redis_data:/data  # Persist Redis data
     restart: always
 
+  qcluster:
+    image: python:3.11-slim
+    container_name: scheduled-tasks-ai-qcluster
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: python manage.py qcluster
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - redis
+    # - db
+
   # db:
   #   image: postgres:15-alpine  # Using Alpine-based image for smaller size
   #   container_name: scheduled-tasks-ai-postgres

@@ -1,4 +1,6 @@
 # Custom requirements:
+django-picklefield
+django-q2
 django-redis
 instructor
 openai
@@ -17,7 +19,6 @@ django-debug-toolbar
 django-extensions
 django-filter
 django-htmx
-
 django-rest-auth
 django-storages
 django-widget-tweaks

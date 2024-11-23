@@ -226,3 +226,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 if PRODUCTION or STAGE:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Django-Q settings
+Q_CLUSTER = {
+    "name": "scheduled-tasks-ai",
+    "workers": 4,
+    "timeout": 60,
+    "retry": 90,
+    "compress": True,
+    "queue_limit": 50,
+    "bulk": 10,
+    "redis": {
+        "host": os.environ.get("REDIS_HOST", "127.0.0.1"),
+        "port": int(os.environ.get("REDIS_PORT", 6379)),
+        "db": int(os.environ.get("REDIS_DB", 5)),  # Explicitly use DB 5
+    },
+}
