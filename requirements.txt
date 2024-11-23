@@ -4,6 +4,7 @@ django-q2
 django-redis
 instructor
 openai
+pytest-django
 # Template requirements:
 boto3
 black
