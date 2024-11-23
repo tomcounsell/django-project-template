@@ -4,3 +4,6 @@
 2. docker-compose build
 3. docker-compose up
 4. docker-compose exec web sh   // to enter the container
+
+Testing:
+python -m apps.insights.data_pipeline
