@@ -82,6 +82,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "django_htmx",
     "django_components",
+    "django_q",
 ]
 
 APPS = [
