@@ -27,7 +27,7 @@ services:
     restart: always
 
   qcluster:
-    image: python:3.11-slim
+    image: scheduled-tasks-ai-web  # Use the built image for the web service
     container_name: scheduled-tasks-ai-qcluster
     working_dir: /app
     volumes:
@@ -38,7 +38,7 @@ services:
     restart: always
     depends_on:
       - redis
-    # - db
+      # - db
 
   # db:
   #   image: postgres:15-alpine  # Using Alpine-based image for smaller size
