@@ -1,9 +1,16 @@
-# apps/insights/tests/test_task_scheduler.py
 import os
 import pytest
 import time
 from django_q.tasks import async_task, result
 import redis
+
+
+# Ensure migrations are applied for the test database
+@pytest.fixture(autouse=True)
+def apply_migrations(db):
+    from django.core.management import call_command
+
+    call_command("migrate")
 
 
 @pytest.mark.django_db
@@ -18,22 +25,30 @@ def test_process_week_task():
     os.environ.setdefault("REDIS_PORT", "6379")
     os.environ.setdefault("REDIS_DB", "5")
 
-    # Verify Redis connection before proceeding
+    # Debug environment variables
+    print("DEBUG: Environment Variables:")
+    print(f"REDIS_URL: {os.getenv('REDIS_URL')}")
+    print(f"REDIS_HOST: {os.getenv('REDIS_HOST')}")
+    print(f"REDIS_PORT: {os.getenv('REDIS_PORT')}")
+    print(f"REDIS_DB: {os.getenv('REDIS_DB')}")
+
+    # Ensure the Redis client connects properly
     try:
-        redis_client = redis.Redis(
-            host=os.environ["REDIS_HOST"],
-            port=int(os.environ["REDIS_PORT"]),
-            db=int(os.environ["REDIS_DB"]),
-        )
+        redis_client = redis.Redis.from_url(os.getenv("REDIS_URL"))
         assert redis_client.ping(), "Redis connection failed!"
+        print("DEBUG: Redis connection successful.")
     except Exception as redis_error:
         pytest.fail(f"Redis setup failed: {redis_error}")
 
     # Correctly resolve the file path for the input data
-    file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
+    file_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
+    )
+    print(f"DEBUG: Resolved file path for GA4 data: {file_path}")
     start_date = "2024-01-01"  # Example start date
     week_number = 1  # Testing for Week 1
 
+    # Trigger the async task and wait for the result
     try:
         # Trigger the task via Django-Q
         task_id = async_task(
@@ -42,6 +57,7 @@ def test_process_week_task():
             start_date,
             week_number,
         )
+        print(f"DEBUG: Task {task_id} triggered successfully.")
 
         # Wait for the result with retries
         retries = 10
@@ -55,7 +71,7 @@ def test_process_week_task():
 
         # Validate and print the result
         assert result_data is not None, "Task did not return a result."
-        print("Task Result:")
+        print("DEBUG: Task Result:")
         print(result_data)
 
     except Exception as task_error:
