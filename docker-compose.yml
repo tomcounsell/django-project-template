@@ -8,7 +8,8 @@ services:
     container_name: scheduled-tasks-ai-django
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - .:/app  # Mount code for live reloading
+      - ./db.sqlite3:/app/db.sqlite3  # Persist SQLite database
     ports:
       - "8000:8000"
     env_file: 

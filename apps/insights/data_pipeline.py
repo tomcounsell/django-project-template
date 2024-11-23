@@ -1,3 +1,4 @@
+# apps/insights/data_pipeline.py
 """
 Title: Data Pipeline for CSV Processing and LLM Integration
 Description:
