@@ -7,8 +7,8 @@ It validates, cleans, filters, and generates statistical overviews,
 and optionally integrates with an LLM for dataset summaries.
 
 Usage:
-Run this file directly to execute the pipeline:
-    python -m apps.insights.data_pipeline
+The `run_pipeline` function can be imported and called programmatically:
+    from apps.insights.data_pipeline import run_pipeline
 """
 
 import logging
@@ -34,20 +34,17 @@ def run_pipeline(file_path: str, start_date: str):
         processor = CSVProcessor(file_path)
 
         logging.info("Starting the CSV processing pipeline...")
-        # Process the file: load, validate, clean, and filter data
         processor.load()
         processor.validate()
         processor.clean()
         week1_df, week2_df = processor.filter(start_date)
 
-        # Calculate week date ranges
         start_date_dt = pd.to_datetime(start_date)
         week1_start = start_date_dt
         week1_end = week1_start + pd.Timedelta(days=6)
         week2_start = week1_end + pd.Timedelta(days=1)
         week2_end = week2_start + pd.Timedelta(days=6)
 
-        # Generate statistical overviews
         logging.info("Generating statistical overviews...")
         logging.info(
             f"\nStatistical Overview - Week 1 (Start: {week1_start.date()}, End: {week1_end.date()}):"
@@ -59,9 +56,7 @@ def run_pipeline(file_path: str, start_date: str):
         )
         print(week2_df.describe().to_string())
 
-        # LLM Integration
         logging.info("Generating summaries with OpenAI...")
-
         week1_summary = week1_df.describe().to_string()
         week2_summary = week2_df.describe().to_string()
 
@@ -89,13 +84,3 @@ def run_pipeline(file_path: str, start_date: str):
     except Exception as e:
         logging.error(f"Pipeline failed: {e}")
         raise
-
-
-if __name__ == "__main__":
-    # Dynamically resolve the path to the CSV file
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_file_path = os.path.join(
-        current_dir, "data/ga4_data.csv"
-    )  # Path inside insights
-    start_date = "2024-01-01"  # Set your start date
-    run_pipeline(csv_file_path, start_date)
