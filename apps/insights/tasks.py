@@ -5,6 +5,9 @@ These tasks integrate with Django-Q to run asynchronously.
 """
 
 import logging
+from datetime import timedelta
+from django.utils import timezone
+from django_q.models import Schedule
 from django_q.tasks import async_task
 from apps.insights.data_pipeline import run_pipeline
 
@@ -29,5 +32,23 @@ def run_pipeline_task(file_path: str, start_date: str):
         raise
 
 
-# Example trigger:
-# async_task("apps.insights.tasks.run_pipeline_task", "/path/to/ga4_data.csv", "2024-01-01")
+def schedule_initial_task(file_path: str, start_date: str):
+    """
+    Schedules the initial task to run 1 minute after creation.
+    """
+    try:
+        logger.info("Scheduling initial task to run 1 minute later...")
+        Schedule.objects.create(
+            func="apps.insights.tasks.chained_tasks",  # Chain starts here
+            args=f"'{file_path}', '{start_date}'",
+            schedule_type=Schedule.ONCE,
+            next_run=timezone.now() + timedelta(minutes=1),
+        )
+        logger.info("Initial task scheduled successfully.")
+    except Exception as e:
+        logger.error(f"Failed to schedule the initial task: {e}")
+        raise
+
+
+# Example trigger for manual testing:
+# schedule_initial_task("/path/to/ga4_data.csv", "2024-01-01")
