@@ -57,7 +57,8 @@ RUN echo "Build DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY"
 
 # Install only runtime dependencies
 RUN apk add --no-cache \
-    libpq
+    libpq \
+    redis  # Added Redis CLI for debugging Redis connections
 
 # Set container working directory
 WORKDIR /app

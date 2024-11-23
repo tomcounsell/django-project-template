@@ -12,6 +12,8 @@ services:
       - ./db.sqlite3:/app/db.sqlite3  # Persist SQLite database
     ports:
       - "8000:8000"
+    environment:
+      REDIS_URL: "redis://127.0.0.1:6379/5"
     env_file: 
       - .env
     restart: always
