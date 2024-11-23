@@ -1,6 +1,6 @@
 import os
 
-output_file = "django-project-template-dump.txt"
+output_file = "dump.txt"
 exclude_dir = "./env"
 file_types = (".py", ".js", ".css", ".html", ".yaml", ".json", ".conf", ".txt")
 
