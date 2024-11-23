@@ -50,6 +50,11 @@ ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Add /app/venv/bin to PATH for runtime
+ENV PATH="/app/venv/bin:$PATH"
+
+RUN echo "Build DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY"
+
 # Install only runtime dependencies
 RUN apk add --no-cache \
     libpq

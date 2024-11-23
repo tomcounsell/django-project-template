@@ -1,3 +1,4 @@
+# apps/insights/tests/test_task_scheduler.py
 import pytest
 from django_q.tasks import async_task, result
 from apps.insights.tasks import process_week_task
@@ -8,7 +9,7 @@ def test_process_week_task():
     """
     Test the process_week_task function via async_task and print the result.
     """
-    file_path = "../data/ga4_data.csv"  # Adjust if needed for your container setup
+    file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
     start_date = "2024-01-01"  # Example start date
     week_number = 1  # Testing for Week 1
 

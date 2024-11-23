@@ -108,3 +108,21 @@ class SummaryOutput(BaseModel):
         # Ensure no unexpected metrics
         for metric in self.key_metrics:
             metric.validate_name()
+
+
+class ComparisonOutput(BaseModel):
+    """
+    Structured output for comparing two dataset summaries.
+    """
+
+    comparison_summary: str = Field(
+        ...,
+        description="A concise English summary highlighting differences and similarities.",
+    )
+    key_metrics_comparison: List[KeyMetric] = Field(
+        ...,
+        description="Key metrics with differences or trends observed between the two datasets.",
+    )
+    notable_trends: str = Field(
+        None, description="Any major trends or patterns observed during the comparison."
+    )

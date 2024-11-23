@@ -3,6 +3,9 @@ import os
 import pytest
 from apps.insights.services.summary_service import process_week
 from apps.insights.services.openai.schemas import SummaryOutput
+from django.conf import settings
+
+print(f"SECRET_KEY in Test: {settings.SECRET_KEY}")
 
 
 def test_process_week():
@@ -10,7 +13,7 @@ def test_process_week():
     Test the summary service with the actual CSV file and a fixed start date.
     Prints the output for manual verification.
     """
-    file_path = "../data/ga4_data.csv"
+    file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
     start_date = "2024-01-01"
     week_number = 1  # Testing for Week 1
 
