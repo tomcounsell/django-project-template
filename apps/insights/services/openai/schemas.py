@@ -1,6 +1,6 @@
 # apps/insights/services/openai/schemas.py
-from pydantic import BaseModel, Field, ValidationError, model_validator
-from typing import List, Optional
+from pydantic import BaseModel, Field, ValidationError
+from typing import List
 
 
 class KeyMetric(BaseModel):
@@ -8,21 +8,76 @@ class KeyMetric(BaseModel):
     Represents a single key metric extracted from the dataset summary.
     """
 
-    name: str = Field(
-        ..., description="Name of the key metric (e.g., 'Mean', 'Median')."
-    )
-    value: float = Field(..., description="Numeric value of the key metric.")
-    description: Optional[str] = Field(
-        None, description="Additional details about the key metric."
-    )
+    name: str
+    value: float
+    description: str
 
-    @model_validator(mode="after")
-    def validate_key_metric(self) -> "KeyMetric":
-        if not self.name.strip():
-            raise ValueError("Key metric name cannot be empty.")
-        if self.value < 0:
-            raise ValueError("Key metric value cannot be negative.")
-        return self
+    @classmethod
+    def ordered_metrics(cls) -> List["KeyMetric"]:
+        """
+        Defines the exact order and expected names for key metrics.
+        """
+        return [
+            cls(
+                name="Average Sessions",
+                value=0,
+                description="The mean number of sessions per day.",
+            ),
+            cls(
+                name="Average Users",
+                value=0,
+                description="The mean number of users per day.",
+            ),
+            cls(
+                name="Average New Users",
+                value=0,
+                description="The mean number of new users per day.",
+            ),
+            cls(
+                name="Average Pageviews",
+                value=0,
+                description="The mean number of pageviews per day.",
+            ),
+            cls(
+                name="Average Pages per Session",
+                value=0,
+                description="The average number of pages viewed per session.",
+            ),
+            cls(
+                name="Average Session Duration",
+                value=0,
+                description="The average duration of a session in seconds.",
+            ),
+            cls(
+                name="Bounce Rate",
+                value=0,
+                description="The average percentage of visitors who leave the site after viewing only one page.",
+            ),
+            cls(
+                name="Conversion Rate",
+                value=0,
+                description="The average percentage of visitors who completed a desired action.",
+            ),
+            cls(
+                name="Average Transactions",
+                value=0,
+                description="The mean number of transactions per day.",
+            ),
+            cls(
+                name="Average Revenue",
+                value=0,
+                description="The average revenue generated per day.",
+            ),
+        ]
+
+    def validate_name(self) -> bool:
+        """
+        Ensures that the name of the metric matches one of the expected names.
+        """
+        expected_names = [metric.name for metric in self.ordered_metrics()]
+        if self.name not in expected_names:
+            raise ValueError(f"Unexpected metric name: {self.name}")
+        return True
 
 
 class SummaryOutput(BaseModel):
@@ -37,12 +92,19 @@ class SummaryOutput(BaseModel):
         ..., description="List of key metrics extracted from the dataset."
     )
 
-    @model_validator(mode="after")
-    def validate_summary(self) -> "SummaryOutput":
-        if not self.dataset_summary.strip():
-            raise ValueError("Dataset summary cannot be empty.")
-        if len(self.dataset_summary) > 1000:
-            raise ValueError(
-                "Dataset summary exceeds the maximum allowed length (1000 characters)."
-            )
-        return self
+    def enforce_ordered_metrics(self):
+        """
+        Enforces that key metrics are in the exact order defined by `KeyMetric.ordered_metrics`.
+        """
+        ordered_names = [metric.name for metric in KeyMetric.ordered_metrics()]
+        self.key_metrics = sorted(
+            self.key_metrics,
+            key=lambda metric: (
+                ordered_names.index(metric.name)
+                if metric.name in ordered_names
+                else float("inf")
+            ),
+        )
+        # Ensure no unexpected metrics
+        for metric in self.key_metrics:
+            metric.validate_name()
