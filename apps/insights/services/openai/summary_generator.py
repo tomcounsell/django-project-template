@@ -1,5 +1,5 @@
 # apps/insights/services/openai/summary_generator.py
-from decouple import config
+import os
 from instructor import from_openai
 from openai import OpenAI
 from .schemas import SummaryOutput
@@ -11,7 +11,10 @@ logging.basicConfig(
 )
 
 # Load OpenAI API key
-openai_api_key = config("OPENAI_API_KEY")
+openai_api_key = os.environ.get("OPENAI_API_KEY")  # Use os.environ.get()
+
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
 
 # Initialize OpenAI client
 client = from_openai(OpenAI(api_key=openai_api_key))
