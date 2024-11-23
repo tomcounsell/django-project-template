@@ -1,3 +1,4 @@
+# settings/base.py
 # from __future__ import absolute_import
 import mimetypes
 import os
@@ -89,6 +90,7 @@ APPS = [
     "apps.communication",
     # 'apps.public',
     # 'apps.api',
+    "apps.insights",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
