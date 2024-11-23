@@ -25,8 +25,8 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     Generates a structured comparison between two dataset summaries using the OpenAI API.
 
     Args:
-        summary1 (str): The first dataset summary.
-        summary2 (str): The second dataset summary.
+        summary1 (str): The first dataset summary as a string.
+        summary2 (str): The second dataset summary as a string.
 
     Returns:
         ComparisonOutput: A structured comparison containing a summary, key metrics comparison, and notable trends.
@@ -53,10 +53,10 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
         logging.info("Requesting dataset comparison from OpenAI...")
 
         # API call with structured output validation
-        response = client.chat.completions.parse(
+        response = client.chat.completions.create(
             model="gpt-4o-2024-08-06",
             messages=[{"role": "user", "content": prompt}],
-            response_format=ComparisonOutput,
+            response_model=ComparisonOutput,
         )
 
         logging.info("Successfully received structured response.")
