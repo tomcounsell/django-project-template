@@ -15,21 +15,23 @@ urlpatterns = [
 # Django Rest Framework API Docs
 API_TITLE, API_DESCRIPTION = "django-project-template API", ""
 urlpatterns += [
-    path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
+    path("docs/", include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
 ]
 
 # Built-In AUTH and ADMIN
 admin.autodiscover()
-admin.site.site_header = "django-project-template Content Database"
-admin.site.site_title = "django-project-template"
+admin.site.site_header = "Scheduled Tasks for Generative AI"
+admin.site.site_title = "Scheduled Tasks for Generative AI"
 admin.site.site_url = None
 admin.site.index_title = "Content Database"
 urlpatterns += [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 ]
 
 # DEBUG MODE
 if DEBUG:
     import debug_toolbar
 
-    urlpatterns = [path('__debug__/', include(debug_toolbar.urls)), ] + urlpatterns
+    urlpatterns = [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ] + urlpatterns

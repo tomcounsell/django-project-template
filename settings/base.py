@@ -7,12 +7,12 @@ from datetime import timedelta
 
 # DEFINE THE ENVIRONMENT TYPE
 PRODUCTION = STAGE = DEMO = LOCAL = False
-dt_key = os.environ.get('DEPLOYMENT_TYPE', "LOCAL")
-if dt_key == 'PRODUCTION':
+dt_key = os.environ.get("DEPLOYMENT_TYPE", "LOCAL")
+if dt_key == "PRODUCTION":
     PRODUCTION = True
-elif dt_key == 'DEMO':
+elif dt_key == "DEMO":
     DEMO = True
-elif dt_key == 'STAGE':
+elif dt_key == "STAGE":
     STAGE = True
 else:
     LOCAL = True
@@ -21,14 +21,14 @@ DEBUG = LOCAL or STAGE
 BASE_DIR = Path(__file__).resolve().parent.parent
 SITE_ROOT = BASE_DIR
 
-WSGI_APPLICATION = 'settings.wsgi.application'
+WSGI_APPLICATION = "settings.wsgi.application"
 
 ALLOWED_HOSTS = [
     # '.mycompany.com',
     # '.herokuapp.com',
     # '.amazonaws.com',
-    'localhost',
-    '127.0.0.1',
+    "localhost",
+    "127.0.0.1",
 ]
 
 if LOCAL:
@@ -39,8 +39,8 @@ else:
         # 'https://*.mycompany.com',
         # 'https://s3.amazonaws.com',
         # 'https://vendor_api.com',
-        'https://localhost',
-        'https://127.0.0.1',
+        "https://localhost",
+        "https://127.0.0.1",
     ]
 
 if PRODUCTION:
@@ -51,10 +51,10 @@ else:
     try:
         HOSTNAME = socket.gethostname()
     except:
-        HOSTNAME = 'localhost'
+        HOSTNAME = "localhost"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # APPLICATIONS
 DJANGO_APPS = [
@@ -74,7 +74,7 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     # "request", # a statistics module for django. It stores requests in a database for admins to see.
     # "django_user_agents",
-    'debug_toolbar',
+    "debug_toolbar",
     "widget_tweaks",
     "rest_framework",
     "rest_framework_api_key",
@@ -84,9 +84,9 @@ THIRD_PARTY_APPS = [
 ]
 
 APPS = [
-    'apps.common',
+    "apps.common",
     # 'apps.integration',
-    'apps.communication',
+    "apps.communication",
     # 'apps.public',
     # 'apps.api',
 ]
@@ -95,10 +95,10 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
 SITE_ID = 1
 
 MIDDLEWARE = [
-    "apps.common.utilities.database.django_middleware.APIHeaderMiddleware",
+    # "apps.common.utilities.database.django_middleware.APIHeaderMiddleware",
     # "django_user_agents.middleware.UserAgentMiddleware",
     "django.middleware.gzip.GZipMiddleware",
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # "request_logging.middleware.LoggingMiddleware",
     # "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -175,41 +175,37 @@ mimetypes.add_type("text/css", ".css", True)
 WSGI_APPLICATION = "settings.wsgi.application"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAdminUser',
-    ),
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 50,
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAdminUser",),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 50,
 }
 
 # Password validation
 PASSWORD_RESET_TIMEOUT_DAYS = 7
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 # https://django-request.readthedocs.io/en/latest/settings.html#request-ignore-paths
-REQUEST_IGNORE_PATHS = (
-    r'^admin/',
-)
+REQUEST_IGNORE_PATHS = (r"^admin/",)
 
 # Internationalization
 LANGUAGE_CODE = "en-us"

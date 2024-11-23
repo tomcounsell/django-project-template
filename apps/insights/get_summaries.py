@@ -2,11 +2,7 @@
 # This file forms the basis of the Django-Q2 tasks.py class and data pipeline
 
 import os
-from .services.csv_reader import load_csv
-from .services.data_validator import validate_columns
-from .services.data_cleaner import clean_data
-from .services.data_filter import filter_data
-from .services.data_overview import generate_overview
+from .services.csv_processor import CSVProcessor
 from .services.openai.llm_integration import generate_summary  # Import updated service
 
 
@@ -15,40 +11,26 @@ def main():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "./data/ga4_data.csv")
 
-    # Step 1: Load the CSV file
-    print("Loading CSV...")
-    df = load_csv(file_path)
+    # Initialize the CSVProcessor
+    processor = CSVProcessor(file_path)
 
-    # Step 2: Validate all columns
-    print("Validating columns...")
-    validate_columns(df)
+    # Define the start date for filtering
+    start_date = "2024-01-01"  # FIXME: Make this dynamic later
 
-    # Step 3: Clean the data
-    print("Cleaning data...")
-    df = clean_data(df)
+    # Run the CSV processing pipeline
+    week1_df, week2_df = processor.process(start_date)
 
-    # Step 4: Filter the data into two periods
-    print("Filtering data...")
-    start_date = "2024-01-01"  # FIXME: Variable input
-    week1_df, week2_df = filter_data(df, start_date)
-
-    # Step 5: Output the filtered data
-    print("\nFiltered Data - Week 1:")
-    print(week1_df)
-    print("\nFiltered Data - Week 2:")
-    print(week2_df)
-
-    # Step 6: Generate statistical overviews
-    print("Generating statistical overviews...")
+    # Step 7: Generate statistical summaries
+    print("Generating statistical summaries...")
     week1_summary = week1_df.describe().to_string()
     week2_summary = week2_df.describe().to_string()
 
-    # Step 7: Generate LLM summaries
+    # Step 8: Generate LLM summaries
     print("Generating LLM summaries...")
     week1_llm_summary = generate_summary(week1_summary)
     week2_llm_summary = generate_summary(week2_summary)
 
-    # Step 8: Display LLM results
+    # Step 9: Display LLM results
     print("\nLLM Summary - Week 1:")
     print(week1_llm_summary.dataset_summary)  # Updated field name
     print("\nKey Metrics:")
