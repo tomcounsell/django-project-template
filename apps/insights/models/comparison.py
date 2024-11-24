@@ -30,18 +30,13 @@ class Comparison(Timestampable):
         help_text="Start date of the comparison, derived from summary1.",
         editable=False,
     )
-    end_date = models.DateField(
-        help_text="End date of the comparison, derived from summary2.",
-        editable=False,
-    )
 
     def save(self, *args, **kwargs):
         self.start_date = self.summary1.start_date
-        self.end_date = self.summary2.end_date
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Comparison from {self.start_date} to {self.end_date}"
+        return f"Comparison from {self.start_date}"
 
     class Meta:
         unique_together = ("summary1", "summary2")
