@@ -15,8 +15,14 @@ class KeyMetricInline(admin.TabularInline):
 
     model = KeyMetric
     extra = 0  # Do not display extra blank rows
-    readonly_fields = ("name", "value")
+    readonly_fields = ("name", "formatted_value")
     can_delete = False
+
+    def formatted_value(self, obj):
+        """Display the value rounded to the nearest whole number."""
+        return f"{round(obj.value):,}" if obj.value is not None else "N/A"
+
+    formatted_value.short_description = "Value (Rounded)"
 
 
 class KeyMetricComparisonInline(admin.TabularInline):
@@ -28,18 +34,55 @@ class KeyMetricComparisonInline(admin.TabularInline):
     extra = 0  # Do not display extra blank rows
     readonly_fields = (
         "name",
-        "value1",
-        "value2",
+        "rounded_value1",
+        "rounded_value2",
         "description",
-        "percentage_difference",
+        "formatted_percentage_difference",
     )
     can_delete = False
 
+    def rounded_value1(self, obj):
+        """Round value1 to the nearest whole number."""
+        return f"{round(obj.value1):,}" if obj.value1 is not None else "N/A"
+
+    def rounded_value2(self, obj):
+        """Round value2 to the nearest whole number."""
+        return f"{round(obj.value2):,}" if obj.value2 is not None else "N/A"
+
+    def formatted_percentage_difference(self, obj):
+        """Display percentage difference to 1 decimal place."""
+        return (
+            f"{obj.percentage_difference:.1f}%"
+            if obj.percentage_difference is not None
+            else "N/A"
+        )
+
+    rounded_value1.short_description = "Week 1 Value (Rounded)"
+    rounded_value2.short_description = "Week 2 Value (Rounded)"
+    formatted_percentage_difference.short_description = "Percentage Difference"
+
 
 class ComparisonAdmin(admin.ModelAdmin):
-    list_display = ("start_date", "end_date", "comparison_summary")
+    list_display = (
+        "start_date",
+        "end_date",
+        "comparison_summary",
+        "display_summary1",
+        "display_summary2",
+    )
     search_fields = ("start_date", "end_date")
     inlines = [KeyMetricComparisonInline]  # Add the inline view for KeyMetricComparison
+
+    def display_summary1(self, obj):
+        """Display Summary1 details."""
+        return f"Summary from {obj.summary1.start_date} to {obj.summary1.end_date}"
+
+    def display_summary2(self, obj):
+        """Display Summary2 details."""
+        return f"Summary from {obj.summary2.start_date} to {obj.summary2.end_date}"
+
+    display_summary1.short_description = "Summary 1"
+    display_summary2.short_description = "Summary 2"
 
     # Add custom URLs for the start-comparison page
     def get_urls(self):
