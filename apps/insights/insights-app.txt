@@ -1,0 +1,2133 @@
+
+==== signals.soon.py ====
+from django.dispatch import receiver
+from django_q.signals import post_execute
+
+
+@receiver(post_execute)
+def create_task_record(sender, task, **kwargs):
+    TaskRecord.objects.update_or_create(
+        task=task,
+        defaults={
+            "task_name": task.name or task.func,
+            "status": "Success" if task.success else "Failed",
+            "started_at": task.started,
+            "completed_at": task.stopped,
+            "result": str(task.result) if task.result else None,
+            "error": str(task.result) if not task.success else None,
+        },
+    )
+
+==== tasks.py ====
+# apps/insights/tasks.py
+"""
+Task definitions for the Insights app.
+These tasks integrate with Django-Q to run asynchronously.
+
+When the user selects a start_date from the datepicker, this triggers the schedule_tasks function, passing in the file_path and the selected start_date. This function first calculates the Week 2 start date by adding 7 days to start_date, then schedules an asynchronous task (process_week_task) for Week 1 using Django-Q. Upon completion of the Week 1 task, the week1_completed_hook is called, which schedules the Week 2 task. Once the Week 2 task finishes, the week2_completed_hook triggers, running the compare_summaries_task to generate a comparison between the Week 1 and Week 2 summaries. The tasks run sequentially, with each step saving data to the database and logging progress.
+
+"""
+
+import logging
+from datetime import timedelta
+from django.utils import timezone
+from django_q.tasks import async_task, result_group, fetch
+from django_q.models import OrmQ
+
+import pandas as pd
+
+from apps.insights.services.summary_service import process_week
+from apps.insights.services.comparison_service import (
+    process_comparison,
+)  # Corrected import
+from apps.insights.services.openai.schemas import SummaryOutput, ComparisonOutput
+
+logger = logging.getLogger(__name__)
+
+
+def process_week_task(file_path: str, start_date: str, week: int) -> SummaryOutput:
+    """
+    Processes a single week's data and generates an LLM summary.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Start date for the week (YYYY-MM-DD).
+        week (int): Week number (1 or 2).
+
+    Returns:
+        SummaryOutput: The summary output for the week.
+    """
+    try:
+        logger.info(f"Processing Week {week} starting from {start_date}...")
+        result = process_week(file_path, start_date, week)
+        logger.info(f"Week {week} summary generated successfully.")
+        return result  # Returning the SummaryOutput object directly
+    except Exception as e:
+        logger.error(f"Failed to process Week {week}: {e}")
+        raise
+
+
+def compare_summaries_task(
+    week1_summary: SummaryOutput, week2_summary: SummaryOutput
+) -> ComparisonOutput:
+    """
+    Compares two LLM-generated summaries and generates a comparative analysis.
+
+    Args:
+        week1_summary (SummaryOutput): Week 1 summary.
+        week2_summary (SummaryOutput): Week 2 summary.
+
+    Returns:
+        ComparisonOutput: The comparison output.
+    """
+    try:
+        logger.info("Generating comparison between Week 1 and Week 2 summaries...")
+        # Convert SummaryOutput objects to dicts for process_comparison
+        summary1_dict = week1_summary.dict()
+        summary2_dict = week2_summary.dict()
+
+        comparison_result = process_comparison(summary1_dict, summary2_dict)
+        logger.info("Comparison generated successfully.")
+        return comparison_result
+    except Exception as e:
+        logger.error(f"Failed to generate comparison: {e}")
+        raise
+
+
+def schedule_tasks(file_path: str, start_date: str):
+    """
+    Schedules tasks to process Week 1 and Week 2 sequentially and then compare them.
+    """
+    try:
+        logger.info("Scheduling tasks for Week 1, Week 2, and comparison...")
+
+        # Calculate Week 2 start date
+        week2_start_date = pd.to_datetime(start_date) + pd.Timedelta(days=7)
+        week2_start_date_str = week2_start_date.strftime("%Y-%m-%d")
+
+        # Schedule Week 1 task with a chain
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            start_date,
+            1,
+            group="process_summaries",
+            hook="apps.insights.tasks.week1_completed_hook",
+            kwargs={
+                "file_path": file_path,
+                "week2_start_date_str": week2_start_date_str,
+            },
+        )
+
+        logger.info("Tasks scheduled successfully.")
+
+    except Exception as e:
+        logger.error(f"Failed to schedule tasks: {e}")
+        raise
+
+
+def week1_completed_hook(task_result, file_path: str, week2_start_date_str: str):
+    """
+    Hook function called after Week 1 task completes.
+    Schedules Week 2 task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 1 processing.
+        file_path (str): Path to the CSV file.
+        week2_start_date_str (str): Start date for Week 2.
+    """
+    try:
+        logger.info("Week 1 processing completed. Scheduling Week 2 task...")
+        # Save Week 1 result to the database or cache if needed
+        week1_summary = task_result  # SummaryOutput object
+
+        # Schedule Week 2 task with a hook to run the comparison after completion
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            week2_start_date_str,
+            2,
+            hook="apps.insights.tasks.week2_completed_hook",
+            kwargs={
+                "week1_summary": week1_summary,
+            },
+        )
+        logger.info("Week 2 task scheduled successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week1_completed_hook: {e}")
+        raise
+
+
+def week2_completed_hook(task_result, week1_summary: SummaryOutput):
+    """
+    Hook function called after Week 2 task completes.
+    Runs the comparison task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 2 processing.
+        week1_summary (SummaryOutput): Result from Week 1 processing.
+    """
+    try:
+        logger.info("Week 2 processing completed. Running comparison task...")
+        week2_summary = task_result  # SummaryOutput object
+
+        # Run comparison task
+        comparison_result = compare_summaries_task(week1_summary, week2_summary)
+
+        # Optionally, save comparison_result to the database or handle as needed
+        logger.info("Comparison task completed successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week2_completed_hook: {e}")
+        raise
+
+==== data_pipeline.py ====
+# apps/insights/data_pipeline.py
+"""
+Title: Data Pipeline for CSV Processing and LLM Integration
+Description:
+This script orchestrates the data pipeline for processing GA4 CSV data.
+It validates, cleans, filters, and generates statistical overviews,
+and optionally integrates with an LLM for dataset summaries.
+
+Usage:
+The `run_pipeline` function can be imported and called programmatically:
+    from apps.insights.data_pipeline import run_pipeline
+"""
+
+import logging
+import os
+import pandas as pd
+from apps.insights.services.csv_processor import CSVProcessor
+from apps.insights.services.openai.summary_generator import generate_summary
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def run_pipeline(file_path: str, start_date: str):
+    """
+    Orchestrates the CSV processing pipeline and outputs results.
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Starting date for data filtering (YYYY-MM-DD).
+    """
+    try:
+        logging.info("Initializing CSVProcessor...")
+        processor = CSVProcessor(file_path)
+
+        logging.info("Starting the CSV processing pipeline...")
+        processor.load()
+        processor.validate()
+        processor.clean()
+        week1_df, week2_df = processor.filter(start_date)
+
+        start_date_dt = pd.to_datetime(start_date)
+        week1_start = start_date_dt
+        week1_end = week1_start + pd.Timedelta(days=6)
+        week2_start = week1_end + pd.Timedelta(days=1)
+        week2_end = week2_start + pd.Timedelta(days=6)
+
+        logging.info("Generating statistical overviews...")
+        logging.info(
+            f"\nStatistical Overview - Week 1 (Start: {week1_start.date()}, End: {week1_end.date()}):"
+        )
+        print(week1_df.describe().to_string())
+
+        logging.info(
+            f"\nStatistical Overview - Week 2 (Start: {week2_start.date()}, End: {week2_end.date()}):"
+        )
+        print(week2_df.describe().to_string())
+
+        logging.info("Generating summaries with OpenAI...")
+        week1_summary = week1_df.describe().to_string()
+        week2_summary = week2_df.describe().to_string()
+
+        week1_llm_summary = generate_summary(week1_summary)
+        week2_llm_summary = generate_summary(week2_summary)
+
+        logging.info(
+            f"\nLLM Summary - Week 1 ({week1_start.date()} to {week1_end.date()}):"
+        )
+        print(week1_llm_summary.dataset_summary)
+        logging.info("Key Metrics:")
+        for metric in week1_llm_summary.key_metrics:
+            print(f"{metric.name}: {metric.value} ({metric.description})")
+
+        logging.info(
+            f"\nLLM Summary - Week 2 ({week2_start.date()} to {week2_end.date()}):"
+        )
+        print(week2_llm_summary.dataset_summary)
+        logging.info("Key Metrics:")
+        for metric in week2_llm_summary.key_metrics:
+            print(f"{metric.name}: {metric.value} ({metric.description})")
+
+        logging.info("Pipeline executed successfully!")
+
+    except Exception as e:
+        logging.error(f"Pipeline failed: {e}")
+        raise
+
+==== dump.txt ====
+
+==== signals.soon.py ====
+from django.dispatch import receiver
+from django_q.signals import post_execute
+
+
+@receiver(post_execute)
+def create_task_record(sender, task, **kwargs):
+    TaskRecord.objects.update_or_create(
+        task=task,
+        defaults={
+            "task_name": task.name or task.func,
+            "status": "Success" if task.success else "Failed",
+            "started_at": task.started,
+            "completed_at": task.stopped,
+            "result": str(task.result) if task.result else None,
+            "error": str(task.result) if not task.success else None,
+        },
+    )
+
+==== tasks.py ====
+# apps/insights/tasks.py
+"""
+Task definitions for the Insights app.
+These tasks integrate with Django-Q to run asynchronously.
+
+When the user selects a start_date from the datepicker, this triggers the schedule_tasks function, passing in the file_path and the selected start_date. This function first calculates the Week 2 start date by adding 7 days to start_date, then schedules an asynchronous task (process_week_task) for Week 1 using Django-Q. Upon completion of the Week 1 task, the week1_completed_hook is called, which schedules the Week 2 task. Once the Week 2 task finishes, the week2_completed_hook triggers, running the compare_summaries_task to generate a comparison between the Week 1 and Week 2 summaries. The tasks run sequentially, with each step saving data to the database and logging progress.
+
+"""
+
+import logging
+from datetime import timedelta
+from django.utils import timezone
+from django_q.tasks import async_task, result_group, fetch
+from django_q.models import OrmQ
+
+import pandas as pd
+
+from apps.insights.services.summary_service import process_week
+from apps.insights.services.comparison_service import (
+    process_comparison,
+)  # Corrected import
+from apps.insights.services.openai.schemas import SummaryOutput, ComparisonOutput
+
+logger = logging.getLogger(__name__)
+
+
+def process_week_task(file_path: str, start_date: str, week: int) -> SummaryOutput:
+    """
+    Processes a single week's data and generates an LLM summary.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Start date for the week (YYYY-MM-DD).
+        week (int): Week number (1 or 2).
+
+    Returns:
+        SummaryOutput: The summary output for the week.
+    """
+    try:
+        logger.info(f"Processing Week {week} starting from {start_date}...")
+        result = process_week(file_path, start_date, week)
+        logger.info(f"Week {week} summary generated successfully.")
+        return result  # Returning the SummaryOutput object directly
+    except Exception as e:
+        logger.error(f"Failed to process Week {week}: {e}")
+        raise
+
+
+def compare_summaries_task(
+    week1_summary: SummaryOutput, week2_summary: SummaryOutput
+) -> ComparisonOutput:
+    """
+    Compares two LLM-generated summaries and generates a comparative analysis.
+
+    Args:
+        week1_summary (SummaryOutput): Week 1 summary.
+        week2_summary (SummaryOutput): Week 2 summary.
+
+    Returns:
+        ComparisonOutput: The comparison output.
+    """
+    try:
+        logger.info("Generating comparison between Week 1 and Week 2 summaries...")
+        # Convert SummaryOutput objects to dicts for process_comparison
+        summary1_dict = week1_summary.dict()
+        summary2_dict = week2_summary.dict()
+
+        comparison_result = process_comparison(summary1_dict, summary2_dict)
+        logger.info("Comparison generated successfully.")
+        return comparison_result
+    except Exception as e:
+        logger.error(f"Failed to generate comparison: {e}")
+        raise
+
+
+def schedule_tasks(file_path: str, start_date: str):
+    """
+    Schedules tasks to process Week 1 and Week 2 sequentially and then compare them.
+    """
+    try:
+        logger.info("Scheduling tasks for Week 1, Week 2, and comparison...")
+
+        # Calculate Week 2 start date
+        week2_start_date = pd.to_datetime(start_date) + pd.Timedelta(days=7)
+        week2_start_date_str = week2_start_date.strftime("%Y-%m-%d")
+
+        # Schedule Week 1 task with a chain
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            start_date,
+            1,
+            group="process_summaries",
+            hook="apps.insights.tasks.week1_completed_hook",
+            kwargs={
+                "file_path": file_path,
+                "week2_start_date_str": week2_start_date_str,
+            },
+        )
+
+        logger.info("Tasks scheduled successfully.")
+
+    except Exception as e:
+        logger.error(f"Failed to schedule tasks: {e}")
+        raise
+
+
+def week1_completed_hook(task_result, file_path: str, week2_start_date_str: str):
+    """
+    Hook function called after Week 1 task completes.
+    Schedules Week 2 task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 1 processing.
+        file_path (str): Path to the CSV file.
+        week2_start_date_str (str): Start date for Week 2.
+    """
+    try:
+        logger.info("Week 1 processing completed. Scheduling Week 2 task...")
+        # Save Week 1 result to the database or cache if needed
+        week1_summary = task_result  # SummaryOutput object
+
+        # Schedule Week 2 task with a hook to run the comparison after completion
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            week2_start_date_str,
+            2,
+            hook="apps.insights.tasks.week2_completed_hook",
+            kwargs={
+                "week1_summary": week1_summary,
+            },
+        )
+        logger.info("Week 2 task scheduled successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week1_completed_hook: {e}")
+        raise
+
+
+def week2_completed_hook(task_result, week1_summary: SummaryOutput):
+    """
+    Hook function called after Week 2 task completes.
+    Runs the comparison task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 2 processing.
+        week1_summary (SummaryOutput): Result from Week 1 processing.
+    """
+    try:
+        logger.info("Week 2 processing completed. Running comparison task...")
+        week2_summary = task_result  # SummaryOutput object
+
+        # Run comparison task
+        comparison_result = compare_summaries_task(week1_summary, week2_summary)
+
+        # Optionally, save comparison_result to the database or handle as needed
+        logger.info("Comparison task completed successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week2_completed_hook: {e}")
+        raise
+
+==== data_pipeline.py ====
+
+==== __init__.py ====
+
+==== apps.py ====
+from django.apps import AppConfig
+
+
+class InsightsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.insights"
+
+==== dump_project.py ====
+import os
+
+output_file = "dump.txt"
+exclude_dir = "./env"
+file_types = (".py", ".js", ".css", ".html", ".yaml", ".json", ".conf", ".txt")
+
+with open(output_file, "w") as out:
+    for root, dirs, files in os.walk("."):
+        # Exclude the env directory and its subdirectories
+        dirs[:] = [d for d in dirs if os.path.join(root, d) != exclude_dir]
+
+        for file in files:
+            if file.endswith(file_types):
+                file_path = os.path.join(root, file)
+                out.write(f"\n==== {file} ====\n")
+                with open(file_path, "r", encoding="utf-8") as f:
+                    out.write(f.read())
+
+==== admin.py ====
+# apps/insights/admin.py
+from django.contrib import admin
+from .models.summary import Summary, KeyMetric
+from .models.comparison import Comparison, KeyMetricComparison
+
+# Registering all models without custom admin configurations
+admin.site.register(Summary)
+admin.site.register(KeyMetric)
+admin.site.register(Comparison)
+admin.site.register(KeyMetricComparison)
+
+==== tests.py ====
+from django.test import TestCase
+
+# Create your tests here.
+
+==== views.py ====
+from django.shortcuts import render
+
+# Create your views here.
+
+==== __init__.py ====
+
+==== 0002_comparison_keymetric_keymetriccomparison_summary_and_more.py ====
+# Generated by Django 5.1.3 on 2024-11-24 04:33
+
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('insights', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Comparison',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
+                ('comparison_summary', models.TextField(help_text='A concise summary of differences and similarities between the two summaries.')),
+                ('start_date', models.DateField(editable=False, help_text='Start date of the comparison, derived from summary1.')),
+                ('end_date', models.DateField(editable=False, help_text='End date of the comparison, derived from summary2.')),
+            ],
+            options={
+                'ordering': ['-created_at'],
+            },
+        ),
+        migrations.CreateModel(
+            name='KeyMetric',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
+                ('name', models.CharField(help_text='Name of the metric.', max_length=100)),
+                ('value', models.FloatField(help_text='Numeric value of the metric.')),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='KeyMetricComparison',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
+                ('name', models.CharField(help_text='Name of the metric being compared.', max_length=100)),
+                ('value1', models.FloatField(help_text='Value from the first summary.')),
+                ('value2', models.FloatField(help_text='Value from the second summary.')),
+                ('description', models.TextField(blank=True, help_text='Description of the observed difference or trend.', null=True)),
+                ('percentage_difference', models.FloatField(blank=True, help_text='Percentage difference between the two values.', null=True)),
+                ('comparison', models.ForeignKey(help_text='The comparison this key metric comparison belongs to.', on_delete=django.db.models.deletion.CASCADE, related_name='key_metrics_comparison', to='insights.comparison')),
+            ],
+            options={
+                'ordering': ['name'],
+                'unique_together': {('comparison', 'name')},
+            },
+        ),
+        migrations.CreateModel(
+            name='Summary',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
+                ('start_date', models.DateField(help_text='Start date of the data period.')),
+                ('end_date', models.DateField(help_text='End date of the data period.')),
+                ('dataset_summary', models.TextField(help_text='A concise English summary of the dataset.')),
+                ('data_source', models.CharField(blank=True, help_text='File path or identifier of the data source.', max_length=255, null=True)),
+            ],
+            options={
+                'verbose_name_plural': 'Summaries',
+                'ordering': ['-start_date'],
+                'unique_together': {('start_date', 'end_date')},
+            },
+        ),
+        migrations.DeleteModel(
+            name='DataSummary',
+        ),
+        migrations.AddField(
+            model_name='keymetric',
+            name='summary',
+            field=models.ForeignKey(help_text='The summary this key metric belongs to.', on_delete=django.db.models.deletion.CASCADE, related_name='key_metrics', to='insights.summary'),
+        ),
+        migrations.AddField(
+            model_name='comparison',
+            name='summary1',
+            field=models.ForeignKey(help_text='The first summary being compared.', on_delete=django.db.models.deletion.CASCADE, related_name='comparisons_as_summary1', to='insights.summary'),
+        ),
+        migrations.AddField(
+            model_name='comparison',
+            name='summary2',
+            field=models.ForeignKey(help_text='The second summary being compared.', on_delete=django.db.models.deletion.CASCADE, related_name='comparisons_as_summary2', to='insights.summary'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='keymetric',
+            unique_together={('summary', 'name')},
+        ),
+        migrations.AlterUniqueTogether(
+            name='comparison',
+            unique_together={('summary1', 'summary2')},
+        ),
+    ]
+
+==== 0001_initial.py ====
+# Generated by Django 5.1.3 on 2024-11-23 13:12
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='DataSummary',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('label', models.CharField(help_text="A label identifying the dataset (e.g., 'Week 1').", max_length=50)),
+                ('plain_summary', models.TextField(help_text='An English summary of the dataset.')),
+                ('key_metrics', models.JSONField(help_text='Structured key metrics from the dataset.')),
+                ('metadata', models.JSONField(blank=True, help_text='Additional metadata about the summary (e.g., filters applied).', null=True)),
+            ],
+            options={
+                'verbose_name': 'Data Summary',
+                'verbose_name_plural': 'Data Summaries',
+            },
+        ),
+    ]
+
+==== __init__.py ====
+
+==== admin.py ====
+# app/insights/forms/admin.py
+from django import forms
+
+
+class DataSummaryAdminForm(forms.ModelForm):
+    start_date = forms.DateField(
+        widget=forms.widgets.DateInput(attrs={"type": "date"}),
+        required=False,
+        help_text="Select a start date for the analysis.",
+    )
+
+==== test_summary_service.py ====
+# apps/insights/tests/test_summary_service.py
+
+import os
+import pytest
+from apps.insights.services.summary_service import process_week
+from apps.insights.services.openai.schemas import SummaryOutput
+from django.conf import settings
+
+print(f"SECRET_KEY in Test: {settings.SECRET_KEY}")
+
+
+def test_process_week():
+    """
+    Test the summary service with the actual CSV file and a fixed start date.
+    Prints the output for manual verification.
+    """
+    file_path = os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
+    start_date = "2024-01-08"
+    week_number = 1  # Testing for Week 1
+
+    try:
+        # Process the week
+        result = process_week(file_path, start_date, week_number)
+
+        # Verify the output type
+        assert isinstance(
+            result, SummaryOutput
+        ), "Result is not a SummaryOutput object."
+
+        # Print dataset summary and key metrics for manual verification
+        print("Dataset Summary:")
+        print(result.dataset_summary)
+        print("\nKey Metrics:")
+        for metric in result.key_metrics:
+            print(f"{metric.name}: {metric.value}")
+
+        print("Test completed successfully.")
+
+    except Exception as e:
+        pytest.fail(f"Summary service test failed: {e}")
+
+==== test_comparison_generator.py ====
+# apps/insights/tests/test_comparison_generator.py
+
+import pytest
+from apps.insights.services.openai.comparison_generator import generate_comparison
+from apps.insights.services.openai.schemas import ComparisonOutput, KeyMetricComparison
+
+
+def test_generate_comparison():
+    """
+    Test the generate_comparison function using two pre-formatted dataset summary strings.
+    Prints the output for manual verification.
+    """
+    # Pre-formatted dataset summaries
+    summary1 = """
+    The dataset covers a 7-day period and encapsulates web analytics data, reflecting user engagement on a website.
+    Key metrics include the total number of sessions, users, new users, pageviews, as well as specific engagement metrics 
+    such as pages per session, average session duration, bounce rate, conversion rate, transactions, and revenue.
+    Overall, the dataset provides an overview of user interaction, revealing patterns in website traffic and user activity
+    over the specified time frame.
+
+    Key Metrics:
+    - Average Sessions: 1543.43
+    - Average Users: 1265.14
+    - Average New Users: 427.29
+    - Average Pageviews: 6225.86
+    - Pages per Session: 4.01
+    - Average Session Duration: 163.1
+    - Bounce Rate: 0.2
+    - Conversion Rate: 0.028
+    - Average Transactions: 34.14
+    - Average Revenue: 1622.53
+    """
+
+    summary2 = """
+    The dataset provides a statistical overview of a website's user interaction over a period of seven days in January 2024,
+    from the 8th to the 14th. It includes metrics related to sessions, users, new users, pageviews, pages per session, 
+    average session duration, bounce rate, conversion rate, transactions, and revenue. The average daily sessions were 
+    approximately 1683, with an average of about 1238 users and around 424 new users daily. The website generated an average 
+    of 6891.71 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
+    16.06%, and the conversion rate stood at about 4.25%. The site recorded an average of 49 transactions per day, resulting
+    in a daily revenue averaging $2087.17.
+
+    Key Metrics:
+    - Average Sessions: 1682.57
+    - Average Users: 1237.86
+    - Average New Users: 424.14
+    - Average Pageviews: 6891.71
+    - Pages per Session: 4.07
+    - Average Session Duration: 153.88
+    - Bounce Rate: 0.1606
+    - Conversion Rate: 0.0425
+    - Average Transactions: 49.43
+    - Average Revenue: 2087.17
+    """
+
+    try:
+        # Call the generator
+        result = generate_comparison(summary1, summary2)
+
+        # Verify the output type
+        assert isinstance(
+            result, ComparisonOutput
+        ), "Result is not a ComparisonOutput object."
+
+        # Log and print results for manual verification
+        print("Comparison Summary:")
+        print(result.comparison_summary)
+        print("\nKey Metrics Comparison:")
+        for metric in result.key_metrics_comparison:
+            print(
+                f"{metric.name}: "
+                f"Week 1 Value = {metric.value1}, "
+                f"Week 2 Value = {metric.value2} "
+                f"({metric.description})"
+            )
+
+        print("Test completed successfully.")
+
+    except Exception as e:
+        pytest.fail(f"Comparison generator test failed: {e}")
+
+==== summary_service_spec.py ====
+from apps.insights.services.summary_service import process_week
+from apps.insights.models.summary import Summary, KeyMetric
+
+# Replace with your test CSV file path and start_date
+file_path = (
+    "apps/insights/data/ga4_data.csv"  # Ensure the path is accessible in the container
+)
+start_date = "2024-01-01"  # Replace with your test date
+week_number = 1  # Testing for Week 1
+
+# Call the service
+try:
+    result = process_week(file_path, start_date, week_number)
+    print("LLM Summary Output:", result.dataset_summary)
+
+    # Check database entries
+    print("Summaries in DB:", Summary.objects.all())
+    print("Key Metrics in DB:", KeyMetric.objects.all())
+
+except Exception as e:
+    print(f"Error during test: {e}")
+
+==== test_task_scheduler.py ====
+import os
+import pytest
+import time
+from django_q.tasks import async_task, result
+import redis
+
+
+# Ensure migrations are applied for the test database
+@pytest.fixture(autouse=True)
+def apply_migrations(db):
+    from django.core.management import call_command
+
+    call_command("migrate")
+
+
+@pytest.mark.django_db
+def test_process_week_task():
+    """
+    Test the process_week_task function via async_task and print the result.
+    """
+    # Ensure critical environment variables are set
+    os.environ.setdefault("DJANGO_SECRET_KEY", "test_secret_key")
+    os.environ.setdefault("REDIS_URL", "redis://redis:6379/5")
+    os.environ.setdefault("REDIS_HOST", "redis")
+    os.environ.setdefault("REDIS_PORT", "6379")
+    os.environ.setdefault("REDIS_DB", "5")
+
+    # Debug environment variables
+    print("DEBUG: Environment Variables:")
+    print(f"REDIS_URL: {os.getenv('REDIS_URL')}")
+    print(f"REDIS_HOST: {os.getenv('REDIS_HOST')}")
+    print(f"REDIS_PORT: {os.getenv('REDIS_PORT')}")
+    print(f"REDIS_DB: {os.getenv('REDIS_DB')}")
+
+    # Ensure the Redis client connects properly
+    try:
+        redis_client = redis.Redis.from_url(os.getenv("REDIS_URL"))
+        assert redis_client.ping(), "Redis connection failed!"
+        print("DEBUG: Redis connection successful.")
+    except Exception as redis_error:
+        pytest.fail(f"Redis setup failed: {redis_error}")
+
+    # Correctly resolve the file path for the input data
+    file_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../data/ga4_data.csv")
+    )
+    print(f"DEBUG: Resolved file path for GA4 data: {file_path}")
+    start_date = "2024-01-01"  # Example start date
+    week_number = 1  # Testing for Week 1
+
+    # Trigger the async task and wait for the result
+    try:
+        # Trigger the task via Django-Q
+        task_id = async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            start_date,
+            week_number,
+        )
+        print(f"DEBUG: Task {task_id} triggered successfully.")
+
+        # Wait for the result with retries
+        retries = 10
+        result_data = None
+        while retries > 0:
+            result_data = result(task_id)
+            if result_data is not None:
+                break
+            retries -= 1
+            time.sleep(1)  # Wait 1 second before retrying
+
+        # Validate and print the result
+        assert result_data is not None, "Task did not return a result."
+        print("DEBUG: Task Result:")
+        print(result_data)
+
+    except Exception as task_error:
+        pytest.fail(f"Task test failed: {task_error}")
+
+==== test_comparison_service.py ====
+# apps/insights/tests/test_comparison_service.py
+
+import pytest
+from apps.insights.services.comparison_service import process_comparison
+from apps.insights.services.openai.schemas import ComparisonOutput, KeyMetricComparison
+
+
+def test_process_comparison():
+    """
+    Test the comparison service using mock structured data for Week 1 and Week 2.
+    Prints the output for manual verification.
+    """
+    # Week 1 structured data
+    data_summary1 = {
+        "dataset_summary": """
+        The dataset covers a 7-day period and encapsulates web analytics data, reflecting user engagement on a website.
+        Key metrics include the total number of sessions, users, new users, pageviews, as well as specific engagement metrics 
+        such as pages per session, average session duration, bounce rate, conversion rate, transactions, and revenue.
+        Overall, the dataset provides an overview of user interaction, revealing patterns in website traffic and user activity
+        over the specified time frame.
+        """,
+        "key_metrics": [
+            {
+                "name": "Average Sessions",
+                "value": 1543.43,
+            },
+            {
+                "name": "Average Users",
+                "value": 1265.14,
+            },
+            {
+                "name": "Average New Users",
+                "value": 427.29,
+            },
+            {
+                "name": "Average Pageviews",
+                "value": 6225.86,
+            },
+            {
+                "name": "Pages per Session",
+                "value": 4.01,
+            },
+            {
+                "name": "Average Session Duration",
+                "value": 163.1,
+            },
+            {
+                "name": "Bounce Rate",
+                "value": 0.2,
+            },
+            {
+                "name": "Conversion Rate",
+                "value": 0.028,
+            },
+            {
+                "name": "Average Transactions",
+                "value": 34.14,
+            },
+            {
+                "name": "Average Revenue",
+                "value": 1622.53,
+            },
+        ],
+    }
+
+    # Week 2 structured data
+    data_summary2 = {
+        "dataset_summary": """
+        The dataset provides a statistical overview of a website's user interaction over a period of seven days in January 2024,
+        from the 8th to the 14th. It includes metrics related to sessions, users, new users, pageviews, pages per session, 
+        average session duration, bounce rate, conversion rate, transactions, and revenue. The average daily sessions were 
+        approximately 1683, with an average of about 1238 users and around 424 new users daily. The website generated an average 
+        of 6892 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
+        16.06%, and the conversion rate stood at about 4.25%. The site recorded an average of 49 transactions per day, resulting
+        in a daily revenue averaging $2087.17.
+        """,
+        "key_metrics": [
+            {
+                "name": "Average Sessions",
+                "value": 1682.57,
+            },
+            {
+                "name": "Average Users",
+                "value": 1237.86,
+            },
+            {
+                "name": "Average New Users",
+                "value": 424.14,
+            },
+            {
+                "name": "Average Pageviews",
+                "value": 6891.71,
+            },
+            {
+                "name": "Pages per Session",
+                "value": 4.07,
+            },
+            {
+                "name": "Average Session Duration",
+                "value": 153.88,
+            },
+            {
+                "name": "Bounce Rate",
+                "value": 0.1606,
+            },
+            {
+                "name": "Conversion Rate",
+                "value": 0.0425,
+            },
+            {
+                "name": "Average Transactions",
+                "value": 49.43,
+            },
+            {
+                "name": "Average Revenue",
+                "value": 2087.17,
+            },
+        ],
+    }
+
+    try:
+        # Process comparison
+        result = process_comparison(data_summary1, data_summary2)
+
+        # Verify the output type
+        assert isinstance(
+            result, ComparisonOutput
+        ), "Result is not a ComparisonOutput object."
+
+        # Print comparison summary and key metrics for manual verification
+        print("Comparison Summary:")
+        print(result.comparison_summary)
+        print("\nKey Metrics Comparison:")
+        for metric in result.key_metrics_comparison:
+            print(
+                f"{metric.name}: Week 1 Value = {metric.value1}, Week 2 Value = {metric.value2} ({metric.description})"
+            )
+
+        print("Test completed successfully.")
+
+    except Exception as e:
+        pytest.fail(f"Comparison service test failed: {e}")
+
+==== __init__.py ====
+from .summary import Summary, KeyMetric
+from .comparison import Comparison, KeyMetricComparison
+
+__all__ = ["Summary", "KeyMetric", "Comparison", "KeyMetricComparison"]
+
+==== comparison.py ====
+# apps/insights/models/comparison.py
+from django.db import models
+from apps.common.behaviors.timestampable import Timestampable  # Importing Timestampable
+from apps.insights.models.summary import (
+    Summary,
+)  # Ensure this import aligns with project structure
+
+
+class Comparison(Timestampable):
+    """
+    Model to store the comparison between two summaries.
+    """
+
+    summary1 = models.ForeignKey(
+        Summary,
+        related_name="comparisons_as_summary1",
+        on_delete=models.CASCADE,
+        help_text="The first summary being compared.",
+    )
+    summary2 = models.ForeignKey(
+        Summary,
+        related_name="comparisons_as_summary2",
+        on_delete=models.CASCADE,
+        help_text="The second summary being compared.",
+    )
+    comparison_summary = models.TextField(
+        help_text="A concise summary of differences and similarities between the two summaries."
+    )
+    start_date = models.DateField(
+        help_text="Start date of the comparison, derived from summary1.",
+        editable=False,
+    )
+    end_date = models.DateField(
+        help_text="End date of the comparison, derived from summary2.",
+        editable=False,
+    )
+
+    def save(self, *args, **kwargs):
+        self.start_date = self.summary1.start_date
+        self.end_date = self.summary2.end_date
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Comparison from {self.start_date} to {self.end_date}"
+
+    class Meta:
+        unique_together = ("summary1", "summary2")
+        ordering = ["-created_at"]
+
+
+class KeyMetricComparison(Timestampable):
+    """
+    Model to store individual key metric comparisons related to a Comparison.
+    """
+
+    comparison = models.ForeignKey(
+        Comparison,
+        related_name="key_metrics_comparison",
+        on_delete=models.CASCADE,
+        help_text="The comparison this key metric comparison belongs to.",
+    )
+    name = models.CharField(
+        max_length=100, help_text="Name of the metric being compared."
+    )
+    value1 = models.FloatField(help_text="Value from the first summary.")
+    value2 = models.FloatField(help_text="Value from the second summary.")
+    description = models.TextField(
+        help_text="Description of the observed difference or trend.",
+        null=True,
+        blank=True,
+    )
+    percentage_difference = models.FloatField(
+        help_text="Percentage difference between the two values.", null=True, blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        if self.value1 and self.value2:
+            self.percentage_difference = (
+                ((self.value2 - self.value1) / self.value1) * 100
+                if self.value1 != 0
+                else None
+            )
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} Comparison (Comparison ID: {self.comparison.id})"
+
+    class Meta:
+        unique_together = ("comparison", "name")
+        ordering = ["name"]
+
+==== summary.py ====
+# apps/insights/models/summary.py
+from django.db import models
+from apps.common.behaviors.timestampable import Timestampable
+
+
+class Summary(Timestampable):
+    """
+    Model to store the dataset summary and key metrics for a specific time period.
+    """
+
+    start_date = models.DateField(help_text="Start date of the data period.")
+    end_date = models.DateField(help_text="End date of the data period.")
+    dataset_summary = models.TextField(
+        help_text="A concise English summary of the dataset."
+    )
+    data_source = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="File path or identifier of the data source.",
+    )
+
+    def __str__(self):
+        return f"Summary from {self.start_date} to {self.end_date}"
+
+    class Meta:
+        ordering = ["-start_date"]
+        unique_together = ("start_date", "end_date")  # Removed `summary_type` here
+        verbose_name_plural = "Summaries"
+
+
+class KeyMetric(Timestampable):
+    """
+    Model to store individual key metrics related to a Summary.
+    """
+
+    summary = models.ForeignKey(
+        Summary,
+        related_name="key_metrics",
+        on_delete=models.CASCADE,
+        help_text="The summary this key metric belongs to.",
+    )
+    name = models.CharField(max_length=100, help_text="Name of the metric.")
+    value = models.FloatField(help_text="Numeric value of the metric.")
+
+    def __str__(self):
+        return f"{self.name}: {self.value} (Summary ID: {self.summary.id})"
+
+    class Meta:
+        unique_together = ("summary", "name")
+        ordering = ["name"]
+
+==== task_record.py ====
+from django.db import models
+from django_q.models import Task
+
+
+class TaskRecord(models.Model):
+    """
+    Model to record additional information about tasks executed via Django-Q2.
+    """
+
+    task = models.OneToOneField(
+        Task,
+        on_delete=models.CASCADE,
+        help_text="The Django-Q task associated with this record.",
+    )
+    task_name = models.CharField(
+        max_length=255, help_text="Name of the task function being executed."
+    )
+    status = models.CharField(
+        max_length=50, help_text="Status of the task (e.g., Pending, Success, Failed)."
+    )
+    started_at = models.DateTimeField(help_text="Timestamp when the task started.")
+    completed_at = models.DateTimeField(
+        null=True, blank=True, help_text="Timestamp when the task completed."
+    )
+    result = models.TextField(
+        null=True, blank=True, help_text="Result of the task, if applicable."
+    )
+    error = models.TextField(
+        null=True, blank=True, help_text="Error message if the task failed."
+    )
+    summary = models.ForeignKey(
+        Summary,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="Associated summary, if applicable.",
+    )
+    comparison = models.ForeignKey(
+        Comparison,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="Associated comparison, if applicable.",
+    )
+    start_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Start date of the data period the task is processing.",
+    )
+    end_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="End date of the data period the task is processing.",
+    )
+
+    def __str__(self):
+        return f"Task Record for Task ID: {self.task.id}"
+
+    class Meta:
+        verbose_name = "Task Record"
+        verbose_name_plural = "Task Records"
+        ordering = ["-started_at"]
+
+==== csv_processor.py ====
+# apps/insights/services/csv_processor.py
+import logging
+from .csv.csv_reader import load_csv
+from .csv.data_validator import validate_columns
+from .csv.data_cleaner import clean_data
+from .csv.data_filter import filter_data
+from .csv.data_overview import generate_overview
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+class CSVProcessor:
+    def __init__(self, file_path: str):
+        """
+        Initialize the CSVProcessor with the path to the CSV file.
+        """
+        self.file_path = file_path
+        self.df = None  # Placeholder for the loaded DataFrame
+
+    def load(self):
+        """
+        Load the CSV file into a Pandas DataFrame.
+        """
+        logging.info("Loading CSV...")
+        self.df = load_csv(self.file_path)
+
+    def validate(self):
+        """
+        Validate that the CSV contains all required columns.
+        """
+        logging.info("Validating CSV columns...")
+        validate_columns(self.df)
+
+    def clean(self):
+        """
+        Clean the DataFrame by standardizing and formatting columns.
+        """
+        logging.info("Cleaning data...")
+        self.df = clean_data(self.df)
+
+    def filter(self, start_date: str):
+        """
+        Filter the data into two weeks based on the start date.
+        """
+        logging.info("Filtering data into Week 1 and Week 2...")
+        return filter_data(self.df, start_date)
+
+    def generate_overview(self, df, label):
+        """
+        Generate a statistical overview for a single DataFrame.
+        """
+        logging.info(f"Generating statistical overview for {label}...")
+        print(f"\nStatistical Overview - {label}:")
+        print(df.describe())
+
+    # def process(self, start_date: str, week_number: int):
+    #     try:
+    #         self.load()
+    #         self.validate()
+    #         self.clean()
+    #         week_df = self.filter(start_date)[week_number - 1]
+    #         self.generate_overview(week_df, f"Week {week_number}")
+    #         return week_df  # Return the processed week DataFrame
+    #     except ValueError as e:
+    #         logging.error(f"Processing error: {e}")
+    #         raise
+
+==== comparison_service.py ====
+# apps/insights/services/comparison_service.py
+"""
+Comparison Service for Dataset Summaries
+Handles LLM comparison generation and logging for two dataset summaries.
+"""
+
+import json
+import logging
+from apps.insights.services.openai.comparison_generator import generate_comparison
+from apps.insights.services.openai.schemas import ComparisonOutput
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def prepare_summary(data_summary: dict) -> str:
+    """
+    Combines dataset_summary and key_metrics from a structured dataset summary into a single string for LLM input.
+
+    Args:
+        data_summary (dict): A dictionary containing 'dataset_summary' (str) and 'key_metrics' (list of dicts).
+
+    Returns:
+        str: A combined string representation of the dataset summary and its key metrics.
+    """
+    try:
+        if not data_summary.get("dataset_summary"):
+            raise ValueError("Missing 'dataset_summary' in data_summary.")
+
+        if not data_summary.get("key_metrics"):
+            raise ValueError("Missing 'key_metrics' in data_summary.")
+
+        key_metrics_str = "\n".join(
+            f"- {metric['name']}: {metric['value']}"
+            for metric in data_summary["key_metrics"]
+            if "name" in metric and "value" in metric
+        )
+
+        if not key_metrics_str:
+            logging.warning("Key metrics are empty or malformed.")
+
+        return f"{data_summary['dataset_summary']}\n\nKey Metrics:\n{key_metrics_str}"
+    except Exception as e:
+        logging.error(f"Failed to prepare summary: {e}")
+        raise
+
+
+def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOutput:
+    """
+    Processes two dataset summaries, merges them into strings, and generates a structured comparison.
+
+    Args:
+        data_summary1 (dict): The first dataset summary (with 'dataset_summary' and 'key_metrics').
+        data_summary2 (dict): The second dataset summary.
+
+    Returns:
+        ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
+    """
+    try:
+        logging.info("Starting comparison of dataset summaries...")
+
+        # Validate and prepare text strings for the LLM
+        summary1 = prepare_summary(data_summary1)
+        summary2 = prepare_summary(data_summary2)
+
+        logging.info("Generated summaries for comparison.")
+        logging.debug(f"Summary 1: {summary1}")
+        logging.debug(f"Summary 2: {summary2}")
+
+        # Generate comparison using LLM
+        comparison_result = generate_comparison(summary1, summary2)
+
+        # Log detailed results
+        logging.info("Comparison completed successfully.")
+        logging.debug(f"Raw comparison result: {comparison_result}")
+
+        logging.info("Comparison Summary:")
+        logging.info(comparison_result.comparison_summary)
+        logging.info("Key Metrics Comparison:")
+        for metric in comparison_result.key_metrics_comparison:
+            logging.info(
+                f"{metric.name}: Week 1 Value = {metric.value1}, "
+                f"Week 2 Value = {metric.value2} ({metric.description})"
+            )
+
+        # Save comparison result to JSON file
+        save_comparison_to_file(comparison_result)
+
+        return comparison_result
+
+    except ValueError as ve:
+        logging.error(f"Validation Error: {ve}")
+        raise
+
+    except Exception as e:
+        logging.error(f"Unexpected error during comparison: {e}")
+        raise
+
+
+def save_comparison_to_file(
+    comparison_result: ComparisonOutput, summary1_id: int, summary2_id: int
+):
+    """
+    Saves the structured comparison result to a JSON file resembling the database entry.
+
+    Args:
+        comparison_result (ComparisonOutput): The structured comparison result.
+        summary1_id (int): The database ID of the first summary.
+        summary2_id (int): The database ID of the second summary.
+    """
+    try:
+        file_path = "comparison_output.json"
+        logging.info(f"Saving comparison result to {file_path}...")
+
+        # Construct the data dictionary to match database structure
+        data = {
+            "summary1": summary1_id,
+            "summary2": summary2_id,
+            "comparison_summary": comparison_result.comparison_summary,
+            "key_metrics_comparison": [
+                {
+                    "name": metric.name,
+                    "value1": metric.value1,
+                    "value2": metric.value2,
+                    "description": metric.description,
+                    "percentage_difference": (
+                        ((metric.value2 - metric.value1) / metric.value1) * 100
+                        if metric.value1 != 0
+                        else None
+                    ),
+                }
+                for metric in comparison_result.key_metrics_comparison
+            ],
+        }
+
+        # Write to the JSON file
+        with open(file_path, "w") as json_file:
+            json.dump(data, json_file, indent=4)
+
+        logging.info("Comparison result saved successfully.")
+    except Exception as e:
+        logging.error(f"Failed to save comparison result to file: {e}")
+        raise
+
+==== __init__.py ====
+
+==== summary_service.py ====
+# apps/insights/services/summary_service.py
+"""
+Summary Service for Single-Week Data Processing
+Handles CSV data validation, processing, LLM summary generation, and key metric extraction for a single week.
+
+This service processes a single week's data from a CSV file, generating a summary and key metrics using OpenAI's LLM, and saving the results to both the database and a JSON file. It uses the CSVProcessor to load, validate, clean, and filter data based on the provided start date. A statistical overview is generated for the specified week, which is then summarized into a dataset summary and key metrics. The results are stored in the Summary and KeyMetric models and saved as JSON for debugging or visualization. Errors are logged at each step.
+
+"""
+
+import json
+import logging
+from django.db import transaction
+from apps.insights.models.summary import Summary, KeyMetric
+from apps.insights.services.csv_processor import CSVProcessor
+from apps.insights.services.openai.summary_generator import generate_summary
+from apps.insights.services.openai.schemas import SummaryOutput
+import pandas as pd
+import datetime  # Added import for datetime
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOutput:
+    """
+    Processes a single week's data and generates an LLM summary.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Start date for the week (YYYY-MM-DD).
+        week_number (int): Week number (1 or 2).
+
+    Returns:
+        SummaryOutput: LLM summary and key metrics for the week.
+    """
+    try:
+        logging.info(
+            f"Processing Week {week_number} data starting from {start_date}..."
+        )
+
+        # Initialize CSVProcessor and load data
+        processor = CSVProcessor(file_path)
+        processor.load()
+        processor.validate()
+        processor.clean()
+
+        # Verify the 'date' column type
+        if not pd.api.types.is_datetime64_any_dtype(processor.df["date"]):
+            logging.error("The 'date' column is not in datetime format after cleaning.")
+            raise TypeError("Date column is not datetime")
+
+        # Filter data for the specified week
+        week_df = processor.filter(start_date)[week_number - 1]
+
+        # Verify the 'date' column type in week_df
+        if not pd.api.types.is_datetime64_any_dtype(week_df["date"]):
+            logging.error("The 'date' column in week_df is not in datetime format.")
+            raise TypeError("Date column in week_df is not datetime")
+
+        # Generate statistical overview using CSVProcessor
+        processor.generate_overview(week_df, f"Week {week_number}")
+
+        # Generate LLM summary
+        logging.info("Requesting summary from OpenAI...")
+        statistical_summary = week_df.describe().to_string()
+        llm_summary = generate_summary(statistical_summary)
+
+        # Validate and log results
+        logging.info(f"LLM Summary - Week {week_number}: {llm_summary.dataset_summary}")
+        logging.info("Key Metrics:")
+        for metric in llm_summary.key_metrics:
+            logging.info(f"{metric.name}: {metric.value}")
+
+        # Convert `date` column to datetime and extract the end date
+        end_date_max = week_df["date"].max()
+        logging.info(f"Max date value: {end_date_max} (type: {type(end_date_max)})")
+        if isinstance(end_date_max, (pd.Timestamp, datetime.datetime)):
+            end_date = end_date_max.strftime("%Y-%m-%d")
+        else:
+            # Attempt to convert to datetime if not already
+            end_date = pd.to_datetime(end_date_max).strftime("%Y-%m-%d")
+
+        # Save summary and metrics to the database
+        save_summary_to_database(
+            start_date=start_date,
+            end_date=end_date,
+            llm_summary=llm_summary,
+        )
+
+        # Save summary to JSON file
+        save_summary_to_file(start_date, end_date, llm_summary, week_number)
+
+        return llm_summary
+
+    except Exception as e:
+        logging.error(f"Failed to process Week {week_number}: {e}")
+        raise
+
+
+def save_summary_to_database(
+    start_date: str, end_date: str, llm_summary: SummaryOutput
+):
+    """
+    Saves the structured summary result and its key metrics to the database.
+
+    Args:
+        start_date (str): Start date for the summary (YYYY-MM-DD).
+        end_date (str): End date for the summary (YYYY-MM-DD).
+        llm_summary (SummaryOutput): The structured summary result.
+    """
+    try:
+        with transaction.atomic():  # Ensure all-or-nothing database operations
+            logging.info(
+                f"Saving summary for {start_date} to {end_date} to the database..."
+            )
+
+            # Create and save the Summary instance
+            summary = Summary.objects.create(
+                start_date=start_date,
+                end_date=end_date,
+                dataset_summary=llm_summary.dataset_summary,
+            )
+
+            # Create and save the KeyMetric instances
+            for metric in llm_summary.key_metrics:
+                KeyMetric.objects.create(
+                    summary=summary,
+                    name=metric.name,
+                    value=metric.value,
+                )
+
+            logging.info(
+                f"Summary and key metrics for {start_date} to {end_date} saved successfully."
+            )
+
+    except Exception as e:
+        logging.error(f"Failed to save summary and key metrics to the database: {e}")
+        raise
+
+
+def save_summary_to_file(
+    start_date: str, end_date: str, llm_summary: SummaryOutput, week_number: int
+):
+    """
+    Saves the structured summary result to a JSON file in the same format as the database.
+
+    Args:
+        start_date (str): Start date for the summary (YYYY-MM-DD).
+        end_date (str): End date for the summary (YYYY-MM-DD).
+        llm_summary (SummaryOutput): The structured summary result.
+        week_number (int): The week number being processed.
+    """
+    try:
+        file_path = f"summary_output_week_{week_number}.json"
+        logging.info(f"Saving Week {week_number} summary result to {file_path}...")
+
+        # Construct the data dictionary to match database structure
+        data = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "dataset_summary": llm_summary.dataset_summary,
+            "key_metrics": [
+                {"name": metric.name, "value": metric.value}
+                for metric in llm_summary.key_metrics
+            ],
+        }
+
+        # Write to the JSON file
+        with open(file_path, "w") as json_file:
+            json.dump(data, json_file, indent=4)
+
+        logging.info(f"Week {week_number} summary result saved successfully.")
+    except Exception as e:
+        logging.error(f"Failed to save Week {week_number} summary result to file: {e}")
+        raise
+
+==== data_overview.py ====
+# apps/insights/services/csv/data_overview.py
+
+
+def generate_overview(self, df, label):
+    """
+    Generate a statistical overview for the given DataFrame.
+
+    Args:
+        df (DataFrame): The DataFrame to generate an overview for.
+        label (str): A label for logging (e.g., Week 1 or Week 2).
+    """
+    logging.info(f"Generating statistical overview for {label}...")
+    print(f"\nStatistical Overview - {label}:")
+    print(df.describe())
+
+==== data_validator.py ====
+# apps/insights/services/csv/data_validator.py
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+REQUIRED_COLUMNS = {
+    "date",
+    "source",
+    "sessions",
+    "users",
+    "new_users",
+    "pageviews",
+    "pages_per_session",
+    "avg_session_duration",
+    "bounce_rate",
+    "conversion_rate",
+    "transactions",
+    "revenue",
+}
+
+
+def validate_columns(df):
+    # Check for missing required columns
+    missing_columns = REQUIRED_COLUMNS - set(df.columns)
+    if missing_columns:
+        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+    logging.info("All required key columns are present.")
+
+==== data_filter.py ====
+# apps/insights/services/csv/data_filter.py
+import pandas as pd
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+def filter_data(df, start_date):
+    """
+    Filter the DataFrame into two weeks based on the start_date.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame to filter.
+        start_date (str): Start date for filtering (YYYY-MM-DD).
+
+    Returns:
+        tuple: Two DataFrames (Week 1, Week 2).
+    """
+    logging.info("Filtering data for organic traffic...")
+    organic_df = df[df["source"] == "organic"]
+    if organic_df.empty:
+        raise ValueError("No data found for organic traffic.")
+
+    # Define date ranges
+    logging.info(f"Calculating date ranges from start_date: {start_date}")
+    start_date = pd.to_datetime(start_date)
+    end_date_week1 = start_date + pd.Timedelta(days=6)  # Week 1 range
+    start_date_week2 = start_date + pd.Timedelta(days=7)  # Week 2 range
+    end_date_week2 = start_date + pd.Timedelta(days=13)  # Week 2 range end
+
+    # Filter Week 1
+    logging.info(f"Filtering Week 1: {start_date.date()} to {end_date_week1.date()}")
+    week1_df = organic_df[
+        (organic_df["date"] >= start_date) & (organic_df["date"] <= end_date_week1)
+    ]
+    if week1_df.empty:
+        raise ValueError("No data found for Week 1.")
+
+    # Log filtered Week 1 data
+    logging.info(f"Week 1 Data (Rows: {len(week1_df)}):\n{week1_df}")
+
+    # Filter Week 2
+    logging.info(
+        f"Filtering Week 2: {start_date_week2.date()} to {end_date_week2.date()}"
+    )
+    week2_df = organic_df[
+        (organic_df["date"] >= start_date_week2)
+        & (organic_df["date"] <= end_date_week2)
+    ]
+    if week2_df.empty:
+        raise ValueError("No data found for Week 2.")
+
+    # Log filtered Week 2 data
+    logging.info(f"Week 2 Data (Rows: {len(week2_df)}):\n{week2_df}")
+
+    return week1_df, week2_df
+
+==== csv_reader.py ====
+# apps/insights/services/csv/csv_reader.py
+import pandas as pd  # Missing import added
+
+
+def load_csv(file_path: str) -> pd.DataFrame:
+    """
+    Load a CSV file into a Pandas DataFrame.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        pd.DataFrame: Loaded data.
+    """
+    try:
+        df = pd.read_csv(file_path)
+        print(
+            f"Successfully loaded {file_path}: {len(df)} rows, {len(df.columns)} columns"
+        )
+        return df
+    except Exception as e:
+        raise ValueError(f"Error loading CSV file: {e}")
+
+==== __init__.py ====
+
+==== data_cleaner.py ====
+# apps/insights/services/csv/data_cleaner.py
+import pandas as pd
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+# Detect the date column dynamically
+def detect_date_column(df):
+    date_columns = [col for col in df.columns if "date" in col.lower()]
+    if len(date_columns) == 0:
+        raise ValueError("No date column detected in the dataset.")
+    if len(date_columns) > 1:
+        raise ValueError(f"Multiple possible date columns found: {date_columns}")
+    logging.info(f"Date column detected: {date_columns[0]}")
+    return date_columns[0]
+
+
+# Standardize the format of the date column
+def standardize_date_format(df, date_column):
+    try:
+        df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+        if df[date_column].isna().any():
+            raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
+        # Removed the following line to keep 'date' as datetime
+        # df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
+        logging.info(
+            f"Dates standardized to datetime format in column '{date_column}'."
+        )
+        return df
+    except Exception as e:
+        raise ValueError(f"Error standardizing date column: {e}")
+
+
+# Ensure date column is in datetime format for filtering
+def ensure_datetime_format(df, date_column):
+    try:
+        df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+        if df[date_column].isna().any():
+            raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
+        logging.info(f"Date column '{date_column}' confirmed as datetime format.")
+        return df
+    except Exception as e:
+        raise ValueError(f"Error ensuring datetime format: {e}")
+
+
+# Perform the full data cleaning process
+def clean_data(df):
+    date_column = detect_date_column(df)
+    df = standardize_date_format(df, date_column)
+    df = ensure_datetime_format(df, date_column)
+    return df
+
+==== summary_generator.py ====
+# apps/insights/services/openai/summary_generator.py
+
+import os
+from instructor import from_openai
+from openai import OpenAI
+from .schemas import SummaryOutput
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+# Load OpenAI API key
+openai_api_key = os.environ.get("OPENAI_API_KEY")  # Use os.environ.get()
+
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
+
+# Initialize OpenAI client
+client = from_openai(OpenAI(api_key=openai_api_key))
+
+
+def generate_summary(statistical_summary: str) -> SummaryOutput:
+    """
+    Generates a structured dataset summary using OpenAI API.
+
+    Args:
+        statistical_summary (str): Statistical summary of the dataset.
+
+    Returns:
+        SummaryOutput: A structured summary containing dataset insights and key metrics.
+    """
+    prompt = f"""
+You are a data analyst tasked with summarizing a dataset. The following is a statistical summary of the dataset:
+
+{statistical_summary}
+
+Please provide the summary in the following JSON format:
+
+{{
+    "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.",
+    "key_metrics": [
+        {{
+            "name": "Name of Metric",
+            "value": Numeric value
+        }}
+        // Repeat for each key metric
+    ]
+}}
+
+Ensure that:
+- All numeric values are provided as numbers (not strings).
+- The key_metrics include the following metrics in this order:
+    - "Average Sessions"
+    - "Average Users"
+    - "Average New Users"
+    - "Average Pageviews"
+    - "Pages per Session"
+    - "Average Session Duration"
+    - "Bounce Rate"
+    - "Conversion Rate"
+    - "Average Transactions"
+    - "Average Revenue"
+- Do not include descriptions for the key metrics.
+- Focus on delivering specific insights derived from the data.
+- Avoid generic statements or repeating information without analysis.
+"""
+
+    try:
+        logging.info("Requesting dataset summary from OpenAI...")
+
+        # API call with structured output validation
+        response = client.chat.completions.create(
+            model="gpt-4o-2024-08-06",
+            messages=[{"role": "user", "content": prompt}],
+            response_model=SummaryOutput,
+        )
+
+        # Log the raw response from OpenAI for debugging
+        logging.info(f"Raw LLM response: {response.json()}")
+
+        logging.info("Successfully received structured response.")
+        return response
+
+    except client.ValidationError as e:
+        logging.error(f"Validation error: {e}")
+        raise ValueError(f"Validation error: {e}")
+
+    except client.ApiError as e:
+        logging.error(f"API error: {e}")
+        raise ValueError(f"API error: {e}")
+
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        raise ValueError(f"Unexpected error: {e}")
+
+==== __init__.py ====
+
+==== comparison_generator.py ====
+# apps/insights/services/openai/comparison_generator.py
+
+import os
+from instructor import from_openai
+from openai import OpenAI
+from .schemas import ComparisonOutput
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+# Load OpenAI API key
+openai_api_key = os.environ.get("OPENAI_API_KEY")
+
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
+
+# Initialize OpenAI client
+client = from_openai(OpenAI(api_key=openai_api_key))
+
+
+def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
+    """
+    Generates a structured comparison between two dataset summaries using the OpenAI API.
+
+    Args:
+        summary1 (str): The first dataset summary as a string (Week 1).
+        summary2 (str): The second dataset summary as a string (Week 2).
+
+    Returns:
+        ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
+    """
+    prompt = f"""
+You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
+
+Week 1:
+{summary1}
+
+Week 2:
+{summary2}
+
+Please provide the comparison in the following JSON format:
+
+{{
+    "comparison_summary": "A concise summary of differences and similarities between Week 1 and Week 2, including notable trends or observations.",
+    "key_metrics_comparison": [
+        {{
+            "name": "Name of Metric",
+            "value1": Value from Week 1,
+            "value2": Value from Week 2,
+            "description": "Description of the observed difference or trend, including specific figures and percentages where appropriate."
+        }}
+        // Repeat for each key metric
+    ]
+}}
+
+Ensure that:
+- All numeric values are provided as numbers (not strings).
+- The key_metrics_comparison includes the following metrics in this order:
+    - "Average Sessions"
+    - "Average Users"
+    - "Average New Users"
+    - "Average Pageviews"
+    - "Pages per Session"
+    - "Average Session Duration"
+    - "Bounce Rate"
+    - "Conversion Rate"
+    - "Average Transactions"
+    - "Average Revenue"
+- The description for each metric explains the difference or trend observed between Week 1 and Week 2, using precise figures (e.g., differences, percentages).
+- Refer to the summaries as "Week 1" and "Week 2" in your descriptions.
+"""
+
+    try:
+        logging.info("Requesting dataset comparison from OpenAI...")
+
+        # API call with structured output validation
+        response = client.chat.completions.create(
+            model="gpt-4o-2024-08-06",
+            messages=[{"role": "user", "content": prompt}],
+            response_model=ComparisonOutput,
+        )
+
+        # Log the raw response from OpenAI for debugging
+        logging.info(f"Raw LLM response: {response.json()}")
+
+        logging.info("Successfully received structured response.")
+        return response
+
+    except client.ValidationError as e:
+        logging.error(f"Validation error: {e}")
+        raise ValueError(f"Validation error: {e}")
+
+    except client.ApiError as e:
+        logging.error(f"API error: {e}")
+        raise ValueError(f"API error: {e}")
+
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        raise ValueError(f"Unexpected error: {e}")
+
+==== schemas.py ====
+# apps/insights/services/openai/schemas.py
+
+from pydantic import BaseModel, Field
+from typing import List
+
+
+class KeyMetric(BaseModel):
+    """
+    Represents a single key metric extracted from the dataset summary.
+    """
+
+    name: str
+    value: float
+
+    @classmethod
+    def ordered_metrics(cls) -> List["KeyMetric"]:
+        """
+        Defines the exact order and expected names for key metrics.
+        """
+        return [
+            cls(name="Average Sessions", value=0),
+            cls(name="Average Users", value=0),
+            cls(name="Average New Users", value=0),
+            cls(name="Average Pageviews", value=0),
+            cls(name="Pages per Session", value=0),
+            cls(name="Average Session Duration", value=0),
+            cls(name="Bounce Rate", value=0),
+            cls(name="Conversion Rate", value=0),
+            cls(name="Average Transactions", value=0),
+            cls(name="Average Revenue", value=0),
+        ]
+
+    def validate_name(self) -> bool:
+        """
+        Ensures that the name of the metric matches one of the expected names.
+        """
+        expected_names = [metric.name for metric in self.ordered_metrics()]
+        if self.name not in expected_names:
+            raise ValueError(f"Unexpected metric name: {self.name}")
+        return True
+
+
+class SummaryOutput(BaseModel):
+    """
+    Structured output for a dataset summary response from the LLM.
+    """
+
+    dataset_summary: str = Field(
+        ..., description="A concise English summary of the dataset."
+    )
+    key_metrics: List[KeyMetric] = Field(
+        ..., description="List of key metrics extracted from the dataset."
+    )
+
+    def enforce_ordered_metrics(self):
+        """
+        Enforces that key metrics are in the exact order defined by `KeyMetric.ordered_metrics`.
+        """
+        ordered_names = [metric.name for metric in KeyMetric.ordered_metrics()]
+        self.key_metrics = sorted(
+            self.key_metrics,
+            key=lambda metric: (
+                ordered_names.index(metric.name)
+                if metric.name in ordered_names
+                else float("inf")
+            ),
+        )
+        # Ensure no unexpected metrics
+        for metric in self.key_metrics:
+            metric.validate_name()
+
+
+class KeyMetricComparison(BaseModel):
+    """
+    Represents a comparison of a key metric between two datasets.
+    """
+
+    name: str
+    value1: float
+    value2: float
+    description: str  # Retaining description for comparisons
+
+
+class ComparisonOutput(BaseModel):
+    """
+    Structured output for comparing two dataset summaries.
+    """
+
+    comparison_summary: str = Field(
+        ...,
+        description="A concise English summary highlighting differences and similarities between Week 1 and Week 2.",
+    )
+    key_metrics_comparison: List[KeyMetricComparison] = Field(
+        ...,
+        description="Key metrics with values from both weeks and descriptions of differences.",
+    )
