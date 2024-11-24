@@ -1,7 +1,7 @@
 # apps/insights/admin.py
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import RunComparisonForm
 from .models.comparison import Comparison
 
@@ -32,6 +32,8 @@ class ComparisonAdmin(admin.ModelAdmin):
                 self.message_user(
                     request, f"Comparison pipeline started for {start_date}"
                 )
+                # Redirect to Django Q2's successful tasks page
+                return redirect("/admin/django_q/success/")
         else:
             form = RunComparisonForm()
         return render(
