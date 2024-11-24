@@ -43,8 +43,7 @@ Please provide the summary in the following JSON format:
     "key_metrics": [
         {{
             "name": "Name of Metric",
-            "value": Numeric value,
-            "description": "Brief description of the metric and its significance."
+            "value": Numeric value
         }}
         // Repeat for each key metric
     ]
@@ -63,7 +62,7 @@ Ensure that:
     - "Conversion Rate"
     - "Average Transactions"
     - "Average Revenue"
-- The description for each metric explains its significance or any notable observations.
+- Do not include descriptions for the key metrics.
 - Focus on delivering specific insights derived from the data.
 - Avoid generic statements or repeating information without analysis.
 """

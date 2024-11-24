@@ -11,7 +11,6 @@ class KeyMetric(BaseModel):
 
     name: str
     value: float
-    description: str
 
     @classmethod
     def ordered_metrics(cls) -> List["KeyMetric"]:
@@ -19,56 +18,16 @@ class KeyMetric(BaseModel):
         Defines the exact order and expected names for key metrics.
         """
         return [
-            cls(
-                name="Average Sessions",
-                value=0,
-                description="The mean number of sessions per day.",
-            ),
-            cls(
-                name="Average Users",
-                value=0,
-                description="The mean number of users per day.",
-            ),
-            cls(
-                name="Average New Users",
-                value=0,
-                description="The mean number of new users per day.",
-            ),
-            cls(
-                name="Average Pageviews",
-                value=0,
-                description="The mean number of pageviews per day.",
-            ),
-            cls(
-                name="Pages per Session",
-                value=0,
-                description="The average number of pages viewed per session.",
-            ),
-            cls(
-                name="Average Session Duration",
-                value=0,
-                description="The average duration of a session in seconds.",
-            ),
-            cls(
-                name="Bounce Rate",
-                value=0,
-                description="The average percentage of visitors who leave the site after viewing only one page.",
-            ),
-            cls(
-                name="Conversion Rate",
-                value=0,
-                description="The average percentage of visitors who completed a desired action.",
-            ),
-            cls(
-                name="Average Transactions",
-                value=0,
-                description="The mean number of transactions per day.",
-            ),
-            cls(
-                name="Average Revenue",
-                value=0,
-                description="The average revenue generated per day.",
-            ),
+            cls(name="Average Sessions", value=0),
+            cls(name="Average Users", value=0),
+            cls(name="Average New Users", value=0),
+            cls(name="Average Pageviews", value=0),
+            cls(name="Pages per Session", value=0),
+            cls(name="Average Session Duration", value=0),
+            cls(name="Bounce Rate", value=0),
+            cls(name="Conversion Rate", value=0),
+            cls(name="Average Transactions", value=0),
+            cls(name="Average Revenue", value=0),
         ]
 
     def validate_name(self) -> bool:
@@ -119,7 +78,7 @@ class KeyMetricComparison(BaseModel):
     name: str
     value1: float
     value2: float
-    description: str
+    description: str  # Retaining description for comparisons
 
 
 class ComparisonOutput(BaseModel):

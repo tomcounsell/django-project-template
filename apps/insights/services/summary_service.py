@@ -56,7 +56,7 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         logging.info(f"LLM Summary - Week {week_number}: {llm_summary.dataset_summary}")
         logging.info("Key Metrics:")
         for metric in llm_summary.key_metrics:
-            logging.info(f"{metric.name}: {metric.value} ({metric.description})")
+            logging.info(f"{metric.name}: {metric.value}")
 
         # Save summary to JSON file
         save_summary_to_file(llm_summary, week_number)

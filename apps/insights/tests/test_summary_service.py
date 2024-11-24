@@ -1,4 +1,5 @@
 # apps/insights/tests/test_summary_service.py
+
 import os
 import pytest
 from apps.insights.services.summary_service import process_week
@@ -31,7 +32,7 @@ def test_process_week():
         print(result.dataset_summary)
         print("\nKey Metrics:")
         for metric in result.key_metrics:
-            print(f"{metric.name}: {metric.value} ({metric.description})")
+            print(f"{metric.name}: {metric.value}")
 
         print("Test completed successfully.")
 
