@@ -64,21 +64,20 @@ class KeyMetricComparisonInline(admin.TabularInline):
 class ComparisonAdmin(admin.ModelAdmin):
     list_display = (
         "start_date",
-        "end_date",
         "comparison_summary",
         "display_summary1",
         "display_summary2",
     )
-    search_fields = ("start_date", "end_date")
+    search_fields = ("start_date",)
     inlines = [KeyMetricComparisonInline]  # Add the inline view for KeyMetricComparison
 
     def display_summary1(self, obj):
         """Display Summary1 details."""
-        return f"Summary from {obj.summary1.start_date} to {obj.summary1.end_date}"
+        return f"Summary from {obj.summary1.start_date}"
 
     def display_summary2(self, obj):
         """Display Summary2 details."""
-        return f"Summary from {obj.summary2.start_date} to {obj.summary2.end_date}"
+        return f"Summary from {obj.summary2.start_date}"
 
     display_summary1.short_description = "Summary 1"
     display_summary2.short_description = "Summary 2"
@@ -89,11 +88,10 @@ class SummaryAdmin(admin.ModelAdmin):
     Admin view for the Summary model.
     """
 
-    list_display = ("start_date", "end_date", "dataset_summary")
-    search_fields = ("start_date", "end_date")
+    list_display = ("start_date", "dataset_summary")
+    search_fields = ("start_date",)
     readonly_fields = (
         "start_date",
-        "end_date",
         "dataset_summary",
     )  # Make fields read-only
     inlines = [KeyMetricInline]  # Add inline view for KeyMetric
