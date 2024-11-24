@@ -33,9 +33,9 @@ def prepare_summary(data_summary: dict) -> str:
             raise ValueError("Missing 'key_metrics' in data_summary.")
 
         key_metrics_str = "\n".join(
-            f"- {metric['name']}: {metric['value']} ({metric['description']})"
+            f"- {metric['name']}: {metric['value']}"
             for metric in data_summary["key_metrics"]
-            if "name" in metric and "value" in metric and "description" in metric
+            if "name" in metric and "value" in metric
         )
 
         if not key_metrics_str:
@@ -85,7 +85,6 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
                 f"Week 2 Value = {metric.value2} ({metric.description})"
             )
 
-        # Removed handling of 'notable_trends' as it no longer exists
         # Save comparison result to JSON file
         save_comparison_to_file(comparison_result)
 

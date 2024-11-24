@@ -23,52 +23,42 @@ def test_process_comparison():
             {
                 "name": "Average Sessions",
                 "value": 1543.43,
-                "description": "The average number of sessions per day over the 7-day period.",
             },
             {
                 "name": "Average Users",
                 "value": 1265.14,
-                "description": "The average number of users visiting the site per day.",
             },
             {
                 "name": "Average New Users",
                 "value": 427.29,
-                "description": "The average number of new users per day.",
             },
             {
                 "name": "Average Pageviews",
                 "value": 6225.86,
-                "description": "The average number of pageviews per day.",
             },
             {
                 "name": "Pages per Session",
                 "value": 4.01,
-                "description": "The average number of pages viewed per session.",
             },
             {
                 "name": "Average Session Duration",
                 "value": 163.1,
-                "description": "The mean duration of a user session in seconds.",
             },
             {
                 "name": "Bounce Rate",
                 "value": 0.2,
-                "description": "The percentage of visitors who leave after viewing only one page.",
             },
             {
                 "name": "Conversion Rate",
                 "value": 0.028,
-                "description": "The proportion of users who completed a desired action.",
             },
             {
                 "name": "Average Transactions",
                 "value": 34.14,
-                "description": "The average number of transactions per day.",
             },
             {
                 "name": "Average Revenue",
                 "value": 1622.53,
-                "description": "The average revenue generated per day.",
             },
         ],
     }
@@ -88,52 +78,42 @@ def test_process_comparison():
             {
                 "name": "Average Sessions",
                 "value": 1682.57,
-                "description": "The average number of sessions per day.",
             },
             {
                 "name": "Average Users",
                 "value": 1237.86,
-                "description": "The average number of users per day.",
             },
             {
                 "name": "Average New Users",
                 "value": 424.14,
-                "description": "The average number of new users per day.",
             },
             {
                 "name": "Average Pageviews",
                 "value": 6891.71,
-                "description": "The average number of pageviews per day.",
             },
             {
                 "name": "Pages per Session",
                 "value": 4.07,
-                "description": "The average number of pages viewed per session.",
             },
             {
                 "name": "Average Session Duration",
                 "value": 153.88,
-                "description": "The average duration of a session in seconds.",
             },
             {
                 "name": "Bounce Rate",
                 "value": 0.1606,
-                "description": "The average bounce rate, representing the percentage of single-page visits.",
             },
             {
                 "name": "Conversion Rate",
                 "value": 0.0425,
-                "description": "The average conversion rate calculated as the percentage of sessions that result in a transaction.",
             },
             {
                 "name": "Average Transactions",
                 "value": 49.43,
-                "description": "The average number of transactions per day.",
             },
             {
                 "name": "Average Revenue",
                 "value": 2087.17,
-                "description": "The average daily revenue in USD.",
             },
         ],
     }
@@ -155,11 +135,6 @@ def test_process_comparison():
             print(
                 f"{metric.name}: Week 1 Value = {metric.value1}, Week 2 Value = {metric.value2} ({metric.description})"
             )
-
-        # Removed the check for 'notable_trends' since it no longer exists
-        # if result.notable_trends:
-        #     print("\nNotable Trends:")
-        #     print(result.notable_trends)
 
         print("Test completed successfully.")
 
