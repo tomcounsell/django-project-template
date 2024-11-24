@@ -5,15 +5,14 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':     'local_postgres_db_name',
-        'USER':     'local_postgres_username',
+        'NAME': 'local_postgres_db_name',
+        'USER': 'local_postgres_username',
         'PASSWORD': 'local_postgres_password',
-        'HOST':     'localhost',
-        'PORT':     '5432',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -34,6 +33,8 @@ CACHES = {
 #         },
 #     }
 # }
+
+LOOPS_API_KEY = ""
 
 # AWS
 AWS_ACCESS_KEY_ID = ''
