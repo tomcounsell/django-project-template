@@ -1,0 +1,47 @@
+{
+    "start_date": "2024-01-01",
+    "end_date": "2024-01-14",
+    "dataset_summary": "The dataset presents an overview of user interactions and transactions over a period of time. On average, there are around 791 sessions with 581 users visiting the site daily. Out of these, approximately 201 are new users, indicating a significant proportion of returning visitors. The site garners an average of 2901 pageviews daily, with users viewing an average of 3.48 pages per session. The average session duration is approximately 145 seconds, suggesting relatively engaged users, though the bounce rate at around 23.6% indicates room for improvement in retaining user interest. The conversion rate is modest at 2.9%, leading to an average of 18 transactions per day, generating around $890 in daily revenue. Notably, the maximum recorded sessions and users reach over 2136 and 1618 respectively, which might be indicative of a promotional event or other anomaly driving traffic.",
+    "key_metrics": [
+        {
+            "name": "Average Sessions",
+            "value": 791.55
+        },
+        {
+            "name": "Average Users",
+            "value": 580.79
+        },
+        {
+            "name": "Average New Users",
+            "value": 201.02
+        },
+        {
+            "name": "Average Pageviews",
+            "value": 2901.1
+        },
+        {
+            "name": "Pages per Session",
+            "value": 3.48
+        },
+        {
+            "name": "Average Session Duration",
+            "value": 145.32
+        },
+        {
+            "name": "Bounce Rate",
+            "value": 0.236
+        },
+        {
+            "name": "Conversion Rate",
+            "value": 0.0293
+        },
+        {
+            "name": "Average Transactions",
+            "value": 18.12
+        },
+        {
+            "name": "Average Revenue",
+            "value": 889.97
+        }
+    ]
+}
