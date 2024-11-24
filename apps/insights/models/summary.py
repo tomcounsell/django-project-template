@@ -9,7 +9,6 @@ class Summary(Timestampable):
     """
 
     start_date = models.DateField(help_text="Start date of the data period.")
-    end_date = models.DateField(help_text="End date of the data period.")
     dataset_summary = models.TextField(
         help_text="A concise English summary of the dataset."
     )
@@ -21,11 +20,11 @@ class Summary(Timestampable):
     )
 
     def __str__(self):
-        return f"Summary from {self.start_date} to {self.end_date}"
+        return f"Summary from {self.start_date}"
 
     class Meta:
         ordering = ["-start_date"]
-        unique_together = ("start_date", "end_date")  # Removed `summary_type` here
+        unique_together = ("start_date",)  # Adjusted to remove end_date
         verbose_name_plural = "Summaries"
 
 
