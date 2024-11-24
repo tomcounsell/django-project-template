@@ -2,6 +2,9 @@
 """
 Summary Service for Single-Week Data Processing
 Handles CSV data validation, processing, LLM summary generation, and key metric extraction for a single week.
+
+This service processes a single week's data from a CSV file, generating a summary and key metrics using OpenAI's LLM, and saving the results to both the database and a JSON file. It uses the CSVProcessor to load, validate, clean, and filter data based on the provided start date. A statistical overview is generated for the specified week, which is then summarized into a dataset summary and key metrics. The results are stored in the Summary and KeyMetric models and saved as JSON for debugging or visualization. Errors are logged at each step.
+
 """
 
 import json
@@ -44,9 +47,8 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         # Filter data for the specified week
         week_df = processor.filter(start_date)[week_number - 1]
 
-        # Log statistical overview
-        logging.info(f"Statistical Overview - Week {week_number}:")
-        print(week_df.describe().to_string())
+        # Generate statistical overview using CSVProcessor
+        processor.generate_overview(week_df, f"Week {week_number}")
 
         # Generate LLM summary
         logging.info("Requesting summary from OpenAI...")

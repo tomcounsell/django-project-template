@@ -47,13 +47,13 @@ class CSVProcessor:
         logging.info("Filtering data into Week 1 and Week 2...")
         return filter_data(self.df, start_date)
 
-    def generate_overviews(self, week1_df, week2_df):
+    def generate_overview(self, df, label):
         """
-        Generate statistical overviews for the filtered DataFrames.
+        Generate a statistical overview for a single DataFrame.
         """
-        logging.info("Generating statistical overviews...")
-        generate_overview(week1_df, "Week 1")
-        generate_overview(week2_df, "Week 2")
+        logging.info(f"Generating statistical overview for {label}...")
+        print(f"\nStatistical Overview - {label}:")
+        print(df.describe())
 
     def process(self, start_date: str):
         try:
