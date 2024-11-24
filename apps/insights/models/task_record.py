@@ -1,5 +1,8 @@
+# apps/insights/models/task_record.py
 from django.db import models
 from django_q.models import Task
+from apps.insights.models.summary import Summary
+from apps.insights.models.comparison import Comparison
 
 
 class TaskRecord(models.Model):
@@ -46,11 +49,6 @@ class TaskRecord(models.Model):
         null=True,
         blank=True,
         help_text="Start date of the data period the task is processing.",
-    )
-    end_date = models.DateField(
-        null=True,
-        blank=True,
-        help_text="End date of the data period the task is processing.",
     )
 
     def __str__(self):
