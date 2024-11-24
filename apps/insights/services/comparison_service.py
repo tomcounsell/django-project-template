@@ -4,6 +4,7 @@ Comparison Service for Dataset Summaries
 Handles LLM comparison generation and logging for two dataset summaries.
 """
 
+import json
 import logging
 from apps.insights.services.openai.comparison_generator import generate_comparison
 from apps.insights.services.openai.schemas import ComparisonOutput
@@ -90,6 +91,9 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         else:
             logging.info("No notable trends identified.")
 
+        # Save comparison result to JSON file
+        save_comparison_to_file(comparison_result)
+
         return comparison_result
 
     except ValueError as ve:
@@ -98,4 +102,22 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
 
     except Exception as e:
         logging.error(f"Unexpected error during comparison: {e}")
+        raise
+
+
+def save_comparison_to_file(comparison_result: ComparisonOutput):
+    """
+    Saves the structured comparison result to a JSON file.
+
+    Args:
+        comparison_result (ComparisonOutput): The structured comparison result.
+    """
+    try:
+        file_path = "comparison_output.json"
+        logging.info(f"Saving comparison result to {file_path}...")
+        with open(file_path, "w") as json_file:
+            json.dump(comparison_result.dict(), json_file, indent=4)
+        logging.info("Comparison result saved successfully.")
+    except Exception as e:
+        logging.error(f"Failed to save comparison result to file: {e}")
         raise

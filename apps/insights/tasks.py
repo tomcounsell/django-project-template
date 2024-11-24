@@ -11,6 +11,7 @@ from django_q.models import Schedule
 from django_q.tasks import async_task, result_group
 
 from apps.insights.services.summary_service import process_week
+from apps.insights.services.comparison_service import generate_comparison
 
 logger = logging.getLogger(__name__)
 
@@ -99,3 +100,58 @@ def fetch_group_results(group_name: str):
 
 # Example trigger for manual testing:
 # schedule_two_summaries("/path/to/ga4_data.csv", "2024-01-01")
+
+from apps.insights.services.comparison_service import generate_comparison
+
+
+def compare_summaries_task(summary1: dict, summary2: dict):
+    """
+    Compares two LLM-generated summaries and generates a comparative analysis.
+
+    Args:
+        summary1 (dict): Week 1 summary.
+        summary2 (dict): Week 2 summary.
+
+    Returns:
+        dict: Comparison summary.
+    """
+    try:
+        logger.info("Generating comparison between Week 1 and Week 2 summaries...")
+        comparison_result = generate_comparison(summary1, summary2)
+        logger.info("Comparison generated successfully.")
+        return {
+            "comparison_summary": comparison_result.comparison_summary,
+            "key_differences": comparison_result.key_differences,
+        }
+    except Exception as e:
+        logger.error(f"Failed to generate comparison: {e}")
+        raise
+
+
+def schedule_comparison_task(group_name: str):
+    """
+    Schedules a task to compare two LLM-generated summaries after fetching group results.
+
+    Args:
+        group_name (str): Name of the group to fetch results from.
+    """
+    try:
+        logger.info("Fetching group results for comparison...")
+        results = fetch_group_results(group_name)
+
+        if len(results) != 2:
+            raise ValueError("Group must contain exactly 2 summaries for comparison.")
+
+        week1_summary = results[0]
+        week2_summary = results[1]
+
+        logger.info("Scheduling comparison task...")
+        async_task(
+            "apps.insights.tasks.compare_summaries_task",
+            week1_summary,
+            week2_summary,
+        )
+        logger.info("Comparison task scheduled successfully.")
+    except Exception as e:
+        logger.error(f"Failed to schedule comparison task: {e}")
+        raise

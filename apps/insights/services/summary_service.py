@@ -4,6 +4,7 @@ Summary Service for Single-Week Data Processing
 Handles CSV data validation, processing, LLM summary generation, and key metric extraction for a single week.
 """
 
+import json
 import logging
 import pandas as pd
 from apps.insights.services.csv_processor import CSVProcessor
@@ -57,8 +58,30 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         for metric in llm_summary.key_metrics:
             logging.info(f"{metric.name}: {metric.value} ({metric.description})")
 
+        # Save summary to JSON file
+        save_summary_to_file(llm_summary, week_number)
+
         return llm_summary
 
     except Exception as e:
         logging.error(f"Failed to process Week {week_number}: {e}")
+        raise
+
+
+def save_summary_to_file(summary: SummaryOutput, week_number: int):
+    """
+    Saves the structured summary result to a JSON file.
+
+    Args:
+        summary (SummaryOutput): The structured summary result.
+        week_number (int): The week number being processed.
+    """
+    try:
+        file_path = f"summary_output_week_{week_number}.json"
+        logging.info(f"Saving Week {week_number} summary result to {file_path}...")
+        with open(file_path, "w") as json_file:
+            json.dump(summary.dict(), json_file, indent=4)
+        logging.info(f"Week {week_number} summary result saved successfully.")
+    except Exception as e:
+        logging.error(f"Failed to save Week {week_number} summary result to file: {e}")
         raise
