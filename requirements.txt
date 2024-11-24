@@ -1,4 +1,5 @@
 # Custom requirements:
+black
 django-picklefield
 django-q2
 django-redis

@@ -6,7 +6,8 @@ Handles CSV data validation, processing, LLM summary generation, and key metric 
 
 import json
 import logging
-import pandas as pd
+from django.db import transaction
+from apps.insights.models.summary import Summary, KeyMetric
 from apps.insights.services.csv_processor import CSVProcessor
 from apps.insights.services.openai.summary_generator import generate_summary
 from apps.insights.services.openai.schemas import SummaryOutput
@@ -58,6 +59,13 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         for metric in llm_summary.key_metrics:
             logging.info(f"{metric.name}: {metric.value}")
 
+        # Save summary and metrics to the database
+        save_summary_to_database(
+            start_date=start_date,
+            end_date=week_df.index[-1].strftime("%Y-%m-%d"),
+            llm_summary=llm_summary,
+        )
+
         # Save summary to JSON file
         save_summary_to_file(llm_summary, week_number)
 
@@ -68,19 +76,78 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         raise
 
 
-def save_summary_to_file(summary: SummaryOutput, week_number: int):
+def save_summary_to_database(
+    start_date: str, end_date: str, llm_summary: SummaryOutput
+):
     """
-    Saves the structured summary result to a JSON file.
+    Saves the structured summary result and its key metrics to the database.
 
     Args:
-        summary (SummaryOutput): The structured summary result.
+        start_date (str): Start date for the summary (YYYY-MM-DD).
+        end_date (str): End date for the summary (YYYY-MM-DD).
+        llm_summary (SummaryOutput): The structured summary result.
+    """
+    try:
+        with transaction.atomic():  # Ensure all-or-nothing database operations
+            logging.info(
+                f"Saving summary for {start_date} to {end_date} to the database..."
+            )
+
+            # Create and save the Summary instance
+            summary = Summary.objects.create(
+                start_date=start_date,
+                end_date=end_date,
+                dataset_summary=llm_summary.dataset_summary,
+            )
+
+            # Create and save the KeyMetric instances
+            for metric in llm_summary.key_metrics:
+                KeyMetric.objects.create(
+                    summary=summary,
+                    name=metric.name,
+                    value=metric.value,
+                )
+
+            logging.info(
+                f"Summary and key metrics for {start_date} to {end_date} saved successfully."
+            )
+
+    except Exception as e:
+        logging.error(f"Failed to save summary and key metrics to the database: {e}")
+        raise
+
+
+def save_summary_to_file(
+    start_date: str, end_date: str, llm_summary: SummaryOutput, week_number: int
+):
+    """
+    Saves the structured summary result to a JSON file in the same format as the database.
+
+    Args:
+        start_date (str): Start date for the summary (YYYY-MM-DD).
+        end_date (str): End date for the summary (YYYY-MM-DD).
+        llm_summary (SummaryOutput): The structured summary result.
         week_number (int): The week number being processed.
     """
     try:
         file_path = f"summary_output_week_{week_number}.json"
         logging.info(f"Saving Week {week_number} summary result to {file_path}...")
+
+        # Construct the data dictionary to match database structure
+        data = {
+            "start_date": start_date,
+            "end_date": end_date,
+            "dataset_summary": llm_summary.dataset_summary,
+            "key_metrics": [
+                {"name": metric.name, "value": metric.value}
+                for metric in llm_summary.key_metrics
+            ],
+        }
+
+        # Write to the JSON file
         with open(file_path, "w") as json_file:
-            json.dump(summary.dict(), json_file, indent=4)
+            json.dump(data, json_file, indent=4)
+
         logging.info(f"Week {week_number} summary result saved successfully.")
     except Exception as e:
         logging.error(f"Failed to save Week {week_number} summary result to file: {e}")

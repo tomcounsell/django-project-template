@@ -2,6 +2,9 @@
 """
 Task definitions for the Insights app.
 These tasks integrate with Django-Q to run asynchronously.
+
+When the user selects a start_date from the datepicker, this triggers the schedule_tasks function, passing in the file_path and the selected start_date. This function first calculates the Week 2 start date by adding 7 days to start_date, then schedules an asynchronous task (process_week_task) for Week 1 using Django-Q. Upon completion of the Week 1 task, the week1_completed_hook is called, which schedules the Week 2 task. Once the Week 2 task finishes, the week2_completed_hook triggers, running the compare_summaries_task to generate a comparison between the Week 1 and Week 2 summaries. The tasks run sequentially, with each step saving data to the database and logging progress.
+
 """
 
 import logging
