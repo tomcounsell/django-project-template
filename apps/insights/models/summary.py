@@ -12,7 +12,6 @@ class Summary(models.Model):
     SUMMARY_TYPE_CHOICES = [
         ("weekly", "Weekly"),
         ("monthly", "Monthly"),
-        # Add more types if needed
     ]
 
     summary_type = models.CharField(

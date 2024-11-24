@@ -53,8 +53,22 @@ class KeyMetricComparison(models.Model):
     value1 = models.FloatField(help_text="Value from the first summary.")
     value2 = models.FloatField(help_text="Value from the second summary.")
     description = models.TextField(
-        help_text="Description of the observed difference or trend."
+        help_text="Description of the observed difference or trend.",
+        null=True,
+        blank=True,
     )
+    percentage_difference = models.FloatField(
+        help_text="Percentage difference between the two values.", null=True, blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        if self.value1 and self.value2:
+            self.percentage_difference = (
+                ((self.value2 - self.value1) / self.value1) * 100
+                if self.value1 != 0
+                else None
+            )
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} Comparison (Comparison ID: {self.comparison.id})"

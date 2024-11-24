@@ -1,4 +1,23 @@
 
+==== signals.soon.py ====
+from django.dispatch import receiver
+from django_q.signals import post_execute
+
+
+@receiver(post_execute)
+def create_task_record(sender, task, **kwargs):
+    TaskRecord.objects.update_or_create(
+        task=task,
+        defaults={
+            "task_name": task.name or task.func,
+            "status": "Success" if task.success else "Failed",
+            "started_at": task.started,
+            "completed_at": task.stopped,
+            "result": str(task.result) if task.result else None,
+            "error": str(task.result) if not task.success else None,
+        },
+    )
+
 ==== tasks.py ====
 # apps/insights/tasks.py
 """
@@ -9,15 +28,21 @@ These tasks integrate with Django-Q to run asynchronously.
 import logging
 from datetime import timedelta
 from django.utils import timezone
-from django_q.models import Schedule
-from django_q.tasks import async_task, result_group
+from django_q.tasks import async_task, result_group, fetch
+from django_q.models import OrmQ
+
+import pandas as pd
 
 from apps.insights.services.summary_service import process_week
+from apps.insights.services.comparison_service import (
+    process_comparison,
+)  # Corrected import
+from apps.insights.services.openai.schemas import SummaryOutput, ComparisonOutput
 
 logger = logging.getLogger(__name__)
 
 
-def process_week_task(file_path: str, start_date: str, week: int):
+def process_week_task(file_path: str, start_date: str, week: int) -> SummaryOutput:
     """
     Processes a single week's data and generates an LLM summary.
 
@@ -25,82 +50,132 @@ def process_week_task(file_path: str, start_date: str, week: int):
         file_path (str): Path to the CSV file.
         start_date (str): Start date for the week (YYYY-MM-DD).
         week (int): Week number (1 or 2).
+
+    Returns:
+        SummaryOutput: The summary output for the week.
     """
     try:
         logger.info(f"Processing Week {week} starting from {start_date}...")
         result = process_week(file_path, start_date, week)
         logger.info(f"Week {week} summary generated successfully.")
-        return {
-            "dataset_summary": result.dataset_summary,
-            "key_metrics": result.key_metrics,
-        }
+        return result  # Returning the SummaryOutput object directly
     except Exception as e:
         logger.error(f"Failed to process Week {week}: {e}")
         raise
 
 
-def schedule_two_summaries(file_path: str, start_date: str):
+def compare_summaries_task(
+    week1_summary: SummaryOutput, week2_summary: SummaryOutput
+) -> ComparisonOutput:
     """
-    Schedules tasks to process Week 1 after a 1-minute delay,
-    followed by processing Week 2 in sequence using group logic.
+    Compares two LLM-generated summaries and generates a comparative analysis.
+
+    Args:
+        week1_summary (SummaryOutput): Week 1 summary.
+        week2_summary (SummaryOutput): Week 2 summary.
+
+    Returns:
+        ComparisonOutput: The comparison output.
     """
     try:
-        logger.info("Scheduling Week 1 task to run in 1 minute...")
+        logger.info("Generating comparison between Week 1 and Week 2 summaries...")
+        # Convert SummaryOutput objects to dicts for process_comparison
+        summary1_dict = week1_summary.dict()
+        summary2_dict = week2_summary.dict()
 
-        # Create a group for dependent tasks
-        group_name = "process_summaries"
+        comparison_result = process_comparison(summary1_dict, summary2_dict)
+        logger.info("Comparison generated successfully.")
+        return comparison_result
+    except Exception as e:
+        logger.error(f"Failed to generate comparison: {e}")
+        raise
 
-        # Schedule Week 1
-        Schedule.objects.create(
-            func="apps.insights.tasks.process_week_task",
-            args=(file_path, start_date, 1),  # Pass arguments as a tuple
-            schedule_type=Schedule.ONCE,
-            next_run=timezone.now() + timedelta(minutes=1),
-            group=group_name,  # Assign task to a group
-        )
-        logger.info("Week 1 task scheduled successfully.")
+
+def schedule_tasks(file_path: str, start_date: str):
+    """
+    Schedules tasks to process Week 1 and Week 2 sequentially and then compare them.
+    """
+    try:
+        logger.info("Scheduling tasks for Week 1, Week 2, and comparison...")
 
         # Calculate Week 2 start date
         week2_start_date = pd.to_datetime(start_date) + pd.Timedelta(days=7)
+        week2_start_date_str = week2_start_date.strftime("%Y-%m-%d")
 
-        # Add Week 2 to the group (ensures it runs after Week 1)
+        # Schedule Week 1 task with a chain
         async_task(
             "apps.insights.tasks.process_week_task",
             file_path,
-            week2_start_date.strftime("%Y-%m-%d"),
-            2,
-            group=group_name,  # Ensure it runs as part of the same group
+            start_date,
+            1,
+            group="process_summaries",
+            hook="apps.insights.tasks.week1_completed_hook",
+            kwargs={
+                "file_path": file_path,
+                "week2_start_date_str": week2_start_date_str,
+            },
         )
-        logger.info("Week 2 task added to the group successfully.")
+
+        logger.info("Tasks scheduled successfully.")
 
     except Exception as e:
-        logger.error(f"Failed to schedule two summaries: {e}")
+        logger.error(f"Failed to schedule tasks: {e}")
         raise
 
 
-def fetch_group_results(group_name: str):
+def week1_completed_hook(task_result, file_path: str, week2_start_date_str: str):
     """
-    Fetches the results of tasks in the specified group.
+    Hook function called after Week 1 task completes.
+    Schedules Week 2 task.
 
     Args:
-        group_name (str): Name of the group to fetch results from.
-
-    Returns:
-        list: Results of all tasks in the group.
+        task_result (SummaryOutput): Result from Week 1 processing.
+        file_path (str): Path to the CSV file.
+        week2_start_date_str (str): Start date for Week 2.
     """
     try:
-        logger.info(f"Fetching results for group: {group_name}")
-        results = result_group(group_name)
-        if not results:
-            logger.warning(f"No results found for group: {group_name}")
-        return results
+        logger.info("Week 1 processing completed. Scheduling Week 2 task...")
+        # Save Week 1 result to the database or cache if needed
+        week1_summary = task_result  # SummaryOutput object
+
+        # Schedule Week 2 task with a hook to run the comparison after completion
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            week2_start_date_str,
+            2,
+            hook="apps.insights.tasks.week2_completed_hook",
+            kwargs={
+                "week1_summary": week1_summary,
+            },
+        )
+        logger.info("Week 2 task scheduled successfully.")
     except Exception as e:
-        logger.error(f"Failed to fetch results for group {group_name}: {e}")
+        logger.error(f"Failed in week1_completed_hook: {e}")
         raise
 
 
-# Example trigger for manual testing:
-# schedule_two_summaries("/path/to/ga4_data.csv", "2024-01-01")
+def week2_completed_hook(task_result, week1_summary: SummaryOutput):
+    """
+    Hook function called after Week 2 task completes.
+    Runs the comparison task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 2 processing.
+        week1_summary (SummaryOutput): Result from Week 1 processing.
+    """
+    try:
+        logger.info("Week 2 processing completed. Running comparison task...")
+        week2_summary = task_result  # SummaryOutput object
+
+        # Run comparison task
+        comparison_result = compare_summaries_task(week1_summary, week2_summary)
+
+        # Optionally, save comparison_result to the database or handle as needed
+        logger.info("Comparison task completed successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week2_completed_hook: {e}")
+        raise
 
 ==== data_pipeline.py ====
 # apps/insights/data_pipeline.py
@@ -191,6 +266,186 @@ def run_pipeline(file_path: str, start_date: str):
         raise
 
 ==== dump.txt ====
+
+==== signals.soon.py ====
+from django.dispatch import receiver
+from django_q.signals import post_execute
+
+
+@receiver(post_execute)
+def create_task_record(sender, task, **kwargs):
+    TaskRecord.objects.update_or_create(
+        task=task,
+        defaults={
+            "task_name": task.name or task.func,
+            "status": "Success" if task.success else "Failed",
+            "started_at": task.started,
+            "completed_at": task.stopped,
+            "result": str(task.result) if task.result else None,
+            "error": str(task.result) if not task.success else None,
+        },
+    )
+
+==== tasks.py ====
+# apps/insights/tasks.py
+"""
+Task definitions for the Insights app.
+These tasks integrate with Django-Q to run asynchronously.
+"""
+
+import logging
+from datetime import timedelta
+from django.utils import timezone
+from django_q.tasks import async_task, result_group, fetch
+from django_q.models import OrmQ
+
+import pandas as pd
+
+from apps.insights.services.summary_service import process_week
+from apps.insights.services.comparison_service import (
+    process_comparison,
+)  # Corrected import
+from apps.insights.services.openai.schemas import SummaryOutput, ComparisonOutput
+
+logger = logging.getLogger(__name__)
+
+
+def process_week_task(file_path: str, start_date: str, week: int) -> SummaryOutput:
+    """
+    Processes a single week's data and generates an LLM summary.
+
+    Args:
+        file_path (str): Path to the CSV file.
+        start_date (str): Start date for the week (YYYY-MM-DD).
+        week (int): Week number (1 or 2).
+
+    Returns:
+        SummaryOutput: The summary output for the week.
+    """
+    try:
+        logger.info(f"Processing Week {week} starting from {start_date}...")
+        result = process_week(file_path, start_date, week)
+        logger.info(f"Week {week} summary generated successfully.")
+        return result  # Returning the SummaryOutput object directly
+    except Exception as e:
+        logger.error(f"Failed to process Week {week}: {e}")
+        raise
+
+
+def compare_summaries_task(
+    week1_summary: SummaryOutput, week2_summary: SummaryOutput
+) -> ComparisonOutput:
+    """
+    Compares two LLM-generated summaries and generates a comparative analysis.
+
+    Args:
+        week1_summary (SummaryOutput): Week 1 summary.
+        week2_summary (SummaryOutput): Week 2 summary.
+
+    Returns:
+        ComparisonOutput: The comparison output.
+    """
+    try:
+        logger.info("Generating comparison between Week 1 and Week 2 summaries...")
+        # Convert SummaryOutput objects to dicts for process_comparison
+        summary1_dict = week1_summary.dict()
+        summary2_dict = week2_summary.dict()
+
+        comparison_result = process_comparison(summary1_dict, summary2_dict)
+        logger.info("Comparison generated successfully.")
+        return comparison_result
+    except Exception as e:
+        logger.error(f"Failed to generate comparison: {e}")
+        raise
+
+
+def schedule_tasks(file_path: str, start_date: str):
+    """
+    Schedules tasks to process Week 1 and Week 2 sequentially and then compare them.
+    """
+    try:
+        logger.info("Scheduling tasks for Week 1, Week 2, and comparison...")
+
+        # Calculate Week 2 start date
+        week2_start_date = pd.to_datetime(start_date) + pd.Timedelta(days=7)
+        week2_start_date_str = week2_start_date.strftime("%Y-%m-%d")
+
+        # Schedule Week 1 task with a chain
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            start_date,
+            1,
+            group="process_summaries",
+            hook="apps.insights.tasks.week1_completed_hook",
+            kwargs={
+                "file_path": file_path,
+                "week2_start_date_str": week2_start_date_str,
+            },
+        )
+
+        logger.info("Tasks scheduled successfully.")
+
+    except Exception as e:
+        logger.error(f"Failed to schedule tasks: {e}")
+        raise
+
+
+def week1_completed_hook(task_result, file_path: str, week2_start_date_str: str):
+    """
+    Hook function called after Week 1 task completes.
+    Schedules Week 2 task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 1 processing.
+        file_path (str): Path to the CSV file.
+        week2_start_date_str (str): Start date for Week 2.
+    """
+    try:
+        logger.info("Week 1 processing completed. Scheduling Week 2 task...")
+        # Save Week 1 result to the database or cache if needed
+        week1_summary = task_result  # SummaryOutput object
+
+        # Schedule Week 2 task with a hook to run the comparison after completion
+        async_task(
+            "apps.insights.tasks.process_week_task",
+            file_path,
+            week2_start_date_str,
+            2,
+            hook="apps.insights.tasks.week2_completed_hook",
+            kwargs={
+                "week1_summary": week1_summary,
+            },
+        )
+        logger.info("Week 2 task scheduled successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week1_completed_hook: {e}")
+        raise
+
+
+def week2_completed_hook(task_result, week1_summary: SummaryOutput):
+    """
+    Hook function called after Week 2 task completes.
+    Runs the comparison task.
+
+    Args:
+        task_result (SummaryOutput): Result from Week 2 processing.
+        week1_summary (SummaryOutput): Result from Week 1 processing.
+    """
+    try:
+        logger.info("Week 2 processing completed. Running comparison task...")
+        week2_summary = task_result  # SummaryOutput object
+
+        # Run comparison task
+        comparison_result = compare_summaries_task(week1_summary, week2_summary)
+
+        # Optionally, save comparison_result to the database or handle as needed
+        logger.info("Comparison task completed successfully.")
+    except Exception as e:
+        logger.error(f"Failed in week2_completed_hook: {e}")
+        raise
+
+==== data_pipeline.py ====
 
 ==== __init__.py ====
 
@@ -290,8 +545,75 @@ class DataSummaryAdminForm(forms.ModelForm):
         help_text="Select a start date for the analysis.",
     )
 
+==== comparison_output.json ====
+{
+    "comparison_summary": "Week 2 showed improvements in several engagement metrics compared to Week 1. Notably, there was an increase in the average sessions, pageviews, transactions, and revenue, while bounce rate and session duration both decreased slightly. The conversion rate saw a significant improvement, indicating a higher effectiveness in user engagement and action completion. However, the number of users and new users remained relatively stable across the two weeks.",
+    "key_metrics_comparison": [
+        {
+            "name": "Average Sessions",
+            "value1": 1543.43,
+            "value2": 1682.57,
+            "description": "The average sessions increased from 1543.43 in Week 1 to 1682.57 in Week 2, indicating a growth of about 9%."
+        },
+        {
+            "name": "Average Users",
+            "value1": 1265.14,
+            "value2": 1237.86,
+            "description": "Average users slightly decreased from 1265.14 in Week 1 to 1237.86 in Week 2, marking a marginal decline, suggesting stable user retention."
+        },
+        {
+            "name": "Average New Users",
+            "value1": 427.29,
+            "value2": 424.14,
+            "description": "The average new users decreased slightly from 427.29 in Week 1 to 424.14 in Week 2, indicating a very small drop in new user acquisition."
+        },
+        {
+            "name": "Average Pageviews",
+            "value1": 6225.86,
+            "value2": 6891.71,
+            "description": "Average pageviews rose from 6225.86 in Week 1 to 6891.71 in Week 2, an increase of approximately 10.7%."
+        },
+        {
+            "name": "Pages per Session",
+            "value1": 4.01,
+            "value2": 4.07,
+            "description": "Pages per session saw a small increase from 4.01 in Week 1 to 4.07 in Week 2, reflecting slightly higher per-session engagement."
+        },
+        {
+            "name": "Average Session Duration",
+            "value1": 163.1,
+            "value2": 153.88,
+            "description": "Average session duration decreased from 163.1 seconds in Week 1 to 153.88 seconds in Week 2, indicating shorter session times."
+        },
+        {
+            "name": "Bounce Rate",
+            "value1": 0.2,
+            "value2": 0.1606,
+            "description": "Bounce rate improved from 20% in Week 1 to 16.06% in Week 2, showing better user retention and engagement."
+        },
+        {
+            "name": "Conversion Rate",
+            "value1": 0.028,
+            "value2": 0.0425,
+            "description": "Conversion rate increased significantly from 2.8% in Week 1 to 4.25% in Week 2, demonstrating enhanced goal achievement."
+        },
+        {
+            "name": "Average Transactions",
+            "value1": 34.14,
+            "value2": 49.43,
+            "description": "Average transactions rose from 34.14 in Week 1 to 49.43 in Week 2, a substantial increase of about 44.8%."
+        },
+        {
+            "name": "Average Revenue",
+            "value1": 1622.53,
+            "value2": 2087.17,
+            "description": "Average revenue increased from $1622.53 in Week 1 to $2087.17 in Week 2, representing a 28.6% boost in earnings."
+        }
+    ]
+}
 ==== test_summary_service.py ====
 # apps/insights/tests/test_summary_service.py
+
 import os
 import pytest
 from apps.insights.services.summary_service import process_week
@@ -324,7 +646,7 @@ def test_process_week():
         print(result.dataset_summary)
         print("\nKey Metrics:")
         for metric in result.key_metrics:
-            print(f"{metric.name}: {metric.value} ({metric.description})")
+            print(f"{metric.name}: {metric.value}")
 
         print("Test completed successfully.")
 
@@ -336,7 +658,7 @@ def test_process_week():
 
 import pytest
 from apps.insights.services.openai.comparison_generator import generate_comparison
-from apps.insights.services.openai.schemas import ComparisonOutput
+from apps.insights.services.openai.schemas import ComparisonOutput, KeyMetricComparison
 
 
 def test_generate_comparison():
@@ -353,16 +675,16 @@ def test_generate_comparison():
     over the specified time frame.
 
     Key Metrics:
-    - Average Sessions: 1543.43 (The average number of sessions per day over the 7-day period.)
-    - Average Users: 1265.14 (The average number of users visiting the site per day.)
-    - Average New Users: 427.29 (The average number of new users per day.)
-    - Average Pageviews: 6225.86 (The average number of pageviews per day.)
-    - Pages per Session: 4.01 (The average number of pages viewed per session.)
-    - Average Session Duration: 163.1 (The mean duration of a user session in seconds.)
-    - Bounce Rate: 0.2 (The percentage of visitors who leave after viewing only one page.)
-    - Conversion Rate: 0.028 (The proportion of users who completed a desired action.)
-    - Average Transactions: 34.14 (The average number of transactions per day.)
-    - Average Revenue: 1622.53 (The average revenue generated per day.)
+    - Average Sessions: 1543.43
+    - Average Users: 1265.14
+    - Average New Users: 427.29
+    - Average Pageviews: 6225.86
+    - Pages per Session: 4.01
+    - Average Session Duration: 163.1
+    - Bounce Rate: 0.2
+    - Conversion Rate: 0.028
+    - Average Transactions: 34.14
+    - Average Revenue: 1622.53
     """
 
     summary2 = """
@@ -370,21 +692,21 @@ def test_generate_comparison():
     from the 8th to the 14th. It includes metrics related to sessions, users, new users, pageviews, pages per session, 
     average session duration, bounce rate, conversion rate, transactions, and revenue. The average daily sessions were 
     approximately 1683, with an average of about 1238 users and around 424 new users daily. The website generated an average 
-    of 6892 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
+    of 6891.71 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
     16.06%, and the conversion rate stood at about 4.25%. The site recorded an average of 49 transactions per day, resulting
     in a daily revenue averaging $2087.17.
 
     Key Metrics:
-    - Average Sessions: 1682.57 (The average number of sessions per day.)
-    - Average Users: 1237.86 (The average number of users per day.)
-    - Average New Users: 424.14 (The average number of new users per day.)
-    - Average Pageviews: 6891.71 (The average number of pageviews per day.)
-    - Pages per Session: 4.07 (The average number of pages viewed per session.)
-    - Average Session Duration: 153.88 (The average duration of a session in seconds.)
-    - Bounce Rate: 0.1606 (The average bounce rate, representing the percentage of single-page visits.)
-    - Conversion Rate: 0.0425 (The average conversion rate calculated as the percentage of sessions that result in a transaction.)
-    - Average Transactions: 49.43 (The average number of transactions per day.)
-    - Average Revenue: 2087.17 (The average daily revenue in USD.)
+    - Average Sessions: 1682.57
+    - Average Users: 1237.86
+    - Average New Users: 424.14
+    - Average Pageviews: 6891.71
+    - Pages per Session: 4.07
+    - Average Session Duration: 153.88
+    - Bounce Rate: 0.1606
+    - Conversion Rate: 0.0425
+    - Average Transactions: 49.43
+    - Average Revenue: 2087.17
     """
 
     try:
@@ -408,15 +730,123 @@ def test_generate_comparison():
                 f"({metric.description})"
             )
 
-        if result.notable_trends:
-            print("\nNotable Trends:")
-            print(result.notable_trends)
-
         print("Test completed successfully.")
 
     except Exception as e:
         pytest.fail(f"Comparison generator test failed: {e}")
 
+==== summary_output_week_1.json ====
+{
+    "dataset_summary": "The dataset captures a week's worth of online activity metrics, indicating overall user engagement and conversion performance. Throughout the period, on average, user sessions and engagement metrics demonstrate consistent user interest, with a mean session count of 1682.57. Although the bounce rate remains relatively low at 16%, suggesting effective content retention, the conversion rate is strikingly low at 4.25%, signaling potential areas for conversion optimization. Furthermore, the variance between new users and returning users highlights a robust core user base, with 1237.86 average total users, including 424.14 new users illustrating ongoing user acquisition efforts. Notably, the revenue generation is lucrative, averaging $2087.17, with an evident peak on the day capturing maximum transactions and revenue influx.",
+    "key_metrics": [
+        {
+            "name": "Average Sessions",
+            "value": 1682.57
+        },
+        {
+            "name": "Average Users",
+            "value": 1237.86
+        },
+        {
+            "name": "Average New Users",
+            "value": 424.14
+        },
+        {
+            "name": "Average Pageviews",
+            "value": 6891.71
+        },
+        {
+            "name": "Pages per Session",
+            "value": 4.07
+        },
+        {
+            "name": "Average Session Duration",
+            "value": 153.88
+        },
+        {
+            "name": "Bounce Rate",
+            "value": 0.16
+        },
+        {
+            "name": "Conversion Rate",
+            "value": 0.0425
+        },
+        {
+            "name": "Average Transactions",
+            "value": 49.43
+        },
+        {
+            "name": "Average Revenue",
+            "value": 2087.17
+        }
+    ]
+}
+==== comparison_output_old.json ====
+{
+    "comparison_summary": "Week 1 and Week 2 both cover a 7-day period, capturing web analytic data focused on user engagement and interaction with a website. In Week 2, there is a general increase in sessions, pageviews, transactions, and revenue compared to Week 1, along with a notable decrease in bounce rate and an improved conversion rate. These differences suggest heightened user engagement and effectiveness in converting visits into transactions during Week 2, despite slightly fewer average users and new users compared to Week 1.",
+    "key_metrics_comparison": [
+        {
+            "name": "Average Sessions",
+            "value1": 1543.43,
+            "value2": 1682.57,
+            "description": "There was an increase in average sessions from 1,543 in Week 1 to 1,683 in Week 2, indicating a rise of approximately 9% in user sessions."
+        },
+        {
+            "name": "Average Users",
+            "value1": 1265.14,
+            "value2": 1237.86,
+            "description": "The average users per day decreased slightly from 1,265 in Week 1 to 1,238 in Week 2, showing a minor drop of 2.16%."
+        },
+        {
+            "name": "Average New Users",
+            "value1": 427.29,
+            "value2": 424.14,
+            "description": "Average new users slightly decreased from 427 in Week 1 to 424 in Week 2, a decrease of approximately 0.74%."
+        },
+        {
+            "name": "Average Pageviews",
+            "value1": 6225.86,
+            "value2": 6891.71,
+            "description": "Average pageviews rose significantly from 6,226 in Week 1 to 6,892 in Week 2, reflecting an increase of about 10.7%."
+        },
+        {
+            "name": "Pages per Session",
+            "value1": 4.01,
+            "value2": 4.07,
+            "description": "Pages per session slightly increased from 4.01 in Week 1 to 4.07 in Week 2, indicating a minor improvement in engagement."
+        },
+        {
+            "name": "Average Session Duration",
+            "value1": 163.1,
+            "value2": 153.88,
+            "description": "The average session duration decreased from 163.1 seconds in Week 1 to 153.88 seconds in Week 2, a reduction of 5.64%."
+        },
+        {
+            "name": "Bounce Rate",
+            "value1": 0.2,
+            "value2": 0.1606,
+            "description": "The bounce rate improved, decreasing from 20% in Week 1 to 16% in Week 2, indicating better user retention."
+        },
+        {
+            "name": "Conversion Rate",
+            "value1": 0.028,
+            "value2": 0.0425,
+            "description": "The conversion rate increased significantly from 2.8% in Week 1 to 4.25% in Week 2, showing enhanced capability to convert visitors."
+        },
+        {
+            "name": "Average Transactions",
+            "value1": 34.14,
+            "value2": 49.43,
+            "description": "Average transactions increased from 34 in Week 1 to 49 in Week 2, an increase of 44.7%."
+        },
+        {
+            "name": "Average Revenue",
+            "value1": 1622.53,
+            "value2": 2087.17,
+            "description": "Average revenue saw a substantial rise from $1,623 in Week 1 to $2,087 in Week 2, marking an increase of about 28.64%."
+        }
+    ]
+}
 ==== test_task_scheduler.py ====
 import os
 import pytest
@@ -523,52 +953,42 @@ def test_process_comparison():
             {
                 "name": "Average Sessions",
                 "value": 1543.43,
-                "description": "The average number of sessions per day over the 7-day period.",
             },
             {
                 "name": "Average Users",
                 "value": 1265.14,
-                "description": "The average number of users visiting the site per day.",
             },
             {
                 "name": "Average New Users",
                 "value": 427.29,
-                "description": "The average number of new users per day.",
             },
             {
                 "name": "Average Pageviews",
                 "value": 6225.86,
-                "description": "The average number of pageviews per day.",
             },
             {
                 "name": "Pages per Session",
                 "value": 4.01,
-                "description": "The average number of pages viewed per session.",
             },
             {
                 "name": "Average Session Duration",
                 "value": 163.1,
-                "description": "The mean duration of a user session in seconds.",
             },
             {
                 "name": "Bounce Rate",
                 "value": 0.2,
-                "description": "The percentage of visitors who leave after viewing only one page.",
             },
             {
                 "name": "Conversion Rate",
                 "value": 0.028,
-                "description": "The proportion of users who completed a desired action.",
             },
             {
                 "name": "Average Transactions",
                 "value": 34.14,
-                "description": "The average number of transactions per day.",
             },
             {
                 "name": "Average Revenue",
                 "value": 1622.53,
-                "description": "The average revenue generated per day.",
             },
         ],
     }
@@ -588,52 +1008,42 @@ def test_process_comparison():
             {
                 "name": "Average Sessions",
                 "value": 1682.57,
-                "description": "The average number of sessions per day.",
             },
             {
                 "name": "Average Users",
                 "value": 1237.86,
-                "description": "The average number of users per day.",
             },
             {
                 "name": "Average New Users",
                 "value": 424.14,
-                "description": "The average number of new users per day.",
             },
             {
                 "name": "Average Pageviews",
                 "value": 6891.71,
-                "description": "The average number of pageviews per day.",
             },
             {
                 "name": "Pages per Session",
                 "value": 4.07,
-                "description": "The average number of pages viewed per session.",
             },
             {
                 "name": "Average Session Duration",
                 "value": 153.88,
-                "description": "The average duration of a session in seconds.",
             },
             {
                 "name": "Bounce Rate",
                 "value": 0.1606,
-                "description": "The average bounce rate, representing the percentage of single-page visits.",
             },
             {
                 "name": "Conversion Rate",
                 "value": 0.0425,
-                "description": "The average conversion rate calculated as the percentage of sessions that result in a transaction.",
             },
             {
                 "name": "Average Transactions",
                 "value": 49.43,
-                "description": "The average number of transactions per day.",
             },
             {
                 "name": "Average Revenue",
                 "value": 2087.17,
-                "description": "The average daily revenue in USD.",
             },
         ],
     }
@@ -656,14 +1066,74 @@ def test_process_comparison():
                 f"{metric.name}: Week 1 Value = {metric.value1}, Week 2 Value = {metric.value2} ({metric.description})"
             )
 
-        if result.notable_trends:
-            print("\nNotable Trends:")
-            print(result.notable_trends)
-
         print("Test completed successfully.")
 
     except Exception as e:
         pytest.fail(f"Comparison service test failed: {e}")
+
+==== task.py ====
+from django.db import models
+from django_q.models import Task
+
+
+class TaskRecord(models.Model):
+    """
+    Model to record additional information about tasks executed via Django-Q2.
+    """
+
+    task = models.OneToOneField(
+        Task,
+        on_delete=models.CASCADE,
+        help_text="The Django-Q task associated with this record.",
+    )
+    task_name = models.CharField(
+        max_length=255, help_text="Name of the task function being executed."
+    )
+    status = models.CharField(
+        max_length=50, help_text="Status of the task (e.g., Pending, Success, Failed)."
+    )
+    started_at = models.DateTimeField(help_text="Timestamp when the task started.")
+    completed_at = models.DateTimeField(
+        null=True, blank=True, help_text="Timestamp when the task completed."
+    )
+    result = models.TextField(
+        null=True, blank=True, help_text="Result of the task, if applicable."
+    )
+    error = models.TextField(
+        null=True, blank=True, help_text="Error message if the task failed."
+    )
+    summary = models.ForeignKey(
+        Summary,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="Associated summary, if applicable.",
+    )
+    comparison = models.ForeignKey(
+        Comparison,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="Associated comparison, if applicable.",
+    )
+    start_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Start date of the data period the task is processing.",
+    )
+    end_date = models.DateField(
+        null=True,
+        blank=True,
+        help_text="End date of the data period the task is processing.",
+    )
+
+    def __str__(self):
+        return f"Task Record for Task ID: {self.task.id}"
+
+    class Meta:
+        verbose_name = "Task Record"
+        verbose_name_plural = "Task Records"
+        ordering = ["-started_at"]
 
 ==== __init__.py ====
 from .summary import DataSummary
@@ -671,49 +1141,143 @@ from .summary import DataSummary
 __all__ = ["DataSummary"]
 
 ==== comparison.py ====
-
-==== summary.py ====
-# apps/insights/models/summary.py
 from django.db import models
 
-# Uncomment the necessary mixins once their import paths are fixed
-# from apps.common.behaviors.timestampable import Timestampable  # Adds created_at and updated_at fields
-# from apps.common.behaviors.uuidable import UUIDable  # Adds a UUID primary key field
-# from apps.common.behaviors.annotatable import Annotatable  # Adds annotation capabilities
-# from apps.common.behaviors.authorable import Authorable  # Adds an author field linked to User
 
+class Comparison(models.Model):
+    """
+    Model to store the comparison between two summaries.
+    """
 
-# Model representing a summary of a dataset with key metrics and a description.
-class DataSummary(
-    models.Model
-):  # Add Uuidable mixin, Timestampable, Annotatable, Authorable
-
-    # Short label for the dataset
-    label = models.CharField(
-        max_length=50,
-        help_text="A label identifying the dataset (e.g., 'Week 1').",
+    summary1 = models.ForeignKey(
+        Summary,
+        related_name="comparisons_as_summary1",
+        on_delete=models.CASCADE,
+        help_text="The first summary being compared.",
     )
-
-    # Text summary generated by ChatGPT
-    plain_summary = models.TextField(help_text="An English summary of the dataset.")
-
-    # Key metrics in JSON format
-    key_metrics = models.JSONField(help_text="Structured key metrics from the dataset.")
-
-    # Optional metadata
-    metadata = models.JSONField(
-        null=True,
-        blank=True,
-        help_text="Additional metadata about the summary (e.g., filters applied).",
+    summary2 = models.ForeignKey(
+        Summary,
+        related_name="comparisons_as_summary2",
+        on_delete=models.CASCADE,
+        help_text="The second summary being compared.",
+    )
+    comparison_summary = models.TextField(
+        help_text="A concise summary of differences and similarities between the two summaries."
+    )
+    date_created = models.DateTimeField(
+        auto_now_add=True, help_text="Timestamp when the comparison was created."
+    )
+    date_updated = models.DateTimeField(
+        auto_now=True, help_text="Timestamp when the comparison was last updated."
     )
 
     def __str__(self):
-        return f"DataSummary: {self.label}"
+        return f"Comparison from {self.summary1.start_date} to {self.summary2.end_date}"
 
     class Meta:
-        # ordering = ["-created_at"]  # Order by most recently created
-        verbose_name = "Data Summary"
-        verbose_name_plural = "Data Summaries"
+        unique_together = ("summary1", "summary2")
+        ordering = ["-date_created"]
+
+
+class KeyMetricComparison(models.Model):
+    """
+    Model to store individual key metric comparisons related to a Comparison.
+    """
+
+    comparison = models.ForeignKey(
+        Comparison,
+        related_name="key_metrics_comparison",
+        on_delete=models.CASCADE,
+        help_text="The comparison this key metric comparison belongs to.",
+    )
+    name = models.CharField(
+        max_length=100, help_text="Name of the metric being compared."
+    )
+    value1 = models.FloatField(help_text="Value from the first summary.")
+    value2 = models.FloatField(help_text="Value from the second summary.")
+    description = models.TextField(
+        help_text="Description of the observed difference or trend."
+    )
+
+    def __str__(self):
+        return f"{self.name} Comparison (Comparison ID: {self.comparison.id})"
+
+    class Meta:
+        unique_together = ("comparison", "name")
+        ordering = ["name"]
+
+==== summary.py ====
+# apps/insights/models.py
+
+from django.db import models
+
+
+class Summary(models.Model):
+    """
+    Model to store the dataset summary and key metrics for a specific time period.
+    """
+
+    # Choices for summary type, in case we have summaries for different periods in the future
+    SUMMARY_TYPE_CHOICES = [
+        ("weekly", "Weekly"),
+        ("monthly", "Monthly"),
+        # Add more types if needed
+    ]
+
+    summary_type = models.CharField(
+        max_length=20,
+        choices=SUMMARY_TYPE_CHOICES,
+        default="weekly",
+        help_text="Type of the summary (e.g., weekly, monthly).",
+    )
+    start_date = models.DateField(help_text="Start date of the data period.")
+    end_date = models.DateField(help_text="End date of the data period.")
+    dataset_summary = models.TextField(
+        help_text="A concise English summary of the dataset."
+    )
+    # Optionally, store the data source file path or identifier
+    data_source = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="File path or identifier of the data source.",
+    )
+    date_created = models.DateTimeField(
+        auto_now_add=True, help_text="Timestamp when the summary was created."
+    )
+    date_updated = models.DateTimeField(
+        auto_now=True, help_text="Timestamp when the summary was last updated."
+    )
+
+    def __str__(self):
+        return f"Summary ({self.summary_type.capitalize()}) from {self.start_date} to {self.end_date}"
+
+    class Meta:
+        ordering = ["-start_date"]
+        unique_together = ("summary_type", "start_date", "end_date")
+        verbose_name_plural = "Summaries"
+
+
+class KeyMetric(models.Model):
+    """
+    Model to store individual key metrics related to a Summary.
+    """
+
+    summary = models.ForeignKey(
+        Summary,
+        related_name="key_metrics",
+        on_delete=models.CASCADE,
+        help_text="The summary this key metric belongs to.",
+    )
+    name = models.CharField(max_length=100, help_text="Name of the metric.")
+    value = models.FloatField(help_text="Numeric value of the metric.")
+
+    def __str__(self):
+        return f"{self.name}: {self.value} (Summary ID: {self.summary.id})"
+
+    class Meta:
+        unique_together = ("summary", "name")
+        ordering = ["name"]
 
 ==== csv_processor.py ====
 # apps/insights/services/csv_processor.py
@@ -791,6 +1355,7 @@ Comparison Service for Dataset Summaries
 Handles LLM comparison generation and logging for two dataset summaries.
 """
 
+import json
 import logging
 from apps.insights.services.openai.comparison_generator import generate_comparison
 from apps.insights.services.openai.schemas import ComparisonOutput
@@ -819,9 +1384,9 @@ def prepare_summary(data_summary: dict) -> str:
             raise ValueError("Missing 'key_metrics' in data_summary.")
 
         key_metrics_str = "\n".join(
-            f"- {metric['name']}: {metric['value']} ({metric['description']})"
+            f"- {metric['name']}: {metric['value']}"
             for metric in data_summary["key_metrics"]
-            if "name" in metric and "value" in metric and "description" in metric
+            if "name" in metric and "value" in metric
         )
 
         if not key_metrics_str:
@@ -842,8 +1407,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         data_summary2 (dict): The second dataset summary.
 
     Returns:
-        ComparisonOutput: A structured comparison containing a summary,
-                          key metrics comparison, and notable trends.
+        ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
     """
     try:
         logging.info("Starting comparison of dataset summaries...")
@@ -872,10 +1436,8 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
                 f"Week 2 Value = {metric.value2} ({metric.description})"
             )
 
-        if comparison_result.notable_trends:
-            logging.info(f"Notable Trends: {comparison_result.notable_trends}")
-        else:
-            logging.info("No notable trends identified.")
+        # Save comparison result to JSON file
+        save_comparison_to_file(comparison_result)
 
         return comparison_result
 
@@ -887,6 +1449,24 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         logging.error(f"Unexpected error during comparison: {e}")
         raise
 
+
+def save_comparison_to_file(comparison_result: ComparisonOutput):
+    """
+    Saves the structured comparison result to a JSON file.
+
+    Args:
+        comparison_result (ComparisonOutput): The structured comparison result.
+    """
+    try:
+        file_path = "comparison_output.json"
+        logging.info(f"Saving comparison result to {file_path}...")
+        with open(file_path, "w") as json_file:
+            json.dump(comparison_result.dict(), json_file, indent=4)
+        logging.info("Comparison result saved successfully.")
+    except Exception as e:
+        logging.error(f"Failed to save comparison result to file: {e}")
+        raise
+
 ==== __init__.py ====
 
 ==== summary_service.py ====
@@ -896,6 +1476,7 @@ Summary Service for Single-Week Data Processing
 Handles CSV data validation, processing, LLM summary generation, and key metric extraction for a single week.
 """
 
+import json
 import logging
 import pandas as pd
 from apps.insights.services.csv_processor import CSVProcessor
@@ -947,12 +1528,34 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         logging.info(f"LLM Summary - Week {week_number}: {llm_summary.dataset_summary}")
         logging.info("Key Metrics:")
         for metric in llm_summary.key_metrics:
-            logging.info(f"{metric.name}: {metric.value} ({metric.description})")
+            logging.info(f"{metric.name}: {metric.value}")
+
+        # Save summary to JSON file
+        save_summary_to_file(llm_summary, week_number)
 
         return llm_summary
 
     except Exception as e:
         logging.error(f"Failed to process Week {week_number}: {e}")
+        raise
+
+
+def save_summary_to_file(summary: SummaryOutput, week_number: int):
+    """
+    Saves the structured summary result to a JSON file.
+
+    Args:
+        summary (SummaryOutput): The structured summary result.
+        week_number (int): The week number being processed.
+    """
+    try:
+        file_path = f"summary_output_week_{week_number}.json"
+        logging.info(f"Saving Week {week_number} summary result to {file_path}...")
+        with open(file_path, "w") as json_file:
+            json.dump(summary.dict(), json_file, indent=4)
+        logging.info(f"Week {week_number} summary result saved successfully.")
+    except Exception as e:
+        logging.error(f"Failed to save Week {week_number} summary result to file: {e}")
         raise
 
 ==== data_overview.py ====
@@ -1242,8 +1845,7 @@ Please provide the summary in the following JSON format:
     "key_metrics": [
         {{
             "name": "Name of Metric",
-            "value": Numeric value,
-            "description": "Brief description of the metric and its significance."
+            "value": Numeric value
         }}
         // Repeat for each key metric
     ]
@@ -1262,7 +1864,7 @@ Ensure that:
     - "Conversion Rate"
     - "Average Transactions"
     - "Average Revenue"
-- The description for each metric explains its significance or any notable observations.
+- Do not include descriptions for the key metrics.
 - Focus on delivering specific insights derived from the data.
 - Avoid generic statements or repeating information without analysis.
 """
@@ -1394,35 +1996,34 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     Generates a structured comparison between two dataset summaries using the OpenAI API.
 
     Args:
-        summary1 (str): The first dataset summary as a string.
-        summary2 (str): The second dataset summary as a string.
+        summary1 (str): The first dataset summary as a string (Week 1).
+        summary2 (str): The second dataset summary as a string (Week 2).
 
     Returns:
-        ComparisonOutput: A structured comparison containing a summary, key metrics comparison, and notable trends.
+        ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
     """
     prompt = f"""
 You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
 
-Summary 1:
+Week 1:
 {summary1}
 
-Summary 2:
+Week 2:
 {summary2}
 
 Please provide the comparison in the following JSON format:
 
 {{
-    "comparison_summary": "A concise summary of differences and similarities.",
+    "comparison_summary": "A concise summary of differences and similarities between Week 1 and Week 2, including notable trends or observations.",
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
             "value1": Value from Week 1,
             "value2": Value from Week 2,
-            "description": "Description of the observed difference or trend."
-        }},
+            "description": "Description of the observed difference or trend, including specific figures and percentages where appropriate."
+        }}
         // Repeat for each key metric
-    ],
-    "notable_trends": "Any notable trends or patterns observed."
+    ]
 }}
 
 Ensure that:
@@ -1438,8 +2039,10 @@ Ensure that:
     - "Conversion Rate"
     - "Average Transactions"
     - "Average Revenue"
-- The description for each metric explains the difference or trend observed between the two summaries.
+- The description for each metric explains the difference or trend observed between Week 1 and Week 2, using precise figures (e.g., differences, percentages).
+- Refer to the summaries as "Week 1" and "Week 2" in your descriptions.
 """
+
     try:
         logging.info("Requesting dataset comparison from OpenAI...")
 
@@ -1482,7 +2085,6 @@ class KeyMetric(BaseModel):
 
     name: str
     value: float
-    description: str
 
     @classmethod
     def ordered_metrics(cls) -> List["KeyMetric"]:
@@ -1490,56 +2092,16 @@ class KeyMetric(BaseModel):
         Defines the exact order and expected names for key metrics.
         """
         return [
-            cls(
-                name="Average Sessions",
-                value=0,
-                description="The mean number of sessions per day.",
-            ),
-            cls(
-                name="Average Users",
-                value=0,
-                description="The mean number of users per day.",
-            ),
-            cls(
-                name="Average New Users",
-                value=0,
-                description="The mean number of new users per day.",
-            ),
-            cls(
-                name="Average Pageviews",
-                value=0,
-                description="The mean number of pageviews per day.",
-            ),
-            cls(
-                name="Pages per Session",
-                value=0,
-                description="The average number of pages viewed per session.",
-            ),
-            cls(
-                name="Average Session Duration",
-                value=0,
-                description="The average duration of a session in seconds.",
-            ),
-            cls(
-                name="Bounce Rate",
-                value=0,
-                description="The average percentage of visitors who leave the site after viewing only one page.",
-            ),
-            cls(
-                name="Conversion Rate",
-                value=0,
-                description="The average percentage of visitors who completed a desired action.",
-            ),
-            cls(
-                name="Average Transactions",
-                value=0,
-                description="The mean number of transactions per day.",
-            ),
-            cls(
-                name="Average Revenue",
-                value=0,
-                description="The average revenue generated per day.",
-            ),
+            cls(name="Average Sessions", value=0),
+            cls(name="Average Users", value=0),
+            cls(name="Average New Users", value=0),
+            cls(name="Average Pageviews", value=0),
+            cls(name="Pages per Session", value=0),
+            cls(name="Average Session Duration", value=0),
+            cls(name="Bounce Rate", value=0),
+            cls(name="Conversion Rate", value=0),
+            cls(name="Average Transactions", value=0),
+            cls(name="Average Revenue", value=0),
         ]
 
     def validate_name(self) -> bool:
@@ -1590,7 +2152,7 @@ class KeyMetricComparison(BaseModel):
     name: str
     value1: float
     value2: float
-    description: str
+    description: str  # Retaining description for comparisons
 
 
 class ComparisonOutput(BaseModel):
@@ -1600,14 +2162,11 @@ class ComparisonOutput(BaseModel):
 
     comparison_summary: str = Field(
         ...,
-        description="A concise English summary highlighting differences and similarities.",
+        description="A concise English summary highlighting differences and similarities between Week 1 and Week 2.",
     )
     key_metrics_comparison: List[KeyMetricComparison] = Field(
         ...,
-        description="Key metrics with values from both summaries and descriptions of differences.",
-    )
-    notable_trends: str = Field(
-        None, description="Any major trends or patterns observed during the comparison."
+        description="Key metrics with values from both weeks and descriptions of differences.",
     )
 
 ==== summary.txt ====

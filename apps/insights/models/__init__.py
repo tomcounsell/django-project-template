@@ -1,3 +1,4 @@
-from .summary import DataSummary
+from .summary import Summary, KeyMetric
+from .comparison import Comparison, KeyMetricComparison
 
-__all__ = ["DataSummary"]
+__all__ = ["Summary", "KeyMetric", "Comparison", "KeyMetricComparison"]
