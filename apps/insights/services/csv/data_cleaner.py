@@ -25,9 +25,10 @@ def standardize_date_format(df, date_column):
         df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
         if df[date_column].isna().any():
             raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
-        df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
+        # Removed the following line to keep 'date' as datetime
+        # df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
         logging.info(
-            f"Dates standardized to 'YYYY-MM-DD' format in column '{date_column}'."
+            f"Dates standardized to datetime format in column '{date_column}'."
         )
         return df
     except Exception as e:
@@ -40,7 +41,7 @@ def ensure_datetime_format(df, date_column):
         df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
         if df[date_column].isna().any():
             raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
-        logging.info(f"Date column '{date_column}' converted to datetime format.")
+        logging.info(f"Date column '{date_column}' confirmed as datetime format.")
         return df
     except Exception as e:
         raise ValueError(f"Error ensuring datetime format: {e}")

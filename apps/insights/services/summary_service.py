@@ -14,6 +14,8 @@ from apps.insights.models.summary import Summary, KeyMetric
 from apps.insights.services.csv_processor import CSVProcessor
 from apps.insights.services.openai.summary_generator import generate_summary
 from apps.insights.services.openai.schemas import SummaryOutput
+import pandas as pd
+import datetime  # Added import for datetime
 
 # Configure logging
 logging.basicConfig(
@@ -44,8 +46,18 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         processor.validate()
         processor.clean()
 
+        # Verify the 'date' column type
+        if not pd.api.types.is_datetime64_any_dtype(processor.df["date"]):
+            logging.error("The 'date' column is not in datetime format after cleaning.")
+            raise TypeError("Date column is not datetime")
+
         # Filter data for the specified week
         week_df = processor.filter(start_date)[week_number - 1]
+
+        # Verify the 'date' column type in week_df
+        if not pd.api.types.is_datetime64_any_dtype(week_df["date"]):
+            logging.error("The 'date' column in week_df is not in datetime format.")
+            raise TypeError("Date column in week_df is not datetime")
 
         # Generate statistical overview using CSVProcessor
         processor.generate_overview(week_df, f"Week {week_number}")
@@ -61,15 +73,24 @@ def process_week(file_path: str, start_date: str, week_number: int) -> SummaryOu
         for metric in llm_summary.key_metrics:
             logging.info(f"{metric.name}: {metric.value}")
 
+        # Convert `date` column to datetime and extract the end date
+        end_date_max = week_df["date"].max()
+        logging.info(f"Max date value: {end_date_max} (type: {type(end_date_max)})")
+        if isinstance(end_date_max, (pd.Timestamp, datetime.datetime)):
+            end_date = end_date_max.strftime("%Y-%m-%d")
+        else:
+            # Attempt to convert to datetime if not already
+            end_date = pd.to_datetime(end_date_max).strftime("%Y-%m-%d")
+
         # Save summary and metrics to the database
         save_summary_to_database(
             start_date=start_date,
-            end_date=week_df.index[-1].strftime("%Y-%m-%d"),
+            end_date=end_date,
             llm_summary=llm_summary,
         )
 
         # Save summary to JSON file
-        save_summary_to_file(llm_summary, week_number)
+        save_summary_to_file(start_date, end_date, llm_summary, week_number)
 
         return llm_summary
 
