@@ -13,6 +13,7 @@ django-extensions
 django-filter
 django-htmx
 django-rest-auth
+django-request
 django-storages
 django-widget-tweaks
 djangorestframework
@@ -24,7 +25,7 @@ ipython
 Markdown
 numpy
 pandas
-popoto
+passlib
 psycopg2
 pydantic
 pytest
@@ -33,7 +34,7 @@ PyYAML
 redis>=3.5.3
 redisgraph
 requests
+supabase
 six
-setuptools
 toolz
 whitenoise
