@@ -40,12 +40,34 @@ class CSVProcessor:
         logging.info("Cleaning data...")
         self.df = clean_data(self.df)
 
-    def filter(self, start_date: str):
+    def filter(self, start_date: str, week_number: int):
         """
-        Filter the data into two weeks based on the start date.
+        Filters the data for a specified week.
+
+        Args:
+            start_date (str): Start date for the dataset (YYYY-MM-DD).
+            week_number (int): Week number to filter (1 = days 1-7, 2 = days 8-14).
+
+        Returns:
+            pd.DataFrame: Filtered DataFrame for the specified week.
         """
-        logging.info("Filtering data into Week 1 and Week 2...")
-        return filter_data(self.df, start_date)
+        logging.info(f"Filtering data for Week {week_number}...")
+        start_date = pd.to_datetime(start_date)
+
+        if week_number == 1:
+            week_start = start_date
+            week_end = start_date + pd.Timedelta(days=6)
+        elif week_number == 2:
+            week_start = start_date + pd.Timedelta(days=7)
+            week_end = start_date + pd.Timedelta(days=13)
+        else:
+            raise ValueError("Invalid week number. Must be 1 or 2.")
+
+        filtered_df = self.df[
+            (self.df["date"] >= week_start) & (self.df["date"] <= week_end)
+        ]
+        logging.info(f"Filtered Week {week_number} Data: {len(filtered_df)} rows.")
+        return filtered_df
 
     def generate_overview(self, df, label):
         """
