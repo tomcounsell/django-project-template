@@ -1,0 +1,77 @@
+{
+    "summary1": 1,
+    "summary2": 1,
+    "comparison_summary": "Week 2 generally showed an improvement in key performance metrics compared to Week 1. There was an increase in average sessions, pageviews, transactions, and revenue. However, Week 2 experienced a slight decrease in both the average session duration and the bounce rate, which suggests more efficient user engagement. The conversion rate notably improved as well. Users count decreased slightly.",
+    "key_metrics_comparison": [
+        {
+            "name": "Average Sessions",
+            "value1": 1543.43,
+            "value2": 1682.57,
+            "description": "Week 2 showed an increase in average sessions with 139 more per day compared to Week 1, indicating a 9% increase in user activity.",
+            "percentage_difference": 9.014986102382347
+        },
+        {
+            "name": "Average Users",
+            "value1": 1265.14,
+            "value2": 1237.86,
+            "description": "Week 2 had slightly fewer average daily users, with a reduction of around 27 users compared to Week 1, representing a 2.16% decrease.",
+            "percentage_difference": -2.156283099103672
+        },
+        {
+            "name": "Average New Users",
+            "value1": 427.29,
+            "value2": 424.14,
+            "description": "Week 2 experienced a minor decrease in average new users by about 3 compared to Week 1, decreasing by 0.73%.",
+            "percentage_difference": -0.73720424067964
+        },
+        {
+            "name": "Average Pageviews",
+            "value1": 6225.86,
+            "value2": 6891.71,
+            "description": "Pageviews increased in Week 2, with an average of approximately 666 more daily pageviews, a 10.70% rise from Week 1.",
+            "percentage_difference": 10.694908012708291
+        },
+        {
+            "name": "Pages per Session",
+            "value1": 4.01,
+            "value2": 4.07,
+            "description": "Week 2 saw a slight increase in pages per session, up by 0.06 pages, enhancing user engagement.",
+            "percentage_difference": 1.4962593516209601
+        },
+        {
+            "name": "Average Session Duration",
+            "value1": 163.1,
+            "value2": 153.88,
+            "description": "The average session duration decreased by about 9.22 seconds in Week 2, indicating a 5.65% faster user session compared to Week 1.",
+            "percentage_difference": -5.652973635806253
+        },
+        {
+            "name": "Bounce Rate",
+            "value1": 0.2,
+            "value2": 0.1606,
+            "description": "Week 2 had a significant decrease in bounce rate by 3.94 percentage points, suggesting improved engagement with fewer users leaving after a single page view.",
+            "percentage_difference": -19.70000000000001
+        },
+        {
+            "name": "Conversion Rate",
+            "value1": 0.028,
+            "value2": 0.0425,
+            "description": "Week 2 saw a notable improvement in conversion rate, increasing by 1.45 percentage points, a growth of 51.79% compared to Week 1.",
+            "percentage_difference": 51.78571428571429
+        },
+        {
+            "name": "Average Transactions",
+            "value1": 34.14,
+            "value2": 49.43,
+            "description": "Average transactions increased significantly in Week 2, with about 15 more transactions daily, a 43.92% increase from Week 1.",
+            "percentage_difference": 44.78617457527827
+        },
+        {
+            "name": "Average Revenue",
+            "value1": 1622.53,
+            "value2": 2087.17,
+            "description": "Average revenue rose by $464.64, a significant increase of 28.63% in Week 2 compared to Week 1.",
+            "percentage_difference": 28.636758642367173
+        }
+    ]
+}
