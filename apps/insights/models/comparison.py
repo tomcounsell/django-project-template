@@ -1,7 +1,12 @@
+# apps/insights/models/comparison.py
 from django.db import models
+from apps.common.behaviors.timestampable import Timestampable  # Importing Timestampable
+from apps.insights.models.summary import (
+    Summary,
+)  # Ensure this import aligns with project structure
 
 
-class Comparison(models.Model):
+class Comparison(Timestampable):
     """
     Model to store the comparison between two summaries.
     """
@@ -21,22 +26,29 @@ class Comparison(models.Model):
     comparison_summary = models.TextField(
         help_text="A concise summary of differences and similarities between the two summaries."
     )
-    date_created = models.DateTimeField(
-        auto_now_add=True, help_text="Timestamp when the comparison was created."
+    start_date = models.DateField(
+        help_text="Start date of the comparison, derived from summary1.",
+        editable=False,
     )
-    date_updated = models.DateTimeField(
-        auto_now=True, help_text="Timestamp when the comparison was last updated."
+    end_date = models.DateField(
+        help_text="End date of the comparison, derived from summary2.",
+        editable=False,
     )
 
+    def save(self, *args, **kwargs):
+        self.start_date = self.summary1.start_date
+        self.end_date = self.summary2.end_date
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Comparison from {self.summary1.start_date} to {self.summary2.end_date}"
+        return f"Comparison from {self.start_date} to {self.end_date}"
 
     class Meta:
         unique_together = ("summary1", "summary2")
-        ordering = ["-date_created"]
+        ordering = ["-created_at"]
 
 
-class KeyMetricComparison(models.Model):
+class KeyMetricComparison(Timestampable):
     """
     Model to store individual key metric comparisons related to a Comparison.
     """

@@ -1,0 +1,280 @@
+
+==== timestampable.py ====
+from django.db import models
+
+
+class Timestampable(models.Model):
+    """
+    created_at: datetime
+    modified_at: datetime
+
+    An abstract mixin for models that need to track the creation and modification timestamps.
+
+    This mixin automatically adds two fields to the model that keep track of when an object
+    was created and last modified. It can be used in various models that require these features.
+
+    Attributes:
+        created_at (datetime): A datetime field that stores the timestamp of when the object was created.
+            It is automatically set to the current time when the object is first created and is not
+            subsequently modified.
+
+        modified_at (datetime): A datetime field that stores the timestamp of when the object was last
+            modified. It is automatically updated to the current time whenever the object is saved.
+
+    Note:
+        This model is abstract and should be used as a mixin in other models.
+        The `auto_now_add` and `auto_now` options are used to automatically manage the timestamps.
+    """
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+==== locatable.py ====
+from django.db import models
+# from timezone_field import TimeZoneField
+
+
+class Locatable(models.Model):
+    address = models.ForeignKey(
+        "common.Address", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    # timezone = TimeZoneField(blank=True, null=True)
+
+    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+==== publishable.py ====
+from django.db import models
+from django.utils import timezone
+
+
+class Publishable(models.Model):
+    published_at = models.DateTimeField(null=True, blank=True)
+    edited_at = models.DateTimeField(null=True, blank=True)
+    unpublished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def is_published(self):
+        now = timezone.now()
+        if (
+            self.published_at
+            and self.published_at < now
+            and not (self.unpublished_at and self.unpublished_at < now)
+        ):
+            return True
+        else:
+            return False
+
+    @is_published.setter
+    def is_published(self, value):
+        if value and not self.is_published:
+            self.unpublished_at = None
+            self.published_at = timezone.now()
+        elif not value and self.is_published:
+            self.unpublished_at = timezone.now()
+
+    def publish(self):
+        self.is_published = True
+
+    def unpublish(self):
+        self.is_published = False
+
+==== authorable.py ====
+from django.db import models
+from settings import AUTH_USER_MODEL
+
+
+class Authorable(models.Model):
+    """
+    author: User
+    is_author_anonymous: bool
+    authored_at: datetime
+
+    A mixin for use with models that have an associated author, represented by a user.
+
+    This mixin encapsulates common attributes related to authorship and can be used
+    in various models that require an author attribute.
+
+    Attributes:
+        author (ForeignKey): A foreign key to the user model representing the author of the content.
+            The related name is dynamically generated based on the class name.
+
+        is_author_anonymous (bool): A boolean flag indicating whether the author's identity should
+            be kept anonymous. Defaults to False.
+
+        authored_at (datetime): A timestamp representing when the content was authored.
+            Automatically set when the object is created.
+
+    Properties:
+        author_display_name (str): A property that returns the display name of the author.
+            If `is_author_anonymous` is True, it returns "Anonymous"; otherwise, it returns the string representation of the author.
+
+    Note:
+        This model is abstract and should be used as a mixin in other models.
+
+    """
+
+    author = models.ForeignKey(
+        AUTH_USER_MODEL, related_name="%(class)ss", on_delete=models.CASCADE
+    )
+    is_author_anonymous = models.BooleanField(default=False)
+    authored_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def author_display_name(self):
+        if self.is_author_anonymous:
+            return "Anonymous"
+        else:
+            return str(self.author)
+
+    class Meta:
+        abstract = True
+
+==== dump.txt ====
+
+==== __init__.py ====
+from .annotatable import Annotatable
+from .authorable import Authorable
+from .expirable import Expirable
+from .locatable import Locatable
+from .permalinkable import Permalinkable
+from .timestampable import Timestampable
+from .publishable import Publishable
+
+
+__all__ = [
+    'Annotatable',
+    'Authorable',
+    'Expirable',
+    'Locatable',
+    'Permalinkable',
+    'Timestampable',
+    'Publishable'
+]
+
+==== annotatable.py ====
+from django.db import models
+
+
+class Annotatable(models.Model):
+    notes = models.ManyToManyField("common.Note")
+
+    @property
+    def has_notes(self):
+        return True if self.notes.count() else False
+
+    class Meta:
+        abstract = True
+
+==== uuidable.py ====
+
+==== expirable.py ====
+from django.db import models
+
+
+class Expirable(models.Model):
+    """
+    valid_at: datetime
+    expired_at: datetime
+
+    A mixin for use with models that require expiration functionality.
+
+    This mixin provides fields and methods to handle the validity and expiration of objects.
+    It can be used in various models that require these features, such as tokens, offers, or temporary access permissions.
+
+    Attributes:
+        valid_at (DateTimeField, optional): A timestamp indicating when the object becomes valid.
+            Can be left blank if the object is valid immediately upon creation.
+
+        expired_at (DateTimeField, optional): A timestamp indicating when the object expires.
+            Can be left blank if the object does not expire.
+
+    Properties:
+        is_expired (bool): A property that returns True if the object has expired, False otherwise.
+            Can be set to True to mark the object as expired, or False to unmark it.
+
+    Note:
+        This model is abstract and should be used as a mixin in other models.
+    """
+
+    valid_at = models.DateTimeField(null=True, blank=True)
+    expired_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def is_expired(self) -> bool:
+        from django.utils.timezone import now
+
+        return True if self.expired_at and self.expired_at < now() else False
+
+    @is_expired.setter
+    def is_expired(self, value: bool):
+        from django.utils.timezone import now
+
+        if value is True:
+            self.expired_at = now()
+        elif value is False and self.is_expired:
+            self.expired_at = None
+
+    class Meta:
+        abstract = True
+
+==== dump_project.py ====
+import os
+
+output_file = "dump.txt"
+exclude_dir = "./env"
+file_types = (".py", ".js", ".css", ".html", ".yaml", ".json", ".conf", ".txt")
+
+with open(output_file, "w") as out:
+    for root, dirs, files in os.walk("."):
+        # Exclude the env directory and its subdirectories
+        dirs[:] = [d for d in dirs if os.path.join(root, d) != exclude_dir]
+
+        for file in files:
+            if file.endswith(file_types):
+                file_path = os.path.join(root, file)
+                out.write(f"\n==== {file} ====\n")
+                with open(file_path, "r", encoding="utf-8") as f:
+                    out.write(f.read())
+
+==== permalinkable.py ====
+from django.core.validators import validate_slug
+from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.utils.text import slugify
+
+
+class Permalinkable(models.Model):
+    slug = models.SlugField(
+        null=True, blank=True, validators=[validate_slug], unique=True
+    )
+
+    class Meta:
+        abstract = True
+
+    def get_url_kwargs(self, **kwargs):
+        kwargs.update(getattr(self, "url_kwargs", {}))
+        return kwargs
+
+    # @models.permalink
+    # def get_absolute_url(self):
+    #     url_kwargs = self.get_url_kwargs(slug=self.slug)
+    #     return (self.url_name, (), url_kwargs)
+
+
+@receiver(pre_save, sender=Permalinkable)
+def pre_save_slug(sender, instance, *args, **kwargs):
+    if not issubclass(sender, Permalinkable):
+        return
+    if not instance.slug and hasattr(instance, "slug_source"):
+        instance.slug = slugify(instance.slug_source)
