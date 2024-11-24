@@ -56,8 +56,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         data_summary2 (dict): The second dataset summary.
 
     Returns:
-        ComparisonOutput: A structured comparison containing a summary,
-                          key metrics comparison, and notable trends.
+        ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
     """
     try:
         logging.info("Starting comparison of dataset summaries...")
@@ -86,11 +85,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
                 f"Week 2 Value = {metric.value2} ({metric.description})"
             )
 
-        if comparison_result.notable_trends:
-            logging.info(f"Notable Trends: {comparison_result.notable_trends}")
-        else:
-            logging.info("No notable trends identified.")
-
+        # Removed handling of 'notable_trends' as it no longer exists
         # Save comparison result to JSON file
         save_comparison_to_file(comparison_result)
 

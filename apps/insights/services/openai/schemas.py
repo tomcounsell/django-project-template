@@ -129,12 +129,9 @@ class ComparisonOutput(BaseModel):
 
     comparison_summary: str = Field(
         ...,
-        description="A concise English summary highlighting differences and similarities.",
+        description="A concise English summary highlighting differences and similarities between Week 1 and Week 2.",
     )
     key_metrics_comparison: List[KeyMetricComparison] = Field(
         ...,
-        description="Key metrics with values from both summaries and descriptions of differences.",
-    )
-    notable_trends: str = Field(
-        None, description="Any major trends or patterns observed during the comparison."
+        description="Key metrics with values from both weeks and descriptions of differences.",
     )

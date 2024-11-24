@@ -156,9 +156,10 @@ def test_process_comparison():
                 f"{metric.name}: Week 1 Value = {metric.value1}, Week 2 Value = {metric.value2} ({metric.description})"
             )
 
-        if result.notable_trends:
-            print("\nNotable Trends:")
-            print(result.notable_trends)
+        # Removed the check for 'notable_trends' since it no longer exists
+        # if result.notable_trends:
+        #     print("\nNotable Trends:")
+        #     print(result.notable_trends)
 
         print("Test completed successfully.")
 

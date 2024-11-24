@@ -2,7 +2,7 @@
 
 import pytest
 from apps.insights.services.openai.comparison_generator import generate_comparison
-from apps.insights.services.openai.schemas import ComparisonOutput
+from apps.insights.services.openai.schemas import ComparisonOutput, KeyMetricComparison
 
 
 def test_generate_comparison():
@@ -36,7 +36,7 @@ def test_generate_comparison():
     from the 8th to the 14th. It includes metrics related to sessions, users, new users, pageviews, pages per session, 
     average session duration, bounce rate, conversion rate, transactions, and revenue. The average daily sessions were 
     approximately 1683, with an average of about 1238 users and around 424 new users daily. The website generated an average 
-    of 6892 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
+    of 6891.71 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
     16.06%, and the conversion rate stood at about 4.25%. The site recorded an average of 49 transactions per day, resulting
     in a daily revenue averaging $2087.17.
 
@@ -74,9 +74,10 @@ def test_generate_comparison():
                 f"({metric.description})"
             )
 
-        if result.notable_trends:
-            print("\nNotable Trends:")
-            print(result.notable_trends)
+        # Removed the check for 'notable_trends' since it no longer exists
+        # if result.notable_trends:
+        #     print("\nNotable Trends:")
+        #     print(result.notable_trends)
 
         print("Test completed successfully.")
 

@@ -26,35 +26,34 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     Generates a structured comparison between two dataset summaries using the OpenAI API.
 
     Args:
-        summary1 (str): The first dataset summary as a string.
-        summary2 (str): The second dataset summary as a string.
+        summary1 (str): The first dataset summary as a string (Week 1).
+        summary2 (str): The second dataset summary as a string (Week 2).
 
     Returns:
-        ComparisonOutput: A structured comparison containing a summary, key metrics comparison, and notable trends.
+        ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
     """
     prompt = f"""
 You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
 
-Summary 1:
+Week 1:
 {summary1}
 
-Summary 2:
+Week 2:
 {summary2}
 
 Please provide the comparison in the following JSON format:
 
 {{
-    "comparison_summary": "A concise summary of differences and similarities.",
+    "comparison_summary": "A concise summary of differences and similarities between Week 1 and Week 2, including notable trends or observations.",
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
             "value1": Value from Week 1,
             "value2": Value from Week 2,
-            "description": "Description of the observed difference or trend."
-        }},
+            "description": "Description of the observed difference or trend, including specific figures and percentages where appropriate."
+        }}
         // Repeat for each key metric
-    ],
-    "notable_trends": "Any notable trends or patterns observed."
+    ]
 }}
 
 Ensure that:
@@ -70,8 +69,10 @@ Ensure that:
     - "Conversion Rate"
     - "Average Transactions"
     - "Average Revenue"
-- The description for each metric explains the difference or trend observed between the two summaries.
+- The description for each metric explains the difference or trend observed between Week 1 and Week 2, using precise figures (e.g., differences, percentages).
+- Refer to the summaries as "Week 1" and "Week 2" in your descriptions.
 """
+
     try:
         logging.info("Requesting dataset comparison from OpenAI...")
 
