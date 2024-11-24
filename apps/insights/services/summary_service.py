@@ -37,6 +37,12 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
             f"Starting process_week: start_date={start_date}, week_number={week_number}"
         )
 
+        # Adjust start_date for week_number 2
+        start_date_dt = pd.to_datetime(start_date)
+        if week_number == 2:
+            logging.info("Adjusting start_date for week 2.")
+            start_date_dt += pd.Timedelta(days=7)
+
         # Step 1: Initialize CSVProcessor and load data
         logging.info("Initializing CSVProcessor...")
         processor = CSVProcessor()
@@ -56,7 +62,7 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
 
         # Step 3: Filter data
         logging.info(f"Filtering data for week: {week_number}")
-        week_df = processor.filter(start_date, week_number)
+        week_df = processor.filter(start_date_dt.strftime("%Y-%m-%d"), week_number)
         logging.info(f"Filtering complete! Filtered rows: {len(week_df)}")
 
         # Step 4: Generate statistical overview and LLM summary
@@ -70,7 +76,6 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
 
         # Step 5: Save results
         logging.info("Saving results to database and JSON...")
-        start_date_dt = pd.to_datetime(start_date)
         save_summary_to_database(
             start_date_dt.strftime("%Y-%m-%d"),
             llm_summary,
