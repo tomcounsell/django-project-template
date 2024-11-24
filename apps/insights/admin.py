@@ -1,36 +1,42 @@
 # apps/insights/admin.py
 from django.contrib import admin
-from .models.summary import Summary, KeyMetric
+from django.urls import path
+from django.shortcuts import render
+from .forms import RunComparisonForm
+from .models.comparison import Comparison
 
 
-# Define an Inline Admin for KeyMetric
-class KeyMetricInline(admin.TabularInline):
-    model = KeyMetric
-    extra = 0  # Number of empty rows to display for adding new KeyMetrics
-    readonly_fields = (
-        "name",
-        "value",
-    )  # Make fields readonly if they're auto-generated
-    can_delete = False  # Disable deletion if KeyMetrics shouldn't be deleted manually
+class ComparisonAdmin(admin.ModelAdmin):
+    list_display = ("start_date", "end_date", "comparison_summary")
+    search_fields = ("start_date", "end_date")
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "start-comparison/",
+                self.admin_site.admin_view(self.start_comparison_view),
+                name="start_comparison",
+            ),
+        ]
+        return custom_urls + urls
+
+    def start_comparison_view(self, request):
+        if request.method == "POST":
+            form = RunComparisonForm(request.POST)
+            if form.is_valid():
+                start_date = form.cleaned_data["start_date"]
+                # Trigger your comparison pipeline or tasks here
+                self.message_user(
+                    request, f"Comparison pipeline started for {start_date}"
+                )
+        else:
+            form = RunComparisonForm()
+        return render(
+            request,
+            "admin/start_comparison.html",
+            {"form": form, "title": "Run Comparison"},
+        )
 
 
-# Extend the Summary Admin to include the inline KeyMetrics
-class SummaryAdmin(admin.ModelAdmin):
-    list_display = (
-        "start_date",
-        "end_date",
-        "dataset_summary",
-    )  # Fields to display in the list view
-    search_fields = ("start_date", "end_date")  # Fields to search on
-    list_filter = ("start_date", "end_date")  # Add filters for date ranges
-    inlines = [KeyMetricInline]
-
-    # Control fields displayed on the detail/edit form
-    fields = ("start_date", "end_date", "dataset_summary")
-
-    # Alternatively, exclude fields you don't want
-    # exclude = ("data_source",)
-
-
-# Register the Summary model with the custom admin
-admin.site.register(Summary, SummaryAdmin)
+admin.site.register(Comparison, ComparisonAdmin)
