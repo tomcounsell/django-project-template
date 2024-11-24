@@ -32,26 +32,42 @@ def generate_summary(statistical_summary: str) -> SummaryOutput:
         SummaryOutput: A structured summary containing dataset insights and key metrics.
     """
     prompt = f"""
-The following is a statistical summary of a dataset:
+You are a data analyst tasked with summarizing a dataset. The following is a statistical summary of the dataset:
 
 {statistical_summary}
 
-Please perform the following tasks:
+Please provide the summary in the following JSON format:
 
-1. **Data Analysis and Summary**: Carefully analyze the statistical summary and write a concise, insightful summary in plain English. Your summary should:
+{{
+    "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.",
+    "key_metrics": [
+        {{
+            "name": "Name of Metric",
+            "value": Numeric value,
+            "description": "Brief description of the metric and its significance."
+        }},
+        // Repeat for each key metric
+    ]
+}}
 
-    - Highlight significant findings, trends, or patterns observed in the data.
-    - Mention any notable increases, decreases, or anomalies in the key metrics.
-    - Provide context by referencing the actual values and what they indicate about user behavior or performance metrics.
-
-2. **Structured Key Metrics**: List the key metrics in a structured format, including their names, values, and brief descriptions.
-
-**Important**:
-
+Ensure that:
+- All numeric values are provided as numbers (not strings).
+- The key_metrics include the following metrics in this order:
+    - "Average Sessions"
+    - "Average Users"
+    - "Average New Users"
+    - "Average Pageviews"
+    - "Pages per Session"
+    - "Average Session Duration"
+    - "Bounce Rate"
+    - "Conversion Rate"
+    - "Average Transactions"
+    - "Average Revenue"
+- The description for each metric explains its significance or any notable observations.
 - Focus on delivering specific insights derived from the data.
 - Avoid generic statements or repeating information without analysis.
-- Ensure the output is structured with two parts: 'dataset_summary' and 'key_metrics' as per the required format.
 """
+
     try:
         logging.info("Requesting dataset summary from OpenAI...")
 
@@ -61,6 +77,9 @@ Please perform the following tasks:
             messages=[{"role": "user", "content": prompt}],
             response_model=SummaryOutput,
         )
+
+        # Log the raw response from OpenAI for debugging
+        logging.info(f"Raw LLM response: {response.json()}")
 
         logging.info("Successfully received structured response.")
         return response
