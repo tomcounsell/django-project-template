@@ -55,13 +55,14 @@ class CSVProcessor:
         print(f"\nStatistical Overview - {label}:")
         print(df.describe())
 
-    def process(self, start_date: str):
-        try:
-            self.load()
-            self.validate()
-            self.clean()
-            week1_df, week2_df = self.filter(start_date)
-            self.generate_overviews(week1_df, week2_df)
-        except ValueError as e:
-            logging.error(f"Processing error: {e}")
-            raise
+    # def process(self, start_date: str, week_number: int):
+    #     try:
+    #         self.load()
+    #         self.validate()
+    #         self.clean()
+    #         week_df = self.filter(start_date)[week_number - 1]
+    #         self.generate_overview(week_df, f"Week {week_number}")
+    #         return week_df  # Return the processed week DataFrame
+    #     except ValueError as e:
+    #         logging.error(f"Processing error: {e}")
+    #         raise
