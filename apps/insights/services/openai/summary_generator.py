@@ -45,7 +45,7 @@ Please provide the summary in the following JSON format:
             "name": "Name of Metric",
             "value": Numeric value,
             "description": "Brief description of the metric and its significance."
-        }},
+        }}
         // Repeat for each key metric
     ]
 }}

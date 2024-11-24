@@ -1,7 +1,8 @@
 # apps/insights/tests/test_comparison_service.py
+
 import pytest
 from apps.insights.services.comparison_service import process_comparison
-from apps.insights.services.openai.schemas import ComparisonOutput
+from apps.insights.services.openai.schemas import ComparisonOutput, KeyMetricComparison
 
 
 def test_process_comparison():

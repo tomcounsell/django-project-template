@@ -14,7 +14,7 @@ logging.basicConfig(
 )
 
 
-def prepare_summary(data_summary):
+def prepare_summary(data_summary: dict) -> str:
     """
     Combines dataset_summary and key_metrics from a structured dataset summary into a single string for LLM input.
 
@@ -24,14 +24,29 @@ def prepare_summary(data_summary):
     Returns:
         str: A combined string representation of the dataset summary and its key metrics.
     """
-    key_metrics_str = "\n".join(
-        f"- {metric['name']}: {metric['value']} ({metric['description']})"
-        for metric in data_summary["key_metrics"]
-    )
-    return f"{data_summary['dataset_summary']}\n\nKey Metrics:\n{key_metrics_str}"
+    try:
+        if not data_summary.get("dataset_summary"):
+            raise ValueError("Missing 'dataset_summary' in data_summary.")
+
+        if not data_summary.get("key_metrics"):
+            raise ValueError("Missing 'key_metrics' in data_summary.")
+
+        key_metrics_str = "\n".join(
+            f"- {metric['name']}: {metric['value']} ({metric['description']})"
+            for metric in data_summary["key_metrics"]
+            if "name" in metric and "value" in metric and "description" in metric
+        )
+
+        if not key_metrics_str:
+            logging.warning("Key metrics are empty or malformed.")
+
+        return f"{data_summary['dataset_summary']}\n\nKey Metrics:\n{key_metrics_str}"
+    except Exception as e:
+        logging.error(f"Failed to prepare summary: {e}")
+        raise
 
 
-def process_comparison(data_summary1, data_summary2) -> ComparisonOutput:
+def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOutput:
     """
     Processes two dataset summaries, merges them into strings, and generates a structured comparison.
 
@@ -46,14 +61,21 @@ def process_comparison(data_summary1, data_summary2) -> ComparisonOutput:
     try:
         logging.info("Starting comparison of dataset summaries...")
 
-        # Prepare text strings for the LLM
+        # Validate and prepare text strings for the LLM
         summary1 = prepare_summary(data_summary1)
         summary2 = prepare_summary(data_summary2)
+
+        logging.info("Generated summaries for comparison.")
+        logging.debug(f"Summary 1: {summary1}")
+        logging.debug(f"Summary 2: {summary2}")
 
         # Generate comparison using LLM
         comparison_result = generate_comparison(summary1, summary2)
 
-        # Log results
+        # Log detailed results
+        logging.info("Comparison completed successfully.")
+        logging.debug(f"Raw comparison result: {comparison_result}")
+
         logging.info("Comparison Summary:")
         logging.info(comparison_result.comparison_summary)
         logging.info("Key Metrics Comparison:")
@@ -62,6 +84,7 @@ def process_comparison(data_summary1, data_summary2) -> ComparisonOutput:
                 f"{metric.name}: Week 1 Value = {metric.value1}, "
                 f"Week 2 Value = {metric.value2} ({metric.description})"
             )
+
         if comparison_result.notable_trends:
             logging.info(f"Notable Trends: {comparison_result.notable_trends}")
         else:
@@ -69,6 +92,10 @@ def process_comparison(data_summary1, data_summary2) -> ComparisonOutput:
 
         return comparison_result
 
+    except ValueError as ve:
+        logging.error(f"Validation Error: {ve}")
+        raise
+
     except Exception as e:
-        logging.error(f"Failed to process dataset comparison: {e}")
+        logging.error(f"Unexpected error during comparison: {e}")
         raise
