@@ -11,47 +11,49 @@ from apps.insights.services.openai.schemas import ComparisonOutput
 # Mock structured data for Week 1 and Week 2
 data_summary1 = {
     "dataset_summary": """
-    The dataset covers a 7-day period and encapsulates web analytics data, reflecting user engagement on a website.
-    Key metrics include the total number of sessions, users, new users, pageviews, as well as specific engagement metrics 
-    such as pages per session, average session duration, bounce rate, conversion rate, transactions, and revenue.
-    Overall, the dataset provides an overview of user interaction, revealing patterns in website traffic and user activity
-    over the specified time frame.
+    The dataset provides a detailed view of website interactions over a period, highlighting user engagement and conversion metrics.
+    On average, there were 729 sessions per day, with a significant variance as the minimum was 181 and the maximum 1940 sessions, showing possible peak days or events.
+    Users averaged at 584.81 per day, indicating a solid user base, although the new user average was notably lower at 200.76, which could imply either high return rates or less attraction to new users.
+    The average pageviews reached 2650.88, suggesting substantial user engagement per session, supported by the average pages per session metric at 3.54.
+    The session duration averaged 143.54 seconds, which shows users spend a considerable amount of time engaged per session.
+    The bounce rate at 24.62% is relatively low, indicating effective user retention on initial pages. With a conversion rate of 2.64%, there is moderate success in turning interactions into actions.
+    Transactions averaged at 15.07 per day, contributing to an average daily revenue of 755.10, indicating satisfactory financial outcomes from the user activities, albeit with room for improvement in conversion efficiency.
     """,
     "key_metrics": [
-        {"name": "Average Sessions", "value": 1543.43},
-        {"name": "Average Users", "value": 1265.14},
-        {"name": "Average New Users", "value": 427.29},
-        {"name": "Average Pageviews", "value": 6225.86},
-        {"name": "Pages per Session", "value": 4.01},
-        {"name": "Average Session Duration", "value": 163.1},
-        {"name": "Bounce Rate", "value": 0.2},
-        {"name": "Conversion Rate", "value": 0.028},
-        {"name": "Average Transactions", "value": 34.14},
-        {"name": "Average Revenue", "value": 1622.53},
+        {"name": "Average Sessions", "value": 729.0},
+        {"name": "Average Users", "value": 584.81},
+        {"name": "Average New Users", "value": 200.76},
+        {"name": "Average Pageviews", "value": 2650.88},
+        {"name": "Pages per Session", "value": 3.54},
+        {"name": "Average Session Duration", "value": 143.54},
+        {"name": "Bounce Rate", "value": 0.246236},
+        {"name": "Conversion Rate", "value": 0.026381},
+        {"name": "Average Transactions", "value": 15.07},
+        {"name": "Average Revenue", "value": 755.10},
     ],
 }
 
 data_summary2 = {
     "dataset_summary": """
-    The dataset provides a statistical overview of a website's user interaction over a period of seven days in January 2024,
-    from the 8th to the 14th. It includes metrics related to sessions, users, new users, pageviews, pages per session, 
-    average session duration, bounce rate, conversion rate, transactions, and revenue. The average daily sessions were 
-    approximately 1683, with an average of about 1238 users and around 424 new users daily. The website generated an average 
-    of 6892 pageviews per day, with each session lasting around 154 seconds on average. The average bounce rate was about 
-    16.06%, and the conversion rate stood at about 4.25%. The site recorded an average of 49 transactions per day, resulting
-    in a daily revenue averaging $2087.17.
+    This dataset provides a detailed statistical summary of website performance metrics over a span of 42 days, centered around the mid-January period of 2024.
+    The average number of sessions per day is approximately 770, with users averaging nearly 596 and new users being around 207 per day.
+    A significant amount of pageviews is recorded, averaging about 2874 daily, complemented by an average of 3.58 pages per session, suggesting reasonable engagement levels.
+    The average session lasts around 128 seconds, with a bounce rate of approximately 28%.
+    Notably, the conversion rate is relatively low at 2.78%, yet transactions average about 17 per day, indicating that while user acquisition may be moderate, those engaged result in financial transactions amounting to an average daily revenue of $815.
+    Variability is considerable across these metrics, particularly with a wide standard deviation in transactions and revenue, suggesting fluctuating daily performance.
+    Extremely high maximum values, such as 2138 sessions and a peak revenue of $3277, indicate occasional spikes, likely due to specific events or promotions that temporarily enhanced user engagement and sales figures.
     """,
     "key_metrics": [
-        {"name": "Average Sessions", "value": 1682.57},
-        {"name": "Average Users", "value": 1237.86},
-        {"name": "Average New Users", "value": 424.14},
-        {"name": "Average Pageviews", "value": 6891.71},
-        {"name": "Pages per Session", "value": 4.07},
-        {"name": "Average Session Duration", "value": 153.88},
-        {"name": "Bounce Rate", "value": 0.1606},
-        {"name": "Conversion Rate", "value": 0.0425},
-        {"name": "Average Transactions", "value": 49.43},
-        {"name": "Average Revenue", "value": 2087.17},
+        {"name": "Average Sessions", "value": 770.52},
+        {"name": "Average Users", "value": 595.93},
+        {"name": "Average New Users", "value": 207.38},
+        {"name": "Average Pageviews", "value": 2874.48},
+        {"name": "Pages per Session", "value": 3.58},
+        {"name": "Average Session Duration", "value": 127.56},
+        {"name": "Bounce Rate", "value": 0.28},
+        {"name": "Conversion Rate", "value": 0.028},
+        {"name": "Average Transactions", "value": 16.86},
+        {"name": "Average Revenue", "value": 814.92},
     ],
 }
 

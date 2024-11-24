@@ -38,6 +38,7 @@ class KeyMetricComparisonInline(admin.TabularInline):
         "description",
         "formatted_percentage_difference",
     )
+    fields = readonly_fields  # Make all fields explicitly read-only
     can_delete = False
 
     def rounded_value1(self, obj):
@@ -63,13 +64,19 @@ class KeyMetricComparisonInline(admin.TabularInline):
 
 class ComparisonAdmin(admin.ModelAdmin):
     list_display = (
-        "start_date",
+        "comparison_start_date",
         "comparison_summary",
         "display_summary1",
         "display_summary2",
     )
-    search_fields = ("start_date",)
+    search_fields = ("summary1__start_date", "summary2__start_date")
     inlines = [KeyMetricComparisonInline]  # Add the inline view for KeyMetricComparison
+
+    def comparison_start_date(self, obj):
+        """Use the earliest start_date from summary1 for consistency."""
+        return obj.summary1.start_date
+
+    comparison_start_date.short_description = "Start Date"
 
     def display_summary1(self, obj):
         """Display Summary1 details."""
