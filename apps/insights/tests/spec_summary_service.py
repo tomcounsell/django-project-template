@@ -1,3 +1,4 @@
+# Run this in the Django Python shell inside the Docker container
 from apps.insights.services.summary_service import process_week
 from apps.insights.models.summary import Summary, KeyMetric
 
