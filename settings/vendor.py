@@ -1,8 +1,8 @@
 import os
 
-from settings import LOCAL, STAGE, DEMO, PRODUCTION
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from settings import LOCAL
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # AWS
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', "")
@@ -17,42 +17,33 @@ AWS_DEFAULT_ACL = 'public-read'
 AWS_SNS_NAME = os.environ.get('AWS_SNS_NAME', "")
 AWS_STATIC_URL = 'https://' + AWS_S3_BUCKET_NAME + '.s3.amazonaws.com/'
 
-
 # STATIC FILES
 if not LOCAL:
     STATIC_URL = AWS_STATIC_URL
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 
-
 CACHES = {
     "default": {
-         "BACKEND": "redis_cache.RedisCache",
-         "LOCATION": os.environ.get('REDIS_URL'),
+        "BACKEND": "redis_cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
     }
 }
 
+# Heroku or Render DATABASE
+import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    "default": dj_database_url.config(),
 }
-
-# HEROKU DATABASE
-import dj_database_url
-DATABASES = {'default': dj_database_url.config(), }
 # Set DATABASE_URL in config if using other host
 # DATABASE_URL = f"postgresql://{username}:{password}@{host}:5432/{dbname}"
 
+SUPABASE_PROJECT_URL = os.environ.get("SUPABASE_PROJECT_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_BUCKET_NAME = os.environ.get("SUPABASE_BUCKET_NAME")
 
-DEFAULT_FROM_EMAIL = "info@example.com"  # if you don't already have this in settings
-SERVER_EMAIL = "info@example.com"  # ditto (default from-email for Django errors)
+DEFAULT_FROM_EMAIL = "admin@investors.royop.com"
+SERVER_EMAIL = "admin@investors.royop.com"
 
-# GOOGLE_ANALYTICS_PROPERTY_ID = 'UA-1234567-8'
-# FACEBOOK_PIXEL_ID = '1234567890'
-# HUBSPOT_PORTAL_ID = '1234'
-# HUBSPOT_DOMAIN = 'somedomain.web101.hubspot.com'
-# INTERCOM_APP_ID = '0123456789abcdef0123456789abcdef01234567'
-# OPTIMIZELY_ACCOUNT_NUMBER = '1234567'
+LOOPS_API_KEY = os.environ.get("LOOPS_API_KEY")
