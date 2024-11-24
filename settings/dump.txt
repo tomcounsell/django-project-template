@@ -87,6 +87,10 @@ SERVER_EMAIL = "info@example.com"  # ditto (default from-email for Django errors
 # settings/local.py
 import os
 
+# FIXME: Remove this:
+print(f"DJANGO_SECRET_KEY: {os.environ.get('DJANGO_SECRET_KEY')}")
+print(f"REDIS_URL: {os.environ.get('REDIS_URL')}")
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -94,6 +98,15 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "test_secret_key")
 
 INTERNAL_IPS = [
     "127.0.0.1",
+]
+
+APPS = [
+    "apps.common",
+    # 'apps.integration',
+    "apps.communication",
+    # 'apps.public',
+    # 'apps.api',
+    "apps.insights",
 ]
 
 # DATABASES = {
@@ -175,28 +188,43 @@ import redis
 
 from settings import DEBUG, LOCAL
 
-SIMULATED_ENV = (LOCAL is True)
-# todo: use this to mark keys in redis db, so they can be separated and deleted
+# Indicates whether the environment is simulated (e.g., local development)
+SIMULATED_ENV = LOCAL
 
-logger = logging.getLogger('redis_db')
+logger = logging.getLogger("redis_db")
 
-if LOCAL:
-    from settings.local import REDIS_URL
-    if REDIS_URL:
-        redis_db = redis.from_url(REDIS_URL)
+# Define a default Redis URL for local and Docker environments
+DEFAULT_REDIS_URL = "redis://redis:6379/5"
+
+# Setup Redis connection
+try:
+    if LOCAL:
+        from settings.local import REDIS_URL
+
+        # Use REDIS_URL from settings.local or fallback to Docker Redis service
+        redis_db = redis.from_url(REDIS_URL or DEFAULT_REDIS_URL)
     else:
-        REDIS_HOST, REDIS_PORT = "127.0.0.1:6379".split(":")
-        pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=0)
-        redis_db = redis.Redis(connection_pool=pool)
-else:
-    redis_db = redis.from_url(os.environ.get("REDIS_URL"))
+        # Use REDIS_URL from environment variable or fallback to Docker Redis service
+        redis_db = redis.from_url(os.environ.get("REDIS_URL", DEFAULT_REDIS_URL))
 
-if DEBUG:
-    logger.info("Redis connection established for app database.")
-    used_memory, maxmemory = int(redis_db.info()['used_memory']), int(redis_db.info()['maxmemory'])
-    maxmemory_human = redis_db.info()['maxmemory_human']
-    if maxmemory > 0:
-        logger.info(f"Redis currently consumes {round(100*used_memory/maxmemory, 2)}% out of {maxmemory_human}")
+    # Log Redis connection details
+    if DEBUG:
+        logger.info("Redis connection established for app database.")
+        redis_info = redis_db.info()
+        used_memory, maxmemory = redis_info.get("used_memory"), redis_info.get(
+            "maxmemory", 0
+        )
+        maxmemory_human = redis_info.get("maxmemory_human", "N/A")
+        if maxmemory > 0:
+            usage_percent = round(100 * used_memory / maxmemory, 2)
+            logger.info(
+                f"Redis currently consumes {usage_percent}% out of {maxmemory_human}"
+            )
+
+except redis.ConnectionError as e:
+    # Log critical error if Redis connection fails
+    logger.critical("Redis connection failed! Ensure Redis is running and accessible.")
+    raise e
 
 ==== dump.txt ====
 

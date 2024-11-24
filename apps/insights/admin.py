@@ -10,6 +10,7 @@ class ComparisonAdmin(admin.ModelAdmin):
     list_display = ("start_date", "end_date", "comparison_summary")
     search_fields = ("start_date", "end_date")
 
+    # Add custom URLs for the start-comparison page
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -21,6 +22,7 @@ class ComparisonAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
+    # Custom view for running a comparison
     def start_comparison_view(self, request):
         if request.method == "POST":
             form = RunComparisonForm(request.POST)
@@ -34,9 +36,15 @@ class ComparisonAdmin(admin.ModelAdmin):
             form = RunComparisonForm()
         return render(
             request,
-            "admin/start_comparison.html",
-            {"form": form, "title": "Run Comparison"},
+            "admin/insights/start_comparison.html",  # Match the template's location
+            {"form": form, "title": "Run Week-over-Week Comparison"},
         )
+
+    # Add a link to the changelist view for "Run Comparison"
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context["start_comparison_url"] = "start-comparison/"
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(Comparison, ComparisonAdmin)
