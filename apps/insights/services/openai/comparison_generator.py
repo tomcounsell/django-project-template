@@ -48,8 +48,8 @@ Please provide the comparison in the following JSON format:
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
-            "value1": Value from Summary 1,
-            "value2": Value from Summary 2,
+            "value1": Value from Week 1,
+            "value2": Value from Week 2,
             "description": "Description of the observed difference or trend."
         }},
         // Repeat for each key metric
