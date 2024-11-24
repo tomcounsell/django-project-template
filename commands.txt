@@ -7,6 +7,7 @@
 5. /app # python manage.py migrate
 Running Tests:
 pytest apps/insights/tests/test_summary_service.py -s
+pytest apps/insights/tests/test_comparison_service.py -s
 pytest apps/insights/tests/test_task_scheduler.py -s
 
 Testing:

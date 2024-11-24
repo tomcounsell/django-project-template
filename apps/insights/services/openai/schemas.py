@@ -1,5 +1,6 @@
 # apps/insights/services/openai/schemas.py
-from pydantic import BaseModel, Field, ValidationError
+
+from pydantic import BaseModel, Field
 from typing import List
 
 
@@ -39,7 +40,7 @@ class KeyMetric(BaseModel):
                 description="The mean number of pageviews per day.",
             ),
             cls(
-                name="Average Pages per Session",
+                name="Pages per Session",
                 value=0,
                 description="The average number of pages viewed per session.",
             ),
@@ -110,6 +111,17 @@ class SummaryOutput(BaseModel):
             metric.validate_name()
 
 
+class KeyMetricComparison(BaseModel):
+    """
+    Represents a comparison of a key metric between two datasets.
+    """
+
+    name: str
+    value1: float
+    value2: float
+    description: str
+
+
 class ComparisonOutput(BaseModel):
     """
     Structured output for comparing two dataset summaries.
@@ -119,9 +131,9 @@ class ComparisonOutput(BaseModel):
         ...,
         description="A concise English summary highlighting differences and similarities.",
     )
-    key_metrics_comparison: List[KeyMetric] = Field(
+    key_metrics_comparison: List[KeyMetricComparison] = Field(
         ...,
-        description="Key metrics with differences or trends observed between the two datasets.",
+        description="Key metrics with values from both summaries and descriptions of differences.",
     )
     notable_trends: str = Field(
         None, description="Any major trends or patterns observed during the comparison."

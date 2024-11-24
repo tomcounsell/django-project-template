@@ -1,4 +1,5 @@
 # apps/insights/services/openai/comparison_generator.py
+
 import os
 from instructor import from_openai
 from openai import OpenAI
@@ -32,23 +33,45 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
         ComparisonOutput: A structured comparison containing a summary, key metrics comparison, and notable trends.
     """
     prompt = f"""
-    You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
+You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
 
-    Summary 1:
-    {summary1}
+Summary 1:
+{summary1}
 
-    Summary 2:
-    {summary2}
+Summary 2:
+{summary2}
 
-    Please:
-    1. Provide a concise summary of the differences and similarities between the two summaries.
-    2. Highlight key metrics where differences or trends are observed, structured as:
-        - Name of Metric
-        - Value from Summary 1
-        - Value from Summary 2
-        - Description of the observed difference or trend.
-    3. Mention any notable trends or patterns observed during the comparison.
-    """
+Please provide the comparison in the following JSON format:
+
+{{
+    "comparison_summary": "A concise summary of differences and similarities.",
+    "key_metrics_comparison": [
+        {{
+            "name": "Name of Metric",
+            "value1": Value from Summary 1,
+            "value2": Value from Summary 2,
+            "description": "Description of the observed difference or trend."
+        }},
+        // Repeat for each key metric
+    ],
+    "notable_trends": "Any notable trends or patterns observed."
+}}
+
+Ensure that:
+- All numeric values are provided as numbers (not strings).
+- The key_metrics_comparison includes the following metrics in this order:
+    - "Average Sessions"
+    - "Average Users"
+    - "Average New Users"
+    - "Average Pageviews"
+    - "Pages per Session"
+    - "Average Session Duration"
+    - "Bounce Rate"
+    - "Conversion Rate"
+    - "Average Transactions"
+    - "Average Revenue"
+- The description for each metric explains the difference or trend observed between the two summaries.
+"""
     try:
         logging.info("Requesting dataset comparison from OpenAI...")
 
@@ -58,6 +81,9 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
             messages=[{"role": "user", "content": prompt}],
             response_model=ComparisonOutput,
         )
+
+        # Log the raw response from OpenAI for debugging
+        logging.info(f"Raw LLM response: {response.json()}")
 
         logging.info("Successfully received structured response.")
         return response
