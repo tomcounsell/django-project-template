@@ -1,4 +1,4 @@
-# apps/insights/services/summary_service.py
+# app/insights/services/summary_service.py
 """
 Summary Service for Single-Week Data Processing
 Handles CSV data validation, processing, LLM summary generation, and key metric extraction for a single week.
@@ -35,38 +35,60 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
         SummaryOutput: LLM summary and key metrics for the week.
     """
     try:
-        logging.info(f"Processing Week {week_number} starting from {start_date}...")
+        logging.info(
+            f"Starting process_week: start_date={start_date}, week_number={week_number}"
+        )
 
-        # Initialize CSVProcessor and load data
+        # Step 1: Initialize CSVProcessor and load data
+        logging.info("Initializing CSVProcessor...")
         processor = CSVProcessor()
+
+        logging.info("Loading CSV...")
         processor.load()
+        logging.info("CSV loaded successfully!")
+
+        # Step 2: Validate and clean
+        logging.info("Validating CSV...")
         processor.validate()
+        logging.info("Validation complete!")
+
+        logging.info("Cleaning CSV...")
         processor.clean()
+        logging.info("Cleaning complete!")
 
-        # Filter data for the specified week
+        # Step 3: Filter data
+        logging.info(f"Filtering data for week: {week_number}")
         week_df = processor.filter(start_date, week_number)
+        logging.info(f"Filtering complete! Filtered rows: {len(week_df)}")
 
-        if week_df.empty:
-            raise ValueError(f"No data found for Week {week_number}.")
-
-        # Generate statistical overview and LLM summary
+        # Step 4: Generate statistical overview and LLM summary
+        logging.info("Generating statistical overview...")
         processor.generate_overview(week_df, f"Week {week_number}")
+
+        logging.info("Calling LLM to generate summary...")
         statistical_summary = week_df.describe().to_string()
         llm_summary = generate_summary(statistical_summary)
+        logging.info("LLM summary generated successfully!")
 
-        # Determine end date for the week
+        # Step 5: Save results
+        logging.info("Saving results to database and JSON...")
         start_date_dt = pd.to_datetime(start_date)
         end_date_dt = start_date_dt + pd.Timedelta(days=(7 * week_number - 1))
-        start_date_formatted = start_date_dt.strftime("%Y-%m-%d")
-        end_date_formatted = end_date_dt.strftime("%Y-%m-%d")
+        save_summary_to_database(
+            start_date_dt.strftime("%Y-%m-%d"),
+            end_date_dt.strftime("%Y-%m-%d"),
+            llm_summary,
+        )
+        save_summary_to_file(
+            start_date_dt.strftime("%Y-%m-%d"),
+            end_date_dt.strftime("%Y-%m-%d"),
+            llm_summary,
+        )
 
-        # Save summary to database and JSON
-        save_summary_to_database(start_date_formatted, end_date_formatted, llm_summary)
-        save_summary_to_file(start_date_formatted, end_date_formatted, llm_summary)
-
+        logging.info("process_week completed successfully!")
         return llm_summary
     except Exception as e:
-        logging.error(f"Failed to process Week {week_number}: {e}")
+        logging.error(f"Error in process_week: {e}")
         raise
 
 
@@ -86,24 +108,18 @@ def save_summary_to_database(
             logging.info(
                 f"Saving summary for {start_date} to {end_date} to the database..."
             )
-
             summary = Summary.objects.create(
                 start_date=start_date,
                 end_date=end_date,
                 dataset_summary=llm_summary.dataset_summary,
             )
-
             for metric in llm_summary.key_metrics:
                 KeyMetric.objects.create(
                     summary=summary,
                     name=metric.name,
                     value=metric.value,
                 )
-
-            logging.info(
-                f"Summary and key metrics for {start_date} to {end_date} saved successfully."
-            )
-
+            logging.info("Summary and key metrics saved successfully.")
     except Exception as e:
         logging.error(f"Failed to save summary and key metrics to the database: {e}")
         raise
@@ -121,7 +137,6 @@ def save_summary_to_file(start_date: str, end_date: str, llm_summary: SummaryOut
     try:
         file_path = f"summary_output_{start_date}_to_{end_date}.json"
         logging.info(f"Saving summary result to {file_path}...")
-
         data = {
             "start_date": start_date,
             "end_date": end_date,
@@ -131,10 +146,8 @@ def save_summary_to_file(start_date: str, end_date: str, llm_summary: SummaryOut
                 for metric in llm_summary.key_metrics
             ],
         }
-
         with open(file_path, "w") as json_file:
             json.dump(data, json_file, indent=4)
-
         logging.info("Summary result saved successfully.")
     except Exception as e:
         logging.error(f"Failed to save summary result to file: {e}")

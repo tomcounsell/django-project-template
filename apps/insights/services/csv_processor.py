@@ -1,5 +1,6 @@
 # apps/insights/services/csv_processor.py
 import logging
+import pandas as pd  # Import pandas for date processing
 from .csv.csv_reader import load_csv
 from .csv.data_validator import validate_columns
 from .csv.data_cleaner import clean_data
@@ -12,11 +13,10 @@ logging.basicConfig(
 
 
 class CSVProcessor:
-    def __init__(self, file_path: str):
+    def __init__(self):
         """
-        Initialize the CSVProcessor with the path to the CSV file.
+        Initialize the CSVProcessor.
         """
-        self.file_path = file_path
         self.df = None  # Placeholder for the loaded DataFrame
 
     def load(self):
@@ -24,7 +24,7 @@ class CSVProcessor:
         Load the CSV file into a Pandas DataFrame.
         """
         logging.info("Loading CSV...")
-        self.df = load_csv(self.file_path)
+        self.df = load_csv()
 
     def validate(self):
         """
@@ -76,15 +76,3 @@ class CSVProcessor:
         logging.info(f"Generating statistical overview for {label}...")
         print(f"\nStatistical Overview - {label}:")
         print(df.describe())
-
-    # def process(self, start_date: str, week_number: int):
-    #     try:
-    #         self.load()
-    #         self.validate()
-    #         self.clean()
-    #         week_df = self.filter(start_date)[week_number - 1]
-    #         self.generate_overview(week_df, f"Week {week_number}")
-    #         return week_df  # Return the processed week DataFrame
-    #     except ValueError as e:
-    #         logging.error(f"Processing error: {e}")
-    #         raise
