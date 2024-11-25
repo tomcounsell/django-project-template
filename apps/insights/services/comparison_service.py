@@ -30,6 +30,9 @@ def prepare_summary(data_summary: dict) -> str:
         str: A combined string representation of the dataset summary and its key metrics.
     """
     try:
+        if not isinstance(data_summary, dict):
+            raise ValueError("data_summary must be a dictionary.")
+
         if not data_summary.get("dataset_summary"):
             raise ValueError("Missing 'dataset_summary' in data_summary.")
 
@@ -44,6 +47,7 @@ def prepare_summary(data_summary: dict) -> str:
 
         if not key_metrics_str:
             logging.warning("Key metrics are empty or malformed.")
+            key_metrics_str = "No key metrics available."
 
         return f"{data_summary['dataset_summary']}\n\nKey Metrics:\n{key_metrics_str}"
     except Exception as e:
@@ -70,8 +74,8 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         summary2 = prepare_summary(data_summary2)
 
         logging.info("Generated summaries for comparison.")
-        logging.debug(f"Summary 1: {summary1}")
-        logging.debug(f"Summary 2: {summary2}")
+        logging.debug(f"Prepared Summary 1:\n{summary1}")
+        logging.debug(f"Prepared Summary 2:\n{summary2}")
 
         # Generate comparison using LLM
         comparison_result = generate_comparison(summary1, summary2)
@@ -85,14 +89,13 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         logging.info("Key Metrics Comparison:")
         for metric in comparison_result.key_metrics_comparison:
             logging.info(
-                f"{metric.name}: Week 1 Value = {metric.value1}, "
-                f"Week 2 Value = {metric.value2} ({metric.description})"
+                f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
             )
 
         return comparison_result
 
     except ValueError as ve:
-        logging.error(f"Validation Error: {ve}")
+        logging.error(f"Validation Error during comparison: {ve}")
         raise
 
     except Exception as e:
@@ -148,49 +151,3 @@ def save_comparison_to_database(
     except Exception as e:
         logging.error(f"Failed to save comparison to the database: {e}")
         raise
-
-
-# def save_comparison_to_file(
-#     comparison_result: ComparisonOutput, summary1_id: int, summary2_id: int
-# ):
-#     """
-#     Saves the structured comparison result to a JSON file resembling the database entry.
-
-#     Args:
-#         comparison_result (ComparisonOutput): The structured comparison result.
-#         summary1_id (int): The database ID of the first summary.
-#         summary2_id (int): The database ID of the second summary.
-#     """
-#     try:
-#         file_path = "comparison_output.json"
-#         logging.info(f"Saving comparison result to {file_path}...")
-
-#         # Construct the data dictionary to match database structure
-#         data = {
-#             "summary1": summary1_id,
-#             "summary2": summary2_id,
-#             "comparison_summary": comparison_result.comparison_summary,
-#             "key_metrics_comparison": [
-#                 {
-#                     "name": metric.name,
-#                     "value1": metric.value1,
-#                     "value2": metric.value2,
-#                     "description": metric.description,
-#                     "percentage_difference": (
-#                         ((metric.value2 - metric.value1) / metric.value1) * 100
-#                         if metric.value1 != 0
-#                         else None
-#                     ),
-#                 }
-#                 for metric in comparison_result.key_metrics_comparison
-#             ],
-#         }
-
-#         # Write to the JSON file
-#         with open(file_path, "w") as json_file:
-#             json.dump(data, json_file, indent=4)
-
-#         logging.info("Comparison result saved successfully.")
-#     except Exception as e:
-#         logging.error(f"Failed to save comparison result to file: {e}")
-#         raise
