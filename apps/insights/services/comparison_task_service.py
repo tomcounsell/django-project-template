@@ -1,5 +1,3 @@
-# apps/insights/services/comparison_task_service.py
-
 from apps.insights.models.summary import Summary
 from apps.insights.services.comparison_service import process_comparison
 import logging
@@ -19,20 +17,20 @@ def run_comparison_task(start_date: str) -> dict:
         dict: The result of the comparison service.
     """
     try:
-        logger.info(f"Running comparison task for start_date: {start_date}")
+        logger.info(f"Starting comparison task for start_date: {start_date}")
 
         # Convert start_date to datetime
         start_date_week1 = datetime.strptime(start_date, "%Y-%m-%d")
+        logger.info(f"Week 1 Start Date: {start_date_week1}")
         start_date_week2 = start_date_week1 + timedelta(days=7)
+        logger.info(f"Week 2 Start Date: {start_date_week2}")
 
         # Fetch summaries
         logger.info("Fetching summaries from the database...")
         summary1 = Summary.objects.get(start_date=start_date_week1.strftime("%Y-%m-%d"))
+        logger.info(f"Fetched Week 1 Summary: {summary1}")
         summary2 = Summary.objects.get(start_date=start_date_week2.strftime("%Y-%m-%d"))
-
-        logger.info("Summaries fetched successfully.")
-        logger.info(f"Week 1 Summary ID: {summary1.id}")
-        logger.info(f"Week 2 Summary ID: {summary2.id}")
+        logger.info(f"Fetched Week 2 Summary: {summary2}")
 
         # Prepare structured data for comparison_service
         data_summary1 = {
@@ -42,6 +40,7 @@ def run_comparison_task(start_date: str) -> dict:
                 for metric in summary1.key_metrics.all()
             ],
         }
+        logger.info(f"Prepared Data Summary 1: {data_summary1}")
 
         data_summary2 = {
             "dataset_summary": summary2.dataset_summary,
@@ -50,6 +49,7 @@ def run_comparison_task(start_date: str) -> dict:
                 for metric in summary2.key_metrics.all()
             ],
         }
+        logger.info(f"Prepared Data Summary 2: {data_summary2}")
 
         # Pass summaries to the comparison_service
         logger.info("Passing summaries to comparison_service...")

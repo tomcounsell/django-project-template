@@ -1,4 +1,7 @@
-from apps.insights.services.comparison_service import process_comparison
+from apps.insights.services.comparison_service import (
+    process_comparison,
+    save_comparison_to_database,
+)
 
 # Mock structured data for Week 1
 data_summary1 = {
@@ -37,12 +40,10 @@ data_summary2 = {
 # Run the comparison service
 comparison_result = process_comparison(data_summary1, data_summary2)
 
-# Output the comparison results
-print("Comparison Summary:")
-print(comparison_result.comparison_summary)
+# Save the comparison result to the database
+# You need to replace summary1_id and summary2_id with actual IDs from your database
+summary1_id = 11  # Replace with actual Week 1 Summary ID
+summary2_id = 12  # Replace with actual Week 2 Summary ID
+save_comparison_to_database(summary1_id, summary2_id, comparison_result)
 
-print("\nKey Metrics Comparison:")
-for metric in comparison_result.key_metrics_comparison:
-    print(
-        f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
-    )
+print("Comparison result has been saved to the database successfully!")
