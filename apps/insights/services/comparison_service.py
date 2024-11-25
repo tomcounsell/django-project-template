@@ -74,8 +74,8 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         summary2 = prepare_summary(data_summary2)
 
         logging.info("Generated summaries for comparison.")
-        logging.debug(f"Prepared Summary 1:\n{summary1}")
-        logging.debug(f"Prepared Summary 2:\n{summary2}")
+        logging.debug(f"Prepared Summary of Current Week:\n{summary1}")
+        logging.debug(f"Prepared Summary of Previous Week:\n{summary2}")
 
         # Step 2:Generate comparison using LLM
         comparison_result = generate_comparison(summary1, summary2)
@@ -89,7 +89,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         logging.info("Key Metrics Comparison:")
         for metric in comparison_result.key_metrics_comparison:
             logging.info(
-                f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
+                f"{metric.name}: Current Week = {metric.value1}, Past Week = {metric.value2} ({metric.description})"
             )
 
         return comparison_result
@@ -97,7 +97,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         # FIXME: Step 3: Save results to database
 
     except ValueError as ve:
-        logging.error(f"Validation Error during comparison: {ve}")
+        logging.error(f"Validation error during comparison: {ve}")
         raise
 
     except Exception as e:
