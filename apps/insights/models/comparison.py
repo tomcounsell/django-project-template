@@ -27,7 +27,7 @@ class Comparison(Timestampable):
         help_text="A concise summary of differences and similarities between the two summaries."
     )
     start_date = models.DateField(
-        help_text="Start date of the comparison, derived from summary1.",
+        help_text="Current week start date of the comparison, derived from summary1.",
         editable=False,
     )
 
