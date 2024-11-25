@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 # FIXME! def generate_summary(start_date)
 
 
+# FIXME! create_comparison()
 def generate_comparison(start_date: str):
     """
     Fetch summaries for current week and past week from the database,
