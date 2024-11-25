@@ -2,72 +2,45 @@
 
 from django_q.tasks import schedule
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-def schedule_week1_summary_task(start_date):
+def schedule_summary_tasks(start_date):
     """
-    Schedule a single task to process the Week 1 summary.
+    Schedule tasks to process summaries for Week 1 and Week 2.
     """
-    # Ensure start_date is in the correct format
+    # Convert start_date to timezone-aware datetime
     if isinstance(start_date, str):
-        try:
-            start_date = datetime.strptime(start_date, "%Y-%m-%d")
-        except ValueError as e:
-            logger.error(
-                f"Invalid start_date format: {start_date}. Expected YYYY-MM-DD."
-            )
-            raise e
-
-    # Ensure start_date is timezone-aware
+        start_date = datetime.strptime(start_date, "%Y-%m-%d")
     if timezone.is_naive(start_date):
         start_date = timezone.make_aware(start_date, timezone.get_current_timezone())
 
-    next_run_time = timezone.now() + timezone.timedelta(seconds=5)  # 5 seconds delay
+    group_id = f"summary-{start_date.isoformat()}"
+    next_run_time = timezone.now() + timedelta(seconds=5)
 
-    # Schedule the task
-    task_id = schedule(
+    # Schedule Task 1: Week 1
+    task_1_id = schedule(
         "apps.insights.services.summary_service.process_week",
-        start_date.strftime("%Y-%m-%d"),  # Pass the start_date as a string again
-        1,  # Week 1
+        start_date.strftime("%Y-%m-%d"),
+        1,
         name=f"Week 1 Summary Task - {start_date.date()}",
-        schedule_type="O",  # One-off execution
+        schedule_type="O",
         next_run=next_run_time,
+        q_options={"group": group_id},
     )
+    logger.info(f"Scheduled Task 1 for Week 1 with ID {task_1_id}")
 
-    logger.info(
-        f"Week 1 Summary Task scheduled with ID {task_id} for {start_date.date()}."
+    # Schedule Task 2: Week 2
+    task_2_id = schedule(
+        "apps.insights.services.summary_service.process_week",
+        start_date.strftime("%Y-%m-%d"),
+        2,
+        name=f"Week 2 Summary Task - {start_date.date()}",
+        schedule_type="O",
+        next_run=next_run_time + timedelta(seconds=5),  # Starts 5 seconds after Task 1
+        q_options={"group": group_id},
     )
-
-
-# def trigger_week_2_task(task):
-#     """
-#     Trigger Task 2 (Week 2) after Task 1 completes successfully.
-#     """
-#     if task.success:
-#         start_date, week_number = task.args
-
-#         # Ensure that start_date is timezone-aware
-#         if timezone.is_naive(start_date):
-#             start_date = timezone.make_aware(
-#                 start_date, timezone.get_current_timezone()
-#             )
-
-#         if week_number == 1:  # Ensure it's Week 1 before triggering Week 2
-#             async_task(
-#                 "apps.insights.services.summary_service.process_week",
-#                 start_date,
-#                 2,
-#                 group=f"summary-{start_date.isoformat()}",
-#                 name=f"Process Week 2 - {start_date.date()}",
-#             )
-#             logger.info(
-#                 f"Task 2 for Week 2 triggered by Task ID {task.id} for start_date {start_date}."
-#             )
-#     else:
-#         logger.error(f"Task 1 failed for start_date {start_date}. Error: {task.result}")
-
-#  After the two grouped tasks, the Step 3 task (comparison task) accepts these returned summaries as inputs from summary_services.
+    logger.info(f"Scheduled Task 2 for Week 2 with ID {task_2_id}")
