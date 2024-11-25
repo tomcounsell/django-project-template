@@ -69,7 +69,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
     try:
         logging.info("Starting comparison of dataset summaries...")
 
-        # Validate and prepare text strings for the LLM
+        # Step 1: Validate and prepare text strings for the LLM
         summary1 = prepare_summary(data_summary1)
         summary2 = prepare_summary(data_summary2)
 
@@ -77,7 +77,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         logging.debug(f"Prepared Summary 1:\n{summary1}")
         logging.debug(f"Prepared Summary 2:\n{summary2}")
 
-        # Generate comparison using LLM
+        # Step 2:Generate comparison using LLM
         comparison_result = generate_comparison(summary1, summary2)
 
         # Log detailed results
@@ -93,6 +93,8 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
             )
 
         return comparison_result
+
+        # FIXME: Step 3: Save results to database
 
     except ValueError as ve:
         logging.error(f"Validation Error during comparison: {ve}")
