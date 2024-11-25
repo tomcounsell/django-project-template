@@ -1,4 +1,4 @@
-from apps.insights.tasks_chain import schedule_summary_tasks
+from apps.insights.tasks import schedule_summary_tasks
 from datetime import datetime
 
 # Provide the start_date as a string
