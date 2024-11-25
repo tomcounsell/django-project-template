@@ -27,7 +27,7 @@ def schedule_summary_tasks(start_date):
     # Create a task chain
     chain = Chain()
 
-    # Append Task 1: Generate Current Week summary
+    # Append Task 1: Generate current week summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,
@@ -36,7 +36,7 @@ def schedule_summary_tasks(start_date):
     )
     logger.info("Added Task 1 to chain: Generate Current Week Summary.")
 
-    # Append Task 2: Generate Past Week summary
+    # Append Task 2: Generate past week summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,

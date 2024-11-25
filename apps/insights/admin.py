@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.utils.html import format_html
 from .forms import RunComparisonForm
 from .models.comparison import Comparison, KeyMetricComparison
 from .models.summary import Summary, KeyMetric
@@ -64,6 +65,7 @@ class KeyMetricComparisonInline(admin.TabularInline):
 
 
 class ComparisonAdmin(admin.ModelAdmin):
+
     list_display = (
         "comparison_start_date",
         "comparison_summary",
@@ -101,6 +103,19 @@ class ComparisonAdmin(admin.ModelAdmin):
         else:
             form = RunComparisonForm()
         return render(request, "admin/insights/run_comparison.html", {"form": form})
+
+    change_list_template = "admin/insights/comparison_list.html"
+
+    def changelist_view(self, request, extra_context=None):
+        """
+        Inject a custom link into the changelist page for comparisons.
+        """
+        if extra_context is None:
+            extra_context = {}
+        extra_context["custom_link"] = format_html(
+            '<a class="button" href="/admin/insights/comparison/run-comparison/">Run Comparison</a>'
+        )
+        return super().changelist_view(request, extra_context=extra_context)
 
     def comparison_start_date(self, obj):
         """Use the earliest start_date from summary1 for consistency."""
