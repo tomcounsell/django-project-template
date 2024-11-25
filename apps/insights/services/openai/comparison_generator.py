@@ -44,6 +44,8 @@ Please provide the comparison in the following JSON format:
 {{
     "comparison_summary": "A summary of differences and similarities between the current week and previous week, including notable trends or observations.
     Ensure that:
+        - Refer to the summaries as "this week" and "the previous week" in your summary.
+        - Use the most salient precise figures (e.g., differences, statistics, percentages) to describe the observed difference or trend between the current week and the previous week in your summary.
         - Commas are used in numerical values to separate thousands in the summary.",
     "key_metrics_comparison": [
         {{
@@ -57,7 +59,7 @@ Please provide the comparison in the following JSON format:
 }}
 
 Ensure that:
-- All numeric values are provided as numbers (not strings).
+- Numerical values for value1 and value2 are provided as numbers (not strings) for each metric.
 - The key_metrics_comparison includes the following metrics in this order:
     - "Average Sessions"
     - "Average Users"

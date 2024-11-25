@@ -59,7 +59,7 @@ class KeyMetricComparisonInline(admin.TabularInline):
 
     rounded_value1.short_description = "Current Value"
     rounded_value2.short_description = "Previous Value"
-    formatted_percentage_difference.short_description = "Percentage Increase"
+    formatted_percentage_difference.short_description = "Percentage Change"
 
 
 class ComparisonAdmin(admin.ModelAdmin):
