@@ -244,6 +244,7 @@ Q_CLUSTER = {
     "compress": True,
     "queue_limit": 50,
     "bulk": 10,
+    "save_limit": 50,  # This ensures that task results are saved up to 50 entries
     "redis": {
         "host": os.environ.get("REDIS_HOST", "redis"),
         "port": int(os.environ.get("REDIS_PORT", 6379)),

@@ -1,15 +1,9 @@
-from django_q.tasks import async_task, schedule, chain
+from datetime import datetime, timedelta
+from django_q.tasks import async_task, schedule
 from apps.insights.services.summary_service import process_week
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-def simple_console_task(message: str):
-    """
-    A simple task that logs a message to the console.
-    """
-    logger.info(f"Simple Console Task says: {message}")
 
 
 def schedule_summary_tasks(start_date):
@@ -17,6 +11,9 @@ def schedule_summary_tasks(start_date):
     Schedule tasks to process summaries for Week 1 and Week 2 sequentially.
     """
     group_id = f"summary-{start_date}"  # Group ID for tracking
+
+    # Calculate 5 seconds from now for the first task
+    next_run_time = datetime.now() + timedelta(seconds=5)
 
     # Chain the tasks: Task 1 (Week 1) triggers Task 2 (Week 2)
     schedule(
@@ -26,7 +23,7 @@ def schedule_summary_tasks(start_date):
             ["apps.insights.services.summary_service.process_week", start_date, 2],
         ],
         schedule_type="O",  # Single execution
-        next_run=5,  # Meet "1-minute delay" requirement
+        next_run=next_run_time,  # Scheduled 5 seconds from now
         group=group_id,
     )
 
