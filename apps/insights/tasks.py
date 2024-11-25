@@ -18,10 +18,11 @@ def schedule_summary_tasks(start_date):
     if timezone.is_naive(start_date):
         start_date = timezone.make_aware(start_date, timezone.get_current_timezone())
 
+    # Wait 1 minute before scheduling the first task
     group_id = f"summary-{start_date.isoformat()}"
     next_run_time = timezone.now() + timedelta(seconds=5)
 
-    # Schedule Task 1: Week 1
+    # Schedule Task 1: Week 1 Summary
     task_1_id = schedule(
         "apps.insights.services.summary_service.process_week",
         start_date.strftime("%Y-%m-%d"),
@@ -33,7 +34,7 @@ def schedule_summary_tasks(start_date):
     )
     logger.info(f"Scheduled Task 1 for Week 1 with ID {task_1_id}")
 
-    # Schedule Task 2: Week 2
+    # Schedule Task 2: Week 2 Summary
     task_2_id = schedule(
         "apps.insights.services.summary_service.process_week",
         start_date.strftime("%Y-%m-%d"),

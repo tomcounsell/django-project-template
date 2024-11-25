@@ -1,3 +1,4 @@
+# apps/insights/services/comparison_pipeline.py
 from apps.insights.services.comparison_service import (
     process_comparison,
     save_comparison_to_database,
