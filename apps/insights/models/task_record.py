@@ -1,4 +1,5 @@
 # apps/insights/models/task_record.py
+# apps/insights/models/task_record.py
 from django.db import models
 from django_q.models import Task
 from apps.insights.models.summary import Summary
@@ -31,12 +32,8 @@ class TaskRecord(models.Model):
     error = models.TextField(
         null=True, blank=True, help_text="Error message if the task failed."
     )
-    summary = models.ForeignKey(
-        Summary,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        help_text="Associated summary, if applicable.",
+    summaries = models.ManyToManyField(
+        Summary, blank=True, help_text="Associated summaries, if applicable."
     )
     comparison = models.ForeignKey(
         Comparison,
