@@ -42,11 +42,13 @@ You are a data analyst tasked with comparing two dataset summaries. Here are the
 Please provide the comparison in the following JSON format:
 
 {{
-    "comparison_summary": "A summary of differences and similarities between the current week and previous week, including notable trends or observations.
+    "comparison_summary": "A comprehensive summary of differences and similarities between the current week and previous week, including notable trends and observations.
     Ensure that:
+        - Maximum length is 180 words.
         - Refer to the summaries as "this week" and "the previous week" in your summary.
-        - Use the most salient precise figures (e.g., differences, statistics, percentages) to describe the observed difference or trend between the current week and the previous week in your summary.
-        - Commas are used in numerical values to separate thousands in the summary.",
+        - Use precise verbal descriptions to describe the observed differences or trends between the current week and the previous week data in your summary.
+        - Mention up to three salient numerical values in your summary.
+        - Commas should be used in numerical values to separate thousands in your summary.",
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
