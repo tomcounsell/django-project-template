@@ -1,25 +1,36 @@
+from django_q.tasks import async_task, schedule, chain
 from apps.insights.services.summary_service import process_week
 import logging
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
-def run_summary_task():
+def simple_console_task(message: str):
     """
-    Task to run the summary service with start date and week number.
+    A simple task that logs a message to the console.
     """
-    try:
-        start_date = "2024-01-15"  # Hardcoded start date
-        week_number = 1  # Always process week 1 for this task
+    logger.info(f"Simple Console Task says: {message}")
 
-        logging.info(
-            f"Running summary task for start_date={start_date}, week_number={week_number}"
-        )
-        process_week(start_date=start_date, week_number=week_number)
 
-        logging.info("Summary task completed successfully.")
-    except Exception as e:
-        logging.error(f"Error in summary task: {e}")
-        raise
+def schedule_summary_tasks(start_date):
+    """
+    Schedule tasks to process summaries for Week 1 and Week 2 sequentially.
+    """
+    group_id = f"summary-{start_date}"  # Group ID for tracking
+
+    # Chain the tasks: Task 1 (Week 1) triggers Task 2 (Week 2)
+    schedule(
+        "django_q.tasks.chain",
+        [
+            ["apps.insights.services.summary_service.process_week", start_date, 1],
+            ["apps.insights.services.summary_service.process_week", start_date, 2],
+        ],
+        schedule_type="O",  # Single execution
+        next_run=5,  # Meet "1-minute delay" requirement
+        group=group_id,
+    )
+
+    logger.info(f"Week 1 and 2 tasks now processing {group_id}.")
+
+
+#  After the two grouped tasks, the Step 3 task (comparison task) accepts these returned summaries as inputs from summary_services.
