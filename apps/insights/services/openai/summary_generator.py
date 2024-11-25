@@ -39,7 +39,9 @@ You are a data analyst tasked with summarizing a dataset. The following is a sta
 Please provide the summary in the following JSON format:
 
 {{
-    "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.",
+    "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.
+    Ensure that:
+        - Commas are used in numerical values to separate thousands.",
     "key_metrics": [
         {{
             "name": "Name of Metric",
@@ -65,7 +67,6 @@ Ensure that:
 - Do not include descriptions for the key metrics.
 - Focus on delivering specific insights derived from the data.
 - Avoid generic statements or repeating information without analysis.
-- Use commas in numerical values to separate thousands.
 """
 
     try:

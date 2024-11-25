@@ -26,8 +26,8 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     Generates a structured comparison between two dataset summaries using the OpenAI API.
 
     Args:
-        summary1 (str): The first dataset summary as a string (Week 1).
-        summary2 (str): The second dataset summary as a string (Week 2).
+        summary1 (str): The first dataset summary as a string (Current Week).
+        summary2 (str): The second dataset summary as a string (Past Week).
 
     Returns:
         ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
@@ -35,21 +35,21 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     prompt = f"""
 You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
 
-Week 1:
+Current Week:
 {summary1}
 
-Week 2:
+Previous Week:
 {summary2}
 
 Please provide the comparison in the following JSON format:
 
 {{
-    "comparison_summary": "A concise summary of differences and similarities between Week 1 and Week 2, including notable trends or observations.",
+    "comparison_summary": "A concise summary of differences and similarities between the Current Week and Previous Week, including notable trends or observations.",
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
-            "value1": Value from Week 1,
-            "value2": Value from Week 2,
+            "value1": Value from Current Week,
+            "value2": Value from Previous Week,
             "description": "Description of the observed difference or trend, including specific figures and percentages where appropriate."
         }}
         // Repeat for each key metric
