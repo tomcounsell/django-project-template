@@ -12,6 +12,7 @@ from apps.insights.models.summary import Summary
 from apps.insights.services.openai.comparison_generator import generate_comparison
 from apps.insights.services.openai.schemas import ComparisonOutput
 
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

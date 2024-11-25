@@ -8,11 +8,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def schedule_summary_tasks(start_date):
+def schedule_single_summary_task(start_date):
     """
     Schedule a single task to process summaries for Week 1.
     """
-    # Convert start_date string to timezone-aware datetime
+    # Ensure start_date is in the correct format
     if isinstance(start_date, str):
         try:
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
@@ -22,24 +22,23 @@ def schedule_summary_tasks(start_date):
             )
             raise e
 
+    # Ensure start_date is timezone-aware
     if timezone.is_naive(start_date):
         start_date = timezone.make_aware(start_date, timezone.get_current_timezone())
 
-    group_id = f"summary-{start_date.isoformat()}"  # Group ID for tracking
-    next_run_time = timezone.now() + timezone.timedelta(seconds=5)  # 5 seconds from now
+    next_run_time = timezone.now() + timezone.timedelta(seconds=5)  # 5 seconds delay
 
-    # Schedule Task 1: Process Week 1
-    task_1_id = schedule(
+    # Schedule the task
+    task_id = schedule(
         "apps.insights.services.summary_service.process_week",
         start_date.strftime("%Y-%m-%d"),  # Pass the start_date as a string again
-        1,
+        1,  # Week 1
         name=f"Process Week 1 - {start_date.date()}",
         schedule_type="O",  # One-off execution
         next_run=next_run_time,
-        q_options={"group": group_id},
     )
 
-    logger.info(f"Task 1 for Week 1 scheduled with ID {task_1_id} in group {group_id}.")
+    logger.info(f"Task scheduled with ID {task_id} for Week 1 - {start_date.date()}.")
 
 
 # def trigger_week_2_task(task):
