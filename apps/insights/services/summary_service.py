@@ -37,11 +37,11 @@ def process_week(start_date: str, week_number: int) -> dict:
             f"Starting process_week: start_date={start_date}, week_number={week_number}"
         )
 
-        # Adjust start_date for week_number 2
+        # Adjust start_date for previous week
         start_date_dt = pd.to_datetime(start_date)
         if week_number == 2:
-            logging.info("Adjusting start_date for week 2.")
-            start_date_dt += pd.Timedelta(days=7)
+            logging.info("Adjusting start_date for previous week.")
+            start_date_dt -= pd.Timedelta(days=7)
 
         # Step 1: Initialize CSVProcessor and load data
         logging.info("Initializing CSVProcessor...")

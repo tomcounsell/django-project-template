@@ -56,18 +56,18 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.process_week",
         start_date_str,
         1,
-        q_options={"task_name": "Generate_Week_1_Summary"},
+        q_options={"task_name": "Generate_Current_Week_Summary"},
     )
-    logger.info("Added Task 1 to chain: Generate Week 1 summary.")
+    logger.info("Added Task 1 to chain: Generate Current Week Summary.")
 
     # Append Task 2: Generate Week 2 summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,
         2,
-        q_options={"task_name": "Generate_Week_2_Summary"},
+        q_options={"task_name": "Generate_Past_Week_Summary"},
     )
-    logger.info("Added Task 2 to chain: Generate Week 2 summary.")
+    logger.info("Added Task 2 to chain: Generate Past Week Summary.")
 
     # Append Task 3: Generate comparison of Weeks 1 and 2
     chain.append(
