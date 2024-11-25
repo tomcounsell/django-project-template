@@ -72,13 +72,13 @@ class SummaryOutput(BaseModel):
 
 class KeyMetricComparison(BaseModel):
     """
-    Represents a comparison of a key metric between two datasets.
+    Represents a comparison of a key metrics between two datasets.
     """
 
     name: str
     value1: float
     value2: float
-    description: str  # Retaining description for comparisons
+    description: str
 
 
 class ComparisonOutput(BaseModel):
@@ -88,7 +88,7 @@ class ComparisonOutput(BaseModel):
 
     comparison_summary: str = Field(
         ...,
-        description="A concise English summary highlighting differences and similarities between Week 1 and Week 2.",
+        description="A concise English summary highlighting differences and similarities between the current week and the previous week.",
     )
     key_metrics_comparison: List[KeyMetricComparison] = Field(
         ...,
