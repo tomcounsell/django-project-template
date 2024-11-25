@@ -65,6 +65,7 @@ Ensure that:
 - Do not include descriptions for the key metrics.
 - Focus on delivering specific insights derived from the data.
 - Avoid generic statements or repeating information without analysis.
+- Use commas in numerical values to separate thousands.
 """
 
     try:
