@@ -27,8 +27,7 @@ def process_week(start_date: str, week_number: int) -> dict:
 
     Args:
         start_date (str): Start date for the dataset (YYYY-MM-DD).
-        week_number (int): Week number to process (1 = days 1-7, 2 = days 8-14).
-
+        week_number (int): Week number to process (1 = current week, 2 = previous week).
     Returns:
         dict: JSON-serializable dictionary containing dataset_summary and key metrics.
     """

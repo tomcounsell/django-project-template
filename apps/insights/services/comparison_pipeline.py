@@ -9,23 +9,26 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# FIXME! def request_summary(start_date)
+# FIXME! def request_comparison(start_date)
+
 
 def run_comparison_task(start_date: str):
     """
-    Fetch summaries for Week 1 and Week 2 from the database,
+    Fetch summaries for current week and past week from the database,
     pass them to the comparison service, and save the results to the database.
     """
     try:
         logger.info("Fetching summaries from the database...")
         start_date_week1 = datetime.strptime(start_date, "%Y-%m-%d")
-        start_date_week2 = start_date_week1 + timedelta(days=7)
+        start_date_week2 = start_date_week1 - timedelta(days=7)
 
         # Fetch summaries
         summary1 = Summary.objects.get(start_date=start_date_week1.strftime("%Y-%m-%d"))
         summary2 = Summary.objects.get(start_date=start_date_week2.strftime("%Y-%m-%d"))
 
-        logger.info(f"Week 1 Summary ID: {summary1.id}")
-        logger.info(f"Week 2 Summary ID: {summary2.id}")
+        logger.info(f"Current Week Summary ID: {summary1.id}")
+        logger.info(f"Past Week Summary ID: {summary2.id}")
 
         # Run the comparison service
         logger.info("Running comparison service...")
@@ -51,7 +54,7 @@ def run_comparison_task(start_date: str):
         logger.info(f"Comparison Summary: {comparison_result.comparison_summary}")
         for metric in comparison_result.key_metrics_comparison:
             logger.info(
-                f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
+                f"{metric.name}: Current Week = {metric.value1}, Past Week = {metric.value2} ({metric.description})"
             )
 
         # Save the comparison result to the database

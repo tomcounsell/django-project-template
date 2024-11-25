@@ -1,9 +1,10 @@
 # apps/insights/tasks.py
 """
+Chaining Tasks:
 - One Function Call: Trigger all tasks with a single function.
 - Sequential Execution: Tasks run one after another in the correct order.
 - Simplicity: Minimal code complexity, all in one file.
-- Integration: Easy to tie into a button click or any other trigger in your application.
+- Integration: Easy to tie into a button click or any other trigger.
 
 """
 from django_q.tasks import Chain
@@ -26,7 +27,7 @@ def schedule_summary_tasks(start_date):
     # Create a task chain
     chain = Chain()
 
-    # Append Task 1: Generate Week 1 summary
+    # Append Task 1: Generate Current Week summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,
@@ -35,7 +36,7 @@ def schedule_summary_tasks(start_date):
     )
     logger.info("Added Task 1 to chain: Generate Current Week Summary.")
 
-    # Append Task 2: Generate Week 2 summary
+    # Append Task 2: Generate Past Week summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,
@@ -44,7 +45,7 @@ def schedule_summary_tasks(start_date):
     )
     logger.info("Added Task 2 to chain: Generate Past Week Summary.")
 
-    # Append Task 3: Generate comparison of Weeks 1 and 2
+    # Append Task 3: Generate comparison of current and past weeks summaries
     chain.append(
         "apps.insights.services.comparison_pipeline.run_comparison_task",
         start_date_str,
