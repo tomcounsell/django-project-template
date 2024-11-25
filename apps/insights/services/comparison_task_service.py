@@ -1,7 +1,7 @@
 # apps/insights/services/comparison_task_service.py
 
 from apps.insights.models.summary import Summary
-from apps.insights.services.openai.comparison_generator import generate_comparison
+from apps.insights.services.comparison_service import process_comparison
 import logging
 from datetime import datetime, timedelta
 
@@ -27,26 +27,35 @@ def run_comparison_task(start_date: str) -> dict:
 
         # Fetch summaries
         logger.info("Fetching summaries from the database...")
-        summary1 = Summary.objects.get(
-            start_date=start_date_week1.strftime("%Y-%m-%d")
-        ).dataset_summary
-        summary2 = Summary.objects.get(
-            start_date=start_date_week2.strftime("%Y-%m-%d")
-        ).dataset_summary
+        summary1 = Summary.objects.get(start_date=start_date_week1.strftime("%Y-%m-%d"))
+        summary2 = Summary.objects.get(start_date=start_date_week2.strftime("%Y-%m-%d"))
 
         logger.info("Summaries fetched successfully.")
-        logger.info(
-            f"Week 1 Summary: {summary1[:50]}..."
-        )  # Log a snippet of the summary
-        logger.info(
-            f"Week 2 Summary: {summary2[:50]}..."
-        )  # Log a snippet of the summary
+        logger.info(f"Week 1 Summary ID: {summary1.id}")
+        logger.info(f"Week 2 Summary ID: {summary2.id}")
 
-        # Pass summaries to the comparison generator
-        logger.info("Generating comparison...")
-        comparison_result = generate_comparison(summary1, summary2)
+        # Prepare structured data for comparison_service
+        data_summary1 = {
+            "dataset_summary": summary1.dataset_summary,
+            "key_metrics": [
+                {"name": metric.name, "value": metric.value}
+                for metric in summary1.key_metrics.all()
+            ],
+        }
 
-        logger.info("Comparison generated successfully!")
+        data_summary2 = {
+            "dataset_summary": summary2.dataset_summary,
+            "key_metrics": [
+                {"name": metric.name, "value": metric.value}
+                for metric in summary2.key_metrics.all()
+            ],
+        }
+
+        # Pass summaries to the comparison_service
+        logger.info("Passing summaries to comparison_service...")
+        comparison_result = process_comparison(data_summary1, data_summary2)
+
+        logger.info("Comparison completed successfully!")
         return comparison_result
 
     except Summary.DoesNotExist as e:
