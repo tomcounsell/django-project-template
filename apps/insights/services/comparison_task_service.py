@@ -1,5 +1,6 @@
 from apps.insights.services.comparison_service import (
     process_comparison,
+    save_comparison_to_database,
 )
 from apps.insights.models.summary import Summary
 from datetime import datetime, timedelta
@@ -10,11 +11,8 @@ logger = logging.getLogger(__name__)
 
 def run_comparison_task(start_date: str):
     """
-    Fetch summaries for Week 1 and Week 2 from the database, pass them to the comparison service,
-    and log the comparison result for debugging.
-
-    Args:
-        start_date (str): The start date for Week 1 in 'YYYY-MM-DD' format.
+    Fetch summaries for Week 1 and Week 2 from the database,
+    pass them to the comparison service, and save the results to the database.
     """
     try:
         logger.info("Fetching summaries from the database...")
@@ -28,40 +26,41 @@ def run_comparison_task(start_date: str):
         logger.info(f"Week 1 Summary ID: {summary1.id}")
         logger.info(f"Week 2 Summary ID: {summary2.id}")
 
-        # Prepare data for comparison_service
+        # Run the comparison service
+        logger.info("Running comparison service...")
         data_summary1 = {
             "dataset_summary": summary1.dataset_summary,
             "key_metrics": [
-                {"name": metric["name"], "value": metric["value"]}
-                for metric in summary1.key_metrics.all().values("name", "value")
+                {"name": metric.name, "value": metric.value}
+                for metric in summary1.key_metrics.all()
             ],
         }
-
         data_summary2 = {
             "dataset_summary": summary2.dataset_summary,
             "key_metrics": [
-                {"name": metric["name"], "value": metric["value"]}
-                for metric in summary2.key_metrics.all().values("name", "value")
+                {"name": metric.name, "value": metric.value}
+                for metric in summary2.key_metrics.all()
             ],
         }
 
-        # Run the comparison service
-        logger.info("Running comparison service...")
         comparison_result = process_comparison(data_summary1, data_summary2)
 
-        # Log the result for debugging
+        # Log the comparison result
         logger.info("Comparison Service Output:")
         logger.info(f"Comparison Summary: {comparison_result.comparison_summary}")
-        logger.info("Key Metrics Comparison:")
         for metric in comparison_result.key_metrics_comparison:
             logger.info(
                 f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
             )
 
-    except Summary.DoesNotExist as e:
-        logger.error(f"Error fetching summaries: {e}")
-        print(f"Error: {e}")
+        # Save the comparison result to the database
+        logger.info("Saving comparison result to the database...")
+        save_comparison_to_database(summary1.id, summary2.id, comparison_result)
+        logger.info("Comparison result has been saved successfully!")
 
+    except Summary.DoesNotExist as e:
+        logger.error(f"Summary not found: {e}")
+        print(f"Error: {e}")
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         print(f"Error: {e}")
