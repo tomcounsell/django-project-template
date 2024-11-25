@@ -25,10 +25,11 @@ def create_task_record(sender, task, **kwargs):
 ==== tasks_chain.py ====
 # apps/insights/tasks.py
 """
+Chaining Tasks:
 - One Function Call: Trigger all tasks with a single function.
 - Sequential Execution: Tasks run one after another in the correct order.
 - Simplicity: Minimal code complexity, all in one file.
-- Integration: Easy to tie into a button click or any other trigger in your application.
+- Integration: Easy to tie into a button click or any other trigger.
 
 """
 from django_q.tasks import Chain
@@ -51,7 +52,7 @@ def schedule_summary_tasks(start_date):
     # Create a task chain
     chain = Chain()
 
-    # Append Task 1: Generate Week 1 summary
+    # Append Task 1: Generate Current Week summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,
@@ -60,7 +61,7 @@ def schedule_summary_tasks(start_date):
     )
     logger.info("Added Task 1 to chain: Generate Current Week Summary.")
 
-    # Append Task 2: Generate Week 2 summary
+    # Append Task 2: Generate Past Week summary
     chain.append(
         "apps.insights.services.summary_service.process_week",
         start_date_str,
@@ -69,7 +70,7 @@ def schedule_summary_tasks(start_date):
     )
     logger.info("Added Task 2 to chain: Generate Past Week Summary.")
 
-    # Append Task 3: Generate comparison of Weeks 1 and 2
+    # Append Task 3: Generate comparison of current and past weeks summaries
     chain.append(
         "apps.insights.services.comparison_pipeline.run_comparison_task",
         start_date_str,
@@ -117,7 +118,7 @@ class RunComparisonForm(forms.Form):
     start_date = forms.DateField(
         widget=forms.widgets.DateInput(attrs={"type": "date"}),
         label="Start Date",
-        help_text="Select the start date for running the comparison.",
+        help_text="Select the start date for the comparison.",
     )
 
 ==== admin.py ====
@@ -716,7 +717,7 @@ class Comparison(Timestampable):
         help_text="A concise summary of differences and similarities between the two summaries."
     )
     start_date = models.DateField(
-        help_text="Start date of the comparison, derived from summary1.",
+        help_text="Current week start date of the comparison, derived from summary1.",
         editable=False,
     )
 
@@ -963,11 +964,11 @@ class CSVProcessor:
     # FIXME: Encapsulate this logic in data_filter.py:
     def filter(self, start_date: str, week_number: int):
         """
-        Filters the data for a specified week.
+        Filters the data for the current (1) or past (2) week.
 
         Args:
             start_date (str): Start date for the dataset (YYYY-MM-DD).
-            week_number (int): Week number to filter (1 = days 1-7, 2 = days 8-14).
+            week_number (int): Week number to filter (1 = current week, 2 = past week).
 
         Returns:
             pd.DataFrame: Filtered DataFrame for the specified week.
@@ -975,12 +976,12 @@ class CSVProcessor:
         logging.info(f"Filtering data for Week {week_number}...")
         start_date = pd.to_datetime(start_date)
 
-        if week_number == 1:
+        if week_number == 1:  # Current Week
             week_start = start_date
             week_end = start_date + pd.Timedelta(days=6)
-        elif week_number == 2:
-            week_start = start_date + pd.Timedelta(days=7)
-            week_end = start_date + pd.Timedelta(days=13)
+        elif week_number == 2:  # Past Week
+            week_start = start_date - pd.Timedelta(days=7)
+            week_end = start_date - pd.Timedelta(days=1)
         else:
             raise ValueError("Invalid week number. Must be 1 or 2.")
 
@@ -1075,8 +1076,8 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         summary2 = prepare_summary(data_summary2)
 
         logging.info("Generated summaries for comparison.")
-        logging.debug(f"Prepared Summary 1:\n{summary1}")
-        logging.debug(f"Prepared Summary 2:\n{summary2}")
+        logging.debug(f"Prepared Summary of Current Week:\n{summary1}")
+        logging.debug(f"Prepared Summary of Previous Week:\n{summary2}")
 
         # Step 2:Generate comparison using LLM
         comparison_result = generate_comparison(summary1, summary2)
@@ -1090,7 +1091,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         logging.info("Key Metrics Comparison:")
         for metric in comparison_result.key_metrics_comparison:
             logging.info(
-                f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
+                f"{metric.name}: Current Week = {metric.value1}, Past Week = {metric.value2} ({metric.description})"
             )
 
         return comparison_result
@@ -1098,7 +1099,7 @@ def process_comparison(data_summary1: dict, data_summary2: dict) -> ComparisonOu
         # FIXME: Step 3: Save results to database
 
     except ValueError as ve:
-        logging.error(f"Validation Error during comparison: {ve}")
+        logging.error(f"Validation error during comparison: {ve}")
         raise
 
     except Exception as e:
@@ -1187,8 +1188,7 @@ def process_week(start_date: str, week_number: int) -> dict:
 
     Args:
         start_date (str): Start date for the dataset (YYYY-MM-DD).
-        week_number (int): Week number to process (1 = days 1-7, 2 = days 8-14).
-
+        week_number (int): Week number to process (1 = current week, 2 = previous week).
     Returns:
         dict: JSON-serializable dictionary containing dataset_summary and key metrics.
     """
@@ -1197,11 +1197,11 @@ def process_week(start_date: str, week_number: int) -> dict:
             f"Starting process_week: start_date={start_date}, week_number={week_number}"
         )
 
-        # Adjust start_date for week_number 2
+        # Adjust start_date for previous week
         start_date_dt = pd.to_datetime(start_date)
         if week_number == 2:
-            logging.info("Adjusting start_date for week 2.")
-            start_date_dt += pd.Timedelta(days=7)
+            logging.info("Adjusting start_date for previous week.")
+            start_date_dt -= pd.Timedelta(days=7)
 
         # Step 1: Initialize CSVProcessor and load data
         logging.info("Initializing CSVProcessor...")
@@ -1326,23 +1326,26 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# FIXME! def request_summary(start_date)
+# FIXME! def request_comparison(start_date)
+
 
 def run_comparison_task(start_date: str):
     """
-    Fetch summaries for Week 1 and Week 2 from the database,
+    Fetch summaries for current week and past week from the database,
     pass them to the comparison service, and save the results to the database.
     """
     try:
         logger.info("Fetching summaries from the database...")
         start_date_week1 = datetime.strptime(start_date, "%Y-%m-%d")
-        start_date_week2 = start_date_week1 + timedelta(days=7)
+        start_date_week2 = start_date_week1 - timedelta(days=7)
 
         # Fetch summaries
         summary1 = Summary.objects.get(start_date=start_date_week1.strftime("%Y-%m-%d"))
         summary2 = Summary.objects.get(start_date=start_date_week2.strftime("%Y-%m-%d"))
 
-        logger.info(f"Week 1 Summary ID: {summary1.id}")
-        logger.info(f"Week 2 Summary ID: {summary2.id}")
+        logger.info(f"Current Week Summary ID: {summary1.id}")
+        logger.info(f"Past Week Summary ID: {summary2.id}")
 
         # Run the comparison service
         logger.info("Running comparison service...")
@@ -1368,7 +1371,7 @@ def run_comparison_task(start_date: str):
         logger.info(f"Comparison Summary: {comparison_result.comparison_summary}")
         for metric in comparison_result.key_metrics_comparison:
             logger.info(
-                f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
+                f"{metric.name}: Current Week = {metric.value1}, Past Week = {metric.value2} ({metric.description})"
             )
 
         # Save the comparison result to the database
@@ -1613,7 +1616,9 @@ You are a data analyst tasked with summarizing a dataset. The following is a sta
 Please provide the summary in the following JSON format:
 
 {{
-    "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.",
+    "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.
+    Ensure that:
+        - Commas are used in numerical values to separate thousands.",
     "key_metrics": [
         {{
             "name": "Name of Metric",
@@ -1700,8 +1705,8 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     Generates a structured comparison between two dataset summaries using the OpenAI API.
 
     Args:
-        summary1 (str): The first dataset summary as a string (Week 1).
-        summary2 (str): The second dataset summary as a string (Week 2).
+        summary1 (str): The first dataset summary as a string (Current Week).
+        summary2 (str): The second dataset summary as a string (Past Week).
 
     Returns:
         ComparisonOutput: A structured comparison containing a summary and key metrics comparison.
@@ -1709,21 +1714,21 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     prompt = f"""
 You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
 
-Week 1:
+Current Week:
 {summary1}
 
-Week 2:
+Previous Week:
 {summary2}
 
 Please provide the comparison in the following JSON format:
 
 {{
-    "comparison_summary": "A concise summary of differences and similarities between Week 1 and Week 2, including notable trends or observations.",
+    "comparison_summary": "A concise summary of differences and similarities between the Current Week and Previous Week, including notable trends or observations.",
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
-            "value1": Value from Week 1,
-            "value2": Value from Week 2,
+            "value1": Value from Current Week,
+            "value2": Value from Previous Week,
             "description": "Description of the observed difference or trend, including specific figures and percentages where appropriate."
         }}
         // Repeat for each key metric
@@ -1850,13 +1855,13 @@ class SummaryOutput(BaseModel):
 
 class KeyMetricComparison(BaseModel):
     """
-    Represents a comparison of a key metric between two datasets.
+    Represents a comparison of a key metrics between two datasets.
     """
 
     name: str
     value1: float
     value2: float
-    description: str  # Retaining description for comparisons
+    description: str
 
 
 class ComparisonOutput(BaseModel):
@@ -1866,7 +1871,7 @@ class ComparisonOutput(BaseModel):
 
     comparison_summary: str = Field(
         ...,
-        description="A concise English summary highlighting differences and similarities between Week 1 and Week 2.",
+        description="A concise English summary highlighting differences and similarities between the current week and the previous week.",
     )
     key_metrics_comparison: List[KeyMetricComparison] = Field(
         ...,

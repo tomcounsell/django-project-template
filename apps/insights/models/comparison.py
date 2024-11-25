@@ -11,23 +11,23 @@ class Comparison(Timestampable):
     Model to store the comparison between two summaries.
     """
 
-    summary1 = models.ForeignKey(
+    summary1 = models.ForeignKey(  # Current Week
         Summary,
         related_name="comparisons_as_summary1",
         on_delete=models.CASCADE,
-        help_text="The first summary being compared.",
+        help_text="The current week summary being compared.",
     )
-    summary2 = models.ForeignKey(
+    summary2 = models.ForeignKey(  # Past Week
         Summary,
         related_name="comparisons_as_summary2",
         on_delete=models.CASCADE,
-        help_text="The second summary being compared.",
+        help_text="The past week summary being compared.",
     )
     comparison_summary = models.TextField(
         help_text="A concise summary of differences and similarities between the two summaries."
     )
     start_date = models.DateField(
-        help_text="Current week start date of the comparison, derived from summary1.",
+        help_text="Start date of the current week in the comparison, derived from summary1.",
         editable=False,
     )
 
@@ -57,8 +57,8 @@ class KeyMetricComparison(Timestampable):
     name = models.CharField(
         max_length=100, help_text="Name of the metric being compared."
     )
-    value1 = models.FloatField(help_text="Value from the first summary.")
-    value2 = models.FloatField(help_text="Value from the second summary.")
+    value1 = models.FloatField(help_text="Value from the current week.")
+    value2 = models.FloatField(help_text="Value from the past week.")
     description = models.TextField(
         help_text="Description of the observed difference or trend.",
         null=True,
@@ -71,8 +71,8 @@ class KeyMetricComparison(Timestampable):
     def save(self, *args, **kwargs):
         if self.value1 and self.value2:
             self.percentage_difference = (
-                ((self.value2 - self.value1) / self.value1) * 100
-                if self.value1 != 0
+                ((self.value1 - self.value2) / self.value2) * 100
+                if self.value2 != 0
                 else None
             )
         super().save(*args, **kwargs)

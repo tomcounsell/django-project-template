@@ -35,22 +35,22 @@ def generate_comparison(summary1: str, summary2: str) -> ComparisonOutput:
     prompt = f"""
 You are a data analyst tasked with comparing two dataset summaries. Here are the summaries:
 
-Current Week:
-{summary1}
+{summary1} is the current week.
 
-Previous Week:
-{summary2}
+{summary2} is the week prior.
 
 Please provide the comparison in the following JSON format:
 
 {{
-    "comparison_summary": "A concise summary of differences and similarities between the Current Week and Previous Week, including notable trends or observations.",
+    "comparison_summary": "A summary of differences and similarities between the current week and previous week, including notable trends or observations.
+    Ensure that:
+        - Commas are used in numerical values to separate thousands in the summary.",
     "key_metrics_comparison": [
         {{
             "name": "Name of Metric",
-            "value1": Value from Current Week,
-            "value2": Value from Previous Week,
-            "description": "Description of the observed difference or trend, including specific figures and percentages where appropriate."
+            "value1": Value from current week,
+            "value2": Value from previous week,
+            "description": "Description of observed difference or trend between the previous week and the current week, including specific figures and percentages where appropriate."
         }}
         // Repeat for each key metric
     ]
@@ -69,8 +69,8 @@ Ensure that:
     - "Conversion Rate"
     - "Average Transactions"
     - "Average Revenue"
-- The description for each metric explains the difference or trend observed between Week 1 and Week 2, using precise figures (e.g., differences, percentages).
-- Refer to the summaries as "Week 1" and "Week 2" in your descriptions.
+- The description for each metric explains the difference or trend observed between the current week and one week prior, using precise figures (e.g., differences, statistics, percentages).
+- Refer to the summaries as "this week" and "the previous week" in your descriptions.
 """
 
     try:

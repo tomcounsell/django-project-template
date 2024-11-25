@@ -41,7 +41,7 @@ Please provide the summary in the following JSON format:
 {{
     "dataset_summary": "A concise, insightful summary highlighting significant findings, trends, or patterns observed in the data. Mention any notable data or anomalies in the key metrics, providing context by referencing the actual values and what they indicate about user behavior or performance metrics.
     Ensure that:
-        - Commas are used in numerical values to separate thousands.",
+        - Commas are used in numerical values to separate thousands in the summary.",
     "key_metrics": [
         {{
             "name": "Name of Metric",
