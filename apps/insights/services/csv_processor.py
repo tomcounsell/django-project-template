@@ -43,11 +43,11 @@ class CSVProcessor:
     # FIXME: Encapsulate this logic in data_filter.py:
     def filter(self, start_date: str, week_number: int):
         """
-        Filters the data for a specified week.
+        Filters the data for the current (1) or past (2) week.
 
         Args:
             start_date (str): Start date for the dataset (YYYY-MM-DD).
-            week_number (int): Week number to filter (1 = days 1-7, 2 = days 8-14).
+            week_number (int): Week number to filter (1 = current week, 2 = past week).
 
         Returns:
             pd.DataFrame: Filtered DataFrame for the specified week.
@@ -55,12 +55,12 @@ class CSVProcessor:
         logging.info(f"Filtering data for Week {week_number}...")
         start_date = pd.to_datetime(start_date)
 
-        if week_number == 1:
+        if week_number == 1:  # Current Week
             week_start = start_date
             week_end = start_date + pd.Timedelta(days=6)
-        elif week_number == 2:
-            week_start = start_date + pd.Timedelta(days=7)
-            week_end = start_date + pd.Timedelta(days=13)
+        elif week_number == 2:  # Past Week
+            week_start = start_date - pd.Timedelta(days=7)
+            week_end = start_date - pd.Timedelta(days=1)
         else:
             raise ValueError("Invalid week number. Must be 1 or 2.")
 
