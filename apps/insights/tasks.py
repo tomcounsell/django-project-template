@@ -8,9 +8,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def schedule_single_summary_task(start_date):
+def schedule_week1_summary_task(start_date):
     """
-    Schedule a single task to process summaries for Week 1.
+    Schedule a single task to process the Week 1 summary.
     """
     # Ensure start_date is in the correct format
     if isinstance(start_date, str):
@@ -33,12 +33,14 @@ def schedule_single_summary_task(start_date):
         "apps.insights.services.summary_service.process_week",
         start_date.strftime("%Y-%m-%d"),  # Pass the start_date as a string again
         1,  # Week 1
-        name=f"Process Week 1 - {start_date.date()}",
+        name=f"Week 1 Summary Task - {start_date.date()}",
         schedule_type="O",  # One-off execution
         next_run=next_run_time,
     )
 
-    logger.info(f"Task scheduled with ID {task_id} for Week 1 - {start_date.date()}.")
+    logger.info(
+        f"Week 1 Summary Task scheduled with ID {task_id} for {start_date.date()}."
+    )
 
 
 # def trigger_week_2_task(task):
