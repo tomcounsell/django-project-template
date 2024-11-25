@@ -1,7 +1,6 @@
 from apps.insights.services.summary_service import process_week
 import logging
 
-# Configure logging for the task
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
