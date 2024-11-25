@@ -31,6 +31,7 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.process_week",
         start_date_str,
         1,
+        q_options={"task_name": "Generate_Week_1_Summary"},
     )
     logger.info("Added Task 1 to chain: Generate Week 1 summary.")
 
@@ -39,6 +40,7 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.process_week",
         start_date_str,
         2,
+        q_options={"task_name": "Generate_Week_2_Summary"},
     )
     logger.info("Added Task 2 to chain: Generate Week 2 summary.")
 
@@ -46,6 +48,7 @@ def schedule_summary_tasks(start_date):
     chain.append(
         "apps.insights.services.comparison_pipeline.run_comparison_task",
         start_date_str,
+        q_options={"task_name": "Generate_Comparison"},
     )
     logger.info("Added Task 3 to chain: Run comparison.")
 

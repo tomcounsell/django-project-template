@@ -18,64 +18,6 @@ def create_task_record(sender, task, **kwargs):
         },
     )
 
-==== tasks_no_hook.py ====
-# apps/insights/tasks.py
-
-from django_q.tasks import schedule, async_task
-from django.utils import timezone
-from datetime import datetime, timedelta
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-def schedule_summary_tasks(start_date):
-    """
-    Schedule tasks to process summaries for Week 1, Week 2, and Comparison.
-    """
-    # Convert start_date to timezone-aware datetime for Q2 scheduling
-    if isinstance(start_date, str):
-        start_date = datetime.strptime(start_date, "%Y-%m-%d")
-    if timezone.is_naive(start_date):
-        start_date = timezone.make_aware(start_date, timezone.get_current_timezone())
-
-    # Define group ID for tasks
-    group_id = f"summary-{start_date.isoformat()}"
-    next_run_time = timezone.now() + timedelta(seconds=5)
-
-    # Schedule Task 1: Generate Week 1 summary
-    schedule(
-        "apps.insights.services.summary_service.process_week",
-        start_date.strftime("%Y-%m-%d"),
-        1,
-        name=f"Week 1 Summary Task - {start_date.date()}",
-        schedule_type="O",
-        next_run=next_run_time,
-        q_options={"group": group_id},
-    )
-    logger.info("Scheduled Task 1 to generate Week 1 summary.")
-
-    # Schedule Task 2: Generate Week 2 summary
-    schedule(
-        "apps.insights.services.summary_service.process_week",
-        start_date.strftime("%Y-%m-%d"),
-        2,
-        name=f"Week 2 Summary Task - {start_date.date()}",
-        schedule_type="O",
-        next_run=next_run_time + timedelta(seconds=5),  # Delay 5 seconds
-        q_options={"group": group_id},
-    )
-    logger.info("Scheduled Task 2 to generate Week 2 summary.")
-
-    # Async Task 3: Generate comparison #! FIXME Remove indefinite wait
-    async_task(  # Waits for Tasks 1 and 2 to complete
-        "apps.insights.services.comparison_pipeline.run_comparison_task",
-        start_date.strftime("%Y-%m-%d"),
-        group=group_id,
-        task_name=f"Comparison Task - {start_date}",
-    )
-    logger.info("Scheduled Task 3 to run after Tasks 1 and 2 complete.")
-
 ==== insights-app.txt ====
 
 ==== __init__.py ====
@@ -114,6 +56,7 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.process_week",
         start_date_str,
         1,
+        q_options={"task_name": "Generate_Week_1_Summary"},
     )
     logger.info("Added Task 1 to chain: Generate Week 1 summary.")
 
@@ -122,15 +65,17 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.process_week",
         start_date_str,
         2,
+        q_options={"task_name": "Generate_Week_2_Summary"},
     )
     logger.info("Added Task 2 to chain: Generate Week 2 summary.")
 
-    # # Append Task 3: Generate comparison of Weeks 1 and 2
-    # chain.append(
-    #     "apps.insights.services.comparison_pipeline.run_comparison_task",
-    #     start_date_str,
-    # )
-    # logger.info("Added Task 3 to chain: Run comparison.")
+    # Append Task 3: Generate comparison of Weeks 1 and 2
+    chain.append(
+        "apps.insights.services.comparison_pipeline.run_comparison_task",
+        start_date_str,
+        q_options={"task_name": "Generate_Comparison"},
+    )
+    logger.info("Added Task 3 to chain: Run comparison.")
 
     # Run the task chain
     chain.run()
@@ -284,112 +229,6 @@ class SummaryAdmin(admin.ModelAdmin):
 
 admin.site.register(Summary, SummaryAdmin)  # Register the Summary model
 admin.site.register(Comparison, ComparisonAdmin)  # Register the Comparison model
-
-==== tasks_hook.py ====
-# apps/insights/tasks.py
-
-from django_q.tasks import schedule, async_task
-from django.utils import timezone
-from datetime import datetime, timedelta
-import logging
-
-from django_q.models import Task
-
-logger = logging.getLogger(__name__)
-
-
-def schedule_summary_tasks(start_date):
-    """
-    Schedule tasks to process summaries for Week 1, Week 2, and Comparison.
-    """
-    # Convert start_date to timezone-aware datetime for Q2 scheduling
-    if isinstance(start_date, str):
-        start_date = datetime.strptime(start_date, "%Y-%m-%d")
-    if timezone.is_naive(start_date):
-        start_date = timezone.make_aware(start_date, timezone.get_current_timezone())
-
-    # Define group ID for tasks
-    group_id = f"summary-{start_date.isoformat()}"
-    next_run_time = timezone.now() + timedelta(seconds=5)
-
-    # Schedule Task 1: Generate Week 1 summary with hook
-    schedule(
-        "apps.insights.services.summary_service.process_week",
-        start_date.strftime("%Y-%m-%d"),
-        1,
-        name=f"Week 1 Summary Task - {start_date.date()}",
-        schedule_type="O",
-        next_run=next_run_time,
-        q_options={
-            "group": group_id,
-            "hook": "apps.insights.tasks.check_and_schedule_comparison_task",
-        },
-    )
-    logger.info("Scheduled Task 1 to generate Week 1 summary with hook.")
-
-    # Schedule Task 2: Generate Week 2 summary with hook
-    schedule(
-        "apps.insights.services.summary_service.process_week",
-        start_date.strftime("%Y-%m-%d"),
-        2,
-        name=f"Week 2 Summary Task - {start_date.date()}",
-        schedule_type="O",
-        next_run=next_run_time + timedelta(seconds=5),  # Delay 5 seconds
-        q_options={
-            "group": group_id,
-            "hook": "apps.insights.tasks.check_and_schedule_comparison_task",
-        },
-    )
-    logger.info("Scheduled Task 2 to generate Week 2 summary with hook.")
-
-
-def check_and_schedule_comparison_task(task):
-    """
-    Hook function called after each summary task completes.
-    If both Task 1 and Task 2 have succeeded, schedule Task 3.
-    """
-    group_id = task.group
-
-    # Fetch all tasks in the group excluding the comparison task
-    tasks_in_group = Task.objects.filter(group=group_id).exclude(
-        func="apps.insights.services.comparison_pipeline.run_comparison_task"
-    )
-
-    # Count total summary tasks
-    total_summary_tasks = tasks_in_group.count()
-
-    # Count completed summary tasks
-    completed_summary_tasks = tasks_in_group.filter(success=True).count()
-
-    logger.info(
-        f"Hook triggered for group {group_id}: {completed_summary_tasks}/{total_summary_tasks} tasks completed successfully."
-    )
-
-    # Check if all summary tasks are completed successfully
-    if completed_summary_tasks == total_summary_tasks:
-        # Verify that Task 3 hasn't been scheduled yet
-        comparison_tasks = Task.objects.filter(
-            group=group_id,
-            func="apps.insights.services.comparison_pipeline.run_comparison_task",
-        )
-        if not comparison_tasks.exists():
-            # Extract start_date_str from group_id
-            start_date_str = group_id.split("summary-")[-1]
-
-            # Schedule Task 3: Generate comparison
-            async_task(
-                "apps.insights.services.comparison_pipeline.run_comparison_task",
-                start_date_str,  # Pass start_date_str as argument
-                group=group_id,
-                task_name=f"Comparison Task - {start_date_str}",
-            )
-            logger.info("Scheduled Task 3 to run after Task 1 and Task 2 completed.")
-        else:
-            logger.info("Task 3 (Comparison Task) already exists. Skipping scheduling.")
-    else:
-        logger.warning(
-            f"Not all summary tasks completed successfully for group {group_id}. Comparison Task will not be scheduled."
-        )
 
 ==== tests.py ====
 from django.test import TestCase
@@ -688,6 +527,14 @@ summary2_id = 12  # Replace with actual Week 2 Summary ID
 save_comparison_to_database(summary1_id, summary2_id, comparison_result)
 
 print("Comparison result has been saved to the database successfully!")
+
+==== shell_tasks.py ====
+from apps.insights.tasks_chain import schedule_summary_tasks
+from datetime import datetime
+
+# Provide the start_date as a string
+start_date = "2024-01-01"  # Replace with your desired date
+schedule_summary_tasks(start_date)
 
 ==== test_comparison_service.py ====
 # apps/insights/tests/test_comparison_service.py
