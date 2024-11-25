@@ -1,7 +1,8 @@
 # apps/insights/admin.py
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+from django.http import HttpResponse
 from .forms import RunComparisonForm
 from .models.comparison import Comparison, KeyMetricComparison
 from .models.summary import Summary, KeyMetric
@@ -71,6 +72,35 @@ class ComparisonAdmin(admin.ModelAdmin):
     )
     search_fields = ("summary1__start_date", "summary2__start_date")
     inlines = [KeyMetricComparisonInline]  # Add the inline view for KeyMetricComparison
+
+    def get_urls(self):
+        """
+        Extend the admin URLs to include a custom URL for the 'run-comparison' page.
+        """
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "run-comparison/",
+                self.admin_site.admin_view(self.run_comparison),
+                name="run-comparison",
+            ),
+        ]
+        return custom_urls + urls
+
+    def run_comparison(self, request):
+        """
+        Handle the custom page for running comparisons with a datepicker.
+        """
+        if request.method == "POST":
+            form = RunComparisonForm(request.POST)
+            if form.is_valid():
+                start_date = form.cleaned_data["start_date"]
+                # Call your function here
+                myfunction(start_date)
+                return HttpResponse("Comparison run successfully!")
+        else:
+            form = RunComparisonForm()
+        return render(request, "admin/insights/run_comparison.html", {"form": form})
 
     def comparison_start_date(self, obj):
         """Use the earliest start_date from summary1 for consistency."""

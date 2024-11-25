@@ -47,7 +47,7 @@ def schedule_summary_tasks(start_date):
 
     # Append Task 3: Generate comparison of current and past weeks summaries
     chain.append(
-        "apps.insights.services.comparison_pipeline.run_comparison_task",
+        "apps.insights.services.app_pipeline.generate_comparison",
         start_date_str,
         q_options={"task_name": "Generate_Comparison"},
     )
