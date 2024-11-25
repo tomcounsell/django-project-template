@@ -55,15 +55,11 @@ class CSVProcessor:
         logging.info(f"Filtering data for Week {week_number}...")
         start_date = pd.to_datetime(start_date)
 
-        if week_number == 1:  # Current Week
-            week_start = start_date
-            week_end = start_date + pd.Timedelta(days=6)
-        elif week_number == 2:  # Past Week
-            week_start = start_date - pd.Timedelta(days=7)
-            week_end = start_date - pd.Timedelta(days=1)
-        else:
-            raise ValueError("Invalid week number. Must be 1 or 2.")
+        # Week 1: No date adjustment needed
+        week_start = start_date
+        week_end = start_date + pd.Timedelta(days=6)
 
+        # If week_number == 2, assume start_date has already been adjusted in process_week
         filtered_df = self.df[
             (self.df["date"] >= week_start) & (self.df["date"] <= week_end)
         ]
