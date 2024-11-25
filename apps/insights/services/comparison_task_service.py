@@ -1,49 +1,79 @@
 from apps.insights.services.comparison_service import (
     process_comparison,
-    save_comparison_to_database,
 )
+from apps.insights.models.summary import Summary
+from datetime import datetime, timedelta
+import logging
 
-# Mock structured data for Week 1
-data_summary1 = {
-    "dataset_summary": "The dataset encompasses 42 entries of web analytics data, revealing user interaction trends. On average, there are 771 sessions and 596 users daily, indicating a moderate level of engagement. Notably, only 207 of these users are new, suggesting a strong returning customer base. Pageviews average at 2874, with users exploring approximately 3.58 pages per session. Sessions typically last around 128 seconds, reflecting concentrated user engagement within short spans. The bounce rate is 27.8%, showing a fair amount of single-page visits, and the conversion rate stands at 2.78%. Transaction volumes average at 17 daily with a corresponding revenue of $814.92. Anomalies include a maximum session count of 2138 and revenue peaking at $3277.14, pointing towards specific days of peak user interest or promotional events. Such peaks offer opportunities for strategic marketing refinements.",
-    "key_metrics": [
-        {"name": "Average Sessions", "value": 770.52},
-        {"name": "Average Users", "value": 595.93},
-        {"name": "Average New Users", "value": 207.38},
-        {"name": "Average Pageviews", "value": 2874.48},
-        {"name": "Pages per Session", "value": 3.58},
-        {"name": "Average Session Duration", "value": 127.56},
-        {"name": "Bounce Rate", "value": 0.2781},
-        {"name": "Conversion Rate", "value": 0.0278},
-        {"name": "Average Transactions", "value": 16.86},
-        {"name": "Average Revenue", "value": 814.92},
-    ],
-}
+logger = logging.getLogger(__name__)
 
-# Mock structured data for Week 2
-data_summary2 = {
-    "dataset_summary": "The dataset provides an overview of web analytics over 43 days, indicating user engagement and conversion metrics. On average, there are 923.84 sessions per day, with a majority being returning users, as indicated by the 746.65 average users, and 254.28 being new. Pageviews average at 3168.86 daily, suggesting moderate user activity per session with 3.45 pages viewed on average. The average session duration of 125.70 seconds implies brief engagement per visit. Bounce rate is 25.79%, showing a relatively engaged audience, given industry ranges. The conversion rate stands at 2.52%, with an average of 18.67 transactions and revenue of $830.98 daily. Notably, there's a high variance in sessions and revenue, evident from the maximum values reaching 7619 sessions and $5099.72 in revenue, pointing to significant peaks on specific days.",
-    "key_metrics": [
-        {"name": "Average Sessions", "value": 923.84},
-        {"name": "Average Users", "value": 746.65},
-        {"name": "Average New Users", "value": 254.28},
-        {"name": "Average Pageviews", "value": 3168.86},
-        {"name": "Pages per Session", "value": 3.45},
-        {"name": "Average Session Duration", "value": 125.7},
-        {"name": "Bounce Rate", "value": 0.2579},
-        {"name": "Conversion Rate", "value": 0.0252},
-        {"name": "Average Transactions", "value": 18.67},
-        {"name": "Average Revenue", "value": 830.98},
-    ],
-}
+
+def run_comparison_task(start_date: str):
+    """
+    Fetch summaries for Week 1 and Week 2 from the database, pass them to the comparison service,
+    and log the comparison result for debugging.
+
+    Args:
+        start_date (str): The start date for Week 1 in 'YYYY-MM-DD' format.
+    """
+    try:
+        logger.info("Fetching summaries from the database...")
+        start_date_week1 = datetime.strptime(start_date, "%Y-%m-%d")
+        start_date_week2 = start_date_week1 + timedelta(days=7)
+
+        # Fetch summaries
+        summary1 = Summary.objects.get(start_date=start_date_week1.strftime("%Y-%m-%d"))
+        summary2 = Summary.objects.get(start_date=start_date_week2.strftime("%Y-%m-%d"))
+
+        logger.info(f"Week 1 Summary ID: {summary1.id}")
+        logger.info(f"Week 2 Summary ID: {summary2.id}")
+
+        # Prepare data for comparison_service
+        data_summary1 = {
+            "dataset_summary": summary1.dataset_summary,
+            "key_metrics": [
+                {"name": metric["name"], "value": metric["value"]}
+                for metric in summary1.key_metrics.all().values("name", "value")
+            ],
+        }
+
+        data_summary2 = {
+            "dataset_summary": summary2.dataset_summary,
+            "key_metrics": [
+                {"name": metric["name"], "value": metric["value"]}
+                for metric in summary2.key_metrics.all().values("name", "value")
+            ],
+        }
+
+        # Run the comparison service
+        logger.info("Running comparison service...")
+        comparison_result = process_comparison(data_summary1, data_summary2)
+
+        # Log the result for debugging
+        logger.info("Comparison Service Output:")
+        logger.info(f"Comparison Summary: {comparison_result.comparison_summary}")
+        logger.info("Key Metrics Comparison:")
+        for metric in comparison_result.key_metrics_comparison:
+            logger.info(
+                f"{metric.name}: Week 1 = {metric.value1}, Week 2 = {metric.value2} ({metric.description})"
+            )
+
+    except Summary.DoesNotExist as e:
+        logger.error(f"Error fetching summaries: {e}")
+        print(f"Error: {e}")
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        print(f"Error: {e}")
+
 
 # Run the comparison service
-comparison_result = process_comparison(data_summary1, data_summary2)
+# comparison_result = process_comparison(data_summary1, data_summary2)
 
-# Save the comparison result to the database
-# You need to replace summary1_id and summary2_id with actual IDs from your database
-summary1_id = 11  # Replace with actual Week 1 Summary ID
-summary2_id = 12  # Replace with actual Week 2 Summary ID
-save_comparison_to_database(summary1_id, summary2_id, comparison_result)
+# # Save the comparison result to the database
+# # You need to replace summary1_id and summary2_id with actual IDs from your database
+# summary1_id = 11  # Replace with actual Week 1 Summary ID
+# summary2_id = 12  # Replace with actual Week 2 Summary ID
+# save_comparison_to_database(summary1_id, summary2_id, comparison_result)
 
-print("Comparison result has been saved to the database successfully!")
+# print("Comparison result has been saved to the database successfully!")
