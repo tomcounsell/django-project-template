@@ -7,6 +7,7 @@ Chaining Tasks:
 - Integration: Easy to tie into a button click or any other trigger.
 
 """
+from datetime import datetime, date
 from django_q.tasks import Chain
 from datetime import datetime
 import logging
@@ -19,10 +20,11 @@ def schedule_summary_tasks(start_date):
     Run tasks to process summaries for Week 1, Week 2, and Comparison.
     """
     # Convert start_date to string
-    if isinstance(start_date, datetime):
-        start_date_str = start_date.strftime("%Y-%m-%d")
-    else:
-        start_date_str = start_date
+    start_date_str = (
+        start_date.strftime("%Y-%m-%d")
+        if isinstance(start_date, (datetime, date))
+        else str(start_date)
+    )
 
     # Create a task chain
     chain = Chain()

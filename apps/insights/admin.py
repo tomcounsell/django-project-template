@@ -7,6 +7,10 @@ from django.utils.html import format_html
 from .forms import RunComparisonForm
 from .models.comparison import Comparison, KeyMetricComparison
 from .models.summary import Summary, KeyMetric
+from .tasks import schedule_summary_tasks
+
+from django.http import HttpResponseRedirect
+from django.contrib import messages  # For flashing messages
 
 
 class KeyMetricInline(admin.TabularInline):
@@ -98,8 +102,13 @@ class ComparisonAdmin(admin.ModelAdmin):
             if form.is_valid():
                 start_date = form.cleaned_data["start_date"]
                 # Call your function here
-                myfunction(start_date)
-                return HttpResponse("Comparison run successfully!")
+                schedule_summary_tasks(start_date)
+
+                # Flash a success message
+                messages.success(request, "Comparison task ran successfully!")
+
+                # Redirect to the Django Q success page
+                return HttpResponseRedirect("/admin/django_q/success/")
         else:
             form = RunComparisonForm()
         return render(request, "admin/insights/run_comparison.html", {"form": form})
