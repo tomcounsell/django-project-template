@@ -21,7 +21,7 @@ logging.basicConfig(
 )
 
 
-def process_week(start_date: str, week_number: int) -> SummaryOutput:
+def process_week(start_date: str, week_number: int) -> dict:
     """
     Processes a single week's data and generates an LLM summary.
 
@@ -30,7 +30,7 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
         week_number (int): Week number to process (1 = days 1-7, 2 = days 8-14).
 
     Returns:
-        SummaryOutput: LLM summary and key metrics for the week.
+        dict: JSON-serializable dictionary containing dataset_summary and key metrics.
     """
     try:
         logging.info(
@@ -80,13 +80,22 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
             start_date_dt.strftime("%Y-%m-%d"),
             llm_summary,
         )
-        # save_summary_to_file(
-        #     start_date_dt.strftime("%Y-%m-%d"),
-        #     llm_summary,
-        # )
+
+        # Step 6: Prepare JSON-serializable output
+        output = {
+            "dataset_summary": llm_summary.dataset_summary,  # This is the string needed for comparison_service
+            "key_metrics": [
+                {"name": metric.name, "value": metric.value}
+                for metric in llm_summary.key_metrics
+            ],
+        }
 
         logging.info("process_week completed successfully!")
-        return llm_summary
+
+        # Print output for debugging
+        print("Output to Q2:", json.dumps(output, indent=4))  # Pretty print JSON output
+        return output  # Return JSON-serializable dictionary
+
     except Exception as e:
         logging.error(f"Error in process_week: {e}")
         raise
