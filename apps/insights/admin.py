@@ -57,9 +57,9 @@ class KeyMetricComparisonInline(admin.TabularInline):
             else "N/A"
         )
 
-    rounded_value1.short_description = "Week 1 Value (Rounded)"
-    rounded_value2.short_description = "Week 2 Value (Rounded)"
-    formatted_percentage_difference.short_description = "Percentage Difference"
+    rounded_value1.short_description = "Current Value"
+    rounded_value2.short_description = "Previous Value"
+    formatted_percentage_difference.short_description = "Percentage Increase"
 
 
 class ComparisonAdmin(admin.ModelAdmin):
@@ -86,8 +86,8 @@ class ComparisonAdmin(admin.ModelAdmin):
         """Display Summary2 details."""
         return f"Summary from {obj.summary2.start_date}"
 
-    display_summary1.short_description = "Summary 1"
-    display_summary2.short_description = "Summary 2"
+    display_summary1.short_description = "Current Week"
+    display_summary2.short_description = "Previous Week"
 
 
 class SummaryAdmin(admin.ModelAdmin):
