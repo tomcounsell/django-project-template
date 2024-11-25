@@ -40,6 +40,7 @@ class CSVProcessor:
         logging.info("Cleaning data...")
         self.df = clean_data(self.df)
 
+    # FIXME: Encapsulate this logic in data_filter.py:
     def filter(self, start_date: str, week_number: int):
         """
         Filters the data for a specified week.

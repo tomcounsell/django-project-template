@@ -149,47 +149,47 @@ def save_comparison_to_database(
         raise
 
 
-def save_comparison_to_file(
-    comparison_result: ComparisonOutput, summary1_id: int, summary2_id: int
-):
-    """
-    Saves the structured comparison result to a JSON file resembling the database entry.
+# def save_comparison_to_file(
+#     comparison_result: ComparisonOutput, summary1_id: int, summary2_id: int
+# ):
+#     """
+#     Saves the structured comparison result to a JSON file resembling the database entry.
 
-    Args:
-        comparison_result (ComparisonOutput): The structured comparison result.
-        summary1_id (int): The database ID of the first summary.
-        summary2_id (int): The database ID of the second summary.
-    """
-    try:
-        file_path = "comparison_output.json"
-        logging.info(f"Saving comparison result to {file_path}...")
+#     Args:
+#         comparison_result (ComparisonOutput): The structured comparison result.
+#         summary1_id (int): The database ID of the first summary.
+#         summary2_id (int): The database ID of the second summary.
+#     """
+#     try:
+#         file_path = "comparison_output.json"
+#         logging.info(f"Saving comparison result to {file_path}...")
 
-        # Construct the data dictionary to match database structure
-        data = {
-            "summary1": summary1_id,
-            "summary2": summary2_id,
-            "comparison_summary": comparison_result.comparison_summary,
-            "key_metrics_comparison": [
-                {
-                    "name": metric.name,
-                    "value1": metric.value1,
-                    "value2": metric.value2,
-                    "description": metric.description,
-                    "percentage_difference": (
-                        ((metric.value2 - metric.value1) / metric.value1) * 100
-                        if metric.value1 != 0
-                        else None
-                    ),
-                }
-                for metric in comparison_result.key_metrics_comparison
-            ],
-        }
+#         # Construct the data dictionary to match database structure
+#         data = {
+#             "summary1": summary1_id,
+#             "summary2": summary2_id,
+#             "comparison_summary": comparison_result.comparison_summary,
+#             "key_metrics_comparison": [
+#                 {
+#                     "name": metric.name,
+#                     "value1": metric.value1,
+#                     "value2": metric.value2,
+#                     "description": metric.description,
+#                     "percentage_difference": (
+#                         ((metric.value2 - metric.value1) / metric.value1) * 100
+#                         if metric.value1 != 0
+#                         else None
+#                     ),
+#                 }
+#                 for metric in comparison_result.key_metrics_comparison
+#             ],
+#         }
 
-        # Write to the JSON file
-        with open(file_path, "w") as json_file:
-            json.dump(data, json_file, indent=4)
+#         # Write to the JSON file
+#         with open(file_path, "w") as json_file:
+#             json.dump(data, json_file, indent=4)
 
-        logging.info("Comparison result saved successfully.")
-    except Exception as e:
-        logging.error(f"Failed to save comparison result to file: {e}")
-        raise
+#         logging.info("Comparison result saved successfully.")
+#     except Exception as e:
+#         logging.error(f"Failed to save comparison result to file: {e}")
+#         raise

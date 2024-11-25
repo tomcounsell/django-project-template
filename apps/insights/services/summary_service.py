@@ -49,16 +49,16 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
 
         logging.info("Loading CSV...")
         processor.load()
-        logging.info("CSV loaded successfully!")
+        logging.info("CSV loaded successfully.")
 
         # Step 2: Validate and clean
         logging.info("Validating CSV...")
         processor.validate()
-        logging.info("Validation complete!")
+        logging.info("Validation complete.")
 
         logging.info("Cleaning CSV...")
         processor.clean()
-        logging.info("Cleaning complete!")
+        logging.info("Cleaning complete.")
 
         # Step 3: Filter data
         logging.info(f"Filtering data for week: {week_number}")
@@ -74,16 +74,16 @@ def process_week(start_date: str, week_number: int) -> SummaryOutput:
         llm_summary = generate_summary(statistical_summary)
         logging.info("LLM summary generated successfully!")
 
-        # Step 5: Save results
-        logging.info("Saving results to database and JSON...")
+        # Step 5: Save results to database
+        logging.info("Saving results to database...")
         save_summary_to_database(
             start_date_dt.strftime("%Y-%m-%d"),
             llm_summary,
         )
-        save_summary_to_file(
-            start_date_dt.strftime("%Y-%m-%d"),
-            llm_summary,
-        )
+        # save_summary_to_file(
+        #     start_date_dt.strftime("%Y-%m-%d"),
+        #     llm_summary,
+        # )
 
         logging.info("process_week completed successfully!")
         return llm_summary
@@ -119,28 +119,28 @@ def save_summary_to_database(start_date: str, llm_summary: SummaryOutput):
         raise
 
 
-def save_summary_to_file(start_date: str, llm_summary: SummaryOutput):
-    """
-    Saves the structured summary result to a JSON file in the same format as the database.
+# def save_summary_to_file(start_date: str, llm_summary: SummaryOutput):
+#     """
+#     Saves the structured summary result to a JSON file in the same format as the database.
 
-    Args:
-        start_date (str): Start date for the summary (YYYY-MM-DD).
-        llm_summary (SummaryOutput): The structured summary result.
-    """
-    try:
-        file_path = f"summary_output_{start_date}.json"
-        logging.info(f"Saving summary result to {file_path}...")
-        data = {
-            "start_date": start_date,
-            "dataset_summary": llm_summary.dataset_summary,
-            "key_metrics": [
-                {"name": metric.name, "value": metric.value}
-                for metric in llm_summary.key_metrics
-            ],
-        }
-        with open(file_path, "w") as json_file:
-            json.dump(data, json_file, indent=4)
-        logging.info("Summary result saved successfully.")
-    except Exception as e:
-        logging.error(f"Failed to save summary result to file: {e}")
-        raise
+#     Args:
+#         start_date (str): Start date for the summary (YYYY-MM-DD).
+#         llm_summary (SummaryOutput): The structured summary result.
+#     """
+#     try:
+#         file_path = f"summary_output_{start_date}.json"
+#         logging.info(f"Saving summary result to {file_path}...")
+#         data = {
+#             "start_date": start_date,
+#             "dataset_summary": llm_summary.dataset_summary,
+#             "key_metrics": [
+#                 {"name": metric.name, "value": metric.value}
+#                 for metric in llm_summary.key_metrics
+#             ],
+#         }
+#         with open(file_path, "w") as json_file:
+#             json.dump(data, json_file, indent=4)
+#         logging.info("Summary result saved successfully.")
+#     except Exception as e:
+#         logging.error(f"Failed to save summary result to file: {e}")
+#         raise
