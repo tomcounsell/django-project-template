@@ -53,37 +53,40 @@ def process_week(start_date: str, week_number: int) -> dict:
         processor.load()
         logging.info("CSV loaded successfully.")
 
-        # Step 2: Validate and clean
+        # Step 2: Validate
         logging.info("Validating CSV...")
         processor.validate()
         logging.info("Validation complete.")
 
+        # Step 3: Clean
         logging.info("Cleaning CSV...")
         processor.clean()
         logging.info("Cleaning complete.")
 
-        # Step 3: Filter data
+        # Step 4: Filter data
         logging.info(f"Filtering data for week: {week_number}")
         week_df = processor.filter(start_date_dt.strftime("%Y-%m-%d"), week_number)
         logging.info(f"Filtering complete! Filtered rows: {len(week_df)}")
 
-        # Step 4: Generate statistical overview and LLM summary
+        # Step 5: Generate statistical overview
         logging.info("Generating statistical overview...")
         processor.generate_overview(week_df, f"Week {week_number}")
 
+        # Step 6: Generate LLM summary
         logging.info("Calling LLM to generate summary...")
         statistical_summary = week_df.describe().to_string()
         llm_summary = generate_summary(statistical_summary)
         logging.info("LLM summary generated successfully!")
 
-        # Step 5: Save results to database
+        # Step 7: Save results to database
         logging.info("Saving results to database...")
         save_summary_to_database(
             start_date_dt.strftime("%Y-%m-%d"),
             llm_summary,
         )
 
-        # Step 6: Prepare JSON-serializable output
+        # FIXME! Remove serializer?
+        # Step 8: Prepare JSON-serializable output
         output = {
             "dataset_summary": llm_summary.dataset_summary,  # This is the string needed for comparison_service
             "key_metrics": [
