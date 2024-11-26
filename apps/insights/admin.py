@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from .forms import RunComparisonForm
 from .models.comparison import Comparison, KeyMetricComparison
 from .models.summary import Summary, KeyMetric
-from .tasks import schedule_summary_tasks
+from .tasks import schedule_summary_chain
 
 from django.http import HttpResponseRedirect
 from django.contrib import messages  # For flashing messages
@@ -102,7 +102,7 @@ class ComparisonAdmin(admin.ModelAdmin):
             if form.is_valid():
                 start_date = form.cleaned_data["start_date"]
                 # Call your function here
-                schedule_summary_tasks(start_date)
+                schedule_summary_chain(start_date)
 
                 # Flash a success message
                 messages.success(request, "Comparison task ran successfully!")
