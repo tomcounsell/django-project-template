@@ -40,18 +40,12 @@ class CSVProcessor:
         logging.info("Cleaning data...")
         self.df = clean_data(self.df)
 
-    def filter(self, start_date: str, week_number: int):
+    def filter(self, start_date: str, traffic_source: str = "organic"):
         """
-        Filters the data for the current (1) or past (2) week using the data_filter module.
-
-        Args:
-            start_date (str): Start date for the dataset (YYYY-MM-DD).
-            week_number (int): Week number to filter (1 = current week, 2 = past week).
-
-        Returns:
-            pd.DataFrame: Filtered DataFrame for the specified week.
+        Filter the data for the specified traffic source and week.
         """
-        return filter_data(self.df, start_date, week_number)
+        logging.info(f"Filtering data for traffic source: {traffic_source}")
+        return filter_data(self.df, start_date, traffic_source)
 
     def generate_overview(self, df, label):
         """

@@ -63,8 +63,8 @@ def process_week(start_date: str, week_number: int) -> dict:
 
         # Step 4: Filter data
         logging.info(f"Filtering data for week: {week_number}")
-        week_df = processor.filter(start_date_dt.strftime("%Y-%m-%d"), week_number)
-        logging.info(f"Filtering complete! Filtered rows: {len(week_df)}")
+        week_df = processor.filter(start_date_dt.strftime("%Y-%m-%d"))
+        logging.info(f"Filtering complete. Filtered rows: {len(week_df)}")
 
         # Step 5: Generate statistical overview
         logging.info("Generating statistical overview...")
@@ -74,7 +74,7 @@ def process_week(start_date: str, week_number: int) -> dict:
         logging.info("Calling LLM to generate summary...")
         statistical_summary = week_df.describe().to_string()
         llm_summary = generate_summary(statistical_summary)
-        logging.info("LLM summary generated successfully!")
+        logging.info("LLM summary generated successfully.")
 
         # Step 7: Save results to database
         logging.info("Saving results to database...")
