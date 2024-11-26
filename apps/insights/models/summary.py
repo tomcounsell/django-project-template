@@ -61,6 +61,9 @@ class Summary(Timestampable, UUIDable):
         verbose_name_plural = "Summaries"
 
 
+from django.core.exceptions import ValidationError
+
+
 class KeyMetric(Timestampable, UUIDable):
     """
     Model to store individual key metrics related to a Summary.
@@ -79,8 +82,20 @@ class KeyMetric(Timestampable, UUIDable):
     )
     value = models.FloatField(help_text="Numeric value of the metric.")
 
+    def clean(self):
+        """
+        Validates that the value is non-negative if negative values are not expected.
+        """
+        if self.value < 0:
+            raise ValidationError(
+                f"The value for metric '{self.name}' cannot be negative."
+            )
+
     def __str__(self):
-        return f"{self.name}: {self.value} (Summary ID: {self.summary.id})"
+        """
+        Returns a descriptive string including the metric's name, value, and associated summary's date.
+        """
+        return f"Metric: {self.name}, Value: {self.value} ({self.summary.start_date})"
 
     class Meta:
         ordering = ["name"]
