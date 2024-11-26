@@ -1,42 +1,27 @@
-# apps/insights/services/csv/data_filter.py
-import pandas as pd
 import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+import pandas as pd
 
 
-def filter_data(df, start_date):
+def filter_data(df, start_date: str, week_number: int):
     """
-    Filter the DataFrame for a single 7-day period based on the start_date.
+    Filters the data for the current (1) or past (2) week.
 
     Args:
-        df (pd.DataFrame): Input DataFrame to filter.
-        start_date (str): Start date for filtering (YYYY-MM-DD).
+        df (pd.DataFrame): DataFrame containing the data to filter.
+        start_date (str): Start date for the dataset (YYYY-MM-DD).
+        week_number (int): Week number to filter (1 = current week, 2 = past week).
 
     Returns:
-        pd.DataFrame: Filtered DataFrame for the 7-day period.
+        pd.DataFrame: Filtered DataFrame for the specified week.
     """
-    logging.info("Filtering data for organic traffic...")
-    organic_df = df[df["source"] == "organic"]
-    if organic_df.empty:
-        raise ValueError("No data found for organic traffic.")
-
-    # Define date range
-    logging.info(f"Calculating date range from start_date: {start_date}")
+    logging.info(f"Filtering data for Week {week_number}...")
     start_date = pd.to_datetime(start_date)
-    end_date = start_date + pd.Timedelta(days=6)
 
-    # Filter the 7-day period
-    logging.info(f"Filtering data: {start_date.date()} to {end_date.date()}")
-    filtered_df = organic_df[
-        (organic_df["date"] >= start_date) & (organic_df["date"] <= end_date)
-    ]
-    if filtered_df.empty:
-        raise ValueError("No data found for the specified 7-day period.")
+    # Week 1: No date adjustment needed
+    week_start = start_date
+    week_end = start_date + pd.Timedelta(days=6)
 
-    # Log filtered data
-    logging.info(f"Filtered Data (Rows: {len(filtered_df)}):\n{filtered_df}")
+    # If week_number == 2, assume start_date has already been adjusted in process_week
+    filtered_df = df[(df["date"] >= week_start) & (df["date"] <= week_end)]
+    logging.info(f"Filtered Week {week_number} Data: {len(filtered_df)} rows.")
     return filtered_df

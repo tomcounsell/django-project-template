@@ -40,10 +40,9 @@ class CSVProcessor:
         logging.info("Cleaning data...")
         self.df = clean_data(self.df)
 
-    # FIXME: Encapsulate this logic in data_filter.py:
     def filter(self, start_date: str, week_number: int):
         """
-        Filters the data for the current (1) or past (2) week.
+        Filters the data for the current (1) or past (2) week using the data_filter module.
 
         Args:
             start_date (str): Start date for the dataset (YYYY-MM-DD).
@@ -52,19 +51,7 @@ class CSVProcessor:
         Returns:
             pd.DataFrame: Filtered DataFrame for the specified week.
         """
-        logging.info(f"Filtering data for Week {week_number}...")
-        start_date = pd.to_datetime(start_date)
-
-        # Week 1: No date adjustment needed
-        week_start = start_date
-        week_end = start_date + pd.Timedelta(days=6)
-
-        # If week_number == 2, assume start_date has already been adjusted in process_week
-        filtered_df = self.df[
-            (self.df["date"] >= week_start) & (self.df["date"] <= week_end)
-        ]
-        logging.info(f"Filtered Week {week_number} Data: {len(filtered_df)} rows.")
-        return filtered_df
+        return filter_data(self.df, start_date, week_number)
 
     def generate_overview(self, df, label):
         """

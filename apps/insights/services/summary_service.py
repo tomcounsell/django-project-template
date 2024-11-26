@@ -43,9 +43,6 @@ def process_week(start_date: str, week_number: int) -> dict:
             logging.info("Adjusting start_date for previous week.")
             start_date_dt -= pd.Timedelta(days=7)
 
-        # FIXME! DEBUGGING
-        print("DEBUG! Start_date:", start_date_dt)
-
         # Step 1: Initialize CSVProcessor and load data
         logging.info("Initializing CSVProcessor...")
         processor = CSVProcessor()
