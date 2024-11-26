@@ -108,7 +108,7 @@ class ComparisonAdmin(admin.ModelAdmin):
                 messages.success(request, "Comparison task ran successfully!")
 
                 # Redirect to the Django Q success page
-                return HttpResponseRedirect("/admin/django_q/success/")
+                return HttpResponseRedirect("/admin/django_q/schedule/")
         else:
             form = RunComparisonForm()
         return render(request, "admin/insights/run_comparison.html", {"form": form})
