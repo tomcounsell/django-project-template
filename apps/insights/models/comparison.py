@@ -5,6 +5,9 @@ from apps.common.behaviors.uuidable import UUIDable
 from apps.insights.models.summary import Summary
 
 
+from django.core.exceptions import ValidationError
+
+
 class Comparison(Timestampable, UUIDable):
     """
     Model to store the comparison between two summaries.
@@ -31,12 +34,31 @@ class Comparison(Timestampable, UUIDable):
         db_index=True,  # Index for faster queries on start_date
     )
 
+    def clean(self):
+        """
+        Validates that the two summaries are not the same and belong to different start dates.
+        """
+        if self.summary1 == self.summary2:
+            raise ValidationError("Summary1 and Summary2 cannot be the same.")
+        if self.summary1.start_date >= self.summary2.start_date:
+            raise ValidationError(
+                "Summary1 must have an earlier start date than Summary2."
+            )
+
     def save(self, *args, **kwargs):
+        """
+        Automatically sets the start_date to the start_date of summary1 before saving.
+        Ensures validation rules are respected.
+        """
         self.start_date = self.summary1.start_date
+        self.clean()  # Explicitly call clean to ensure validation rules are enforced
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Comparison from {self.start_date}"
+        """
+        Returns a descriptive string representation, including the start date and summaries being compared.
+        """
+        return f"Comparison: {self.summary1.start_date} vs {self.summary2.start_date}"
 
     class Meta:
         ordering = ["-created_at"]
