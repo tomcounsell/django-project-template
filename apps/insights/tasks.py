@@ -8,14 +8,12 @@ Chaining Tasks:
 """
 
 from datetime import datetime, date, timedelta
+from django.conf import settings
 from django.utils.timezone import now  # Correct import for timezone.now
 from django_q.tasks import schedule, Chain
 import logging
 
 logger = logging.getLogger(__name__)
-
-# Adjustable delay for scheduling the task (in seconds)
-SUMMARY_TASK_TIME_DELAY = 5
 
 
 def schedule_summary_chain(start_date):
