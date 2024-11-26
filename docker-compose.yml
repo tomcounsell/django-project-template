@@ -22,19 +22,36 @@ services:
     restart: always
     depends_on:
       - redis
-      # - db
+      - db  # Enable dependency on Postgres
+
+  db:
+    image: postgres:15-alpine
+    container_name: scheduled-tasks-ai-postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "myuser", "-d", "mydatabase"]
+      interval: 30s
+      retries: 3
+      timeout: 10s
+      start_period: 5s
 
   redis:
-    image: redis:7-alpine  # Using the official Redis image with Alpine for smaller size
+    image: redis:7-alpine
     container_name: scheduled-tasks-ai-redis
     ports:
-      - "6379:6379"  # Expose Redis port
+      - "6379:6379"
     volumes:
-      - redis_data:/data  # Persist Redis data
+      - redis_data:/data
     restart: always
 
   qcluster:
-    image: scheduled-tasks-ai-web  # Use the built image for the web service
+    image: scheduled-tasks-ai-web
     container_name: scheduled-tasks-ai-qcluster
     working_dir: /app
     volumes:
@@ -50,19 +67,8 @@ services:
     restart: always
     depends_on:
       - redis
-      # - db
-
-  # db:
-  #   image: postgres:15-alpine  # Using Alpine-based image for smaller size
-  #   container_name: scheduled-tasks-ai-postgres
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data  # Persist database data
-  #   env_file:
-  #     - .env  # Load environment variables from .env
-  #   ports:
-  #     - "5432:5432"
-  #   restart: always
+    #  - db
 
 volumes:
   redis_data:  # Define the named volume for Redis persistence
-  # postgres_data:  # Define the named volume for PostgreSQL persistence
+  postgres_data:  # Define the named volume for PostgreSQL persistence:
