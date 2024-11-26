@@ -1,14 +1,18 @@
 # apps/insights/models/summary.py
 from django.db import models
 from apps.common.behaviors.timestampable import Timestampable
+from apps.common.behaviors.uuidable import UUIDable
 
 
-class Summary(Timestampable):
+class Summary(Timestampable, UUIDable):
     """
     Model to store the dataset summary and key metrics for a specific time period.
     """
 
-    start_date = models.DateField(help_text="Start date of the data period.")
+    start_date = models.DateField(
+        help_text="Start date of the data period.",
+        db_index=True,  # Index added for faster filtering and ordering by start_date
+    )
     dataset_summary = models.TextField(
         help_text="A concise English summary of the dataset."
     )
@@ -24,11 +28,11 @@ class Summary(Timestampable):
 
     class Meta:
         ordering = ["-start_date"]
-        unique_together = ("start_date",)  # Adjusted to remove end_date
+        unique_together = ("start_date",)
         verbose_name_plural = "Summaries"
 
 
-class KeyMetric(Timestampable):
+class KeyMetric(Timestampable, UUIDable):
     """
     Model to store individual key metrics related to a Summary.
     """
@@ -39,7 +43,11 @@ class KeyMetric(Timestampable):
         on_delete=models.CASCADE,
         help_text="The summary this key metric belongs to.",
     )
-    name = models.CharField(max_length=100, help_text="Name of the metric.")
+    name = models.CharField(
+        max_length=100,
+        help_text="Name of the metric.",
+        db_index=True,  # Index added for faster filtering by name
+    )
     value = models.FloatField(help_text="Numeric value of the metric.")
 
     def __str__(self):
@@ -48,3 +56,8 @@ class KeyMetric(Timestampable):
     class Meta:
         unique_together = ("summary", "name")
         ordering = ["name"]
+        indexes = [
+            models.Index(
+                fields=["summary", "name"]
+            ),  # Combined index for unique constraint
+        ]
