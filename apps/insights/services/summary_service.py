@@ -21,8 +21,7 @@ logging.basicConfig(
 )
 
 
-# FIXME! create_summary()
-def process_week(start_date: str, week_number: int) -> dict:
+def create_summary(start_date: str, week_number: int) -> dict:
     """
     Processes a single week's data and generates an LLM summary.
 
