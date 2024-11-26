@@ -3,7 +3,6 @@ import mimetypes
 import os
 from pathlib import Path
 import socket
-from datetime import timedelta
 
 # DEFINE THE ENVIRONMENT TYPE
 PRODUCTION = STAGE = DEMO = LOCAL = False
@@ -87,15 +86,15 @@ APPS = [
     'apps.common',
     # 'apps.integration',
     'apps.communication',
-    # 'apps.public',
-    # 'apps.api',
+    'apps.public',  # for web front-end
+    # 'apps.api',  # for API
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
 SITE_ID = 1
 
 MIDDLEWARE = [
-    "apps.common.utilities.database.django_middleware.APIHeaderMiddleware",
+    "apps.common.utilities.django.middleware.APIHeaderMiddleware",
     # "django_user_agents.middleware.UserAgentMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -113,7 +112,6 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
 ]
 
-
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 
@@ -126,7 +124,7 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "templates",
-            # BASE_DIR / "apps" / "public" / "templates",
+            BASE_DIR / "apps" / "public" / "templates",
         ],
         # "APP_DIRS": True,  # removed for django-components
         "OPTIONS": {
@@ -155,7 +153,6 @@ TEMPLATES = [
     },
 ]
 
-
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
@@ -170,7 +167,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 mimetypes.add_type("text/javascript", ".js", True)
 mimetypes.add_type("text/css", ".css", True)
-
 
 WSGI_APPLICATION = "settings.wsgi.application"
 
