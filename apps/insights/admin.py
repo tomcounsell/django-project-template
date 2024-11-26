@@ -20,14 +20,17 @@ class KeyMetricInline(admin.TabularInline):
 
     model = KeyMetric
     extra = 0  # Do not display extra blank rows
-    readonly_fields = ("name", "formatted_value")
+    readonly_fields = ("name", "value")
     can_delete = False
 
-    def formatted_value(self, obj):
-        """Display the value rounded to the nearest whole number."""
-        return f"{round(obj.value):,}" if obj.value is not None else "N/A"
+    fields = readonly_fields  # Make all fields explicitly read-only
 
-    formatted_value.short_description = "Value (Rounded)"
+    # def formatted_value(self, obj): # FIXME Remove redundant code
+    #    return obj.value
+    # """Display the value rounded to the nearest whole number."""
+    # return f"{round(obj.value):,}" if obj.value is not None else "N/A"
+
+    # formatted_value.short_description = "Value"
 
 
 class KeyMetricComparisonInline(admin.TabularInline):

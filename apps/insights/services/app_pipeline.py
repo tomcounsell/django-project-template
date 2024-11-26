@@ -9,11 +9,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# FIXME! def generate_summary(start_date)
 
-
-# FIXME! create_comparison()
-def generate_comparison(start_date: str):
+def create_comparison(start_date: str):
     """
     Fetch summaries for current week and past week from the database,
     pass them to the comparison service, and save the comparison output to the database.
@@ -68,15 +65,3 @@ def generate_comparison(start_date: str):
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         print(f"Error: {e}")
-
-
-# Run the comparison service
-# comparison_result = process_comparison(data_summary1, data_summary2)
-
-# # Save the comparison result to the database
-# # You need to replace summary1_id and summary2_id with actual IDs from your database
-# summary1_id = 11  # Replace with actual Week 1 Summary ID
-# summary2_id = 12  # Replace with actual Week 2 Summary ID
-# save_comparison_to_database(summary1_id, summary2_id, comparison_result)
-
-# print("Comparison result has been saved to the database successfully!")
