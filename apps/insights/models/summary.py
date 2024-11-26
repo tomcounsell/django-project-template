@@ -27,8 +27,13 @@ class Summary(Timestampable, UUIDable):
         return f"Summary from {self.start_date}"
 
     class Meta:
-        ordering = ["-start_date"]
-        unique_together = ("start_date",)
+        ordering = [
+            "-start_date",
+            "-created_at",
+        ]  # Added secondary ordering for predictability
+        constraints = [
+            models.UniqueConstraint(fields=["start_date"], name="unique_start_date"),
+        ]
         verbose_name_plural = "Summaries"
 
 
@@ -46,7 +51,7 @@ class KeyMetric(Timestampable, UUIDable):
     name = models.CharField(
         max_length=100,
         help_text="Name of the metric.",
-        db_index=True,  # Index added for faster filtering by name
+        db_index=True,  # Index for filtering by name
     )
     value = models.FloatField(help_text="Numeric value of the metric.")
 
@@ -54,10 +59,12 @@ class KeyMetric(Timestampable, UUIDable):
         return f"{self.name}: {self.value} (Summary ID: {self.summary.id})"
 
     class Meta:
-        unique_together = ("summary", "name")
         ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["summary", "name"], name="unique_summary_name"
+            ),
+        ]
         indexes = [
-            models.Index(
-                fields=["summary", "name"]
-            ),  # Combined index for unique constraint
+            models.Index(fields=["summary", "name"]),  # Combined index for performance
         ]

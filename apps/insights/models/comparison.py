@@ -1,23 +1,22 @@
 # apps/insights/models/comparison.py
 from django.db import models
-from apps.common.behaviors.timestampable import Timestampable  # Importing Timestampable
-from apps.insights.models.summary import (
-    Summary,
-)  # Ensure this import aligns with project structure
+from apps.common.behaviors.timestampable import Timestampable
+from apps.common.behaviors.uuidable import UUIDable
+from apps.insights.models.summary import Summary
 
 
-class Comparison(Timestampable):
+class Comparison(Timestampable, UUIDable):
     """
     Model to store the comparison between two summaries.
     """
 
-    summary1 = models.ForeignKey(  # Current Week
+    summary1 = models.ForeignKey(
         Summary,
         related_name="comparisons_as_summary1",
         on_delete=models.CASCADE,
         help_text="The current week summary being compared.",
     )
-    summary2 = models.ForeignKey(  # Past Week
+    summary2 = models.ForeignKey(
         Summary,
         related_name="comparisons_as_summary2",
         on_delete=models.CASCADE,
@@ -29,6 +28,7 @@ class Comparison(Timestampable):
     start_date = models.DateField(
         help_text="Start date of the current week in the comparison, derived from summary1.",
         editable=False,
+        db_index=True,  # Index for faster queries on start_date
     )
 
     def save(self, *args, **kwargs):
@@ -39,11 +39,15 @@ class Comparison(Timestampable):
         return f"Comparison from {self.start_date}"
 
     class Meta:
-        unique_together = ("summary1", "summary2")
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["summary1", "summary2"], name="unique_summary_comparison"
+            ),
+        ]
 
 
-class KeyMetricComparison(Timestampable):
+class KeyMetricComparison(Timestampable, UUIDable):
     """
     Model to store individual key metric comparisons related to a Comparison.
     """
@@ -55,7 +59,9 @@ class KeyMetricComparison(Timestampable):
         help_text="The comparison this key metric comparison belongs to.",
     )
     name = models.CharField(
-        max_length=100, help_text="Name of the metric being compared."
+        max_length=100,
+        help_text="Name of the metric being compared.",
+        db_index=True,  # Index for faster queries on name
     )
     value1 = models.FloatField(help_text="Value from the current week.")
     value2 = models.FloatField(help_text="Value from the past week.")
@@ -81,5 +87,14 @@ class KeyMetricComparison(Timestampable):
         return f"{self.name} Comparison (Comparison ID: {self.comparison.id})"
 
     class Meta:
-        unique_together = ("comparison", "name")
         ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["comparison", "name"], name="unique_metric_comparison"
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=["comparison", "name"]
+            ),  # Combined index for unique constraint
+        ]
