@@ -87,7 +87,7 @@ class KeyMetricComparison(Timestampable, UUIDable):
         return f"{self.name} Comparison (Comparison ID: {self.comparison.id})"
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["name", "-created_at"]
         constraints = [
             models.UniqueConstraint(
                 fields=["comparison", "name"], name="unique_metric_comparison"

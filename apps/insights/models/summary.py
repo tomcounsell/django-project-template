@@ -2,6 +2,7 @@
 from django.db import models
 from apps.common.behaviors.timestampable import Timestampable
 from apps.common.behaviors.uuidable import UUIDable
+from django.core.exceptions import ValidationError
 
 
 class Summary(Timestampable, UUIDable):
@@ -10,20 +11,43 @@ class Summary(Timestampable, UUIDable):
     """
 
     start_date = models.DateField(
-        help_text="Start date of the data period.",
+        help_text=(
+            "The starting date of the dataset's time period. This is used for identifying "
+            "and organizing summaries. It should correspond to the first day of the data coverage."
+        ),
         db_index=True,  # Index added for faster filtering and ordering by start_date
     )
     dataset_summary = models.TextField(
-        help_text="A concise English summary of the dataset."
+        help_text=(
+            "A concise English summary of the dataset, highlighting key patterns, trends, "
+            "or anomalies for the specified time period."
+        )
     )
     data_source = models.CharField(
         max_length=255,
         null=True,
         blank=True,
-        help_text="File path or identifier of the data source.",
+        help_text=(
+            "Optional. A file path, URL, or identifier for the source of the dataset. "
+            "Useful for traceability or referencing the original data."
+        ),
     )
 
+    def clean(self):
+        """
+        Validates that the dataset_summary is not empty and does not exceed a reasonable length.
+        """
+        if not self.dataset_summary:
+            raise ValidationError("The dataset summary cannot be empty.")
+        if len(self.dataset_summary) > 2000:  # Example max length
+            raise ValidationError("The dataset summary cannot exceed 2000 characters.")
+
     def __str__(self):
+        """
+        Returns a string representation of the Summary, including the start date and data source if available.
+        """
+        if self.data_source:
+            return f"Summary from {self.start_date} (Source: {self.data_source})"
         return f"Summary from {self.start_date}"
 
     class Meta:
