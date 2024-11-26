@@ -69,6 +69,9 @@ class Comparison(Timestampable, UUIDable):
         ]
 
 
+from django.core.exceptions import ValidationError
+
+
 class KeyMetricComparison(Timestampable, UUIDable):
     """
     Model to store individual key metric comparisons related to a Comparison.
@@ -96,20 +99,48 @@ class KeyMetricComparison(Timestampable, UUIDable):
         help_text="Percentage difference between the two values.", null=True, blank=True
     )
 
+    def clean(self):
+        """
+        Validates that the metric values are logical and percentage_difference is not manually set.
+        """
+        if self.value1 < 0 or self.value2 < 0:
+            raise ValidationError(
+                "Metric values (value1 and value2) cannot be negative."
+            )
+        if self.percentage_difference is not None:
+            raise ValidationError(
+                "Percentage difference is auto-calculated and cannot be manually set."
+            )
+
     def save(self, *args, **kwargs):
+        """
+        Automatically calculates percentage_difference and enforces validation rules before saving.
+        """
         if self.value1 and self.value2:
             self.percentage_difference = (
                 ((self.value1 - self.value2) / self.value2) * 100
                 if self.value2 != 0
                 else None
             )
+        self.clean()  # Explicitly call clean to ensure validation rules are respected
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} Comparison (Comparison ID: {self.comparison.id})"
+        """
+        Returns a descriptive string representation including metric name, values, and percentage difference.
+        """
+        percentage_diff = (
+            f", Difference: {self.percentage_difference:.2f}%"
+            if self.percentage_difference
+            else ""
+        )
+        return f"{self.name}: {self.value1} vs {self.value2}{percentage_diff} (Comparison ID: {self.comparison.id})"
 
     class Meta:
-        ordering = ["name", "-created_at"]
+        ordering = [
+            "name",
+            "-created_at",
+        ]  # Added secondary ordering for predictability
         constraints = [
             models.UniqueConstraint(
                 fields=["comparison", "name"], name="unique_metric_comparison"
