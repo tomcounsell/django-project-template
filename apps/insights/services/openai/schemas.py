@@ -70,6 +70,17 @@ class SummaryOutput(BaseModel):
             metric.validate_name()
 
 
+class KeyMetricComparison(BaseModel):
+    """
+    Represents a comparison of a key metrics between two datasets.
+    """
+
+    name: str
+    value1: float
+    value2: float
+    description: str
+
+
 class ComparisonOutput(BaseModel):
     """
     Structured output for comparing two dataset summaries.
@@ -83,14 +94,3 @@ class ComparisonOutput(BaseModel):
         ...,
         description="Key metrics with values from both weeks and descriptions of differences.",
     )
-
-
-class KeyMetricComparison(BaseModel):
-    """
-    Represents a comparison of a key metrics between two datasets.
-    """
-
-    name: str
-    value1: float
-    value2: float
-    description: str

@@ -34,13 +34,7 @@ services:
     ports:
       - "5432:5432"
     restart: always
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "myuser", "-d", "mydatabase"]
-      interval: 30s
-      retries: 3
-      timeout: 10s
-      start_period: 5s
-
+    
   redis:
     image: redis:7-alpine
     container_name: scheduled-tasks-ai-redis
