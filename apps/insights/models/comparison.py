@@ -36,13 +36,14 @@ class Comparison(Timestampable, UUIDable):
 
     def clean(self):
         """
-        Validates that the two summaries are not the same and belong to different start dates.
+        Validates that the two summaries are not the same and belong to valid time periods.
+        Ensures summary2 represents a prior week compared to summary1.
         """
         if self.summary1 == self.summary2:
             raise ValidationError("Summary1 and Summary2 cannot be the same.")
-        if self.summary1.start_date >= self.summary2.start_date:
+        if self.summary2.start_date >= self.summary1.start_date:
             raise ValidationError(
-                "Summary1 must have an earlier start date than Summary2."
+                "Summary2 must have an earlier start date than Summary1."
             )
 
     def save(self, *args, **kwargs):
@@ -67,9 +68,6 @@ class Comparison(Timestampable, UUIDable):
                 fields=["summary1", "summary2"], name="unique_summary_comparison"
             ),
         ]
-
-
-from django.core.exceptions import ValidationError
 
 
 class KeyMetricComparison(Timestampable, UUIDable):
