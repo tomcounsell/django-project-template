@@ -97,22 +97,9 @@ class KeyMetricComparison(Timestampable, UUIDable):
         help_text="Percentage difference between the two values.", null=True, blank=True
     )
 
-    def clean(self):
-        """
-        Validates that the metric values are logical and percentage_difference is not manually set.
-        """
-        if self.value1 < 0 or self.value2 < 0:
-            raise ValidationError(
-                "Metric values (value1 and value2) cannot be negative."
-            )
-        if self.percentage_difference is not None:
-            raise ValidationError(
-                "Percentage difference is auto-calculated and cannot be manually set."
-            )
-
     def save(self, *args, **kwargs):
         """
-        Automatically calculates percentage_difference and enforces validation rules before saving.
+        Automatically calculates percentage_difference before saving.
         """
         if self.value1 and self.value2:
             self.percentage_difference = (
@@ -120,7 +107,6 @@ class KeyMetricComparison(Timestampable, UUIDable):
                 if self.value2 != 0
                 else None
             )
-        self.clean()  # Explicitly call clean to ensure validation rules are respected
         super().save(*args, **kwargs)
 
     def __str__(self):
