@@ -8,7 +8,7 @@ This service processes a single week's data from a CSV file, generating a summar
 """
 import json
 import logging
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.core.exceptions import ValidationError
 from apps.insights.models.summary import Summary, KeyMetric
 from apps.insights.services.csv_processor import CSVProcessor
@@ -20,9 +20,6 @@ import pandas as pd
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-
-from django.core.exceptions import ValidationError
 
 
 def create_summary(start_date: str, week_number: int) -> dict:
@@ -43,22 +40,30 @@ def create_summary(start_date: str, week_number: int) -> dict:
         # Convert start_date to datetime
         start_date_dt = pd.to_datetime(start_date)
 
+        # Adjust start_date for Week 2 task
+        if week_number == 2:
+            start_date_dt -= pd.Timedelta(days=7)
+
+        # Date to use for validation and processing
+        adjusted_start_date_str = start_date_dt.strftime("%Y-%m-%d")
+
         # Validate that start_date is in the past
         if start_date_dt > pd.Timestamp.now():
-            raise ValidationError(f"Start date {start_date} cannot be in the future.")
-
-        # Validate uniqueness of summary
-        if Summary.objects.filter(
-            start_date=start_date_dt.strftime("%Y-%m-%d")
-        ).exists():
+            logging.error(
+                f"Validation failed: Start date {adjusted_start_date_str} cannot be in the future."
+            )
             raise ValidationError(
-                f"A summary for the start date {start_date} already exists."
+                f"Start date {adjusted_start_date_str} cannot be in the future."
             )
 
-        # Adjust start_date for previous week
-        if week_number == 2:
-            logging.info("Adjusting start_date for previous week.")
-            start_date_dt -= pd.Timedelta(days=7)
+        # Validate uniqueness of start_date
+        if Summary.objects.filter(start_date=adjusted_start_date_str).exists():
+            logging.error(
+                f"Duplicate summary found for start_date: {adjusted_start_date_str}"
+            )
+            raise ValidationError(
+                f"A summary for the start date {adjusted_start_date_str} already exists."
+            )
 
         # Step 1: Initialize CSVProcessor and load data
         logging.info("Initializing CSVProcessor...")
@@ -80,10 +85,10 @@ def create_summary(start_date: str, week_number: int) -> dict:
 
         # Step 4: Filter data
         logging.info(f"Filtering data for week: {week_number}")
-        week_df = processor.filter(start_date_dt.strftime("%Y-%m-%d"))
+        week_df = processor.filter(adjusted_start_date_str)
         if week_df.empty:
             raise ValidationError(
-                f"No data available for the specified week starting on {start_date_dt.strftime('%Y-%m-%d')}."
+                f"No data available for the specified week starting on {adjusted_start_date_str}."
             )
         logging.info(f"Filtering complete. Filtered rows: {len(week_df)}")
 
@@ -100,11 +105,10 @@ def create_summary(start_date: str, week_number: int) -> dict:
         # Step 7: Save results to database
         logging.info("Saving results to database...")
         save_summary_to_database(
-            start_date_dt.strftime("%Y-%m-%d"),
+            adjusted_start_date_str,
             llm_summary,
         )
 
-        # FIXME! Remove serializer?
         # Step 8: Prepare JSON-serializable output
         output = {
             "dataset_summary": llm_summary.dataset_summary,  # This is the string needed for comparison_service
@@ -137,22 +141,48 @@ def save_summary_to_database(start_date: str, llm_summary: SummaryOutput):
         llm_summary (SummaryOutput): The structured summary result.
     """
     try:
+        # Pre-save validation: Ensure LLM summary contains necessary data
+        if not llm_summary.dataset_summary:
+            raise ValidationError("Dataset summary is missing in the LLM output.")
+        if not llm_summary.key_metrics:
+            raise ValidationError("Key metrics are missing in the LLM output.")
+
         with transaction.atomic():
-            logging.info(f"Saving summary for {start_date} to the database...")
+            logging.info(
+                f"Saving summary for start_date={start_date} to the database..."
+            )
+
+            # Create the Summary object
             summary = Summary.objects.create(
                 start_date=start_date,
                 dataset_summary=llm_summary.dataset_summary,
             )
+
+            # Create KeyMetric objects one by one (could also be batched if needed)
             for metric in llm_summary.key_metrics:
                 KeyMetric.objects.create(
                     summary=summary,
                     name=metric.name,
                     value=metric.value,
                 )
-            logging.info("Summary and key metrics saved successfully.")
-    except Exception as e:
-        logging.error(f"Failed to save summary and key metrics to the database: {e}")
+
+            # Log successful save with details
+            logging.info(
+                f"Saved summary for start_date={start_date} with {len(llm_summary.key_metrics)} key metrics."
+            )
+            return summary  # Optional: Return the created Summary object
+
+    except ValidationError as ve:
+        logging.error(f"Validation error while saving summary: {ve}")
         raise
+    except IntegrityError as ie:
+        logging.error(f"Database integrity error: {ie}")
+        raise ValidationError(
+            "A database integrity error occurred while saving."
+        ) from ie
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+        raise RuntimeError("Failed to save summary and key metrics.") from e
 
 
 # def save_summary_to_file(start_date: str, llm_summary: SummaryOutput):
