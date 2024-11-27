@@ -10,11 +10,12 @@ import json
 import logging
 from django.db import IntegrityError, transaction
 from django.core.exceptions import ValidationError
+import pandas as pd
 from apps.insights.models.summary import Summary, KeyMetric
 from apps.insights.services.csv_processor import CSVProcessor
 from apps.insights.services.openai.summary_generator import generate_summary
 from apps.insights.services.openai.schemas import SummaryOutput
-import pandas as pd
+from apps.insights.services.utils.db_operations import save_summary_to_database
 
 # Configure logging
 logging.basicConfig(
@@ -130,116 +131,3 @@ def create_summary(start_date: str, week_number: int) -> dict:
     except Exception as e:
         logging.error(f"Error in process_week: {e}")
         raise
-
-
-from django.db import transaction, IntegrityError
-from django.core.exceptions import ValidationError
-from apps.insights.models.summary import Summary, KeyMetric
-from apps.insights.services.openai.schemas import SummaryOutput
-import logging
-
-logger = logging.getLogger(__name__)
-
-
-def save_summary_to_database(start_date: str, llm_summary: SummaryOutput):
-    """
-    Saves the structured summary result and its key metrics to the database.
-
-    Args:
-        start_date (str): Start date for the summary (YYYY-MM-DD).
-        llm_summary (SummaryOutput): The structured summary result.
-
-    Returns:
-        Summary: The created Summary object.
-    """
-    try:
-        # Pre-save validation: Ensure LLM summary contains necessary data
-        if not llm_summary.dataset_summary:
-            logger.error("Dataset summary is missing in the LLM output.")
-            raise ValidationError("Dataset summary is missing in the LLM output.")
-        if not llm_summary.key_metrics:
-            logger.error("Key metrics are missing in the LLM output.")
-            raise ValidationError("Key metrics are missing in the LLM output.")
-
-        with transaction.atomic():
-            logger.info(
-                f"Saving summary for start_date={start_date} to the database..."
-            )
-
-            # Create the Summary object
-            try:
-                summary = Summary.objects.create(
-                    start_date=start_date,
-                    dataset_summary=llm_summary.dataset_summary,
-                )
-                logger.info(f"Summary created with ID: {summary.id}")
-            except IntegrityError as ie:
-                logger.error(
-                    f"Integrity error while creating Summary for start_date={start_date}: {ie}"
-                )
-                raise ValidationError(
-                    f"Failed to create Summary due to integrity constraints: {ie}"
-                ) from ie
-
-            # Create KeyMetric objects
-            for metric in llm_summary.key_metrics:
-                try:
-                    KeyMetric.objects.create(
-                        summary=summary,
-                        name=metric.name,
-                        value=metric.value,
-                    )
-                    logger.info(
-                        f"KeyMetric created for {metric.name} with value {metric.value}"
-                    )
-                except IntegrityError as ie:
-                    logger.error(
-                        f"Integrity error while creating KeyMetric for {metric.name}: {ie}"
-                    )
-                    raise ValidationError(
-                        f"Failed to create KeyMetric for {metric.name}."
-                    ) from ie
-
-            logger.info(
-                f"Saved summary for start_date={start_date} with {len(llm_summary.key_metrics)} key metrics."
-            )
-            return summary  # Optional: Return the created Summary object
-
-    except ValidationError as ve:
-        logger.error(f"Validation error while saving summary: {ve}")
-        raise
-    except IntegrityError as ie:
-        logger.error(f"Database integrity error: {ie}")
-        raise ValidationError(
-            "A database integrity error occurred while saving."
-        ) from ie
-    except Exception as e:
-        logger.error(f"Unexpected error while saving summary: {e}")
-        raise RuntimeError("Failed to save summary and key metrics.") from e
-
-
-# def save_summary_to_file(start_date: str, llm_summary: SummaryOutput):
-#     """
-#     Saves the structured summary result to a JSON file in the same format as the database.
-
-#     Args:
-#         start_date (str): Start date for the summary (YYYY-MM-DD).
-#         llm_summary (SummaryOutput): The structured summary result.
-#     """
-#     try:
-#         file_path = f"summary_output_{start_date}.json"
-#         logging.info(f"Saving summary result to {file_path}...")
-#         data = {
-#             "start_date": start_date,
-#             "dataset_summary": llm_summary.dataset_summary,
-#             "key_metrics": [
-#                 {"name": metric.name, "value": metric.value}
-#                 for metric in llm_summary.key_metrics
-#             ],
-#         }
-#         with open(file_path, "w") as json_file:
-#             json.dump(data, json_file, indent=4)
-#         logging.info("Summary result saved successfully.")
-#     except Exception as e:
-#         logging.error(f"Failed to save summary result to file: {e}")
-#         raise
