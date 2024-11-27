@@ -72,7 +72,7 @@ def save_summary_to_database(start_date: str, llm_summary: SummaryOutput):
             logger.info(
                 f"Saved summary for start_date={start_date} with {len(llm_summary.key_metrics)} key metrics."
             )
-            return summary  # Optional: Return the created Summary object
+            return summary
 
     except ValidationError as ve:
         logger.error(f"Validation error while saving summary: {ve}")
@@ -96,20 +96,48 @@ def save_comparison_to_database(
     Args:
         summary1_id (int): ID of the first summary (Week 1).
         summary2_id (int): ID of the second summary (Week 2).
-        comparison_result (ComparisonOutput Pydantic model): The structured comparison result from the LLM.
+        comparison_result (ComparisonOutput): The structured comparison result from LLM.
+
+    Returns:
+        Comparison: The created Comparison object.
     """
     try:
+        # Pre-save validation: Ensure comparison_result contains necessary data
+        if not comparison_result.comparison_summary:
+            logger.error("Comparison summary is missing in the LLM output.")
+            raise ValidationError("Comparison summary is missing in the LLM output.")
+        if not comparison_result.key_metrics_comparison:
+            logger.error("Key metrics comparison is missing in the LLM output.")
+            raise ValidationError(
+                "Key metrics comparison is missing in the LLM output."
+            )
+
         with transaction.atomic():
+            logger.info(
+                f"Saving comparison for summaries {summary1_id} and {summary2_id}..."
+            )
+
             # Fetch the summaries
             try:
                 summary1 = Summary.objects.get(id=summary1_id)
-                summary2 = Summary.objects.get(id=summary2_id)
-                logger.info(
-                    f"Found summaries {summary1_id} and {summary2_id} for comparison."
-                )
+                logger.info(f"Fetched Summary 1 with ID: {summary1_id}")
             except Summary.DoesNotExist as e:
-                logger.error(f"Summary not found: {e}")
-                raise ValueError(f"Summary not found: {e}")
+                logger.error(f"Summary with ID {summary1_id} does not exist: {e}")
+                raise ValidationError(f"Summary with ID {summary1_id} does not exist.")
+
+            try:
+                summary2 = Summary.objects.get(id=summary2_id)
+                logger.info(f"Fetched Summary 2 with ID: {summary2_id}")
+            except Summary.DoesNotExist as e:
+                logger.error(f"Summary with ID {summary2_id} does not exist: {e}")
+                raise ValidationError(f"Summary with ID {summary2_id} does not exist.")
+
+            # Validate that summary IDs are not identical
+            if summary1_id == summary2_id:
+                logger.error(
+                    "Validation error: Summary IDs for comparison must be different."
+                )
+                raise ValidationError("The summaries for comparison must be different.")
 
             # Create the Comparison object
             try:
@@ -118,12 +146,12 @@ def save_comparison_to_database(
                     summary2=summary2,
                     comparison_summary=comparison_result.comparison_summary,
                 )
-                logger.info(f"Comparison object created successfully.")
-            except IntegrityError as e:
-                logger.error(f"Integrity error while creating Comparison: {e}")
-                raise ValueError(
-                    "Failed to create Comparison due to constraint violation."
-                )
+                logger.info(f"Comparison created with ID: {comparison.id}")
+            except IntegrityError as ie:
+                logger.error(f"Integrity error while creating Comparison: {ie}")
+                raise ValidationError(
+                    "Failed to create Comparison due to integrity constraints."
+                ) from ie
 
             # Create KeyMetricComparison objects
             for metric in comparison_result.key_metrics_comparison:
@@ -135,26 +163,30 @@ def save_comparison_to_database(
                         value2=metric.value2,
                         description=metric.description,
                     )
-                except IntegrityError as e:
+                    logger.info(
+                        f"KeyMetricComparison created for metric {metric.name}."
+                    )
+                except IntegrityError as ie:
                     logger.error(
-                        f"Integrity error while creating KeyMetricComparison for metric {metric.name}: {e}"
+                        f"Integrity error while creating KeyMetricComparison for {metric.name}: {ie}"
                     )
-                    raise ValueError(
-                        f"Failed to create KeyMetricComparison for metric {metric.name}."
-                    )
+                    raise ValidationError(
+                        f"Failed to create KeyMetricComparison for {metric.name}."
+                    ) from ie
 
             logger.info(
                 f"Comparison saved successfully for summaries {summary1_id} and {summary2_id}."
             )
+            return comparison
 
-    except IntegrityError as e:
-        logger.error(f"Database constraint error: {e}")
-        raise ValueError(
-            "A database constraint error occurred during the save operation."
-        )
-
+    except ValidationError as ve:
+        logger.error(f"Validation error while saving comparison: {ve}")
+        raise
+    except IntegrityError as ie:
+        logger.error(f"Database integrity error: {ie}")
+        raise ValidationError(
+            "A database integrity error occurred while saving the comparison."
+        ) from ie
     except Exception as e:
-        logger.error(f"Failed to save comparison to the database: {e}")
-        raise RuntimeError(
-            "An unexpected error occurred while saving the comparison."
-        ) from e
+        logger.error(f"Unexpected error while saving comparison: {e}")
+        raise RuntimeError("Failed to save comparison and key metrics.") from e
