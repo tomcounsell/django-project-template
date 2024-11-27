@@ -1,11 +1,11 @@
 # apps/insights/services/csv_processor.py
 import logging
 import pandas as pd  # Import pandas for date processing
-from .csv.csv_reader import load_csv
-from .csv.data_validator import validate_columns
-from .csv.data_cleaner import clean_data
-from .csv.data_filter import filter_data
-from .csv.data_overview import generate_overview
+from .csv_reader import load_csv
+from .data_validator import validate_columns
+from .data_cleaner import clean_data
+from .data_filter import filter_data
+from .data_overview import generate_overview
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"

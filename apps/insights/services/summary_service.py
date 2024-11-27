@@ -12,7 +12,7 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import ValidationError
 import pandas as pd
 from apps.insights.models.summary import Summary, KeyMetric
-from apps.insights.services.csv_processor import CSVProcessor
+from apps.insights.services.csv.csv_processor import CSVProcessor
 from apps.insights.services.openai.summary_generator import generate_summary
 from apps.insights.services.openai.schemas import SummaryOutput
 from apps.insights.services.utils.db_operations import save_summary_to_database
