@@ -73,7 +73,7 @@ def schedule_summary_tasks(start_date):
 
     # Append Task 1: Generate current week summary
     chain.append(
-        "apps.insights.services.summary_service.process_week",
+        "apps.insights.services.summary_service.create_summary",
         start_date_str,
         1,
         q_options={"task_name": "Generate_Current_Week_Summary"},
@@ -82,7 +82,7 @@ def schedule_summary_tasks(start_date):
 
     # Append Task 2: Generate past week summary
     chain.append(
-        "apps.insights.services.summary_service.process_week",
+        "apps.insights.services.summary_service.create_summary",
         start_date_str,
         2,
         q_options={"task_name": "Generate_Previous_Week_Summary"},
