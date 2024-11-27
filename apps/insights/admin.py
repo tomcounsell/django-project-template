@@ -112,8 +112,12 @@ class ComparisonAdmin(admin.ModelAdmin):
 
                 # Redirect to the Django Q success page
                 return HttpResponseRedirect("/admin/django_q/schedule/")
+            else:
+                # Flash an error message
+                messages.error(request, "Please correct the error below.")
         else:
             form = RunComparisonForm()
+
         return render(request, "admin/insights/run_comparison.html", {"form": form})
 
     change_list_template = "admin/insights/comparison_list.html"
