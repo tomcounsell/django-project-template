@@ -1,23 +1,20 @@
 # apps/insights/services/comparison_service.py
 """
 Comparison Service for Dataset Summaries
-Handles LLM comparison generation and logging for two dataset summaries.
+Handles LLM comparison generation for two dataset summaries stored in the database.
+
+This service compares dataset summaries and key metrics for the current and previous weeks using OpenAI's LLM. It begins by validating the absence of duplicate comparisons, then fetches the relevant summaries from the database. The summaries are formatted and processed to generate a natural language comparison summary and key metrics comparison. Results are stored in the Comparison and KeyMetricComparison models, ensuring persistence and availability for further analysis. Errors are logged at each step to facilitate debugging and maintain reliability.
 """
 
-import json
 import logging
 from datetime import datetime, timedelta
-from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from apps.insights.models.comparison import Comparison, KeyMetricComparison
 from apps.insights.models.summary import Summary
 from apps.insights.services.openai.comparison_generator import generate_comparison
 from apps.insights.services.openai.schemas import ComparisonOutput
 from apps.insights.services.utils.db_operations import save_comparison_to_database
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
 logger = logging.getLogger(__name__)
 
 
@@ -26,18 +23,62 @@ def create_comparison(start_date: str):
     Fetches summaries for current week and past week from the database,
     passes them to the processing service, then saves the comparison to the database.
 
+    Args:
+        start_date (str): The start date for the current week's summary (YYYY-MM-DD).
+
+    Raises:
+        ValidationError: Raised if one or both summaries are missing, or if a comparison already exists.
     """
     try:
-        logger.info("Fetching summaries from the database...")
+        logger.info("Starting comparison creation process...")
+
+        # Calculate start dates for the two weeks
         start_date_week1 = datetime.strptime(start_date, "%Y-%m-%d")
         start_date_week2 = start_date_week1 - timedelta(days=7)
+        logger.info(
+            f"Start dates - Current Week: {start_date_week1}, Previous Week: {start_date_week2}"
+        )
 
-        # Fetch summaries
-        summary1 = Summary.objects.get(start_date=start_date_week1.strftime("%Y-%m-%d"))
-        summary2 = Summary.objects.get(start_date=start_date_week2.strftime("%Y-%m-%d"))
+        # Check if a comparison already exists
+        logger.info("Checking for an existing comparison...")
+        if Comparison.objects.filter(
+            summary1__start_date=start_date_week1.strftime("%Y-%m-%d"),
+            summary2__start_date=start_date_week2.strftime("%Y-%m-%d"),
+        ).exists():
+            logger.error(
+                f"A comparison already exists for summaries with start dates {start_date_week1.strftime('%Y-%m-%d')} "
+                f"and {start_date_week2.strftime('%Y-%m-%d')}."
+            )
+            raise ValidationError(
+                f"A comparison already exists for the given summaries."
+            )
 
-        logger.info(f"Current Week Summary ID: {summary1.id}")
-        logger.info(f"Past Week Summary ID: {summary2.id}")
+        # Fetch summaries for both weeks
+        try:
+            summary1 = Summary.objects.get(
+                start_date=start_date_week1.strftime("%Y-%m-%d")
+            )
+            logger.info(f"Found Current Week Summary ID: {summary1.id}")
+        except Summary.DoesNotExist:
+            logger.error(
+                f"Summary for Current Week ({start_date_week1.strftime('%Y-%m-%d')}) not found."
+            )
+            raise ValidationError(
+                f"Summary for the week beginning ({start_date_week1.strftime('%Y-%m-%d')}) does not exist."
+            )
+
+        try:
+            summary2 = Summary.objects.get(
+                start_date=start_date_week2.strftime("%Y-%m-%d")
+            )
+            logger.info(f"Found Past Week Summary ID: {summary2.id}")
+        except Summary.DoesNotExist:
+            logger.error(
+                f"Summary for Past Week ({start_date_week2.strftime('%Y-%m-%d')}) not found."
+            )
+            raise ValidationError(
+                f"Summary for the week prior to ({start_date_week2.strftime('%Y-%m-%d')}) does not exist."
+            )
 
         # Run the comparison service
         logger.info("Running comparison service...")
@@ -71,12 +112,12 @@ def create_comparison(start_date: str):
         save_comparison_to_database(summary1.id, summary2.id, comparison_result)
         logger.info("Comparison result has been saved successfully!")
 
-    except Summary.DoesNotExist as e:
-        logger.error(f"Summary not found: {e}")
-        print(f"Error: {e}")
+    except ValidationError as ve:
+        logger.error(f"Validation error: {ve}")
+        raise
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
-        print(f"Error: {e}")
+        raise RuntimeError("Failed to create comparison.") from e
 
     logger.info("Comparison generation completed.")
 
