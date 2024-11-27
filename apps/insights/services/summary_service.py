@@ -9,6 +9,7 @@ This service processes a single week's data from a CSV file, generating a summar
 import json
 import logging
 from django.db import transaction
+from django.core.exceptions import ValidationError
 from apps.insights.models.summary import Summary, KeyMetric
 from apps.insights.services.csv_processor import CSVProcessor
 from apps.insights.services.openai.summary_generator import generate_summary
@@ -19,6 +20,9 @@ import pandas as pd
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+
+
+from django.core.exceptions import ValidationError
 
 
 def create_summary(start_date: str, week_number: int) -> dict:
@@ -36,8 +40,22 @@ def create_summary(start_date: str, week_number: int) -> dict:
             f"Starting process_week: start_date={start_date}, week_number={week_number}"
         )
 
-        # Adjust start_date for previous week
+        # Convert start_date to datetime
         start_date_dt = pd.to_datetime(start_date)
+
+        # Validate that start_date is in the past
+        if start_date_dt > pd.Timestamp.now():
+            raise ValidationError(f"Start date {start_date} cannot be in the future.")
+
+        # Validate uniqueness of summary
+        if Summary.objects.filter(
+            start_date=start_date_dt.strftime("%Y-%m-%d")
+        ).exists():
+            raise ValidationError(
+                f"A summary for the start date {start_date} already exists."
+            )
+
+        # Adjust start_date for previous week
         if week_number == 2:
             logging.info("Adjusting start_date for previous week.")
             start_date_dt -= pd.Timedelta(days=7)
@@ -63,6 +81,10 @@ def create_summary(start_date: str, week_number: int) -> dict:
         # Step 4: Filter data
         logging.info(f"Filtering data for week: {week_number}")
         week_df = processor.filter(start_date_dt.strftime("%Y-%m-%d"))
+        if week_df.empty:
+            raise ValidationError(
+                f"No data available for the specified week starting on {start_date_dt.strftime('%Y-%m-%d')}."
+            )
         logging.info(f"Filtering complete. Filtered rows: {len(week_df)}")
 
         # Step 5: Generate statistical overview
@@ -98,6 +120,9 @@ def create_summary(start_date: str, week_number: int) -> dict:
         print("Output to Q2:", json.dumps(output, indent=4))  # Pretty print JSON output
         return output  # Return JSON-serializable dictionary
 
+    except ValidationError as ve:
+        logging.error(f"Validation error: {ve}")
+        raise
     except Exception as e:
         logging.error(f"Error in process_week: {e}")
         raise
