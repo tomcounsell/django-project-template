@@ -1,24 +1,56 @@
 # apps/insights/services/openai/summary_generator.py
 
 import os
+from django.conf import settings
 from instructor import from_openai
 from openai import OpenAI
 from .schemas import SummaryOutput
 import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
 )
 
-# Load OpenAI API key
-openai_api_key = os.environ.get("OPENAI_API_KEY")  # Use os.environ.get()
+# Load OpenAI API key from settings
+openai_api_key = settings.OPENAI_API_KEY
 
 if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
+    raise ValueError("OPENAI_API_KEY is not set in Django settings.")
 
 # Initialize OpenAI client
 client = from_openai(OpenAI(api_key=openai_api_key))
+
+
+# Retry logic for transient errors
+@retry(
+    stop=stop_after_attempt(settings.OPENAI_RETRY_ATTEMPTS),
+    wait=wait_exponential(
+        multiplier=settings.OPENAI_RETRY_WAIT_MULTIPLIER,
+        min=settings.OPENAI_RETRY_WAIT_MIN,
+        max=settings.OPENAI_RETRY_WAIT_MAX,
+    ),
+)
+def call_openai_api(prompt: str) -> SummaryOutput:
+    """
+    Makes a call to the OpenAI API with a retry mechanism for transient errors.
+
+    Args:
+        prompt (str): The input prompt for the OpenAI model.
+
+    Returns:
+        SummaryOutput: A structured summary containing dataset insights and key metrics.
+    """
+    try:
+        # Make the API call
+        return client.chat.completions.create(
+            model="gpt-4o-2024-08-06",
+            messages=[{"role": "user", "content": prompt}],
+            response_model=SummaryOutput,
+        )
+    except Exception as e:
+        logging.error(f"Error during OpenAI API call: {e}")
+        raise
 
 
 def generate_summary(statistical_summary: str) -> SummaryOutput:
@@ -68,16 +100,11 @@ Ensure that:
 - Focus on delivering specific insights derived from the data.
 - Avoid generic statements or repeating information without analysis.
 """
-
     try:
         logging.info("Requesting dataset summary from OpenAI...")
 
-        # API call with structured output validation
-        response = client.chat.completions.create(
-            model="gpt-4o-2024-08-06",
-            messages=[{"role": "user", "content": prompt}],
-            response_model=SummaryOutput,
-        )
+        # Retry-enabled API call
+        response = call_openai_api(prompt)
 
         # Log the raw response from OpenAI for debugging
         logging.info(f"Raw LLM response: {response.json()}")
@@ -85,14 +112,6 @@ Ensure that:
         logging.info("Successfully received structured response.")
         return response
 
-    except client.ValidationError as e:
-        logging.error(f"Validation error: {e}")
-        raise ValueError(f"Validation error: {e}")
-
-    except client.ApiError as e:
-        logging.error(f"API error: {e}")
-        raise ValueError(f"API error: {e}")
-
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
-        raise ValueError(f"Unexpected error: {e}")
+        logging.error(f"Error generating summary: {e}")
+        raise ValueError("Failed to generate summary using OpenAI.") from e
