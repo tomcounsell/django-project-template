@@ -3,7 +3,7 @@
 
 def generate_overview(self, df, label):
     """
-    Generate a statistical overview for the given DataFrame.
+    Generates a statistical overview for the given DataFrame.
 
     Args:
         df (DataFrame): The DataFrame to generate an overview for.

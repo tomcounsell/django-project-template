@@ -110,21 +110,6 @@ def create_summary(start_date: str, week_number: int) -> dict:
             llm_summary,
         )
 
-        # Step 8: Prepare JSON-serializable output
-        output = {
-            "dataset_summary": llm_summary.dataset_summary,  # This is the string needed for comparison_service
-            "key_metrics": [
-                {"name": metric.name, "value": metric.value}
-                for metric in llm_summary.key_metrics
-            ],
-        }
-
-        logging.info("process_week completed successfully!")
-
-        # Print output for debugging
-        print("Output to Q2:", json.dumps(output, indent=4))  # Pretty print JSON output
-        return output  # Return JSON-serializable dictionary
-
     except ValidationError as ve:
         logging.error(f"Validation error: {ve}")
         raise

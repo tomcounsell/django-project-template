@@ -1,19 +1,33 @@
-# apps/insights/tasks.py
-"""
-Chaining Tasks:
-- One Function Call: Trigger all tasks with a single function.
-- Sequential Execution: Tasks run one after another in the correct order.
-- Simplicity: Minimal code complexity, all in one file.
-- Integration: Easy to tie into a button click or any other trigger.
-"""
-
 from datetime import datetime, date, timedelta
 from django.conf import settings
 from django.utils.timezone import now  # Correct import for timezone.now
-from django_q.tasks import schedule, Chain
+from django_q.tasks import schedule, Chain, async_task
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def schedule_weekly_summary_task():
+    """
+    Schedules the weekly task to trigger the schedule_summary_chain
+    every Monday at 00:00, with retry logic and error logging.
+    """
+    try:
+        schedule(
+            "apps.insights.tasks.schedule_summary_chain",
+            args=[now().date()],
+            name="weekly_summary_chain",
+            schedule_type="C",
+            cron="0 0 * * 1",  # Every Monday at 00:00
+        )
+        logger.info("Scheduled weekly summary task successfully.")
+    except Exception as e:
+        logger.error("Failed to schedule weekly summary task: %s", e)
+        logger.info("Retrying scheduling of weekly summary task.")
+        async_task(
+            "apps.insights.tasks.schedule_weekly_summary_task",
+            q_options={"retry": 3, "retry_delay": 300},  # Retry 3 times with 5 min gaps
+        )
 
 
 def schedule_summary_chain(start_date):
@@ -21,7 +35,7 @@ def schedule_summary_chain(start_date):
     Wrapper function to schedule the summary chain after a delay.
 
     Schedules the `schedule_summary_tasks` function to run
-    after a predefined delay with `start_date`.
+    after a predefined delay with `start_date`, with retry logic and error logging.
     """
     time_delay = getattr(settings, "SUMMARY_TASK_TIME_DELAY", 60)
 
@@ -54,14 +68,19 @@ def schedule_summary_chain(start_date):
         )
     except Exception as e:
         logger.error("Failed to schedule the summary tasks: %s", e)
-        raise
+        logger.info("Retrying scheduling of summary chain.")
+        async_task(
+            "apps.insights.tasks.schedule_summary_chain",
+            start_date,  # Retry with the same argument
+            q_options={"retry": 3, "retry_delay": 300},  # Retry 3 times with 5 min gaps
+        )
 
 
 def schedule_summary_tasks(start_date):
     """
     Run tasks to process summaries for Week 1, Week 2, and Comparison.
     """
-    # Convert start_date to string # FIXME Remove repeated type conversion
+    # Convert start_date to string #
     start_date_str = (
         start_date.strftime("%Y-%m-%d")
         if isinstance(start_date, (datetime, date))

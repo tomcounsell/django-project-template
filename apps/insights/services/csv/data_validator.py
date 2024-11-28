@@ -23,7 +23,7 @@ REQUIRED_COLUMNS = {
 
 
 def validate_columns(df):
-    # Check for missing required columns
+    # Checks the CSV file for missing required columns
     missing_columns = REQUIRED_COLUMNS - set(df.columns)
     if missing_columns:
         raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")

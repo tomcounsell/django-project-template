@@ -25,13 +25,6 @@ class KeyMetricInline(admin.TabularInline):
 
     fields = readonly_fields  # Make all fields explicitly read-only
 
-    # def formatted_value(self, obj): # FIXME Remove redundant code
-    #    return obj.value
-    # """Display the value rounded to the nearest whole number."""
-    # return f"{round(obj.value):,}" if obj.value is not None else "N/A"
-
-    # formatted_value.short_description = "Value"
-
 
 class KeyMetricComparisonInline(admin.TabularInline):
     """
@@ -163,6 +156,8 @@ class SummaryAdmin(admin.ModelAdmin):
         "dataset_summary",
     )  # Make fields read-only
     inlines = [KeyMetricInline]  # Add inline view for KeyMetric
+
+    fields = readonly_fields  # Make all fields explicitly read-only
 
 
 admin.site.register(Summary, SummaryAdmin)  # Register the Summary model
