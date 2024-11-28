@@ -76,7 +76,7 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.create_summary",
         start_date_str,
         1,
-        q_options={"task_name": "Generate_Current_Week_Summary"},
+        q_options={"task_name": "current_week_summary"},
     )
     logger.info("Added Task 1 to chain: Generate Current Week Summary.")
 
@@ -85,7 +85,7 @@ def schedule_summary_tasks(start_date):
         "apps.insights.services.summary_service.create_summary",
         start_date_str,
         2,
-        q_options={"task_name": "Generate_Previous_Week_Summary"},
+        q_options={"task_name": "past_week_summary"},
     )
     logger.info("Added Task 2 to chain: Generate Past Week Summary.")
 
@@ -93,9 +93,9 @@ def schedule_summary_tasks(start_date):
     chain.append(
         "apps.insights.services.comparison_service.create_comparison",
         start_date_str,
-        q_options={"task_name": "Generate_Comparison"},
+        q_options={"task_name": "week_over_week_comparison"},
     )
-    logger.info("Added Task 3 to chain: Generate comparison.")
+    logger.info("Added Task 3 to chain: Generate Week Over Week Comparison.")
 
     # Run the task chain
     chain.run()
