@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def schedule_weekly_summary_task():
     """
     Schedules the weekly task to trigger the schedule_summary_chain
-    every Monday at 00:00, with retry logic and error logging.
+    every Monday at 00:00.
     """
     try:
         schedule(
@@ -78,7 +78,7 @@ def schedule_summary_chain(start_date):
 
 def schedule_summary_tasks(start_date):
     """
-    Run tasks to process summaries for Week 1, Week 2, and Comparison.
+    Runs sequential tasks to process summaries for Week 1, Week 2, and a Week Over Week Comparison.
     """
     # Convert start_date to string #
     start_date_str = (
