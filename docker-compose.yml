@@ -60,16 +60,6 @@ services:
     command: python manage.py qcluster
     volumes:
       - .:/app
-    environment:
-      REDIS_URL: ${REDIS_URL}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_DB: ${REDIS_DB}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: postgres
-      DB_PORT: ${DB_PORT}
     env_file:
       - .env
     depends_on:
@@ -79,30 +69,20 @@ services:
         condition: service_started
     restart: always
 
-  # celery_worker:
-  #   build: .
-  #   container_name: celery
-  #   command: python -m celery -A settings worker -l INFO
-  #   volumes:
-  #     - .:/app
-  #   environment:
-  #     REDIS_URL: ${REDIS_URL}
-  #     REDIS_HOST: ${REDIS_HOST}
-  #     REDIS_PORT: ${REDIS_PORT}
-  #     REDIS_DB: ${REDIS_DB}
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     DB_HOST: postgres
-  #     DB_PORT: ${DB_PORT}
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     postgres:
-  #       condition: service_started
-  #     redis:
-  #       condition: service_started
-  #   restart: always
+  celery_worker:
+    build: .
+    container_name: celery
+    command: python -m celery -A settings worker -l INFO
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    restart: always
 
 volumes:
   redis_data:  # Development: Define the named volume for Redis persistence.

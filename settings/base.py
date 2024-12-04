@@ -85,7 +85,7 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "django_components",
     "django_q",
-    # "celery",
+    "celery",
 ]
 
 APPS = [
@@ -255,10 +255,10 @@ if PRODUCTION or STAGE:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# # Celery Configuration
-# CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
-# CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://redis:6379/0")
-# CELERY_ACCEPT_CONTENT = ["application/json"]
-# CELERY_TASK_SERIALIZER = "json"
-# CELERY_RESULT_SERIALIZER = "json"
-# CELERY_TIMEZONE = TIME_ZONE
+# Celery Configuration
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
