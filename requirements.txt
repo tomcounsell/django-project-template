@@ -7,11 +7,12 @@ django-redis
 instructor
 openai
 pytest-django
+redis>=3.5.3
 tenacity
+
 # Template requirements:
 boto3
 black
-celery
 coreapi
 decorator
 dj-database-url
@@ -41,7 +42,6 @@ pydantic
 pytest
 pytz
 PyYAML
-redis>=3.5.3
 redisgraph
 requests
 six

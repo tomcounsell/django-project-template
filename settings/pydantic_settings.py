@@ -9,12 +9,12 @@ class Settings(BaseModel):
     INTERNAL_IPS: List[str] = Field(default=["127.0.0.1"])
 
     # Database settings
-    DATABASES_ENGINE: str = "django.db.backends.postgresql"
-    DATABASES_NAME: str = Field(..., env="POSTGRES_DB")
-    DATABASES_USER: str = Field(..., env="POSTGRES_USER")
-    DATABASES_PASSWORD: str = Field(..., env="POSTGRES_PASSWORD")
-    DATABASES_HOST: str = Field(..., env="POSTGRES_HOST", default="db")
-    DATABASES_PORT: int = Field(..., env="POSTGRES_PORT", default=5432)
+    DATABASES_ENGINE: str = "django.db.backends.DBql"
+    DATABASES_NAME: str = Field(..., env="DB_NAME")
+    DATABASES_USER: str = Field(..., env="DB_USER")
+    DATABASES_PASSWORD: str = Field(..., env="DB_PASSWORD")
+    DATABASES_HOST: str = Field(..., env="DB_HOST", default="db")
+    DATABASES_PORT: int = Field(..., env="DB_PORT", default=5432)
 
     # Redis settings
     REDIS_URL: str = Field(..., env="REDIS_URL", default="redis://redis:6379/5")

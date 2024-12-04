@@ -79,23 +79,30 @@ services:
         condition: service_started
     restart: always
 
-  # celery_worker:
-  #   build: .
-  #   container_name: scheduled-tasks-ai-celery-worker
-  #   command: celery -A core worker -l INFO
-  #   volumes:
-  #     - .:/app
-  #   environment:
-  #     REDIS_URL: "redis://redis:6379/5"
-  #     REDIS_HOST: "redis"
-  #     REDIS_PORT: 6379
-  #     REDIS_DB: 5
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - redis
-  #     - web
-  #   restart: always
+  celery_worker:
+    build: .
+    container_name: scheduled-tasks-ai-celery-worker
+    command: python -m celery -A core worker -l INFO
+    volumes:
+      - .:/app
+    environment:
+      REDIS_URL: ${REDIS_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+    restart: always
 
 volumes:
   redis_data:  # Development: Define the named volume for Redis persistence
