@@ -1,4 +1,4 @@
-# Custom requirements:
+# Additional requirements:
 black
 celery>=5.3.4
 django-picklefield
@@ -6,9 +6,18 @@ django-q2
 django-redis
 instructor
 openai
-pytest-django
 redis>=3.5.3
 tenacity
+
+# Testing
+factory-boy
+freezegun
+pytest-cov
+pytest-django
+pytest-mock
+pytest-xdist
+responses
+testcontainers[postgresql,redis]==4.8.2
 
 # Template requirements:
 boto3

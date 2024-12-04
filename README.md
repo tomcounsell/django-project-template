@@ -1,6 +1,10 @@
 # Scheduled Tasks AI Template
 
 ## Installation
+Install PostgreSQL
+Install Redis
+Install Hadolint
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/aihelps/scheduled-tasks-ai-template.git

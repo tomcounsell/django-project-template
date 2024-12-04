@@ -1,13 +1,31 @@
 import os
 
-output_file = "insights-app.txt"
-exclude_dir = "./env"
-file_types = (".py", ".js", ".css", ".html", ".yaml", ".json", ".conf", ".txt")
+output_file = "project.txt"
+exclude_dirs = (
+    "./_archive",
+    "_docs",
+    "./.git",
+    "./kubernetes",
+    "./.mypy_cache",
+    "./staticfiles",
+    "./venv",
+)
+file_types = (
+    ".py",
+    ".js",
+    ".css",
+    ".html",
+    ".yml",
+    ".json",
+    ".conf",
+    ".txt",
+    ".md",
+    "Dockerfile",
+)
 
 with open(output_file, "w") as out:
     for root, dirs, files in os.walk("."):
-        # Exclude the env directory and its subdirectories
-        dirs[:] = [d for d in dirs if os.path.join(root, d) != exclude_dir]
+        dirs[:] = [d for d in dirs if os.path.join(root, d) not in exclude_dirs]
 
         for file in files:
             if file.endswith(file_types):
