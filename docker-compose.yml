@@ -55,11 +55,16 @@ services:
     restart: always
 
   celery_worker:
-    build: .
+    build:
+      context: .
+      args:
+        REDIS_STREAMS_URL: ${REDIS_STREAMS_URL}
     container_name: celery
     command: python -m celery -A settings worker -l INFO
     volumes:
       - .:/app
+    environment:
+      CELERY_BROKER_URL: ${REDIS_STREAMS_URL}
     env_file:
       - .env
     depends_on:

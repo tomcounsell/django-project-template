@@ -7,7 +7,8 @@
 # Runtime Details:
 #   - Base: Python 3.11 Alpine
 #   - Database: PostgreSQL
-#   - Cache: Redis
+#   - Cache: Redis, Redis Streams
+#   - Schedulers: Celery, Django-Q2
 #   - Web Server: Gunicorn
 #   - Port: 8000
 
@@ -72,7 +73,7 @@ COPY . .
 # Create static directory
 RUN mkdir -p /app/static
 
-# Skip collectstatic during build (we'll run it at runtime)
+# Skip collectstatic during build (as it will run at runtime)
 ENV DJANGO_SKIP_COLLECTSTATIC=1
 
 # Create and switch to non-root user for security
