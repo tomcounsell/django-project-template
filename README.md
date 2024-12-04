@@ -1,9 +1,18 @@
-# Scheduled Tasks AI Template
+# Scheduled Tasks for Generative AI Template
+
+Paul Tuck @pau1tuck
 
 ## Installation
-Install PostgreSQL
-Install Redis
-Install Hadolint
+
+### Prerequisites
+- Python => 3.10
+- PostgreSQL => 16.0
+- Redis => 7.0
+- Docker => 24.0
+- Docker Compose => 2.17
+- Hadolint => 2.12.0 (optional)
+
+### Quickstart
 
 1. Clone the repository:
    ```bash
@@ -15,27 +24,29 @@ Install Hadolint
    ```
 
 ### With Docker Compose
-1. Install Docker Compose:
+1. Run `export xlm=xlm`
+   
+2. Install Docker Compose:
    ```bash
    brew install docker-compose
    ```
-2. Build and run the containers:
+3. Build and run the containers:
    ```bash
    docker-compose build && docker-compose up
    ```
-3. Check the status of the containers:
+4. Check the status of the containers:
    ```bash
    docker-compose ps
    ```
-4. Access the container shell:
+5. Access the container shell:
    ```bash
    docker-compose exec web sh
    ```
-5. Create a superuser account:
+6. Create a superuser account:
    ```bash
    docker compose exec web sh -c "python manage.py createsuperuser"
    ```
-6. Access the admin interface:
+7. Access the admin interface:
    ```
    http://localhost:8000/admin
    ```

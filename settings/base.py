@@ -224,11 +224,11 @@ Q_CLUSTER = {
     "compress": True,
     "queue_limit": 50,
     "bulk": 10,
-    "save_limit": 50,  # This ensures that task results are saved up to 50 entries
+    "save_limit": 50,
     "redis": {
         "host": os.environ.get("REDIS_HOST", "redis"),
         "port": int(os.environ.get("REDIS_PORT", 6379)),
-        "db": int(os.environ.get("REDIS_DB", 5)),  # Explicitly use DB 5
+        "db": int(os.environ.get("REDIS_DB", 5)),
     },
 }
 
@@ -254,11 +254,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 if PRODUCTION or STAGE:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-# Celery Configuration
-CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://redis:6379/0")
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = TIME_ZONE
