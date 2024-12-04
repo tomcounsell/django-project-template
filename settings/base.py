@@ -85,6 +85,7 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "django_components",
     "django_q",
+    "celery",
 ]
 
 APPS = [
@@ -230,6 +231,14 @@ Q_CLUSTER = {
         "db": int(os.environ.get("REDIS_DB", 5)),  # Explicitly use DB 5
     },
 }
+
+# Celery Configuration
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
 
 # https://django-request.readthedocs.io/en/latest/settings.html#request-ignore-paths
 REQUEST_IGNORE_PATHS = (r"^admin/",)
