@@ -1,5 +1,6 @@
 # Custom requirements:
 black
+celery>=5.3.4
 django-picklefield
 django-q2
 django-redis
