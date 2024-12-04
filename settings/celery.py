@@ -1,11 +1,13 @@
+# settings/celery.py
 import os
-
 from celery import Celery
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 # Celery Configuration Options
+CELERY_BROKER_URL = os.getenv("REDIS_URL")
+CELERY_RESULT_BACKEND = os.getenv("POSTGRES_URL")
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = int(
     os.environ.get("CELERY_TASK_TIME_LIMIT", 14400)
