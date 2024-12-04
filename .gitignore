@@ -133,7 +133,7 @@ Pipfile
 .gcloudignore
 
 *.dump
-settings/local.py
+# settings/local.py
 datasets/
 *.pkl
 *tar..gz

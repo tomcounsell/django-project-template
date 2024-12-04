@@ -23,24 +23,24 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: postgres
       DB_PORT: ${DB_PORT}
     env_file: 
       - .env
     restart: always
     depends_on:
-      db:
+      postgres:
         condition: service_started
       redis:
         condition: service_started
 
-  db:
+  postgres:
     image: postgres:15-alpine
     container_name: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: always
@@ -68,42 +68,42 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: postgres
       DB_PORT: ${DB_PORT}
     env_file:
       - .env
     depends_on:
-      db:
+      postgres:
         condition: service_started
       redis:
         condition: service_started
     restart: always
 
-  celery_worker:
-    build: .
-    container_name: celery
-    command: python -m celery -A settings worker -l INFO
-    volumes:
-      - .:/app
-    environment:
-      REDIS_URL: ${REDIS_URL}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_DB: ${REDIS_DB}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_started
-      redis:
-        condition: service_started
-    restart: always
+  # celery_worker:
+  #   build: .
+  #   container_name: celery
+  #   command: python -m celery -A settings worker -l INFO
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     REDIS_URL: ${REDIS_URL}
+  #     REDIS_HOST: ${REDIS_HOST}
+  #     REDIS_PORT: ${REDIS_PORT}
+  #     REDIS_DB: ${REDIS_DB}
+  #     DB_NAME: ${DB_NAME}
+  #     DB_USER: ${DB_USER}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: postgres
+  #     DB_PORT: ${DB_PORT}
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     postgres:
+  #       condition: service_started
+  #     redis:
+  #       condition: service_started
+  #   restart: always
 
 volumes:
-  redis_data:  # Development: Define the named volume for Redis persistence
-  postgres_data:  # Development: Define the named volume for PostgreSQL persistence:
+  redis_data:  # Development: Define the named volume for Redis persistence.
+  postgres_data:  # Development: Define the named volume for PostgreSQL persistence.
