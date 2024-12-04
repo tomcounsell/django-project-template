@@ -37,20 +37,44 @@
    ```
 
 ### With Kubernetes Minikube
-1. Install Minikube:
+1. Install required tools:
    ```bash
    brew install kubectl minikube helm
    ```
-2. Start Minikube:
+2. Make the setup scripts executable:
    ```bash
-   minikube start --driver=docker
+   chmod +x scripts/k8s-setup.sh scripts/k8s-cleanup.sh
    ```
-3. Apply Kubernetes configurations:
+3. Run the setup script:
    ```bash
-   kubectl apply -f kubernetes/base/
-   kubectl apply -f kubernetes/overlays/development/
+   ./scripts/k8s-setup.sh
    ```
-4. Get the application URL:
+4. Forward the port to access the application:
    ```bash
-   minikube service scheduled-tasks-ai --url
+   kubectl port-forward service/django 8000:8000 -n scheduled-tasks-ai
    ```
+5. Create a superuser:
+   ```bash
+   kubectl exec -it deployment/django -n scheduled-tasks-ai -- python manage.py createsuperuser
+   ```
+6. Access the admin interface:
+   ```
+   http://localhost:8000/admin
+   ```
+
+To clean up:
+```bash
+./scripts/k8s-cleanup.sh        # Remove all resources
+./scripts/k8s-cleanup.sh --stop # Remove all resources and stop Minikube
+```
+
+Useful commands:
+```bash
+# View logs
+kubectl logs -f deployment/django -n scheduled-tasks-ai    # Django logs
+kubectl logs -f deployment/qcluster -n scheduled-tasks-ai  # Q-cluster logs
+kubectl logs -f deployment/redis -n scheduled-tasks-ai     # Redis logs
+kubectl logs -f deployment/postgres -n scheduled-tasks-ai  # PostgreSQL logs
+
+# Access shell
+kubectl exec -it deployment/django -n scheduled-tasks-ai -- sh
