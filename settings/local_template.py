@@ -1,10 +1,12 @@
+# settings/local_template.py
+import os
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "50 char security key here"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "50 char security key here")
 
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-
 
 DATABASES = {
     "default": {
@@ -36,20 +38,21 @@ CACHES = {
 }
 
 # AWS
-AWS_ACCESS_KEY_ID = ""
-AWS_SECRET_ACCESS_KEY = ""
-AWS_STORAGE_BUCKET_NAME = AWS_S3_BUCKET_NAME = "project-stage"
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "project-stage")
+AWS_S3_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
 AWS_OPTIONS = {
     "AWS_ACCESS_KEY_ID": AWS_ACCESS_KEY_ID,
     "AWS_SECRET_ACCESS_KEY": AWS_SECRET_ACCESS_KEY,
     "AWS_STORAGE_BUCKET_NAME": AWS_S3_BUCKET_NAME,
 }
-AWS_SNS_NAME = ""
-AWS_STATIC_URL = "https://" + AWS_S3_BUCKET_NAME + ".s3.amazonaws.com/"
+AWS_SNS_NAME = os.environ.get("AWS_SNS_NAME", "")
+AWS_STATIC_URL = f"https://{AWS_S3_BUCKET_NAME}.s3.amazonaws.com/"
 
 # OAUTH AND SOCIAL
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ""
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ""
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_KEY", "")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET", "")
 
 # LOGGING
 LOGGING = {
@@ -62,7 +65,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": os.environ.get("LOGGING_LEVEL", "DEBUG"),
             "class": "logging.StreamHandler",
             "formatter": "standard",
         },
@@ -70,16 +73,16 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "INFO",
+            "level": os.environ.get("LOGGING_LEVEL", "INFO"),
             "propagate": True,
         },
         "apps.insights": {  # App-specific logging
             "handlers": ["console"],
-            "level": "INFO",
+            "level": os.environ.get("LOGGING_LEVEL", "INFO"),
             "propagate": False,
         },
     },
 }
 
 # Adjustable time delay for scheduling the summaries task chain (in seconds)
-SUMMARY_TASK_TIME_DELAY = settings.SUMMARY_TASK_TIME_DELAY
+SUMMARY_TASK_TIME_DELAY = int(os.environ.get("SUMMARY_TASK_TIME_DELAY", "1"))

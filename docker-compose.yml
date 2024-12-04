@@ -7,7 +7,10 @@ services:
         # Development: Pass the Django secret key as an environment variable:
         DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY} 
     container_name: scheduled-tasks-ai-django
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
       - ./db.sqlite3:/app/db.sqlite3  # Development: Persist SQLite database
@@ -64,23 +67,23 @@ services:
       - redis
     #  - db
 
-  celery_worker:
-    build: .
-    container_name: scheduled-tasks-ai-celery-worker
-    command: celery -A core worker -l INFO
-    volumes:
-      - .:/app
-    environment:
-      REDIS_URL: "redis://redis:6379/5"
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
-      REDIS_DB: 5
-    env_file:
-      - .env
-    depends_on:
-      - redis
-      - web
-    restart: always
+  # celery_worker:
+  #   build: .
+  #   container_name: scheduled-tasks-ai-celery-worker
+  #   command: celery -A core worker -l INFO
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     REDIS_URL: "redis://redis:6379/5"
+  #     REDIS_HOST: "redis"
+  #     REDIS_PORT: 6379
+  #     REDIS_DB: 5
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - redis
+  #     - web
+  #   restart: always
 
 volumes:
   redis_data:  # Development: Define the named volume for Redis persistence

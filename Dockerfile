@@ -66,11 +66,19 @@ WORKDIR /app
 # Copy only the compiled packages from builder
 COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
-# Copy the application code
+# Copy application code
 COPY . .
 
-# Gather all project static assets (CSS, JS, images, etc.) and place them in the STATIC_ROOT directory for production
-RUN python manage.py collectstatic --noinput
+# Create static directory
+RUN mkdir -p /app/static
 
-# Set the default Gunicorn command for the web service and bind to port 8000
-CMD ["gunicorn", "--bind", ":8000", "settings.wsgi:application"]
+# Skip collectstatic during build (we'll run it at runtime)
+ENV DJANGO_SKIP_COLLECTSTATIC=1
+
+# Create and switch to non-root user for security
+RUN addgroup -S app && adduser -S app -G app
+RUN chown -R app:app /app
+USER app
+
+# Set the default command
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "settings.wsgi:application"]
