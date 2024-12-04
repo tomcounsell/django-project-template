@@ -80,3 +80,6 @@ LOGGING = {
         },
     },
 }
+
+# Adjustable time delay for scheduling the summaries task chain (in seconds)
+SUMMARY_TASK_TIME_DELAY = settings.SUMMARY_TASK_TIME_DELAY

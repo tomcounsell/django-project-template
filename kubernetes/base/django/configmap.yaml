@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: django-config
+  namespace: scheduled-tasks-ai
+data:
+  DJANGO_SETTINGS_MODULE: "settings"

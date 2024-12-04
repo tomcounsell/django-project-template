@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: django
+  namespace: scheduled-tasks-ai
+spec:
+  type: NodePort  # Makes the service accessible outside the cluster
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+  selector:
+    app: django
