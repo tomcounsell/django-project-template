@@ -214,6 +214,23 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django-Q2 settings
+Q_CLUSTER = {
+    "name": "scheduled-tasks-ai",
+    "workers": 4,
+    "timeout": 60,
+    "retry": 120,
+    "compress": True,
+    "queue_limit": 50,
+    "bulk": 10,
+    "save_limit": 50,  # This ensures that task results are saved up to 50 entries
+    "redis": {
+        "host": os.environ.get("REDIS_HOST", "redis"),
+        "port": int(os.environ.get("REDIS_PORT", 6379)),
+        "db": int(os.environ.get("REDIS_DB", 5)),  # Explicitly use DB 5
+    },
+}
+
 # https://django-request.readthedocs.io/en/latest/settings.html#request-ignore-paths
 REQUEST_IGNORE_PATHS = (r"^admin/",)
 
@@ -234,20 +251,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 if PRODUCTION or STAGE:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-# Django-Q settings
-Q_CLUSTER = {
-    "name": "scheduled-tasks-ai",
-    "workers": 4,
-    "timeout": 60,
-    "retry": 120,
-    "compress": True,
-    "queue_limit": 50,
-    "bulk": 10,
-    "save_limit": 50,  # This ensures that task results are saved up to 50 entries
-    "redis": {
-        "host": os.environ.get("REDIS_HOST", "redis"),
-        "port": int(os.environ.get("REDIS_PORT", 6379)),
-        "db": int(os.environ.get("REDIS_DB", 5)),  # Explicitly use DB 5
-    },
-}

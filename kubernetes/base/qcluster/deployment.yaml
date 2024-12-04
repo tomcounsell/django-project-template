@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qcluster
+  namespace: scheduled-tasks-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qcluster
+  template:
+    metadata:
+      labels:
+        app: qcluster
+    spec:
+      containers:
+      - name: qcluster
+        image: scheduled-tasks-ai-web:latest
+        imagePullPolicy: Never
+        command: ["python", "manage.py", "qcluster"]
+        envFrom:
+        - configMapRef:
+            name: django-config
+        - secretRef:
+            name: django-secrets
+        volumeMounts:
+        - name: app-code
+          mountPath: /app
+      volumes:
+      - name: app-code
+        hostPath:
+          path: /app

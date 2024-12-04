@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+spec:
+  template:
+    spec:
+      volumes:
+      - name: app-code
+        hostPath:
+          path: /Users/pau1tuck/dev/projects/deckfusion/scheduled-tasks-ai  # Local development path
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qcluster
+spec:
+  template:
+    spec:
+      volumes:
+      - name: app-code
+        hostPath:
+          path: /Users/pau1tuck/dev/projects/deckfusion/scheduled-tasks-ai  # Local development path
