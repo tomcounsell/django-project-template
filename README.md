@@ -78,3 +78,6 @@ kubectl logs -f deployment/postgres -n scheduled-tasks-ai  # PostgreSQL logs
 
 # Access shell
 kubectl exec -it deployment/django -n scheduled-tasks-ai -- sh
+
+# Launch Kubernetes Dashboard
+minikube dashboard
