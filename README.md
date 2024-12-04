@@ -23,13 +23,13 @@
    ```bash
    docker-compose ps
    ```
-4. Enter the container shell:
+4. Access the container shell:
    ```bash
    docker-compose exec web sh
    ```
-5. Run migrations:
+5. Create a superuser account:
    ```bash
-   python manage.py migrate
+   docker compose exec web sh -c "python manage.py createsuperuser"
    ```
 6. Access the admin interface:
    ```

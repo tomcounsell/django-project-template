@@ -4,7 +4,6 @@ services:
     build:
       context: .
       args:
-        # Development: Pass the Django secret key as an environment variable:
         DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY} 
     container_name: scheduled-tasks-ai-django
     command: >
@@ -13,20 +12,27 @@ services:
              python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
-      - ./db.sqlite3:/app/db.sqlite3  # Development: Persist SQLite database
+      - ./db.sqlite3:/app/db.sqlite3
     ports:
       - "8000:8000"
     environment:
-      REDIS_URL: "redis://redis:6379/5"
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
-      REDIS_DB: 5
+      REDIS_URL: ${REDIS_URL} 
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
     env_file: 
       - .env
     restart: always
     depends_on:
-      - redis
-      - db
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
 
   db:
     image: postgres:15-alpine
@@ -49,23 +55,29 @@ services:
     restart: always
 
   qcluster:
-    image: scheduled-tasks-ai-web
+    build: .
     container_name: scheduled-tasks-ai-qcluster
-    working_dir: /app
+    command: python manage.py qcluster
     volumes:
       - .:/app
-    command: python manage.py qcluster
     environment:
-      REDIS_URL: "redis://redis:6379/5"
-      REDIS_HOST: "redis"
-      REDIS_PORT: 6379
-      REDIS_DB: 5
+      REDIS_URL: ${REDIS_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_DB: ${REDIS_DB}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
     env_file:
       - .env
-    restart: always
     depends_on:
-      - redis
-    #  - db
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+    restart: always
 
   # celery_worker:
   #   build: .
