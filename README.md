@@ -51,6 +51,42 @@ Paul Tuck @pau1tuck
    http://localhost:8000/admin
    ```
 
+### Using VSCode Dev Containers
+
+To streamline development, you can open this project directly in VSCode using **Dev Containers**. Follow these steps:
+
+1. **Install Required Extensions:**
+   - Ensure you have the following VSCode extensions installed:
+     - **Dev Containers** (Remote - Containers)
+     - **Docker**
+     - **Python**
+
+2. **Open the Repository in VSCode:**
+   - Launch VSCode and open the project folder:
+     ```bash
+     code .
+     ```
+
+3. **Reopen in Dev Container:**
+   - Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
+   - Select **Dev Containers: Reopen in Container**.
+   - VSCode will rebuild the container and attach to it automatically.
+
+4. **Verify Python Interpreter:**
+   - Ensure the Python interpreter is set to the container environment:
+     - Open the Command Palette and select **Python: Select Interpreter**.
+     - Choose the path `/usr/local/bin/python`.
+
+5. **Run the Application:**
+   - Use the integrated terminal in VSCode to manage the project:
+     ```bash
+     python manage.py runserver
+     ```
+   - Access the application at:
+     ```
+     http://localhost:8000
+     ```
+
 ### With Kubernetes Minikube
 1. Install required tools:
    ```bash
