@@ -1,6 +1,6 @@
 {
     "name": "scheduled-tasks-ai", // Container name
-    "dockerComposeFile": "../docker-compose.yml",
+    "dockerComposeFile": "../docker-compose.yml", // Path to Docker Compose file
     "service": "web", // Attach to the "web" service
     "workspaceFolder": "/app", // Workspace path inside the container
     "customizations": {
@@ -16,7 +16,8 @@
                     "./apps"
                 ],
                 "editor.formatOnSave": true,
-                "editor.tabSize": 4
+                "editor.tabSize": 4,
+                "docker.languageserver.enable": true // Enable Docker language server for IntelliSense
             },
             "extensions": [
                 "ms-python.python",
