@@ -16,7 +16,6 @@
 FROM python:3.11-alpine AS builder
 
 # Set core environment variables for Python optimization
-# Prevent Python from writing pyc files (compiled bytecode) to disk, reducing container size and improving startup time
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -34,8 +33,6 @@ WORKDIR /build
 
 # Install Python dependencies and upgrade Pip
 COPY requirements.txt .
-
-# Install Python dependencies using a local Asian mirror and increased timeout
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir --default-timeout=100 -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
@@ -59,7 +56,8 @@ RUN echo "Build DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY"
 # Install only runtime dependencies
 RUN apk add --no-cache \
     libpq \
-    redis  # Added Redis CLI for debugging Redis connections
+    redis \
+    bash  # Added bash for VSCode/Windsurf compatibility
 
 # Set container working directory
 WORKDIR /app
