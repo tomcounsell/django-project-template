@@ -1,10 +1,11 @@
-# Additional requirements:
+# Custom requirements:
 black
 celery>=5.3.4
 django-picklefield
 django-q2
 django-redis
 instructor
+numpy>=1.22
 openai
 redis>=5.2.0
 tenacity
@@ -12,7 +13,6 @@ tenacity
 # Type Stubs
 pandas-stubs
 types-PyYAML
-types-numpy
 types-redis
 types-requests
 types-setuptools
@@ -51,7 +51,6 @@ gunicorn
 icecream
 ipython
 Markdown
-numpy
 pandas
 popoto
 psycopg2
