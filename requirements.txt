@@ -9,6 +9,14 @@ openai
 redis>=5.2.0
 tenacity
 
+# Type Stubs
+numpy-stubs
+pandas-stubs
+types-PyYAML
+types-redis
+types-requests
+types-setuptools
+
 # Testing
 factory-boy
 freezegun
