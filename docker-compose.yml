@@ -1,11 +1,11 @@
 # docker-compose.yml
 services:
   django:
+    container_name: django
     build:
       context: .
       args:
         DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY} 
-    container_name: django
     command: >
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py migrate &&
@@ -34,9 +34,18 @@ services:
       redis:
         condition: service_started
 
+  prometheus:
+  container_name: prometheus
+  image: prom/prometheus:latest
+  volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  ports:
+    - "9090:9090"
+  restart: always
+
   postgres:
-    image: postgres:15-alpine
     container_name: postgres
+    image: postgres:15-alpine
     env_file:
       - .env
     volumes:
@@ -46,8 +55,8 @@ services:
     restart: always
     
   redis:
-    image: redis:7-alpine
     container_name: redis
+    image: redis:7-alpine
     ports:
       - "6379:6379"
     volumes:
@@ -55,11 +64,11 @@ services:
     restart: always
 
   celery_worker:
+    container_name: celery
     build:
       context: .
       args:
         REDIS_STREAMS_URL: ${REDIS_STREAMS_URL}
-    container_name: celery
     command: python -m celery -A settings worker -l INFO
     volumes:
       - .:/app
@@ -73,8 +82,8 @@ services:
     restart: always
 
   qcluster:
-    build: .
     container_name: qcluster
+    build: .
     command: python manage.py qcluster
     volumes:
       - .:/app

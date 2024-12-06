@@ -57,7 +57,7 @@ else:
         HOSTNAME = "localhost"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = str(os.environ.get("SECRET_KEY"))
 
 # APPLICATIONS
 DJANGO_APPS = [
@@ -81,9 +81,10 @@ THIRD_PARTY_APPS = [
     "widget_tweaks",
     "rest_framework",
     "rest_framework_api_key",
+    "django_components",
     "django_filters",
     "django_htmx",
-    "django_components",
+    "django_prometheus",
     "django_q",
     "celery",
 ]
@@ -117,6 +118,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 

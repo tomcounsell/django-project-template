@@ -2,6 +2,7 @@
 black
 celery>=5.3.4
 django-picklefield
+django-prometheus
 django-q2
 django-redis
 instructor
