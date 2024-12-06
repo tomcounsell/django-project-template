@@ -10,11 +10,11 @@ services:
       sh -c "python manage.py collectstatic --noinput &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
     volumes:
       - .:/app
       - ./db.sqlite3:/app/db.sqlite3
-    ports:
-      - "8000:8000"
     environment:
       REDIS_URL: ${REDIS_URL} 
       REDIS_HOST: ${REDIS_HOST}
@@ -29,21 +29,18 @@ services:
       - .env
     restart: always
     depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+      - postgres
+      - redis
 
-  # DATABASES AND CACHING
   postgres:
     container_name: postgres
     image: postgres:15-alpine
-    env_file:
-      - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
     restart: always
     
   redis:
@@ -55,7 +52,6 @@ services:
       - redis_data:/data
     restart: always
 
-  # TASK SCHEDULING
   celery_worker:
     container_name: celery
     build:
@@ -63,6 +59,7 @@ services:
       args:
         REDIS_STREAMS_URL: ${REDIS_STREAMS_URL}
     command: python -m celery -A settings worker -l INFO
+    ports: []
     volumes:
       - .:/app
     environment:
@@ -70,38 +67,35 @@ services:
     env_file:
       - .env
     depends_on:
-      redis:
-        condition: service_started
+      - redis
     restart: always
 
   qcluster:
     container_name: qcluster
     build: .
     command: python manage.py qcluster
+    ports: []
     volumes:
       - .:/app
     env_file:
       - .env
     depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+      - postgres
+      - redis
     restart: always
 
-  # MONITORING
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     restart: always
 
   grafana:
-    image: grafana/grafana:latest
     container_name: grafana
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     depends_on:
@@ -110,10 +104,23 @@ services:
       - grafana_data:/var/lib/grafana
     restart: always
     environment:
-      # Reduce Grafana logging level. Change to debug, info, warn, error if necessary:
-      - GF_LOG_LEVEL=warn 
+      - GF_LOG_LEVEL=warn
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_SECURITY_ADMIN_PASSWORD}
+    
+  postgres-exporter:
+    container_name: postgres-exporter
+    image: bitnami/postgres-exporter:latest
+    ports:
+      - "9187:9187"
+    env_file:
+      - .env
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}?sslmode=disable"
+    depends_on:
+      - postgres
 
 volumes:
-  grafana_data: # Development and production: Define the named volume for Grafana persistence.
-  postgres_data:  # Development: Define the named volume for PostgreSQL persistence.
-  redis_data:  # Development: Define the named volume for Redis persistence.
+  grafana_data:
+  postgres_data:
+  redis_data:

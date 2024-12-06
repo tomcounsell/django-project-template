@@ -1,6 +1,6 @@
 # Scheduled Tasks for Generative AI Template
 
-Paul Tuck @pau1tuck
+Paul Tuck <@pau1tuck>
 
 ## Installation
 
@@ -24,7 +24,7 @@ Paul Tuck @pau1tuck
    ```
 
 ### With Docker Compose
-1. Run `export xlm=xlm`
+1. Run `export xlm=xlm` to remove warning message.
    
 2. Install Docker Compose:
    ```bash
@@ -50,6 +50,18 @@ Paul Tuck @pau1tuck
    ```
    http://localhost:8000/admin
    ```
+
+### Grafana Setup
+
+#### Add Prometheus as a Data Source
+
+1. Navigate to the Grafana dashboard at `http://localhost:3000`.
+2. Login with the username `admin` and the password you set for `GF_SECURITY_ADMIN_PASSWORD` in your `.env` file. If not set, the default password is `admin`.
+3. In the left-hand sidebar, find “Connections” and click on “Data sources.”
+4. Click "Add data source."
+5. Select Prometheus.
+6. In the "Prometheus server URL" field, enter: `http://prometheus:9090`.
+7. Click "Save & Test" to verify the connection.
 
 ### Using VSCode Dev Containers
 

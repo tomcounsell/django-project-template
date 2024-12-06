@@ -1,7 +1,11 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 15s # How often to scrape targets by default.
 
 scrape_configs:
   - job_name: "django"
     static_configs:
-      - targets: ["django:8000"] 
+      - targets: ["django:8000"] # Keep Django's target for metrics
+
+  - job_name: "postgres-exporter"
+    static_configs:
+      - targets: ["postgres-exporter:9187"] # Add Postgres Exporter for DB metrics
