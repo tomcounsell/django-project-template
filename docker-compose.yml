@@ -34,15 +34,7 @@ services:
       redis:
         condition: service_started
 
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    restart: always
-
+  # DATABASES AND CACHING
   postgres:
     container_name: postgres
     image: postgres:15-alpine
@@ -63,6 +55,7 @@ services:
       - redis_data:/data
     restart: always
 
+  # TASK SCHEDULING
   celery_worker:
     container_name: celery
     build:
@@ -94,6 +87,25 @@ services:
         condition: service_started
       redis:
         condition: service_started
+    restart: always
+
+  # MONITORING
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
     restart: always
 
 volumes:
