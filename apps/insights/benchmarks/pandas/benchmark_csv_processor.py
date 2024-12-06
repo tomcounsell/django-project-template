@@ -1,7 +1,7 @@
 import time
 from apps.insights.services.csv.csv_processor import CSVProcessor
 
-# Run:
+# Run: (25.617ms)
 # docker-compose exec django sh
 # python manage.py shell
 # exec(open("apps/insights/benchmarks/benchmark_pandas_csv_processor.py").read())
@@ -56,7 +56,6 @@ def benchmark_pandas_csv_processor(start_date: str):
     print(f"Total process time: {(total_end_time - total_start_time) * 1000:.3f} ms")
 
     print("Benchmark complete.")
-    print("Statistical Overview:", overview)
 
 
 if __name__ == "__main__":

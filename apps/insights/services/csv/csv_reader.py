@@ -1,7 +1,7 @@
 # apps/insights/services/csv/csv_reader.py
 import pandas as pd
 
-CSV_FILE_PATH = "/app/apps/insights/data/ga4_data.csv"
+CSV_FILE_PATH = "./apps/insights/data/ga4_data.csv"
 
 
 def read_csv(file_path: str = CSV_FILE_PATH) -> pd.DataFrame:
