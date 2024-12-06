@@ -16,52 +16,40 @@ Paul Tuck <@pau1tuck>
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/aihelps/scheduled-tasks-ai-template.git
+   git clone https://github.com/aihelps/scheduled-tasks-ai.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd scheduled-tasks-ai-template
+   cd scheduled-tasks-ai
    ```
 
 ### With Docker Compose
-1. Run `export xlm=xlm` to remove warning message.
-   
-2. Install Docker Compose:
+
+1. Build and run the containers:
    ```bash
-   brew install docker-compose
+   make up
    ```
-3. Build and run the containers:
+
+2. Check the status of the containers:
    ```bash
-   docker-compose build && docker-compose up
+   make ps
    ```
-4. Check the status of the containers:
+
+3. Access the container shell:
    ```bash
-   docker-compose ps
+   make shell
    ```
-5. Access the container shell:
+
+4. Create a superuser account (to log in to the admin interface):
    ```bash
-   docker-compose exec web sh
+   make superuser
    ```
-6. Create a superuser account:
-   ```bash
-   docker compose exec web sh -c "python manage.py createsuperuser"
-   ```
-7. Access the admin interface:
-   ```
+
+5. Access the admin interface:
    http://localhost:8000/admin
-   ```
 
-### Grafana Setup
-
-#### Add Prometheus as a Data Source
-
-1. Navigate to the Grafana dashboard at `http://localhost:3000`.
-2. Login with the username `admin` and the password you set for `GF_SECURITY_ADMIN_PASSWORD` in your `.env` file. If not set, the default password is `admin`.
-3. In the left-hand sidebar, find “Connections” and click on “Data sources.”
-4. Click "Add data source."
-5. Select Prometheus.
-6. In the "Prometheus server URL" field, enter: `http://prometheus:9090`.
-7. Click "Save & Test" to verify the connection.
+6. (Optional) View container logs:
+   make logs
 
 ### Using VSCode Dev Containers
 
@@ -99,7 +87,20 @@ To streamline development, you can open this project directly in VSCode using **
      http://localhost:8000
      ```
 
-### With Kubernetes Minikube
+### Grafana Setup
+
+#### Add Prometheus as a Data Source
+
+1. Navigate to the Grafana dashboard at `http://localhost:3000`.
+2. Login with the username `admin` and the password you set for `GF_SECURITY_ADMIN_PASSWORD` in your `.env` file. If not set, the default password is `admin`.
+3. In the left-hand sidebar, find “Connections” and click on “Data sources.”
+4. Click "Add data source."
+5. Select Prometheus.
+6. In the "Prometheus server URL" field, enter: `http://prometheus:9090`.
+7. Click "Save & Test" to verify the connection.
+
+### Alternative Installation: With Kubernetes Minikube
+
 1. Install required tools:
    ```bash
    brew install kubectl minikube helm
