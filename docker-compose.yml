@@ -106,8 +106,14 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
     restart: always
+    environment:
+      # Reduce Grafana logging level. Change to debug, info, warn, error if necessary:
+      - GF_LOG_LEVEL=warn 
 
 volumes:
-  redis_data:  # Development: Define the named volume for Redis persistence.
+  grafana_data: # Development and production: Define the named volume for Grafana persistence.
   postgres_data:  # Development: Define the named volume for PostgreSQL persistence.
+  redis_data:  # Development: Define the named volume for Redis persistence.
