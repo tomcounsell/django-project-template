@@ -2,13 +2,13 @@
 import pandas as pd
 
 
-def generate_overview(df: pd.DataFrame) -> pd.DataFrame:
+def generate_overview(df: pd.DataFrame) -> str:
     """
     Generates a statistical overview for the given DataFrame.
 
     Args:
         df (DataFrame): The DataFrame to generate an overview for.
     """
-    statistical_overview = df.describe()
+    statistical_overview = df.describe().to_string()
     print(statistical_overview)
     return statistical_overview

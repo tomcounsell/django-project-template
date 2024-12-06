@@ -90,18 +90,18 @@ def create_summary(start_date: str, week_number: int) -> dict:
         week_df = processor.filter(adjusted_start_date_str)
         if week_df.empty:
             raise ValidationError(
-                "No data available for the specified week starting on %s."
-                % adjusted_start_date_str
+                f"No data available for the specified week starting on {adjusted_start_date_str}."
             )
         logging.info("Filtering complete. Filtered rows: %s", len(week_df))
 
         # Step 5: Generate statistical overview
+        processor.df = week_df  # Update self.df with the filtered DataFrame
         logging.info("Generating statistical overview...")
-        processor.generate_overview(week_df, "Week %s" % week_number)
+        statistical_summary = processor.generate_overview()
 
         # Step 6: Generate LLM summary
         logging.info("Calling LLM to generate summary...")
-        statistical_summary = week_df.describe().to_string()
+
         llm_summary = generate_summary(statistical_summary)
         logging.info("LLM summary generated successfully.")
 

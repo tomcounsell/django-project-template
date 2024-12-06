@@ -54,7 +54,7 @@ class CSVProcessor:
         logging.info("Filtering data for traffic source: %s", traffic_source)
         return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
-    def generate_overview(self):
+    def generate_overview(self) -> str:
         """
         Generate a statistical overview of the filtered DataFrame.
         """

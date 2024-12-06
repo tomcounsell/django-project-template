@@ -1,4 +1,5 @@
 # apps/insights/models/summary.py
+from Typing import Type
 from django.core.exceptions import ValidationError
 from django.db import models
 from apps.common.behaviors.timestampable import Timestampable
@@ -9,6 +10,10 @@ class Summary(Timestampable, UUIDable):
     """
     Model to store the dataset summary and key metrics for a specific time period.
     """
+
+    objects: Type[models.Manager] = (
+        models.Manager()
+    )  # Explicitly add the objects manager for MyPy
 
     start_date: models.DateField = models.DateField(
         help_text=(
@@ -94,7 +99,8 @@ class KeyMetric(Timestampable, UUIDable):
         """
         Returns a descriptive string including the metric's name, value, and associated summary's date.
         """
-        return f"Metric: {self.name}, Value: {self.value} ({self.summary.start_date})"
+        # Use .start_date from the related Summary object
+        return f"Metric: {self.name}, Value: {self.value} ({self.summary.start_date if self.summary else 'No Summary exists.'})"
 
     class Meta:
         ordering = ["name"]
