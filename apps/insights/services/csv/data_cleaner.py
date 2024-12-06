@@ -1,6 +1,6 @@
 # apps/insights/services/csv/data_cleaner.py
-import pandas as pd
 import logging
+import pandas as pd
 
 # Configure logging
 logging.basicConfig(
@@ -8,8 +8,10 @@ logging.basicConfig(
 )
 
 
-# Detect the date column dynamically
-def detect_date_column(df):
+def detect_date_column(df: pd.DataFrame) -> str:
+    """
+    Dynamically detect the date column in a pandas DataFrame.
+    """
     date_columns = [col for col in df.columns if "date" in col.lower()]
     if len(date_columns) == 0:
         raise ValueError("No date column detected in the dataset.")
@@ -19,8 +21,10 @@ def detect_date_column(df):
     return date_columns[0]
 
 
-# Standardize the format of the date column
-def standardize_date_format(df, date_column):
+def standardize_date_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
+    """
+    Standardize the date column to a consistent datetime format.
+    """
     try:
         df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
         if df[date_column].isna().any():
@@ -35,8 +39,10 @@ def standardize_date_format(df, date_column):
         raise ValueError(f"Error standardizing date column: {e}")
 
 
-# Ensure date column is in datetime format for filtering
-def ensure_datetime_format(df, date_column):
+def ensure_datetime_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
+    """
+    Ensure the specified column is in datetime format.
+    """
     try:
         df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
         if df[date_column].isna().any():
@@ -47,8 +53,10 @@ def ensure_datetime_format(df, date_column):
         raise ValueError(f"Error ensuring datetime format: {e}")
 
 
-# Perform the full data cleaning process
-def clean_data(df):
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Perform the full data cleaning process on the input DataFrame.
+    """
     date_column = detect_date_column(df)
     df = standardize_date_format(df, date_column)
     df = ensure_datetime_format(df, date_column)
