@@ -13,6 +13,13 @@ logging.basicConfig(
 
 
 class CSVProcessor:
+    """
+    A utility class for processing CSV files with various data manipulation operations.
+
+    This class provides a streamlined workflow for loading, validating, cleaning,
+    filtering, and generating overviews of CSV data using Pandas.
+    """
+
     def __init__(self):
         """
         Initialize the CSVProcessor.
@@ -44,13 +51,13 @@ class CSVProcessor:
         """
         Filter the data for the specified traffic source and week.
         """
-        logging.info(f"Filtering data for traffic source: {traffic_source}")
+        logging.info("Filtering data for traffic source: %s", traffic_source)
         return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
     def generate_overview(self, df, label):
         """
         Generate a statistical overview for a single DataFrame.
         """
-        logging.info(f"Generating statistical overview for {label}...")
+        logging.info("Generating statistical overview for %s...", label)
         print(f"\nStatistical Overview - {label}:")
         print(df.describe())
