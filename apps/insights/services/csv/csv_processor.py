@@ -45,7 +45,7 @@ class CSVProcessor:
         Filter the data for the specified traffic source and week.
         """
         logging.info(f"Filtering data for traffic source: {traffic_source}")
-        return filter_data(self.df, start_date, traffic_source)
+        return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
     def generate_overview(self, df, label):
         """

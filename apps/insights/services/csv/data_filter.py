@@ -3,13 +3,14 @@ import logging
 import pandas as pd
 
 
-def filter_data(df, start_date: str, traffic_source: str):
+def filter_data(df, start_date: pd.Timestamp, traffic_source: str):
     """
-    Filters the data for a specified traffic source within a 7-day period starting from the given date.
+    Filters the data for a specified traffic source
+    within a 7-day period starting from the given date.
 
     Args:
         df (pd.DataFrame): DataFrame containing the data to filter.
-        start_date (str): Start date for the dataset (YYYY-MM-DD).
+        start_date (pd.Timestamp): Start date for the dataset (YYYY-MM-DD).
         traffic_source (str): Traffic source to filter (e.g., "organic").
 
     Returns:
@@ -18,7 +19,6 @@ def filter_data(df, start_date: str, traffic_source: str):
     logging.info(f"Filtering '{traffic_source}' traffic starting from {start_date}...")
 
     # Convert start_date to datetime
-    start_date = pd.to_datetime(start_date)
     end_date = start_date + pd.Timedelta(days=6)
 
     # Filter for the specified traffic source
