@@ -1,4 +1,5 @@
 # apps/insights/models/comparison.py
+from typing import Type
 from django.db import models
 from apps.common.behaviors.timestampable import Timestampable
 from apps.common.behaviors.uuidable import UUIDable
@@ -12,6 +13,10 @@ class Comparison(Timestampable, UUIDable):
     """
     Model to store the comparison between two summaries.
     """
+
+    objects: Type[models.Manager] = (
+        models.Manager()
+    )  # Explicitly add the objects manager for MyPy
 
     summary1 = models.ForeignKey(
         Summary,

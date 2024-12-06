@@ -100,7 +100,7 @@ class KeyMetric(Timestampable, UUIDable):
         Returns a descriptive string including the metric's name, value, and associated summary's date.
         """
         # Use .start_date from the related Summary object
-        return f"Metric: {self.name}, Value: {self.value} ({self.summary.start_date if self.summary else 'No Summary exists.'})"
+        return f"Metric: {self.name}, Value: {self.value} ({self.summary.start_date if self.summary else 'No Summary exists'})"
 
     class Meta:
         ordering = ["name"]
