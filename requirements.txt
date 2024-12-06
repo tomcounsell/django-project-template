@@ -25,6 +25,7 @@ types-setuptools
 # Testing
 factory-boy
 freezegun
+pylint
 pytest-cov
 pytest-django
 pytest-mock

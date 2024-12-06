@@ -1,12 +1,17 @@
 import time
 from apps.insights.services.csv.csv_processor import CSVProcessor
 
+# Run:
+# docker-compose exec django sh
+# python manage.py shell
+# exec(open("apps/insights/benchmarks/benchmark_pandas_csv_processor.py").read())
+
+START_DATE = "2024-01-01"
+
 
 def benchmark_pandas_csv_processor(start_date: str):
     """
-    Benchmarks the CSVProcessor with a given start date.
-    Args:
-        start_date (str): Start date for filtering in 'YYYY-MM-DD' format.
+    Benchmarks the Pandas CSVProcessor with a given start date.
     """
     processor = CSVProcessor()
     total_start_time = time.perf_counter()  # Start total timing
@@ -55,5 +60,4 @@ def benchmark_pandas_csv_processor(start_date: str):
 
 
 if __name__ == "__main__":
-    # Example start date for testing
-    benchmark_pandas_csv_processor("2024-01-01")
+    benchmark_pandas_csv_processor(START_DATE)
