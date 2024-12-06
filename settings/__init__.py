@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 
 from settings.base import *
 from settings.vendor import *
+from settings.databases import *
 
 if LOCAL:
     from settings.local import *
