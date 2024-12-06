@@ -54,10 +54,9 @@ class CSVProcessor:
         logging.info("Filtering data for traffic source: %s", traffic_source)
         return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
-    def generate_overview(self, df, label):
+    def generate_overview(self):
         """
         Generate a statistical overview for a single DataFrame.
         """
-        logging.info("Generating statistical overview for %s...", label)
-        print(f"\nStatistical Overview - {label}:")
-        print(df.describe())
+        logging.info("Generating statistical overview...")
+        return generate_overview(self.df)

@@ -13,6 +13,7 @@ tenacity
 
 # Types
 celery-types
+django-stubs
 pandas-stubs
 types-PyYAML
 types-redis

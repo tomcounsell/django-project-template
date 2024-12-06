@@ -6,15 +6,12 @@ Handles CSV data processing, summary generation, and key metric extraction for a
 This service processes a single week's data from a CSV file, generating a summary and key metrics using OpenAI's LLM, and saving the results to both the database and a JSON file. It uses the CSVProcessor to load, validate, clean, and filter data based on the provided start date. A statistical overview is generated for the specified week, which is then summarized into a dataset summary and key metrics. The results are stored in the Summary and KeyMetric models and saved as JSON for debugging or visualization. Errors are logged at each step.
 
 """
-import json
 import logging
-from django.db import IntegrityError, transaction
 from django.core.exceptions import ValidationError
 import pandas as pd
-from apps.insights.models.summary import Summary, KeyMetric
+from apps.insights.models.summary import Summary
 from apps.insights.services.csv.csv_processor import CSVProcessor
 from apps.insights.services.openai.summary_generator import generate_summary
-from apps.insights.services.openai.schemas import SummaryOutput
 from apps.insights.services.utils.db_operations import save_summary_to_database
 
 # Configure logging
@@ -35,7 +32,9 @@ def create_summary(start_date: str, week_number: int) -> dict:
     """
     try:
         logging.info(
-            f"Starting process_week: start_date={start_date}, week_number={week_number}"
+            "Starting process_week: start_date=%s, week_number=%s",
+            start_date,
+            week_number,
         )
 
         # Convert start_date to datetime
@@ -51,19 +50,21 @@ def create_summary(start_date: str, week_number: int) -> dict:
         # Validate that start_date is in the past
         if start_date_dt > pd.Timestamp.now():
             logging.error(
-                f"Validation failed: Start date {adjusted_start_date_str} cannot be in the future."
+                "Validation failed: Start date %s cannot be in the future.",
+                adjusted_start_date_str,
             )
             raise ValidationError(
-                f"Start date {adjusted_start_date_str} cannot be in the future."
+                "Start date %s cannot be in the future." % adjusted_start_date_str
             )
 
         # Validate uniqueness of start_date
         if Summary.objects.filter(start_date=adjusted_start_date_str).exists():
             logging.error(
-                f"Duplicate summary found for start_date: {adjusted_start_date_str}"
+                "Duplicate summary found for start_date: %s", adjusted_start_date_str
             )
             raise ValidationError(
-                f"A summary for the start date {adjusted_start_date_str} already exists."
+                "A summary for the start date %s already exists."
+                % adjusted_start_date_str
             )
 
         # Step 1: Initialize CSVProcessor and load data
@@ -85,17 +86,18 @@ def create_summary(start_date: str, week_number: int) -> dict:
         logging.info("Cleaning complete.")
 
         # Step 4: Filter data
-        logging.info(f"Filtering data for week: {week_number}")
+        logging.info("Filtering data for week: %s", week_number)
         week_df = processor.filter(adjusted_start_date_str)
         if week_df.empty:
             raise ValidationError(
-                f"No data available for the specified week starting on {adjusted_start_date_str}."
+                "No data available for the specified week starting on %s."
+                % adjusted_start_date_str
             )
-        logging.info(f"Filtering complete. Filtered rows: {len(week_df)}")
+        logging.info("Filtering complete. Filtered rows: %s", len(week_df))
 
         # Step 5: Generate statistical overview
         logging.info("Generating statistical overview...")
-        processor.generate_overview(week_df, f"Week {week_number}")
+        processor.generate_overview(week_df, "Week %s" % week_number)
 
         # Step 6: Generate LLM summary
         logging.info("Calling LLM to generate summary...")
@@ -111,8 +113,13 @@ def create_summary(start_date: str, week_number: int) -> dict:
         )
 
     except ValidationError as ve:
-        logging.error(f"Validation error: {ve}")
+        logging.error("Validation error: %s", ve)
         raise
     except Exception as e:
-        logging.error(f"Error in process_week: {e}")
+        logging.error("Error in process_week: %s", e)
         raise
+
+    return {
+        "dataset_summary": llm_summary.dataset_summary,
+        "key_metrics": llm_summary.key_metrics,
+    }
