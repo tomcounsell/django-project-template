@@ -28,14 +28,14 @@ class CSVProcessor:
 
     def load(self):
         """
-        Load the CSV file into a Pandas DataFrame.
+        Load the data from the CSV file into a Pandas DataFrame.
         """
         logging.info("Loading CSV...")
         self.df = load_csv()
 
     def validate(self):
         """
-        Validate that the CSV contains all required columns.
+        Validate that the DataFrame contains all required columns.
         """
         logging.info("Validating CSV columns...")
         validate_columns(self.df)
@@ -49,14 +49,14 @@ class CSVProcessor:
 
     def filter(self, start_date: str, traffic_source: str = "organic"):
         """
-        Filter the data for the specified traffic source and week.
+        Filter the DataFrame for the specified traffic source and week.
         """
         logging.info("Filtering data for traffic source: %s", traffic_source)
         return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
     def generate_overview(self):
         """
-        Generate a statistical overview for a single DataFrame.
+        Generate a statistical overview of the filtered DataFrame.
         """
         logging.info("Generating statistical overview...")
         return generate_overview(self.df)
