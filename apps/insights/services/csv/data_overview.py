@@ -1,7 +1,13 @@
 # apps/insights/services/csv/data_overview.py
+import logging
+import pandas as pd
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
-def generate_overview(self, df, label):
+def generate_overview(df: pd.DataFrame, label: str):
     """
     Generates a statistical overview for the given DataFrame.
 
