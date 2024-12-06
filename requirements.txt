@@ -1,6 +1,8 @@
 # requirements.txt
 black
 celery>=5.3.4
+celery[redis]
+django-celery-beat
 django-picklefield
 django-prometheus
 django-q2

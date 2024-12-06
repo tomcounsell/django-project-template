@@ -1,9 +1,23 @@
 import logging
+from django.db import transaction
+from celery import Celery
 
 from django_celery_beat.models import PeriodicTask
 from django_celery_beat.models import PeriodicTasks
 from django_celery_beat.schedulers import DatabaseScheduler
-from django.db import transaction
+
+app = Celery("scheduled_tasks_ai")
+app.conf.update(
+    broker_url="redis://${REDIS_HOST}:${REDIS_PORT}/0",
+    result_backend="redis://${REDIS_HOST}:${REDIS_PORT}/0",
+    beat_schedule={
+        # Example task
+        "sample_task": {
+            "task": "your_project_name.tasks.sample_task",
+            "schedule": 3600.0,  # Run every hour
+        },
+    },
+)
 
 
 class DatabaseSchedulerWithCleanup(DatabaseScheduler):

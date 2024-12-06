@@ -32,6 +32,7 @@ services:
       - postgres
       - redis
 
+  # DATA STORAGE AND CACHING
   postgres:
     container_name: postgres
     image: postgres:15-alpine
@@ -52,6 +53,7 @@ services:
       - redis_data:/data
     restart: always
 
+  # TASK SCHEDULING
   celery_worker:
     container_name: celery
     build:
@@ -70,6 +72,24 @@ services:
       - redis
     restart: always
 
+  celery-beat:
+    container_name: celery-beat
+    build:
+      context: .
+      args:
+        DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY} 
+    command: celery -A settings beat -l info
+    volumes:
+      - .:/app
+    environment:
+      REDIS_URL: ${REDIS_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      - django
+      - redis
+    restart: always
+
   qcluster:
     container_name: qcluster
     build: .
@@ -84,6 +104,7 @@ services:
       - redis
     restart: always
 
+  # MONITORING
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
