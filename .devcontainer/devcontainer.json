@@ -1,7 +1,7 @@
 {
     "name": "scheduled-tasks-ai", // Container name
     "dockerComposeFile": "../docker-compose.yml", // Path to Docker Compose file
-    "service": "web", // Attach to the "web" service
+    "service": "django", // Attach to the "web" service (matches docker-compose.yml)
     "workspaceFolder": "/app", // Workspace path inside the container
     "customizations": {
         "vscode": {

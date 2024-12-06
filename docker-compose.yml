@@ -1,6 +1,6 @@
 # docker-compose.yml
 services:
-  web:
+  django:
     build:
       context: .
       args:
