@@ -11,7 +11,8 @@ openai
 redis>=5.2.0
 tenacity
 
-# Type Stubs
+# Types
+celery-types
 pandas-stubs
 types-PyYAML
 types-redis
