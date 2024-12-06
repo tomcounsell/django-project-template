@@ -84,5 +84,9 @@ LOGGING = {
     },
 }
 
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,  # Optional: Always show toolbar
+}
+
 # Adjustable time delay for scheduling the summaries task chain (in seconds)
 SUMMARY_TASK_TIME_DELAY = int(os.environ.get("SUMMARY_TASK_TIME_DELAY", "1"))

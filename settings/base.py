@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import socket
 from datetime import timedelta
+import socket
+
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "test_secret_key")
 
@@ -26,13 +28,16 @@ SITE_ROOT = BASE_DIR
 
 WSGI_APPLICATION = "settings.wsgi.application"
 
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]  # for Docker Compose
+
 ALLOWED_HOSTS = [
     # '.mycompany.com',
     # '.herokuapp.com',
     # '.amazonaws.com',
     "localhost",
     "127.0.0.1",
-    "django",  # for Prometheus and Docker
+    "django",  # for Prometheus and Docker Compose
 ]
 
 if LOCAL:
@@ -103,11 +108,11 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
 SITE_ID = 1
 
 MIDDLEWARE = [
+    "django.middleware.gzip.GZipMiddleware",
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # "apps.common.utilities.database.django_middleware.APIHeaderMiddleware",
     # "django_user_agents.middleware.UserAgentMiddleware",
-    "django.middleware.gzip.GZipMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # "request_logging.middleware.LoggingMiddleware",
     # "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",

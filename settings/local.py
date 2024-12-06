@@ -87,5 +87,9 @@ LOGGING = {
     },
 }
 
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,  # Optional: Always show toolbar
+}
+
 # Task settings
 SUMMARY_TASK_TIME_DELAY = int(os.environ.get("SUMMARY_TASK_TIME_DELAY", "1"))
