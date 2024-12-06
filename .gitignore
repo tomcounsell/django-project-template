@@ -1,6 +1,7 @@
 # Paul's .gitignore
 _archive/
 _docs/
+.pytest_cache/
 *.sqlite3
 project.txt
 project.md
