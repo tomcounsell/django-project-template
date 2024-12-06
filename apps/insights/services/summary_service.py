@@ -50,21 +50,19 @@ def create_summary(start_date: str, week_number: int) -> dict:
         # Validate that start_date is in the past
         if start_date_dt > pd.Timestamp.now():
             logging.error(
-                "Validation failed: Start date %s cannot be in the future.",
-                adjusted_start_date_str,
+                f"Validation failed: Start date {adjusted_start_date_str} cannot be in the future."
             )
             raise ValidationError(
-                "Start date %s cannot be in the future." % adjusted_start_date_str
+                f"Start date {adjusted_start_date_str} cannot be in the future."
             )
 
         # Validate uniqueness of start_date
         if Summary.objects.filter(start_date=adjusted_start_date_str).exists():
             logging.error(
-                "Duplicate summary found for start_date: %s", adjusted_start_date_str
+                f"Duplicate summary found for start_date: {adjusted_start_date_str}"
             )
             raise ValidationError(
-                "A summary for the start date %s already exists."
-                % adjusted_start_date_str
+                f"A summary for the start date {adjusted_start_date_str} already exists."
             )
 
         # Step 1: Initialize CSVProcessor and load data

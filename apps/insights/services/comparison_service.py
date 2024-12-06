@@ -36,7 +36,9 @@ def create_comparison(start_date: str):
         start_date_week1 = datetime.strptime(start_date, "%Y-%m-%d")
         start_date_week2 = start_date_week1 - timedelta(days=7)
         logger.info(
-            f"Start dates - Current Week: {start_date_week1}, Previous Week: {start_date_week2}"
+            "Start dates - Current Week: %s, Previous Week: %s",
+            start_date_week1,
+            start_date_week2,
         )
 
         # Check if a comparison already exists
@@ -46,11 +48,12 @@ def create_comparison(start_date: str):
             summary2__start_date=start_date_week2.strftime("%Y-%m-%d"),
         ).exists():
             logger.error(
-                f"A comparison already exists for summaries with start dates {start_date_week1.strftime('%Y-%m-%d')} "
-                f"and {start_date_week2.strftime('%Y-%m-%d')}."
+                "A comparison already exists for summaries with start dates %s and %s.",
+                start_date_week1.strftime("%Y-%m-%d"),
+                start_date_week2.strftime("%Y-%m-%d"),
             )
             raise ValidationError(
-                f"A comparison already exists for the given summaries."
+                "A comparison already exists for the given summaries."
             )
 
         # Fetch summaries for both weeks
@@ -58,27 +61,25 @@ def create_comparison(start_date: str):
             summary1 = Summary.objects.get(
                 start_date=start_date_week1.strftime("%Y-%m-%d")
             )
-            logger.info(f"Found Current Week Summary ID: {summary1.id}")
-        except Summary.DoesNotExist:
+            logger.info("Found Current Week Summary ID: %s", summary1.id)
+        except Summary.DoesNotExist as exc:
             logger.error(
-                f"Summary for Current Week ({start_date_week1.strftime('%Y-%m-%d')}) not found."
+                "Summary for Current Week (%s) not found.",
+                start_date_week1.strftime("%Y-%m-%d"),
             )
-            raise ValidationError(
-                f"Summary for the week beginning ({start_date_week1.strftime('%Y-%m-%d')}) does not exist."
-            )
+            raise ValidationError(f"Summary for the week beginning ({start_date_week1.strftime('%Y-%m-%d')}) does not exist.") from exc
 
         try:
             summary2 = Summary.objects.get(
                 start_date=start_date_week2.strftime("%Y-%m-%d")
             )
-            logger.info(f"Found Past Week Summary ID: {summary2.id}")
-        except Summary.DoesNotExist:
+            logger.info("Found Past Week Summary ID: %s", summary2.id)
+        except Summary.DoesNotExist as exc:
             logger.error(
-                f"Summary for Past Week ({start_date_week2.strftime('%Y-%m-%d')}) not found."
+                "Summary for Past Week (%s) not found.",
+                start_date_week2.strftime("%Y-%m-%d"),
             )
-            raise ValidationError(
-                f"Summary for the week prior to ({start_date_week2.strftime('%Y-%m-%d')}) does not exist."
-            )
+            raise ValidationError(f"Summary for the week prior to ({start_date_week2.strftime('%Y-%m-%d')}) does not exist.") from exc
 
         # Run the comparison service
         logger.info("Running comparison service...")
@@ -101,10 +102,14 @@ def create_comparison(start_date: str):
 
         # Log the comparison result
         logger.info("Comparison Service Output:")
-        logger.info(f"Comparison Summary: {comparison_result.comparison_summary}")
+        logger.info("Comparison Summary: %s", comparison_result.comparison_summary)
         for metric in comparison_result.key_metrics_comparison:
             logger.info(
-                f"{metric.name}: Current Week = {metric.value1}, Past Week = {metric.value2} ({metric.description})"
+                "%s: Current Week = %s, Past Week = %s (%s)",
+                metric.name,
+                metric.value1,
+                metric.value2,
+                metric.description,
             )
 
         # Save the comparison result to the database
@@ -113,10 +118,10 @@ def create_comparison(start_date: str):
         logger.info("Comparison result has been saved successfully!")
 
     except ValidationError as ve:
-        logger.error(f"Validation error: {ve}")
+        logger.error("Validation error: %s", ve)
         raise
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error("Unexpected error: %s", e)
         raise RuntimeError("Failed to create comparison.") from e
 
     logger.info("Comparison generation completed.")
@@ -141,32 +146,36 @@ def process_summaries(data_summary1: dict, data_summary2: dict) -> ComparisonOut
         summary2 = format_summary(data_summary2)
 
         logging.info("Generated summaries for comparison.")
-        logging.debug(f"Prepared Summary of Current Week:\n{summary1}")
-        logging.debug(f"Prepared Summary of Previous Week:\n{summary2}")
+        logging.debug("Prepared Summary of Current Week:\n%s", summary1)
+        logging.debug("Prepared Summary of Previous Week:\n%s", summary2)
 
         # Step 2:Generate comparison using LLM
         comparison_result = generate_comparison(summary1, summary2)
 
         # Log detailed results
         logging.info("Comparison completed successfully.")
-        logging.debug(f"Raw comparison result: {comparison_result}")
+        logging.debug("Raw comparison result: %s", comparison_result)
 
         logging.info("Comparison Summary:")
-        logging.info(comparison_result.comparison_summary)
+        logging.info("%s", comparison_result.comparison_summary)
         logging.info("Key Metrics Comparison:")
         for metric in comparison_result.key_metrics_comparison:
             logging.info(
-                f"{metric.name}: Current Week = {metric.value1}, Past Week = {metric.value2} ({metric.description})"
+                "%s: Current Week = %s, Past Week = %s (%s)",
+                metric.name,
+                metric.value1,
+                metric.value2,
+                metric.description,
             )
 
         return comparison_result
 
     except ValueError as ve:
-        logging.error(f"Validation error during comparison: {ve}")
+        logging.error("Validation error during comparison: %s", ve)
         raise
 
     except Exception as e:
-        logging.error(f"Unexpected error during comparison: {e}")
+        logging.error("Unexpected error during comparison: %s", e)
         raise
 
 
@@ -191,7 +200,7 @@ def format_summary(data_summary: dict) -> str:
             raise ValueError("Missing 'key_metrics' in data_summary.")
 
         key_metrics_str = "\n".join(
-            f"- {metric['name']}: {metric['value']}"
+            "- %s: %s" % (metric["name"], metric["value"])
             for metric in data_summary["key_metrics"]
             if "name" in metric and "value" in metric
         )
@@ -200,7 +209,10 @@ def format_summary(data_summary: dict) -> str:
             logging.warning("Key metrics are empty or malformed.")
             key_metrics_str = "No key metrics available."
 
-        return f"{data_summary['dataset_summary']}\n\nKey Metrics:\n{key_metrics_str}"
+        return "%s\n\nKey Metrics:\n%s" % (
+            data_summary["dataset_summary"],
+            key_metrics_str,
+        )
     except Exception as e:
-        logging.error(f"Failed to prepare summary: {e}")
+        logging.error("Failed to prepare summary: %s", e)
         raise
