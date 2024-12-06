@@ -1,7 +1,7 @@
 # apps/insights/services/csv/data_validator.py
 import logging
+import pandas as pd
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -22,9 +22,13 @@ REQUIRED_COLUMNS = {
 }
 
 
-def validate_columns(df):
-    # Checks the CSV file for missing required columns
+def validate_columns(df: pd.DataFrame) -> None:
+    """
+    Checks the CSV file for missing required columns.
+    """
     missing_columns = REQUIRED_COLUMNS - set(df.columns)
     if missing_columns:
-        raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
+        raise ValueError(
+            f"CSV file is missing required columns: {', '.join(missing_columns)}"
+        )
     logging.info("All required key columns are present.")

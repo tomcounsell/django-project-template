@@ -4,9 +4,9 @@ import pandas as pd
 CSV_FILE_PATH = "/app/apps/insights/data/ga4_data.csv"
 
 
-def load_csv(file_path: str = CSV_FILE_PATH) -> pd.DataFrame:
+def read_csv(file_path: str = CSV_FILE_PATH) -> pd.DataFrame:
     """
-    Load the CSV file into a Pandas DataFrame.
+    Read the CSV file into a Pandas DataFrame.
     """
     try:
         print(f"Attempting to load file from: {file_path}")
@@ -15,7 +15,7 @@ def load_csv(file_path: str = CSV_FILE_PATH) -> pd.DataFrame:
             f"Successfully loaded {file_path}: {len(df)} rows, {len(df.columns)} columns"
         )
         return df
-    except FileNotFoundError:
-        raise FileNotFoundError(f"CSV file not found at: {file_path}")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"CSV file not found at: {file_path}") from e
     except Exception as e:
-        raise ValueError(f"Error loading CSV file: {e}")
+        raise ValueError(f"Error reading CSV file at {file_path}: {e}") from e

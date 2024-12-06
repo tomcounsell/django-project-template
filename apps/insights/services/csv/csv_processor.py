@@ -1,7 +1,7 @@
 # apps/insights/services/csv_processor.py
 import logging
 import pandas as pd  # Import pandas for date processing
-from .csv_reader import load_csv
+from .csv_reader import read_csv
 from .data_validator import validate_columns
 from .data_cleaner import clean_data
 from .data_filter import filter_data
@@ -24,14 +24,14 @@ class CSVProcessor:
         """
         Initialize the CSVProcessor.
         """
-        self.df = None  # Placeholder for the loaded DataFrame
+        self.df = None  # Placeholder for the DataFrame
 
     def load(self):
         """
         Load the data from the CSV file into a Pandas DataFrame.
         """
         logging.info("Loading CSV...")
-        self.df = load_csv()
+        self.df = read_csv()
 
     def validate(self):
         """
