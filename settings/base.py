@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     # '.amazonaws.com',
     "localhost",
     "127.0.0.1",
+    "django",  # for Prometheus and Docker
 ]
 
 if LOCAL:
@@ -102,6 +103,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + APPS
 SITE_ID = 1
 
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     # "apps.common.utilities.database.django_middleware.APIHeaderMiddleware",
     # "django_user_agents.middleware.UserAgentMiddleware",
     "django.middleware.gzip.GZipMiddleware",
@@ -118,7 +120,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 

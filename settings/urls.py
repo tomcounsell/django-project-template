@@ -1,16 +1,18 @@
+from django_prometheus.exports import ExportToDjangoView
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
 from rest_framework.documentation import include_docs_urls
 from settings import DEBUG
 
-
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("", include("apps.public.urls", namespace="public")),
-    path("metrics/", include("django_prometheus.urls")),
+    path(
+        "metrics/", csrf_exempt(ExportToDjangoView)
+    ),  # Remove .as_view() for function-based view
 ]
-
 
 # Django Rest Framework API Docs
 API_TITLE, API_DESCRIPTION = "django-project-template API", ""
