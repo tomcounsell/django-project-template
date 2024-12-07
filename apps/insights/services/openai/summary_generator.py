@@ -19,22 +19,24 @@ from .schemas import SummaryOutput
 openai_api_key = settings.OPENAI_API_KEY
 
 if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY is not set in Django settings.")
+    raise ValueError("OPENAI_API_KEY must be set in environment variables.")
 
 # Initialize OpenAI client
 client = from_openai(OpenAI(api_key=openai_api_key))
 
-# Connect to Redis
-cache = redis.Redis(host="localhost", port=6379, db=0)  # Adjust Redis config if needed
+# Initialize Redis client for caching
+cache = redis.Redis(
+    host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
+)
 
 
 def instructor_cache(func):
     """
-    Cache a function that returns a Pydantic model.
+    Caches a function that returns a Pydantic model.
     """
     return_type = inspect.signature(func).return_annotation
     if not issubclass(return_type, BaseModel):
-        raise ValueError("The return type must be a Pydantic model")
+        raise ValueError("Return type must be a Pydantic model.")
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -94,7 +96,7 @@ def call_openai_api(prompt: str) -> SummaryOutput:
 
 def generate_summary(statistical_summary: str) -> SummaryOutput:
     """
-    Generates a structured dataset summary using OpenAI API.
+    Generates a structured dataset summary using the OpenAI API.
 
     Args:
         statistical_summary (str): Statistical summary of the dataset.
