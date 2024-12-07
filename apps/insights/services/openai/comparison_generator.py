@@ -70,6 +70,8 @@ You are a data analyst tasked with comparing two dataset summaries. Here are the
 
 {summary2} is the week prior.
 
+Think step-by-step to explain your reasoning for the comparison, and include this explanation in the field `chain_of_thought`.
+
 Please provide the comparison in the following JSON format:
 
 {{
@@ -88,7 +90,8 @@ Please provide the comparison in the following JSON format:
             "description": "Description of observed difference or trend between the previous week and the current week, including specific figures and percentages where appropriate."
         }}
         // Repeat for each key metric
-    ]
+    ],
+    "chain_of_thought": "Step-by-step reasoning explaining how the comparison summary and key metrics were derived."
 }}
 
 Ensure that:
@@ -107,7 +110,6 @@ Ensure that:
 - The description for each metric explains the difference or trend observed between the current week and one week prior, using precise figures (e.g., differences, statistics, percentages).
 - Refer to the summaries as "this week" and "the previous week" in your descriptions.
 """
-
     try:
         logging.info("Requesting dataset comparison from OpenAI...")
 
