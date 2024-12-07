@@ -50,8 +50,9 @@ class CSVProcessor:
         """
         return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
-    def generate_overview(self) -> str:  # FIXME: dict to store the overview in a model
+    def generate_overview(self) -> str:
         """
         Generates a statistical overview of the filtered DataFrame.
         """
+        # FIXME: dict to store the overview in a model
         return generate_overview(self.df)
