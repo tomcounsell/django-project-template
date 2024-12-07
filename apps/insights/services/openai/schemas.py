@@ -51,6 +51,10 @@ class SummaryOutput(BaseModel):
     key_metrics: List[KeyMetric] = Field(
         ..., description="List of key metrics extracted from the dataset."
     )
+    chain_of_thought: str = Field(
+        ...,
+        description="Step-by-step reasoning explaining how the summary was derived.",
+    )
 
     def enforce_ordered_metrics(self):
         """
@@ -72,7 +76,7 @@ class SummaryOutput(BaseModel):
 
 class KeyMetricComparison(BaseModel):
     """
-    Represents a comparison of a key metrics between two datasets.
+    Represents a comparison of key metrics between two datasets.
     """
 
     name: str
@@ -93,4 +97,8 @@ class ComparisonOutput(BaseModel):
     key_metrics_comparison: List[KeyMetricComparison] = Field(
         ...,
         description="Key metrics with values from both weeks and descriptions of differences.",
+    )
+    chain_of_thought: str = Field(
+        ...,
+        description="Step-by-step reasoning explaining how the comparison was derived.",
     )
