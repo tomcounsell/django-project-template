@@ -6,12 +6,12 @@ from apps.insights.services.csv.csv_processor import CSVProcessor
 # python manage.py shell
 # exec(open("apps/insights/benchmarks/benchmark_pandas_csv_processor.py").read())
 
-START_DATE = "2024-01-01"
+START_DATE = "2024-01-08"
 
 
 def benchmark_pandas_csv_processor(start_date: str):
     """
-    Benchmarks the Pandas CSVProcessor with a given start date.
+    Benchmarks the Pandas CSVProcessor with a given start date and saves the overview to a JSON file.
     """
     processor = CSVProcessor()
     total_start_time = time.perf_counter()  # Start total timing
@@ -43,10 +43,12 @@ def benchmark_pandas_csv_processor(start_date: str):
     # Ensure filtered data is not empty
     if filtered_df.empty:
         print("Filtered DataFrame is empty. Ensure the start date is valid.")
+        return
 
     # Timing generate_overview
     start_time = time.perf_counter()
     processor.df = filtered_df  # Update processor's df with filtered data
+    overview = processor.generate_overview()  # Generate statistical overview
     end_time = time.perf_counter()
     print(f"Overview generation time: {(end_time - start_time) * 1000:.3f} ms")
 
