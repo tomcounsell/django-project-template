@@ -1,6 +1,8 @@
 # apps/insights/services/csv/data_cleaner.py
+from typing import List
 import logging
 import pandas as pd
+from apps.insights.services.utils.data_utils import validate_dataframe
 
 # Configure logging
 logging.basicConfig(
@@ -10,13 +12,35 @@ logging.basicConfig(
 
 def detect_date_column(df: pd.DataFrame) -> str:
     """
-    Dynamically detect the date column in a pandas DataFrame.
+    Dynamically detects the date column in a pandas DataFrame.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to inspect for a date column.
+
+    Returns:
+        str: The name of the detected date column.
+
+    Raises:
+        ValueError: If no date column is detected or if multiple columns contain "date" in their name.
     """
-    date_columns = [col for col in df.columns if "date" in col.lower()]
+    # Validate that input is a DataFrame
+    validate_dataframe(df)
+
+    # Find columns with "date" in their names (case-insensitive)
+    date_columns: List[str] = [col for col in df.columns if "date" in col.lower()]
+
     if len(date_columns) == 0:
+        logging.error("No date column detected in the dataset.")
         raise ValueError("No date column detected in the dataset.")
+
     if len(date_columns) > 1:
-        raise ValueError(f"Multiple possible date columns found: {date_columns}")
+        logging.error(
+            "Multiple possible date columns found: %s", ", ".join(date_columns)
+        )
+        raise ValueError(
+            f"Multiple possible date columns found: {', '.join(date_columns)}"
+        )
+
     logging.info("Date column detected: %s", date_columns[0])
     return date_columns[0]
 
@@ -32,8 +56,7 @@ def standardize_date_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
         # Removed the following line to keep 'date' as datetime
         # df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
         logging.info(
-            "Dates standardized to datetime format in column '%s'",
-            date_column
+            "Dates standardized to datetime format in column '%s'", date_column
         )
         return df
     except Exception as e:
@@ -57,7 +80,17 @@ def ensure_datetime_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Perform the full data cleaning process on the input DataFrame.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to clean.
+
+    Returns:
+        pd.DataFrame: The cleaned DataFrame with a standardized date column.
     """
+    # Validate the DataFrame
+    validate_dataframe(df)
+
+    # Perform data cleaning steps
     date_column = detect_date_column(df)
     df = standardize_date_format(df, date_column)
     df = ensure_datetime_format(df, date_column)
