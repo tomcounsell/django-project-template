@@ -21,7 +21,8 @@ def detect_date_column(df: pd.DataFrame) -> str:
         str: The name of the detected date column.
 
     Raises:
-        ValueError: If no date column is detected or if multiple columns contain "date" in their name.
+        ValueError: If no date column is detected or if multiple columns
+        contain "date" in their name.
     """
     # Validate that input is a DataFrame
     validate_dataframe(df)
@@ -48,19 +49,22 @@ def detect_date_column(df: pd.DataFrame) -> str:
 def standardize_date_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
     """
     Standardize the date column to a consistent datetime format.
+
+    Args:
+        df (pd.DataFrame): The DataFrame containing the data.
+        date_column (str): The name of the column to standardize.
+
+    Returns:
+        pd.DataFrame: The DataFrame with the standardized date column.
+
+    Raises:
+        ValueError: If invalid or unparseable dates are found.
     """
-    try:
-        df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
-        if df[date_column].isna().any():
-            raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
-        # Removed the following line to keep 'date' as datetime
-        # df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
-        logging.info(
-            "Dates standardized to datetime format in column '%s'", date_column
-        )
-        return df
-    except Exception as e:
-        raise ValueError(f"Error standardizing date column: {e}") from e
+    df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
+    if df[date_column].isna().any():
+        raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
+    logging.info("Dates standardized to datetime format in column '%s'", date_column)
+    return df
 
 
 def ensure_datetime_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
