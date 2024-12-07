@@ -13,7 +13,7 @@ logging.basicConfig(
 CSV_FILE_PATH = "./apps/insights/data/ga4_data.csv"
 
 
-def read_csv(file_path: Optional[str] = None, **read_csv_kwargs) -> pd.DataFrame:
+def read_csv(file_path: Optional[str] = None, **read_csv_kwargs: dict) -> pd.DataFrame:
     """
     Reads a CSV file into a Pandas DataFrame.
 
@@ -27,6 +27,9 @@ def read_csv(file_path: Optional[str] = None, **read_csv_kwargs) -> pd.DataFrame
     Raises:
         FileNotFoundError: If the file does not exist at the specified path.
         ValueError: If there is an error reading the file or processing the content.
+
+    Usage:
+        df = read_csv(file_path="path/to/csv_data.csv", sep=";",encoding="utf-8-sig", nrows=100)
     """
     file_path = file_path or CSV_FILE_PATH
     file_path_obj = Path(file_path)
