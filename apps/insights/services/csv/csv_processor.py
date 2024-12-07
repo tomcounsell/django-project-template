@@ -20,42 +20,38 @@ class CSVProcessor:
     filtering, and generating overviews of CSV data using Pandas.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the CSVProcessor.
         """
-        self.df = None  # Placeholder for the DataFrame
+        self.df: pd.DataFrame | None = None  # Placeholder for the DataFrame
 
-    def load(self):
+    def load(self) -> None:
         """
         Loads the data from the CSV file into a Pandas DataFrame.
         """
         self.df = read_csv()
 
-    def validate(self):
+    def validate(self) -> None:
         """
         Validates that the DataFrame contains all required columns.
         """
-        logging.info("Validating CSV columns...")
         validate_columns(self.df)
 
-    def clean(self):
+    def clean(self) -> None:
         """
         Cleans the DataFrame by standardizing and formatting columns.
         """
-        logging.info("Cleaning data...")
         self.df = clean_data(self.df)
 
-    def filter(self, start_date: str, traffic_source: str = "organic"):
+    def filter(self, start_date: str, traffic_source: str = "organic") -> pd.DataFrame:
         """
         Filters the DataFrame for the specified traffic source and week.
         """
-        logging.info("Filtering data for traffic source: %s", traffic_source)
         return filter_data(self.df, pd.to_datetime(start_date), traffic_source)
 
-    def generate_overview(self) -> str:
+    def generate_overview(self) -> str:  # FIXME: dict to store the overview in a model
         """
         Generates a statistical overview of the filtered DataFrame.
         """
-        logging.info("Generating statistical overview...")
         return generate_overview(self.df)
