@@ -17,7 +17,7 @@ def detect_date_column(df: pd.DataFrame) -> str:
         raise ValueError("No date column detected in the dataset.")
     if len(date_columns) > 1:
         raise ValueError(f"Multiple possible date columns found: {date_columns}")
-    logging.info(f"Date column detected: {date_columns[0]}")
+    logging.info("Date column detected: %s", date_columns[0])
     return date_columns[0]
 
 
@@ -32,11 +32,12 @@ def standardize_date_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
         # Removed the following line to keep 'date' as datetime
         # df[date_column] = df[date_column].dt.strftime("%Y-%m-%d")
         logging.info(
-            f"Dates standardized to datetime format in column '{date_column}'."
+            "Dates standardized to datetime format in column '%s'",
+            date_column
         )
         return df
     except Exception as e:
-        raise ValueError(f"Error standardizing date column: {e}")
+        raise ValueError(f"Error standardizing date column: {e}") from e
 
 
 def ensure_datetime_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
@@ -47,10 +48,10 @@ def ensure_datetime_format(df: pd.DataFrame, date_column: str) -> pd.DataFrame:
         df[date_column] = pd.to_datetime(df[date_column], errors="coerce")
         if df[date_column].isna().any():
             raise ValueError(f"Invalid or unparseable dates in column '{date_column}'.")
-        logging.info(f"Date column '{date_column}' confirmed as datetime format.")
+        logging.info("Date column '%s' confirmed as datetime format.", date_column)
         return df
     except Exception as e:
-        raise ValueError(f"Error ensuring datetime format: {e}")
+        raise ValueError(f"Error ensuring datetime format: {e}") from e
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
