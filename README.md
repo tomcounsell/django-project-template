@@ -35,21 +35,18 @@ Paul Tuck <@pau1tuck>
    make ps
    ```
 
-3. Access the container shell:
-   ```bash
-   make shell
-   ```
-
-4. Create a superuser account (to log in to the admin interface):
+3. Create a superuser account (to log in to the admin interface):
    ```bash
    make superuser
    ```
 
-5. Access the admin interface:
+4. Access the admin interface:
    http://localhost:8000/admin
 
-6. (Optional) View container logs:
+5. (Optional) View container logs:
+   ```bash
    make logs
+   ```
 
 ### Using VSCode Dev Containers
 

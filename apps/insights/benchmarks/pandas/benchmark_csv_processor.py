@@ -47,13 +47,12 @@ def benchmark_pandas_csv_processor(start_date: str):
     # Timing generate_overview
     start_time = time.perf_counter()
     processor.df = filtered_df  # Update processor's df with filtered data
-    overview = processor.generate_overview()
     end_time = time.perf_counter()
     print(f"Overview generation time: {(end_time - start_time) * 1000:.3f} ms")
 
     # Total time
     total_end_time = time.perf_counter()
-    print(f"Total process time: {(total_end_time - total_start_time) * 1000:.3f} ms")
+    print(f"Total processing time: {(total_end_time - total_start_time) * 1000:.3f} ms")
 
     print("Benchmark complete.")
 
