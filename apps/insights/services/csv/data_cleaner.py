@@ -24,9 +24,6 @@ def detect_date_column(df: pd.DataFrame) -> str:
         ValueError: If no date column is detected or if multiple columns
         contain "date" in their name.//
     """
-    # Validate that input is a DataFrame
-    validate_dataframe(df)
-
     # Find columns with "date" in their names (case-insensitive)
     date_columns: List[str] = [col for col in df.columns if "date" in col.lower()]
 
