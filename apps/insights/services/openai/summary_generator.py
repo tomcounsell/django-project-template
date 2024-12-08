@@ -14,7 +14,7 @@ from django.conf import settings
 from instructor import from_openai
 from openai import OpenAI
 from .schemas import SummaryOutput
-from .prompts.summary import SUMMARY_PROMPT_TEMPLATE
+from .prompts.summary import SUMMARY_PROMPT
 
 
 # Load OpenAI API key from settings
@@ -106,7 +106,7 @@ def generate_summary(statistical_summary: str) -> SummaryOutput:
     Returns:
         SummaryOutput: A structured summary containing dataset insights and key metrics.
     """
-    prompt = SUMMARY_PROMPT_TEMPLATE.format(statistical_summary=statistical_summary)
+    prompt = SUMMARY_PROMPT.format(statistical_summary=statistical_summary)
     try:
         logging.info("Requesting dataset summary from OpenAI...")
 

@@ -1,4 +1,7 @@
+# apps/insights/benchmarks/benchmark_summary_generator.py
 import time
+import os
+import django
 import json
 from pathlib import Path
 from apps.insights.services.openai.summary_generator import generate_summary
@@ -6,11 +9,18 @@ from apps.insights.services.openai.summary_generator import generate_summary
 # Path to the dummy statistical overview file
 TEST_DATA_FILE = Path("apps/insights/tests/data/overview_2024-01-01.json")
 
+# Path to save the LLM output
+OUTPUT_FILE = Path("apps/insights/benchmarks/generated_summary_output.json")
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+django.setup()
+
 
 def benchmark_summary_generator():
     """
     Benchmarks the `generate_summary` function using dummy data.
     Measures and prints the execution time.
+    Saves the LLM structured output to a file.
     """
     # Load the test data from JSON file
     with open(TEST_DATA_FILE, "r", encoding="utf-8") as f:
@@ -38,7 +48,14 @@ def benchmark_summary_generator():
         # Print execution time
         print(f"\nExecution Time: {(end_time - start_time) * 1000:.3f} ms")
         print("\n=== Generated Summary ===")
-        print(response.dict())
+
+        # Convert response to a dictionary
+        response_dict = response.model_dump()
+
+        # Save the structured output to a JSON file
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as output_file:
+            json.dump(response_dict, output_file, indent=4)
+        print(f"Structured output saved to {OUTPUT_FILE}")
 
     except Exception as e:
         print(f"Error during benchmark: {e}")

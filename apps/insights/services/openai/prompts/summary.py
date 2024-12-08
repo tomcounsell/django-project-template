@@ -1,6 +1,6 @@
 # apps/insights/services/openai/prompts/summary.py
 
-SUMMARY_PROMPT_TEMPLATE = """
+SUMMARY_PROMPT = """
 You are a data analyst tasked with summarizing a dataset. The following is a statistical summary of the dataset:
 
 {statistical_summary}
