@@ -2,7 +2,7 @@ import json
 import numpy as np
 import pandas as pd
 
-OUTPUT_FILE = "overview_2024-01-01.json"
+OUTPUT_FILE = "overview_2024-01-15.json"
 
 
 def generate_overview(df: pd.DataFrame) -> str:
