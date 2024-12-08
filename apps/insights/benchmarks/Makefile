@@ -1,0 +1,1 @@
+# docker-compose exec django python apps/insights/benchmarks/benchmark_summary_generator.py
