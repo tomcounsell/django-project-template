@@ -10,7 +10,7 @@ from apps.insights.services.openai.summary_generator import generate_summary
 TEST_DATA_FILE = Path("apps/insights/tests/data/overview_2024-01-01.json")
 
 # Path to save the LLM output
-OUTPUT_FILE = Path("apps/insights/benchmarks/generated_summary_output.json")
+OUTPUT_FILE = Path("apps/insights/benchmarks/generated_summary_output_2024-01-01.json")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()

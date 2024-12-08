@@ -84,7 +84,7 @@ LOGGING = {
         },
         "apps.insights": {
             "handlers": ["console"],
-            "level": os.environ.get("LOGGING_LEVEL", "INFO"),
+            "level": os.environ.get("LOGGING_LEVEL", "DEBUG"),
             "propagate": False,
         },
     },

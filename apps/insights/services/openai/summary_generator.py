@@ -1,5 +1,3 @@
-# apps/insights/services/openai/summary_generator.py
-
 import logging
 import functools
 import inspect
@@ -15,7 +13,12 @@ from instructor import from_openai
 from openai import OpenAI
 from .schemas import SummaryOutput
 from .prompts.summary import SUMMARY_PROMPT
-
+from .logging import (
+    log_completion_kwargs,
+    log_completion_response,
+    log_completion_error,
+    log_parse_error,
+)
 
 # Load OpenAI API key from settings
 openai_api_key = settings.OPENAI_API_KEY
@@ -25,6 +28,12 @@ if not openai_api_key:
 
 # Initialize OpenAI client
 client = from_openai(OpenAI(api_key=openai_api_key))
+
+# Register Instructor hooks for logging
+client.on("completion:kwargs", log_completion_kwargs)
+client.on("completion:response", log_completion_response)
+client.on("completion:error", log_completion_error)
+client.on("parse:error", log_parse_error)
 
 # Initialize Redis client for caching
 cache = redis.Redis(
@@ -113,9 +122,7 @@ def generate_summary(statistical_summary: str) -> SummaryOutput:
         # Retry-enabled API call
         response = call_openai_api(prompt)
 
-        # Log the raw response from OpenAI for debugging
-        logging.info("Raw LLM response: %s", response.json())
-
+        # We no longer log the raw response here because it's handled by the hooks
         logging.info("Successfully received structured response.")
         return response
 
