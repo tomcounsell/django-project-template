@@ -2,7 +2,7 @@
 
 import pytest
 from apps.insights.services.openai.comparison_generator import generate_comparison
-from apps.insights.services.openai.schemas import ComparisonOutput, KeyMetricComparison
+from apps.insights.services.openai.schemas import ComparisonOutput
 
 
 def test_generate_comparison():

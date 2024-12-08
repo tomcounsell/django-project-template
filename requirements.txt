@@ -32,6 +32,7 @@ pytest-django
 pytest-mock
 pytest-xdist
 responses
+selenium
 testcontainers[postgresql,redis]==4.8.2
 
 # Template requirements:
