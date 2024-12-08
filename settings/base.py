@@ -89,7 +89,7 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "django_prometheus",
     "django_q",
-    "celery",
+    # "celery",
 ]
 
 APPS = [
