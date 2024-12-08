@@ -1,12 +1,13 @@
 # requirements.txt
 black
-celery>=5.3.4
-celery[redis]
-django-celery-beat
+#celery>=5.3.4
+#celery[redis]
+#django-celery-beat
 django-picklefield
 django-prometheus
 django-q2
 django-redis
+#flower==1.2.0
 instructor
 numpy>=1.22
 openai
@@ -14,7 +15,7 @@ redis>=5.2.0
 tenacity
 
 # Types
-celery-types
+#celery-types
 django-stubs
 pandas-stubs
 types-PyYAML

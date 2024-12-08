@@ -1,12 +1,9 @@
 # settings/base.py
 # from __future__ import absolute_import
+import socket
 import mimetypes
 import os
 from pathlib import Path
-import socket
-from datetime import timedelta
-import socket
-
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "test_secret_key")
 

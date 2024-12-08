@@ -1,3 +1,4 @@
+# settings/vendor.py
 import os
 
 from settings import LOCAL, STAGE, DEMO, PRODUCTION

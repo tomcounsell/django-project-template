@@ -1,3 +1,4 @@
+# settings/urls.py
 from django_prometheus.exports import ExportToDjangoView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import admin

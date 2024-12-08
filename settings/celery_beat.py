@@ -1,3 +1,5 @@
+# settings/celery_beat.py
+import os
 import logging
 from django.db import transaction
 from celery import Celery
@@ -8,8 +10,8 @@ from django_celery_beat.schedulers import DatabaseScheduler
 
 app = Celery("scheduled_tasks_ai")
 app.conf.update(
-    broker_url="redis://${REDIS_HOST}:${REDIS_PORT}/0",
-    result_backend="redis://${REDIS_HOST}:${REDIS_PORT}/0",
+    broker_url=os.environ.get("REDIS_STREAMS_URL"),
+    result_backend=os.environ.get("REDIS_STREAMS_URL"),
     beat_schedule={
         # Example task
         "sample_task": {

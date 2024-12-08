@@ -11,7 +11,7 @@
                 "python.linting.mypyEnabled": true,
                 "python.linting.pylintEnabled": true,
                 "python.formatting.provider": "black",
-                "python.analysis.typeCheckingMode": "basic",
+                "python.analysis.typeCheckingMode": "strict",
                 "python.analysis.extraPaths": [
                     "./apps"
                 ],

@@ -48,8 +48,8 @@ ENV DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Add /app/venv/bin to PATH for runtime
-ENV PATH="/app/venv/bin:$PATH"
+# Add /usr/local/bin to PATH for runtime 
+ENV PATH="/usr/local/bin:$PATH"
 
 RUN echo "Build DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY"
 
@@ -67,6 +67,9 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/pyth
 
 # Copy application code
 COPY . .
+
+# Install Celery and Flower explicitly in the final stage for runtime
+# RUN pip install --no-cache-dir celery[redis] flower
 
 # Create static directory
 RUN mkdir -p /app/static

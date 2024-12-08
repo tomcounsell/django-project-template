@@ -7,16 +7,12 @@ from settings.base import TIME_ZONE
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 # Celery Configuration Options
-CELERY_BROKER_URL = os.environ.get("REDIS_STREAMS_URL")
-CELERY_RESULT_BACKEND = os.environ.get("DB_URL")
-
-if not CELERY_BROKER_URL or not CELERY_RESULT_BACKEND:
-    raise ValueError("Both REDIS_URL and POSTGRES_URL must be set in the .env file")
-
+CELERY_BROKER_URL = os.environ.get("REDIS_STREAMS_URL")  # Use Redis Streams
+CELERY_RESULT_BACKEND = os.environ.get("DB_URL")  # Use PostgreSQL
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = int(
     os.environ.get("CELERY_TASK_TIME_LIMIT", 14400)
-)  # default 4 hours
+)  # Default: 4 hours
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

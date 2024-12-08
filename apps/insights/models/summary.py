@@ -1,5 +1,5 @@
 # apps/insights/models/summary.py
-from Typing import Type
+from typing import Type
 from django.core.exceptions import ValidationError
 from django.db import models
 from apps.common.behaviors.timestampable import Timestampable

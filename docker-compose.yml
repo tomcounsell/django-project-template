@@ -1,4 +1,3 @@
-# docker-compose.yml
 services:
   django:
     container_name: django
@@ -54,42 +53,6 @@ services:
     restart: always
 
   # TASK SCHEDULING
-  celery_worker:
-    container_name: celery
-    build:
-      context: .
-      args:
-        REDIS_STREAMS_URL: ${REDIS_STREAMS_URL}
-    command: python -m celery -A settings worker -l INFO
-    ports: []
-    volumes:
-      - .:/app
-    environment:
-      CELERY_BROKER_URL: ${REDIS_STREAMS_URL}
-    env_file:
-      - .env
-    depends_on:
-      - redis
-    restart: always
-
-  celery_beat:
-    container_name: celery-beat
-    build:
-      context: .
-      args:
-        DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY} 
-    command: celery -A settings beat -l info
-    volumes:
-      - .:/app
-    environment:
-      REDIS_URL: ${REDIS_URL}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-    depends_on:
-      - django
-      - redis
-    restart: always
-
   qcluster:
     container_name: qcluster
     build: .
@@ -103,6 +66,42 @@ services:
       - postgres
       - redis
     restart: always
+
+  # celery_worker:
+  #   container_name: celery
+  #   build:
+  #     context: .
+  #     args:
+  #       REDIS_STREAMS_URL: ${REDIS_STREAMS_URL}
+  #   command: python -m celery -A settings worker -l INFO
+  #   ports: []
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     CELERY_BROKER_URL: ${REDIS_STREAMS_URL}  # Redis Streams for broker
+  #     CELERY_RESULT_BACKEND: ${DB_URL}         # PostgreSQL for result storage
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - redis
+  #   restart: always
+
+  # celery_beat:
+  #   container_name: celery-beat
+  #   build:
+  #     context: .
+  #     args:
+  #       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY} 
+  #   command: celery -A settings beat -l info
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     REDIS_STREAMS_URL: ${REDIS_STREAMS_URL}
+  #     CELERY_RESULT_BACKEND: ${DB_URL}
+  #   depends_on:
+  #     - django
+  #     - redis
+  #   restart: always
 
   # MONITORING
   prometheus:
@@ -140,6 +139,20 @@ services:
       DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}?sslmode=disable"
     depends_on:
       - postgres
+
+  # flower:
+  #   container_name: flower
+  #   image: mher/flower:latest
+  #   command: >
+  #     flower --port=5555 --broker=${REDIS_STREAMS_URL}
+  #   ports:
+  #     - "5555:5555"
+  #   environment:
+  #     - CELERY_BROKER_URL=${REDIS_STREAMS_URL}
+  #   restart: always
+  #   depends_on:
+  #     - redis
+  #     - celery_worker
 
 volumes:
   grafana_data:
