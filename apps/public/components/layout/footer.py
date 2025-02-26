@@ -1,14 +1,11 @@
 from django_components import component
 
 
-@component.register("footer")
+@component.register("layout-footer")
 class Footer(component.Component):
-    template_name = "footer/footer.html"
+    template_name = "layout/footer.html"
 
     def get_context_data(self):
         return {}
 
-    class Media:
-        pass
-        # css = "footer/footer.css"
-        # js = "footer/footer.js"
+    # Media class removed - will add back when implementing Tailwind

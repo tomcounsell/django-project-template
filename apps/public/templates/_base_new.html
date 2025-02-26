@@ -76,11 +76,15 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
+          {# Can be included directly or as a component #}
           {% include "nav/navbar.html" %}
+          {# Alternative: {% component "nav-navbar" %}{% endcomponent %} #}
         {% endblock navbar %}
 
         {% block messages %}
+          {# Can be included directly or as a component #}
           {% include "messages/toast.html" %}
+          {# Alternative: {% component "messages-toast" %}{% endcomponent %} #}
         {% endblock messages %}
 
         <main id="main" hx-history-elt>
@@ -104,7 +108,9 @@
         </main>
 
         {% block footer %}
+          {# Can be included directly or as a component #}
           {% include "layout/footer.html" %}
+          {# Alternative: {% component "layout-footer" %}{% endcomponent %} #}
         {% endblock footer %}
       </div>
     </div>

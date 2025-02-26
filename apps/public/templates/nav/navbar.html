@@ -54,7 +54,9 @@
       {% if user.is_authenticated %}
         {#      {% include "nav/search.html" %}#}
       {% endif  %}
+      {# Can be included directly or as a component #}
       {% include "nav/account_menu.html" %}
+      {# Alternative: {% component "nav-account_menu" %}{% endcomponent %} #}
     </div>
 
   </div>
