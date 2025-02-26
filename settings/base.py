@@ -160,7 +160,11 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     # BASE_DIR / "static",
     BASE_DIR / "apps" / "public" / "static",
-    BASE_DIR / "apps" / "public" / "components",
+]
+
+# Django Components settings
+COMPONENTS_DIRS = [
+    BASE_DIR / "apps" / "public" / "views" / "components",
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
