@@ -65,8 +65,8 @@
     <!--BASE CSS-->
     <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css?v=2" />
 
-    <!-- COMPONENT'S CSS -->
-    {% component_css_dependencies %}
+    <!-- Tailwind CSS will be added here later -->
+    
     <!--FOR TEMPLATES TO LOAD MORE CSS-->
     {% block css %} {% endblock css %}
   </head>
@@ -76,11 +76,11 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
-          {% component "navbar"%}{% endcomponent %}
+          {% include "nav/navbar.html" %}
         {% endblock navbar %}
 
         {% block messages %}
-          {% component "messages" %}{% endcomponent %}
+          {% include "messages/toast.html" %}
         {% endblock messages %}
 
         <main id="main" hx-history-elt>
@@ -104,7 +104,7 @@
         </main>
 
         {% block footer %}
-          {% component "footer" %}{% endcomponent %}
+          {% include "layout/footer.html" %}
         {% endblock footer %}
       </div>
     </div>
@@ -113,9 +113,8 @@
     <!--Javascript Placed at the end of the document. Pages load faster. -->
     <!--BASE JS-->
     <script src="{{ STATIC_URL }}js/base.js?v=1"></script>
+    <!-- Component JS files will be added when implementing Tailwind -->
 
-    <!-- COMPONENT'S JS -->
-    {% component_js_dependencies %}
     <!--FOR TEMPLATES TO LOAD MORE JS-->
     {% block javascript %} {% endblock javascript %}
     <!--HTMX-->
