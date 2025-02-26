@@ -1,43 +1,68 @@
+{# 
+  Account Menu Component
+  =====================
+  
+  Purpose:
+  User account management dropdown menu that provides access to account-related
+  functions and administrative tools based on user permissions.
+  
+  Authenticated User View:
+  - Account menu toggle: Three-dot icon that expands the dropdown
+  - Settings link: Access to user profile and account settings
+  - Admin link: Access to Django admin (staff users only)
+  - Logout link: Option to end the user session
+  
+  Non-Authenticated User View:
+  - Login link: Direct link to the login page
+  
+  States:
+  - Collapsed: Only shows the menu toggle
+  - Expanded: Shows all available options in a dropdown
+  
+  Integration:
+  This component is included in the navbar and handles all user account
+  management navigation. It adapts its display based on authentication state
+  and user permissions.
+#}
+
 {% if user.is_authenticated %}
-  <div class="navbar-item has-dropdown is-hoverable">
-    <a class="navbar-link is-arrowless mx-3">
+  <div id="account-dropdown">
+    <a>
       <i class="fas fa-ellipsis-h" style="font-size: x-large"></i>
     </a>
-    <div class="navbar-dropdown is-right" style="width: 12em">
-      <a class="navbar-item"
-         href="{% url 'public:account-settings' %}"
-      >
-        <span class="icon-text">
-          <span class="icon">
+    <div id="dropdown-menu" style="width: 12em">
+      <a href="{% url 'public:account-settings' %}">
+        <span>
+          <span>
             <i class="fas fa-user-ninja"></i>
           </span>
           <span>Settings</span>
         </span>
       </a>
       {% if user.is_staff %}
-        <hr class="navbar-divider" />
-        <a href="/admin/" class="navbar-item">
-          <span class="icon-text">
-            <span class="icon">
+        <hr />
+        <a href="/admin/">
+          <span>
+            <span>
               <i class="fas fa-database"></i>
             </span>
             <span>Admin DB</span>
           </span>
         </a>
       {% endif %}
-{#      <hr class="navbar-divider" />#}
-{#      <a href="/api/" class="navbar-item">#}
-{#        <span class="icon-text">#}
-{#          <span class="icon">#}
+{#      <hr />#}
+{#      <a href="/api/">#}
+{#        <span>#}
+{#          <span>#}
 {#            <i class="fas fa-book"></i>#}
 {#          </span>#}
 {#          <span>API Docs</span>#}
 {#        </span>#}
 {#      </a>#}
-      <hr class="navbar-divider" />
-      <a class="navbar-item" href="{% url 'public:account-logout' %}">
-        <span class="icon-text">
-          <span class="icon">
+      <hr />
+      <a href="{% url 'public:account-logout' %}">
+        <span>
+          <span>
             <i class="fas fa-sign-out-alt"></i>
           </span>
           <span>Logout</span>
@@ -46,8 +71,8 @@
     </div>
   </div>
 {% else %}
-  <a class="navbar-item" href="{% url 'public:account-login' %}">
-    <i class="fas fa-user-ninja pr-2"></i>
+  <a href="{% url 'public:account-login' %}">
+    <i class="fas fa-user-ninja"></i>
     Login
   </a>
 {% endif %}

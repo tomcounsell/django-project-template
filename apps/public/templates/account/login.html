@@ -1,23 +1,50 @@
 {% extends "pages/onboarding.html" %}
 
+{# 
+  Login Page
+  ==========
+  
+  Purpose:
+  Provides user authentication functionality with a simple login form.
+  This template extends from "pages/onboarding.html" which sets up the appropriate
+  layout for authentication-related screens.
+  
+  Form Elements:
+  - Email field: Uses the username field from the authentication form
+  - Password field: Masked input for secure password entry
+  - Login button: Submits the form for authentication
+  - Error display: Shows authentication errors or validation issues
+  
+  User Experience:
+  - Clean, focused interface with minimal distractions
+  - Icon indicators for form fields (envelope for email, lock for password)
+  - Clear error messaging when authentication fails
+  - Visual feedback for form validation
+  
+  Integration:
+  This template displays in the center content area of the base template.
+  It's part of the authentication flow that includes login, registration,
+  and password reset functionality.
+#}
+
 {% block center_content %}
-  <section class="section">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-half">
-          <div class="card has-background-danger p-6">
+  <section>
+    <div>
+      <div>
+        <div>
+          <div>
             <form action="{% url 'public:account-login' %}" method="post">
               {% load widget_tweaks %}{% csrf_token %}
 
               <!-- Username Field -->
-              <div class="field">
-                <label class="label">Email</label>
-                <div class="control has-icons-left has-icons-right">
-                  {{ form.username|add_class:'input is-primary-dark' }}
-                  <span class="icon is-small is-left has-text-primary-dark">
+              <div>
+                <label>Email</label>
+                <div>
+                  {{ form.username }}
+                  <span>
                     <i class="fas fa-envelope"></i>
                   </span>
-                  <span class="icon is-small is-right">
+                  <span>
                     <!-- Conditional class for invalid email -->
                     <i class="fas fa-check"></i>
                   </span>
@@ -25,26 +52,26 @@
               </div>
 
               <!-- Password Field -->
-              <div class="field">
-                <label class="label">Password</label>
-                <div class="control has-icons-left">
-                  {{ form.password|add_class:'input is-primary-dark' }}
-                  <span class="icon is-small is-left has-text-primary-dark">
+              <div>
+                <label>Password</label>
+                <div>
+                  {{ form.password }}
+                  <span>
                     <i class="fas fa-lock"></i>
                   </span>
                 </div>
               </div>
 
               <!-- Login Button -->
-              <div class="field">
-                <div class="control">
-                  <button class="button is-warning" type="submit">Login</button>
+              <div>
+                <div>
+                  <button type="submit">Login</button>
                 </div>
               </div>
 
               <!-- Error Messages -->
               {% if form.errors %}
-              <p class="help is-danger has-text-centered">
+              <p>
                 {{ form.non_field_errors }}
               </p>
               {% endif %}

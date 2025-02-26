@@ -1,23 +1,48 @@
 {% load static %}
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="/">
+{# 
+  Navbar Component
+  ===============
+  
+  Purpose:
+  Primary navigation component that appears at the top of all pages.
+  Provides access to main site sections and user account functions.
+  
+  Elements:
+  - Logo: Site branding that links to the homepage
+  - Mobile menu toggle: Hamburger icon that expands navigation on small screens
+  - Main navigation area: Contains links to primary site sections
+  - Account menu: User-specific options (login/logout, settings, etc.)
+  
+  Responsive Behavior:
+  - On desktop: Horizontal navigation with full menu visible
+  - On mobile: Collapsed menu with hamburger toggle for expansion
+  
+  States:
+  - Default: Standard navigation with branding and links
+  - Authenticated: Shows user-specific navigation options
+  - Mobile expanded: Shows full navigation menu on small screens
+  
+  Integration:
+  This component is included in the base template and appears on every page.
+  It works with navbar.js for mobile menu toggling functionality.
+#}
+
+<nav role="navigation" aria-label="main navigation">
+  <div>
+    <a href="/">
       <img src="{% static 'assets/img/logo.png' %}" width="28" height="28"  alt="Django Project Template Logo"/>
     </a>
 
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+    <a role="button" id="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
 
-  <div
-      id="navMenu"
-      class="navbar-menu"
-  >
-    <div class="navbar-start">
+  <div id="navMenu">
+    <div>
       {% if user.is_authenticated %}
         {#      {% component "search" %}{% endcomponent %}#}
       {% endif  %}
@@ -25,7 +50,7 @@
 
     <!-- middle zone between left and right -->
 
-    <div class="navbar-end">
+    <div>
       {% if user.is_authenticated %}
         {#      {% component "search" %}{% endcomponent %}#}
       {% endif  %}
