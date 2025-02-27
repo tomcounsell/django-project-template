@@ -1,14 +1,97 @@
 
+# Django Project Template
+
 Technologies: Python, Django, PostgreSQL, 
 API: Django Rest Framework
-Web: HTMX, Bulma CSS
-Hosting: Heroku or Render, AWS-S3
+Web: HTMX, Tailwind CSS
+Hosting: Render, AWS-S3
 Integrations: 
     Transloadit for uploading and processing images
     SendGrid for email
     Stripe for payments
     OpenAI for GPTs
     Telegram for chatbot
+
+## Quick Start Guide
+
+Follow these steps to get this project up and running on your local machine:
+
+### 1. Set up environment
+
+```bash
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 2. Install dependencies
+
+```bash
+# Install pip-tools
+pip install pip-tools
+
+# Generate and install requirements
+pip-compile requirements/base.in -o requirements/base.txt
+pip-compile requirements/dev.in -o requirements/dev.txt
+pip-compile requirements/prod.in -o requirements/prod.txt
+
+# Install development dependencies
+pip install -r requirements/dev.txt
+```
+
+### 3. Configure local settings
+
+```bash
+# Copy the local settings template
+cp settings/local_template.py settings/local.py
+
+# Copy the environment variables example file
+cp .env.example .env.local
+
+# Edit .env.local:
+# - Add your secure SECRET_KEY (50 characters)
+# - Configure your PostgreSQL database settings
+# - Add API keys and other sensitive information
+```
+
+### 4. Set up the database
+
+```bash
+# Create a PostgreSQL database
+createdb your_database_name  # Or use your preferred PostgreSQL client
+
+# Run migrations
+python manage.py migrate
+```
+
+### 5. Create a superuser and run server
+
+```bash
+# Create admin user
+python manage.py createsuperuser
+
+# Start development server
+python manage.py runserver
+```
+
+Visit http://127.0.0.1:8000/ to see your application running!
+
+### Alternative: Using Docker
+
+If you prefer to use Docker for development:
+
+```bash
+# Create a .env.local file from the example
+cp .env.example .env.local
+
+# Build and start the containers
+docker-compose up -d
+
+# Create a superuser
+docker-compose exec web python manage.py createsuperuser
+```
+
+Visit http://127.0.0.1:8000/ to see your Docker-based application running.
 
 
 # Project Structure
@@ -19,7 +102,7 @@ This project is structured in a modular fashion to promote separation of concern
 - `settings/`: Configuration settings for the entire Django project.
 - `static/`: Global static files such as CSS, JS, and images.
 - `templates/`: Global HTML templates.
-- `Procfile`: Specifies startup services for Heroku
+- `build.sh`: Build script for Render deployment
 - `requirements.txt`: Lists all Python dependencies.
 - `runtime.txt`: Specifies the Python runtime.
 

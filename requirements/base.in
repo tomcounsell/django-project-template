@@ -29,6 +29,7 @@ passlib
 psycopg2
 pydantic
 pytest
+python-dotenv
 pytz
 PyYAML
 redis>=3.5.3
