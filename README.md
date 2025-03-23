@@ -93,6 +93,26 @@ docker-compose exec web python manage.py createsuperuser
 
 Visit http://127.0.0.1:8000/ to see your Docker-based application running.
 
+### Running Tests
+
+Run Django-integrated tests with:
+
+```bash
+# Run all tests
+python manage.py test
+
+# Run specific app tests
+python manage.py test apps.common.tests
+
+# Run specific test case
+python manage.py test apps.common.tests.test_behaviors.test_timestampable
+
+# Run standalone behavior mixin tests (no Django setup required)
+python test_behaviors.py
+```
+
+For Python 3.12 compatibility, use the standalone test script when working with behavior mixins.
+
 ### Deployment
 
 For deployments to platforms like Render or Heroku:
@@ -134,6 +154,20 @@ _General purpose and shared components for any applications.
 This includes models, forms, views, and other components that are shared across multiple apps._
 
 _Key Features include 1. Enhanced User model with best practices for consumer-facing apps. 2. Common model behaviors like timestamping, authoring, etc. 3. Large collection of utility functions for common problems encountered while building applications._
+
+#### Behavior Mixins
+
+The `apps/common/behaviors/` directory contains reusable model mixins that add common functionality:
+
+- **Timestampable**: Adds `created_at` and `modified_at` fields with automatic updates
+- **Authorable**: Tracks content authors with anonymous option
+- **Publishable**: Manages content publishing workflow with publish/unpublish functionality
+- **Expirable**: Handles content expiration with validity tracking
+- **Permalinkable**: Manages URL slugs and permalink generation
+- **Locatable**: Adds location data with address and coordinate fields
+- **Annotatable**: Provides notes relationship management
+
+All behavior mixins have comprehensive test coverage (see `apps/common/tests/test_behaviors/`).
 
 
 - `apps/common/`: common app

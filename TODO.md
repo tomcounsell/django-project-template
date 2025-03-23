@@ -6,14 +6,15 @@
 - [x] Create test factory classes for common models
 - [ ] Set up coverage tools (pytest-cov) and reporting
 - [ ] Add coverage check to CI pipeline with target thresholds
-- [ ] Create test mixins for common test patterns
-- [ ] Complete behavior mixin tests:
-  - [ ] Audit existing tests for Timestampable, Authorable behaviors
-  - [ ] Implement missing tests for Publishable behavior
-  - [ ] Implement missing tests for Expirable behavior
-  - [ ] Implement missing tests for Locatable behavior
-  - [ ] Implement missing tests for Permalinkable behavior
-  - [ ] Implement missing tests for Annotatable behavior
+- [x] Create test mixins for common test patterns
+- [x] Complete behavior mixin tests:
+  - [x] Audit existing tests for Timestampable, Authorable behaviors
+  - [x] Implement missing tests for Publishable behavior
+  - [x] Implement missing tests for Expirable behavior
+  - [x] Implement missing tests for Locatable behavior
+  - [x] Implement missing tests for Permalinkable behavior
+  - [x] Implement missing tests for Annotatable behavior
+  - [x] Create standalone behavior tests that run without Django setup
 - [ ] Complete model tests:
   - [ ] Audit existing model tests (Address, Country, Currency, Note, Upload)
   - [ ] Add tests for User model

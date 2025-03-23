@@ -34,7 +34,13 @@
 - **Organization**:
   - Model tests: `apps/{app_name}/tests/test_models/`
   - View tests: `apps/{app_name}/tests/test_views/`
+  - Behavior tests: `apps/common/tests/test_behaviors/`
   - Factory classes: `apps/common/tests/factories.py`
+- **Running Tests**:
+  - Django tests: `DJANGO_SETTINGS_MODULE=settings pytest`
+  - Behavior mixins: `python test_behaviors.py` (standalone tests)
+  - With coverage: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
+- **Python 3.12**: Use standalone behavior tests (`test_behaviors.py`) for Python 3.12 compatibility
 - **Coverage**: Aim for 100% test coverage for models and behavior mixins
 
 ## Development Process
