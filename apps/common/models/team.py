@@ -2,10 +2,10 @@
 Team model for organizing users with roles and permissions.
 """
 from enum import Enum
-from typing import QuerySet
 
 from django.conf import settings
 from django.db import models
+from django.db.models import QuerySet
 
 from apps.common.behaviors.timestampable import Timestampable
 
