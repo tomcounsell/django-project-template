@@ -27,17 +27,17 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 ### 2. Install dependencies
 
 ```bash
-# Install pip-tools
-pip install pip-tools
-
-# Generate and install requirements
-pip-compile requirements/base.in -o requirements/base.txt
-pip-compile requirements/dev.in -o requirements/dev.txt
-pip-compile requirements/prod.in -o requirements/prod.txt
+# Install uv
+pip install uv
 
 # Install development dependencies
-pip install -r requirements/dev.txt
+./requirements/install.sh dev
+
+# Or for production
+./requirements/install.sh prod
 ```
+
+See `requirements/README.md` for more details on using uv.
 
 ### 3. Configure local settings
 
@@ -92,6 +92,18 @@ docker-compose exec web python manage.py createsuperuser
 ```
 
 Visit http://127.0.0.1:8000/ to see your Docker-based application running.
+
+### Deployment
+
+For deployments to platforms like Render or Heroku:
+
+```bash
+# Generate the requirements.txt file needed for deployment
+./requirements/generate_deployment_requirements.sh
+
+# This will create a requirements.txt file in the project root 
+# which can be used by deployment platforms
+```
 
 
 # Project Structure
