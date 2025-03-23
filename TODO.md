@@ -33,6 +33,10 @@
 - [ ] Consolidate static files from apps/public/static to root static directory
 - [ ] Update static file references in templates
 - [ ] Remove "dont_put_things_here.txt" from static directory
+- [ ] Reorganize templates for better HTMX integration
+  - [ ] Create dedicated partial template directory structure
+  - [ ] Implement standardized naming convention for partials
+  - [ ] Add template documentation in comments
 
 ### 3. Remove Component Framework Dependencies
 - [x] Identify all uses of django-components and webcomponents
@@ -111,8 +115,14 @@
 - [ ] Integrate payment processing example
 
 ## Frontend
+- [ ] Modernize base templates with best practices
+  - [ ] Create new _base.html template with improved structure
+  - [ ] Design HTMX-focused partial templates for common UI elements
+  - [ ] Implement template patterns from recent successful projects
+  - [ ] Create reusable Tailwind UI components as includes
+  - [ ] Document template extension and inclusion patterns
 - [ ] Implement design system components
 - [ ] Add JavaScript bundling with Webpack/Vite
-- [ ] Create unified CSS approach (Tailwind/Bulma)
+- [ ] Create unified CSS approach (Tailwind only)
 - [ ] Implement responsive layouts
 - [ ] Add dark mode support
