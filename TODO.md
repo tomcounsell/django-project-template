@@ -35,11 +35,11 @@
 - [ ] Remove "dont_put_things_here.txt" from static directory
 
 ### 3. Remove Component Framework Dependencies
-- [ ] Identify all uses of django-components and webcomponents
-- [ ] Convert component templates to standard Django includes
-- [ ] Update views that use component decorators
-- [ ] Remove django-components from INSTALLED_APPS and TEMPLATES settings
-- [ ] Remove django-components from requirements
+- [x] Identify all uses of django-components and webcomponents
+- [x] Convert component templates to standard Django includes
+- [x] Update views that use component decorators
+- [x] Remove django-components from INSTALLED_APPS and TEMPLATES settings
+- [x] Remove django-components from requirements
 - [ ] Update documentation on template patterns
 
 ### 4. Dependency Management with uv
