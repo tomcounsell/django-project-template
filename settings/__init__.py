@@ -1,52 +1,34 @@
-import logging
-import os
-from pathlib import Path
+"""
+Django settings for the project.
+Settings are organized into modular files for better organization.
+"""
 
-# Load environment variables from .env.local file
-from dotenv import load_dotenv
+# Load settings in order of increasing specificity
+# This allows settings in later files to override earlier ones
 
-# Determine the correct .env file based on environment
-env_file = ".env.local"
-env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), env_file)
-load_dotenv(env_path)
+# 1. First, environment & base configuration
+from settings.env import *  # Required first to detect environment
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE_ROOT = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-
-LOGGING_CONFIG = None
-LOGGING = {
-    'django.utils.autoreload': {
-        'level': 'INFO',
-    }
-}
-
-# DEFINE THE ENVIRONMENT TYPE
-PRODUCTION = STAGE = DEMO = LOCAL = False
-dt_key = os.environ.get('DEPLOYMENT_TYPE', "LOCAL")
-if dt_key == 'PRODUCTION':
-    PRODUCTION = True
-    log_level = logging.INFO
-elif dt_key == 'DEMO':
-    DEMO = True
-    log_level = logging.INFO
-elif dt_key == 'STAGE':
-    STAGE = True
-    log_level = logging.DEBUG
-else:
-    LOCAL = True
-    log_level = logging.INFO
-
-logging.basicConfig(level=log_level)
-logger = logging.getLogger(__name__)
-
+# 2. Core settings modules
 from settings.base import *
-from settings.vendor import *
-from settings.databases import *
+from settings.database import *
+from settings.third_party import *
+from settings.logging import *
 
+# 3. Scheduler settings (if needed)
+try:
+    from settings.scheduler.celery import *
+except ImportError:
+    pass  # Celery not required
+
+# 4. Environment-specific settings
+# Production settings
+if PRODUCTION:
+    from settings.production import *
+
+# Local development settings (override everything)
 if LOCAL:
-    from settings.local import *
+    try:
+        from settings.local import *
+    except ImportError:
+        pass  # Local settings are optional

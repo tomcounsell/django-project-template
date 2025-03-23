@@ -138,3 +138,4 @@ _toms_studies_/fast_ai/fastbook-master/
 apps/finance/_legacy_/
 /apps/finance/test.py
 static/temp/*
+.env.local
