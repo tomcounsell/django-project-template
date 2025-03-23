@@ -5,6 +5,8 @@ from .upload import Upload
 from .document import Document
 from .image import Image
 from .user import User
+from .note import Note
+from .team import Team, TeamMember, Role
 
 __all__ = [
     "Country",
@@ -14,4 +16,8 @@ __all__ = [
     "Document",
     "Image",
     "User",
+    "Note",
+    "Team",
+    "TeamMember",
+    "Role",
 ]

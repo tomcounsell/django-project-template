@@ -1,5 +1,34 @@
 {% load django_htmx %} {% load static %}
 
+{# 
+  _base.html - Primary Layout Template
+  ===================================
+  
+  Purpose:
+  This is the main layout template that provides the common structure for all pages.
+  It defines the HTML skeleton, imports necessary CSS/JS dependencies, and provides
+  the three-column layout system used throughout the site.
+  
+  Structure:
+  - <head>: Meta tags, CSS imports, title, and other header elements
+  - <body>: Contains the main layout with navbar, messages, and content areas
+    - Navbar: Site navigation at the top
+    - Messages: Toast notifications for user feedback
+    - Main content: Three-column layout (left, center, right)
+    - Footer: Site footer with copyright information
+  
+  Column Layout:
+  - Left column: Navigation, filters, or secondary content (hidden on mobile)
+  - Center column: Primary content area (main focus of the page)
+  - Right column: Supplementary information, actions or related content
+  
+  Usage:
+  {% extends "_base.html" %}
+  {% block center_content %}
+    <!-- Your main content here -->
+  {% endblock %}
+#}
+
 <!DOCTYPE html>
 <html lang="en" data-csrf_token="{{ csrf_token }}">
   <head>
@@ -24,14 +53,7 @@
       href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600&display=swap"
     />
 
-    <!---Bulma CSS--->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css"
-      integrity="sha512-HqxHUkJM0SYcbvxUw5P60SzdOTy/QVwA1JJrvaXJv4q7lmbDZCmZaqz01UPOaQveoxfYRv1tHozWGPMcuTBuvQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
+    <!-- Bulma CSS removed -->
     <script
       src="https://kit.fontawesome.com/c83e8fd695.js"
       crossorigin="anonymous"
@@ -40,8 +62,8 @@
     <!--BASE CSS-->
     <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css?v=2" />
 
-    <!-- COMPONENT'S CSS -->
-    {% component_css_dependencies %}
+    <!-- Tailwind CSS will be added here later -->
+    
     <!--FOR TEMPLATES TO LOAD MORE CSS-->
     {% block css %} {% endblock css %}
   </head>
@@ -51,26 +73,30 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
-          {% component "navbar"%}{% endcomponent %}
+          {# Can be included directly or as a component #}
+          {% include "nav/navbar.html" %}
+          {# Alternative: {% component "nav-navbar" %}{% endcomponent %} #}
         {% endblock navbar %}
 
         {% block messages %}
-          {% component "messages" %}{% endcomponent %}
+          {# Can be included directly or as a component #}
+          {% include "messages/toast.html" %}
+          {# Alternative: {% component "messages-toast" %}{% endcomponent %} #}
         {% endblock messages %}
 
-        <main id="main" class="container-fluid" hx-history-elt>
-          <div class="columns is-mobile m-3">
-            <section id="left_column" class="column is-2-tablet is-4-mobile">
+        <main id="main" hx-history-elt>
+          <div>
+            <section id="left_column">
               {% block left_content %}
                 <!-- left column -->
               {% endblock left_content %}
             </section>
 
-            <section id="center_column" class="column is-8">
+            <section id="center_column">
               {% block center_content %} {% endblock center_content %}
             </section>
 
-            <section id="right_column" class="column is-2-tablet is-0-mobile">
+            <section id="right_column">
               {% block right_content %}
                 <!-- right column -->
               {% endblock right_content %}
@@ -79,7 +105,9 @@
         </main>
 
         {% block footer %}
-          {% component "footer" %}{% endcomponent %}
+          {# Can be included directly or as a component #}
+          {% include "layout/footer.html" %}
+          {# Alternative: {% component "layout-footer" %}{% endcomponent %} #}
         {% endblock footer %}
       </div>
     </div>
@@ -88,10 +116,8 @@
     <!--Javascript Placed at the end of the document. Pages load faster. -->
     <!--BASE JS-->
     <script src="{{ STATIC_URL }}js/base.js?v=1"></script>
-    <script src="{{ STATIC_URL }}js/bulma.js?v=1"></script>
+    <!-- Component JS files will be added when implementing Tailwind -->
 
-    <!-- COMPONENT'S JS -->
-    {% component_js_dependencies %}
     <!--FOR TEMPLATES TO LOAD MORE JS-->
     {% block javascript %} {% endblock javascript %}
     <!--HTMX-->

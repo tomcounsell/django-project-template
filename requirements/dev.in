@@ -1,7 +1,0 @@
--r base.in
-black
-flake8
-pip-tools
-setuptools
-django-browser-reload
-Werkzeug

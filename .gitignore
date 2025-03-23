@@ -1,9 +1,14 @@
 .vscode
 *.pyc
 *.secret
-intelligenttrading-datastore.json
-.idea/
 *credentials.json
+.idea/
+db.sqlite3
+db.sqlite3-journal
+media/
+settings/local.py
+*.env
+.env.local
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template

@@ -1,43 +1,66 @@
-# Dependency Setup with pip-tools
+# Dependency Management with uv
+
+This project uses [uv](https://github.com/astral-sh/uv) for dependency management. uv is a fast, modern Python package installer and resolver that replaces pip-tools with significant performance improvements.
+
+## Files
+
+- `base.txt` - Core dependencies for all environments
+- `dev.txt` - Additional dependencies for development
+- `prod.txt` - Production dependencies
+- `base.lock.txt` - Locked dependencies for base
+- `dev.lock.txt` - Locked dependencies for development
+- `prod.lock.txt` - Locked dependencies for production
+- `install.sh` - Helper script to install dependencies
+- `generate_deployment_requirements.sh` - Script to create requirements.txt
+- `test.sh` - Test script for validating setup
+
+## Installation
 
 ```bash
-# Initial setup
-pip install pip-tools
-mkdir requirements
+# Install uv
+pip install uv
+
+# Install development dependencies
+./requirements/install.sh dev
+
+# For production
+./requirements/install.sh prod
 ```
 
-Create three files:
-```txt
-# requirements/base.in
-Django==5.1.*
-# Add core dependencies...
+## Updating Dependencies
 
-# requirements/dev.in
--r base.in
-black
-pytest
-# Add dev tools...
-
-# requirements/prod.in
--r base.in
-# Add prod-specific deps...
-```
+To update lockfiles after changing requirements:
 
 ```bash
-# Generate locked files
-pip-compile requirements/base.in -o requirements/base.txt
-pip-compile requirements/dev.in -o requirements/dev.txt
-pip-compile requirements/prod.in -o requirements/prod.txt
+# Update base lockfile
+uv pip compile requirements/base.txt -o requirements/base.lock.txt
 
-# Install
-pip install -r requirements/dev.txt  # For development
-pip install -r requirements/prod.txt # For production
+# Update development lockfile
+uv pip compile requirements/dev.txt -o requirements/dev.lock.txt
 
-# Update all deps
-pip-compile --upgrade requirements/*.in
-
-# Update single package
-pip-compile --upgrade-package package_name requirements/base.in
+# Update production lockfile
+uv pip compile requirements/prod.txt -o requirements/prod.lock.txt
 ```
 
-Commit both `.in` and `.txt` files.
+## For Deployments
+
+Generate a requirements.txt file for deployment platforms:
+
+```bash
+./requirements/generate_deployment_requirements.sh
+```
+
+This creates a `requirements.txt` file in the project root that can be used by deployment platforms like Render or Heroku.
+
+## Using Virtual Environments with uv
+
+```bash
+# Create a virtual environment in the current directory
+uv venv
+
+# Activate it
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+./requirements/install.sh dev
+```

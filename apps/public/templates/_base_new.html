@@ -1,5 +1,34 @@
 {% load django_htmx %} {% load static %}
 
+{# 
+  _base_new.html - Alternative Layout Template with Web Awesome Components
+  ======================================================================
+  
+  Purpose:
+  An alternative base template that uses Web Awesome components for layout
+  instead of custom CSS. This provides a more component-oriented approach
+  to page structure.
+  
+  Structure:
+  Similar to _base.html but uses Web Awesome components like:
+  - wa-grid: Modern grid system for layout
+  - wa-col: Column components with responsive sizing
+  
+  Visual Differences:
+  - More consistent component styling through Web Awesome
+  - Clean responsive behavior using the Web Awesome grid system
+  - Modern component design patterns
+  
+  Usage:
+  {% extends "_base_new.html" %}
+  {% block center_content %}
+    <!-- Your main content here -->
+  {% endblock %}
+  
+  Note: This is an alternative to _base.html that can be used for pages
+  that need the Web Awesome component library.
+#}
+
 <!DOCTYPE html>
 <html lang="en" data-csrf_token="{{ csrf_token }}">
   <head>
@@ -36,8 +65,8 @@
     <!--BASE CSS-->
     <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css?v=2" />
 
-    <!-- COMPONENT'S CSS -->
-    {% component_css_dependencies %}
+    <!-- Tailwind CSS will be added here later -->
+    
     <!--FOR TEMPLATES TO LOAD MORE CSS-->
     {% block css %} {% endblock css %}
   </head>
@@ -47,14 +76,18 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
-          {% component "navbar"%}{% endcomponent %}
+          {# Can be included directly or as a component #}
+          {% include "nav/navbar.html" %}
+          {# Alternative: {% component "nav-navbar" %}{% endcomponent %} #}
         {% endblock navbar %}
 
         {% block messages %}
-          {% component "messages" %}{% endcomponent %}
+          {# Can be included directly or as a component #}
+          {% include "messages/toast.html" %}
+          {# Alternative: {% component "messages-toast" %}{% endcomponent %} #}
         {% endblock messages %}
 
-        <main id="main" class="container" hx-history-elt>
+        <main id="main" hx-history-elt>
           <wa-grid>
             <wa-col size="2" mobile="4">
               {% block left_content %}
@@ -75,7 +108,9 @@
         </main>
 
         {% block footer %}
-          {% component "footer" %}{% endcomponent %}
+          {# Can be included directly or as a component #}
+          {% include "layout/footer.html" %}
+          {# Alternative: {% component "layout-footer" %}{% endcomponent %} #}
         {% endblock footer %}
       </div>
     </div>
@@ -84,9 +119,8 @@
     <!--Javascript Placed at the end of the document. Pages load faster. -->
     <!--BASE JS-->
     <script src="{{ STATIC_URL }}js/base.js?v=1"></script>
+    <!-- Component JS files will be added when implementing Tailwind -->
 
-    <!-- COMPONENT'S JS -->
-    {% component_js_dependencies %}
     <!--FOR TEMPLATES TO LOAD MORE JS-->
     {% block javascript %} {% endblock javascript %}
     <!--HTMX-->

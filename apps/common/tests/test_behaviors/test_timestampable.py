@@ -2,21 +2,32 @@ from datetime import datetime
 import pytz
 from unittest import mock
 
+from django.test import TestCase
 from django.utils import timezone
 
+from apps.common.behaviors.timestampable import Timestampable
 from .test_mixins import BehaviorTestCaseMixin
 
 
-class TimestampableTest(BehaviorTestCaseMixin):
-    def test_save_model_should_save_create_time(self):
+class TimestampableModel(Timestampable):
+    class Meta:
+        app_label = 'test_app'
+
+
+class TimestampableTest(BehaviorTestCaseMixin, TestCase):
+    @property
+    def model(self):
+        return TimestampableModel
+        
+    def test_save_model_should_save_created_at(self):
         now = timezone.now()
 
         with mock.patch('django.utils.timezone.now') as mock_now:
             mock_now.return_value = now
             obj = self.create_instance()
-            self.assertEqual(obj.create_date, now)
+            self.assertEqual(obj.created_at, now)
 
-    def test_edit_data_in_model_should_not_override_create_time(self):
+    def test_edit_data_in_model_should_not_override_created_at(self):
         first_time = datetime(2015, 1, 1, tzinfo=pytz.UTC)
         second_time = datetime(2016, 2, 2, tzinfo=pytz.UTC)
 
@@ -29,9 +40,9 @@ class TimestampableTest(BehaviorTestCaseMixin):
             ]
             obj = self.create_instance()
             obj.save()
-            self.assertEqual(obj.create_date, first_time)
+            self.assertEqual(obj.created_at, first_time)
 
-    def test_edit_data_in_model_should_override_modified_time(self):
+    def test_edit_data_in_model_should_override_modified_at(self):
         first_time = datetime(2015, 1, 1, tzinfo=pytz.UTC)
         second_time = datetime(2016, 2, 2, tzinfo=pytz.UTC)
 
@@ -44,12 +55,12 @@ class TimestampableTest(BehaviorTestCaseMixin):
             ]
             obj = self.create_instance()
             obj.save()
-            self.assertEqual(obj.modified_date, second_time)
+            self.assertEqual(obj.modified_at, second_time)
 
-    def test_save_model_should_save_modified_time(self):
+    def test_save_model_should_save_modified_at(self):
         now = timezone.now()
 
         with mock.patch('django.utils.timezone.now') as mock_now:
             mock_now.return_value = now
             obj = self.create_instance()
-            self.assertEqual(obj.modified_date, now)
+            self.assertEqual(obj.modified_at, now)

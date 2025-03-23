@@ -1,101 +1,131 @@
 {% extends base_template %}
 {% load static %}
 
+{# 
+  Account Settings Page
+  ====================
+  
+  Purpose:
+  Allows users to manage their account settings, including personal information
+  and password changes. This page is accessible only to authenticated users.
+  
+  Section 1: Basic Information
+  - First Name: User's first name
+  - Last Name: User's last name
+  - Email: User's email address (also serves as username)
+  - Save button: Updates the user's basic information
+  
+  Section 2: Password Management
+  - Current password: Verification of existing password
+  - New password: Field for entering a new password
+  - Confirm password: Verification field to prevent typos
+  - Update password button: Changes the user's password
+  - Error display: Shows password-related errors (mismatch, invalid format, etc.)
+  
+  User Experience:
+  - Segmented interface with clear section headers
+  - Validation feedback for form fields
+  - Separate submission buttons for each section to prevent unintended changes
+  - Clear error messaging for validation issues
+  
+  Integration:
+  Displays in the center content area of the base template, providing
+  access to account management functionality in a clean, organized interface.
+#}
+
 {% block center_content %}
 
-<div class="card m-3">
-  <header class="card-header">
-    <p class="card-header-title">Basic Info</p>
+<div>
+  <header>
+    <p>Basic Info</p>
   </header>
-  <div class="card-content">
+  <div>
     <form method="post">
       {% csrf_token %}
-      <div class="columns is-multiline">
-        <div class="column is-one-third">
-          <div class="field">
-            <label class="label">First Name</label>
-            <div class="control">
+      <div>
+        <div>
+          <div>
+            <label>First Name</label>
+            <div>
               {{ user_form.first_name }}
             </div>
           </div>
         </div>
-        <div class="column is-one-third">
-          <div class="field">
-            <label class="label">Last Name</label>
-            <div class="control">
+        <div>
+          <div>
+            <label>Last Name</label>
+            <div>
               {{ user_form.last_name }}
             </div>
           </div>
         </div>
-        <div class="column is-one-third">
-          <div class="field">
-            <label class="label">Email</label>
-            <div class="control has-icons-left has-icons-right">
+        <div>
+          <div>
+            <label>Email</label>
+            <div>
               {{ user_form.email }}
             </div>
           </div>
         </div>
       </div>
-      <div class="field">
-        <div class="control">
-          <button type="submit" class="button is-success-dark">Save</button>
+      <div>
+        <div>
+          <button type="submit">Save</button>
         </div>
       </div>
     </form>
   </div>
 </div>
 
-<div class="card m-3">
-  <header class="card-header">
-    <p class="card-header-title">Change Password</p>
+<div>
+  <header>
+    <p>Change Password</p>
   </header>
 
-  <div class="card-content">
+  <div>
     <form method="post">
       {% load widget_tweaks %}{% csrf_token %}
-      <div class="field">
-        <label class="label">Current password</label>
-        <div class="control">
-          {{ password_form.old_password|add_class:"input" }}
+      <div>
+        <label>Current password</label>
+        <div>
+          {{ password_form.old_password }}
         </div>
         {% if password_form.old_password.errors %}
-          <p class="help is-danger">{{ password_form.old_password.errors.0 }}</p>
+          <p>{{ password_form.old_password.errors.0 }}</p>
         {% endif %}
       </div>
-      <div class="field">
-        <label class="label">New password</label>
-        <div class="control">
-          {{ password_form.new_password1|add_class:"input" }}
+      <div>
+        <label>New password</label>
+        <div>
+          {{ password_form.new_password1 }}
         </div>
         {% if password_form.new_password1.errors %}
-          <p class="help is-danger">{{ password_form.new_password1.errors.0 }}</p>
+          <p>{{ password_form.new_password1.errors.0 }}</p>
         {% endif %}
       </div>
-      <div class="field">
-        <label class="label">Confirm new password</label>
-        <div class="control">
-          {{ password_form.new_password2|add_class:"input" }}
+      <div>
+        <label>Confirm new password</label>
+        <div>
+          {{ password_form.new_password2 }}
         </div>
         {% if password_form.new_password2.errors %}
-          <p class="help is-danger">{{ password_form.new_password2.errors.0 }}</p>
+          <p>{{ password_form.new_password2.errors.0 }}</p>
         {% endif %}
       </div>
-      <div class="field is-grouped">
-        <div class="control">
-          <button type="submit" class="button is-danger">Update password</button>
+      <div>
+        <div>
+          <button type="submit">Update password</button>
         </div>
       </div>
     </form>
   </div>
 
-  <footer class="card-footer">
-
+  <footer>
     {% if password_form.errors %}
       {% for error in password_form.non_field_errors %}
-        <p class="card-footer-item text-warning">{{ error|escape }}</p>
+        <p>{{ error|escape }}</p>
       {% endfor %}
     {% endif %}
-
   </footer>
 
 </div>
