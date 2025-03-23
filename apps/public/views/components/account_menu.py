@@ -1,18 +1,20 @@
 """
-Account menu component definition.
+Account menu context function.
 """
-from django_components import component
+from django.http import HttpRequest
 
 
-@component.register("nav-account_menu")
-class AccountMenu(component.Component):
+def get_account_menu_context(request: HttpRequest):
     """
-    Account dropdown menu component.
+    Return context for the account menu.
+    
     Displays user-specific options such as settings and logout.
     Shows login link for unauthenticated users.
+    
+    Args:
+        request: The HttpRequest object
+        
+    Returns:
+        dict: Context variables for the account menu template
     """
-    template_name = "nav/account_menu.html"
-
-    def get_context_data(self):
-        """Return context for the account menu."""
-        return {}
+    return {}

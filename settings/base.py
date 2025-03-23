@@ -63,7 +63,6 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # "django_components.safer_staticfiles",  # replaces "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django.contrib.sites",
 ]
@@ -79,7 +78,6 @@ THIRD_PARTY_APPS = [
     "rest_framework_api_key",
     "django_filters",
     "django_htmx",
-    "django_components",
 ]
 
 APPS = [
@@ -126,7 +124,7 @@ TEMPLATES = [
             BASE_DIR / "templates",
             BASE_DIR / "apps" / "public" / "templates",
         ],
-        # "APP_DIRS": True,  # removed for django-components
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -135,19 +133,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.static",
                 "django.contrib.messages.context_processors.messages",
-            ],
-            "loaders": [
-                (
-                    "django.template.loaders.cached.Loader",
-                    [
-                        "django.template.loaders.filesystem.Loader",
-                        "django.template.loaders.app_directories.Loader",
-                        "django_components.template_loader.Loader",
-                    ],
-                )
-            ],
-            "builtins": [
-                "django_components.templatetags.component_tags",
             ],
         },
     },
@@ -162,10 +147,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "apps" / "public" / "static",
 ]
 
-# Django Components settings
-COMPONENTS_DIRS = [
-    BASE_DIR / "apps" / "public" / "views" / "components",
-]
+# Django Components settings have been removed
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

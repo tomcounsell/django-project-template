@@ -1,20 +1,21 @@
 """
-Toast notifications component definition.
+Toast notifications context function.
 """
-from django_components import component
+from django.http import HttpRequest
 
 
-@component.register("messages-toast")
-class Toast(component.Component):
+def get_toast_context(request: HttpRequest):
     """
-    Toast notification component for displaying messages to the user.
+    Return context for toast notifications.
+    
+    Toast notifications for displaying messages to the user.
     Renders different styled notifications based on message type
     (success, info, warning, error).
+    
+    Args:
+        request: The HttpRequest object
+        
+    Returns:
+        dict: Context variables for the toast template
     """
-    template_name = "messages/toast.html"
-
-    def get_context_data(self):
-        """Return context for the toast notifications."""
-        return {}
-
-    # Media class will be added back when implementing Tailwind
+    return {}

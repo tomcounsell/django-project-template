@@ -53,7 +53,7 @@
       href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600&display=swap"
     />
 
-    <!-- Bulma CSS removed -->
+    <!--Font Awesome-->
     <script
       src="https://kit.fontawesome.com/c83e8fd695.js"
       crossorigin="anonymous"
@@ -62,7 +62,8 @@
     <!--BASE CSS-->
     <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css?v=2" />
 
-    <!-- Tailwind CSS will be added here later -->
+    <!--Tailwind CSS-->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/tailwind.css" />
     
     <!--FOR TEMPLATES TO LOAD MORE CSS-->
     {% block css %} {% endblock css %}
@@ -73,15 +74,11 @@
     <div style="height: 100vh">
       <div class="wrapper background-style">
         {% block navbar %}
-          {# Can be included directly or as a component #}
           {% include "nav/navbar.html" %}
-          {# Alternative: {% component "nav-navbar" %}{% endcomponent %} #}
         {% endblock navbar %}
 
         {% block messages %}
-          {# Can be included directly or as a component #}
           {% include "messages/toast.html" %}
-          {# Alternative: {% component "messages-toast" %}{% endcomponent %} #}
         {% endblock messages %}
 
         <main id="main" hx-history-elt>
@@ -105,9 +102,7 @@
         </main>
 
         {% block footer %}
-          {# Can be included directly or as a component #}
           {% include "layout/footer.html" %}
-          {# Alternative: {% component "layout-footer" %}{% endcomponent %} #}
         {% endblock footer %}
       </div>
     </div>
@@ -116,7 +111,6 @@
     <!--Javascript Placed at the end of the document. Pages load faster. -->
     <!--BASE JS-->
     <script src="{{ STATIC_URL }}js/base.js?v=1"></script>
-    <!-- Component JS files will be added when implementing Tailwind -->
 
     <!--FOR TEMPLATES TO LOAD MORE JS-->
     {% block javascript %} {% endblock javascript %}

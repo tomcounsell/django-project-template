@@ -12,7 +12,6 @@ gunicorn
 whitenoise
 django-storages
 django-widget-tweaks
-django-components
 django-htmx
 black
 flake8
