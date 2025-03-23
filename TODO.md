@@ -25,6 +25,12 @@
 - [ ] Add API endpoint tests with APITestCase
 - [ ] Add view tests with proper request mocking
 - [ ] Create comprehensive test fixtures for all models
+- [ ] Write complete test suite for Loops email integration:
+  - [ ] Mock Loops API responses for unit tests
+  - [ ] Test LoopsClient class with all endpoints
+  - [ ] Test error handling and API errors
+  - [ ] Test all transactional email shortcuts
+  - [ ] Create fixtures for common email templates
 
 ### 2. Template and Static File Consolidation
 - [ ] Audit all app-level template directories and create migration plan

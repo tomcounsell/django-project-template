@@ -7,7 +7,7 @@ Web: HTMX, Tailwind CSS
 Hosting: Render, AWS-S3
 Integrations: 
     Transloadit for uploading and processing images
-    SendGrid for email
+    Loops for transactional email
     Stripe for payments
     OpenAI for GPTs
     Telegram for chatbot
