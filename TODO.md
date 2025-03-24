@@ -19,7 +19,7 @@
   - [ ] Audit existing model tests (Address, Country, Currency, Note, Upload)
   - [x] Add tests for User model
   - [x] Add tests for Image model
-  - [ ] Add tests for Document model
+  - [x] Add tests for Document model
   - [ ] Add tests for Background Job model
   - [ ] Add tests for City model
 - [ ] Add API endpoint tests with APITestCase
