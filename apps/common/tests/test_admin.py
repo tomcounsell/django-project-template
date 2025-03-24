@@ -64,3 +64,17 @@ class AdminTestCase(TestCase):
         
         # Check for CSS output
         self.assertContains(response, 'output.css')
+        
+    def test_custom_dashboard(self):
+        """Test the custom admin dashboard."""
+        url = '/admin/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        
+        # The custom dashboard should contain summary cards
+        self.assertContains(response, 'Dashboard')
+        self.assertContains(response, 'Users Summary')
+        self.assertContains(response, 'Teams Summary')
+        
+        # Check for specific dashboard elements
+        self.assertContains(response, 'Recent Activity')

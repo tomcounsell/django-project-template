@@ -147,7 +147,7 @@ UNFOLD = {
     "SITE_HEADER": "PhotOps Content Database",
     "SITE_URL": "/",
     "SITE_ICON": None,  # Relative path to icon (e.g. "img/favicon.png")
-    "DASHBOARD_CALLBACK": None,  # Callable to customize the dashboard
+    "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",  # Customize dashboard
     "STYLES": [
         "css/output.css",  # Tailwind CSS output file
     ],  
