@@ -11,15 +11,15 @@ urlpatterns = [
 
 
 # # Django Rest Framework API Docs
-# API_TITLE, API_DESCRIPTION = "PhotOps API", ""
+# API_TITLE, API_DESCRIPTION = "ProjectName API", ""
 # urlpatterns += [
 #     path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
 # ]
 
 # Built-In AUTH and ADMIN
 admin.autodiscover()
-admin.site.site_header = "PhotOps Content Database"
-admin.site.site_title = "PhotOps"
+admin.site.site_header = "ProjectName Content Database"
+admin.site.site_title = "ProjectName"
 admin.site.site_url = None
 admin.site.index_title = "Content Database"
 urlpatterns += [

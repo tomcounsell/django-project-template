@@ -60,7 +60,7 @@ class AdminTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Verify that admin shows our custom page title
-        self.assertContains(response, 'PhotOps Content Database')
+        self.assertContains(response, 'ProjectName Content Database')
         
         # Check for CSS output
         self.assertContains(response, 'output.css')

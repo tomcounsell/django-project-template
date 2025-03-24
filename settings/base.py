@@ -143,8 +143,8 @@ REQUEST_IGNORE_PATHS = (
 
 # Django Unfold settings
 UNFOLD = {
-    "SITE_TITLE": "PhotOps Admin",
-    "SITE_HEADER": "PhotOps Content Database",
+    "SITE_TITLE": "ProjectName Admin",
+    "SITE_HEADER": "ProjectName Content Database",
     "SITE_URL": "/",
     "SITE_ICON": None,  # Relative path to icon (e.g. "img/favicon.png")
     "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",  # Customize dashboard
