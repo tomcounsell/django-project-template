@@ -20,7 +20,7 @@
   - [x] Add tests for User model
   - [x] Add tests for Image model
   - [x] Add tests for Document model
-  - [ ] Add tests for Background Job model
+  - [x] Add tests for Background Job model
   - [ ] Add tests for City model
 - [ ] Add API endpoint tests with APITestCase
 - [ ] Add view tests with proper request mocking
