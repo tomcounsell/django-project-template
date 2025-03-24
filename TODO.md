@@ -1,38 +1,18 @@
 # TODO List for Django Project Template
 
-## High Priority Tasks (Implementation Order)
+## Completed Tasks ✅
+- ✅ Added comprehensive behavior mixin examples with BlogPost model
+- ✅ Created detailed setup guide for new developers
+- ✅ Implemented Loops email integration with tests
+- ✅ Improved test coverage for models and behaviors
+- ✅ Upgraded admin interface with Django Unfold and Tailwind
+- ✅ Implemented Team models with permissions system
+- ✅ Removed component framework dependencies
+- ✅ Upgraded to uv for dependency management
 
-### 1. Test Coverage Improvement (100% goal)
-- [x] Create test factory classes for common models
-- [x] Set up coverage tools (pytest-cov) and reporting
-- [x] Add coverage check to CI pipeline with target thresholds
-- [x] Create test mixins for common test patterns
-- [x] Complete behavior mixin tests:
-  - [x] Audit existing tests for Timestampable, Authorable behaviors
-  - [x] Implement missing tests for Publishable behavior
-  - [x] Implement missing tests for Expirable behavior
-  - [x] Implement missing tests for Locatable behavior
-  - [x] Implement missing tests for Permalinkable behavior
-  - [x] Implement missing tests for Annotatable behavior
-  - [x] Create standalone behavior tests that run without Django setup
-- [ ] Complete model tests:
-  - [x] Audit existing model tests (Address, Country, Currency, Note, Upload)
-  - [x] Add tests for User model
-  - [x] Add tests for Image model
-  - [x] Add tests for Document model
-  - [x] Add tests for Background Job model
-  - [x] Add tests for City model
-- [ ] Add API endpoint tests with APITestCase
-- [ ] Add view tests with proper request mocking
-- [ ] Create comprehensive test fixtures for all models
-- [ ] Write complete test suite for Loops email integration:
-  - [ ] Mock Loops API responses for unit tests
-  - [ ] Test LoopsClient class with all endpoints
-  - [ ] Test error handling and API errors
-  - [ ] Test all transactional email shortcuts
-  - [ ] Create fixtures for common email templates
+## Current Priority Tasks
 
-### 2. Template and Static File Consolidation
+### 1. Template and Static File Organization
 - [ ] Audit all app-level template directories and create migration plan
 - [ ] Move templates from apps/public/templates to root templates directory
 - [ ] Update template references in views and URL configurations
@@ -43,54 +23,40 @@
   - [ ] Create dedicated partial template directory structure
   - [ ] Implement standardized naming convention for partials
   - [ ] Add template documentation in comments
-
-### 3. Remove Component Framework Dependencies
-- [x] Identify all uses of django-components and webcomponents
-- [x] Convert component templates to standard Django includes
-- [x] Update views that use component decorators
-- [x] Remove django-components from INSTALLED_APPS and TEMPLATES settings
-- [x] Remove django-components from requirements
+- [ ] Document HTMX integration patterns with examples
 - [ ] Update documentation on template patterns
 
-### 4. Dependency Management with uv
-- [x] Install uv tool globally (`pip install uv`)
-- [x] Convert existing requirements files to uv format
-- [x] Create requirements.txt generation script for deployments
-- [x] Update documentation with new dependency management workflow
+### 2. Extend Test Coverage
+- [ ] Add API endpoint tests with APITestCase
+- [ ] Add view tests with proper request mocking
+- [ ] Create comprehensive test fixtures for all models
+
+### 3. Dependency Management Improvements
 - [ ] Create pyproject.toml with project metadata
 - [ ] Update build.sh script to use uv for dependency installation
+- [ ] Setup pre-commit hooks for code quality (black, isort, flake8, mypy)
+
+### 4. User Experience Improvements
+- [ ] Implement basic Team-related views (create, join, manage)
+- [ ] Add user authentication templates (reset password, etc.)
+- [ ] Create reusable form components
+- [ ] Modernize base templates with best practices
 
 ### 5. App Restructuring
-- [ ] Create new apps/ai/ directory structure
+- [ ] Create new apps/ai/ directory structure 
 - [ ] Set up apps/ai/__init__.py, apps.py, models, views, and urls
 - [ ] Create initial models for AI agent workflows
 - [ ] Add apps.ai to INSTALLED_APPS
 - [ ] Audit apps/communication for models and functionality to merge
 - [ ] Migrate communication models to apps/common
-- [ ] Update imports and references to communication models
 - [ ] Remove apps/communication after successful migration
 
-### 6. Team and Permission Models
-- [x] Design Team model with fields for name, slug, and metadata
-- [x] Create TeamMember model with role and permission fields
-- [x] Implement Team-User relationship (many-to-many through TeamMember)
-- [x] Add permission checking methods and decorators
-- [x] Create migrations for new models
-- [x] Add admin interface for Team management
-- [ ] Implement basic Team-related views (create, join, manage)
-- [x] Add tests for Team models and permissions
-- [x] Improve test coverage for Team model to reach 100%
-
-## Documentation
-- [x] Update CLAUDE.md with development guidelines
-- [x] Update CONTRIBUTING.md to match new project directions
-- [x] Create detailed setup guide for new developers
-- [x] Add example usage for each behavior mixin
+## Documentation Tasks
 - [ ] Document HTMX integration patterns with examples
 - [ ] Add API documentation with OpenAPI/Swagger
 - [ ] Create architecture diagram showing app relationships
 
-## Infrastructure
+## Infrastructure Tasks
 - [ ] Dockerize the application with proper configuration
   - [ ] Update Dockerfile for production use
   - [ ] Create docker-compose.yml for local development
@@ -101,35 +67,22 @@
   - [ ] Update documentation for environment setup
   - [ ] Create .env.example with all required variables
   - [ ] Update settings to load from environment variables
-- [ ] Setup pre-commit hooks for code quality (black, isort, flake8, mypy)
 - [ ] Add GitHub Actions workflow for testing
 - [ ] Create deployment pipeline for staging/production
 - [ ] Setup monitoring and error tracking
 
-## Code Quality
+## Code Quality Tasks
 - [ ] Implement consistent error handling strategy
 - [ ] Refactor redundant template logic
 - [ ] Update to latest Django version
 - [ ] Standardize form validation approach
 - [ ] Improve type annotations across codebase
 
-## Features
-- [ ] Add user authentication templates (reset password, etc.)
-- [x] Implement custom admin dashboard
-- [x] Upgrade admin site to use Django Unfold with Tailwind integration
-- [ ] Create reusable form components
-- [ ] Add internationalization support
-- [ ] Integrate payment processing example
-
-## Frontend
-- [ ] Modernize base templates with best practices
-  - [ ] Create new _base.html template with improved structure
-  - [ ] Design HTMX-focused partial templates for common UI elements
-  - [ ] Implement template patterns from recent successful projects
-  - [ ] Create reusable Tailwind UI components as includes
-  - [ ] Document template extension and inclusion patterns
+## Frontend Tasks
 - [ ] Implement design system components
 - [ ] Add JavaScript bundling with Webpack/Vite
 - [ ] Create unified CSS approach (Tailwind only)
 - [ ] Implement responsive layouts
 - [ ] Add dark mode support
+- [ ] Add internationalization support
+- [ ] Integrate payment processing example
