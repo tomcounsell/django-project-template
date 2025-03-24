@@ -17,7 +17,7 @@
   - [x] Create standalone behavior tests that run without Django setup
 - [ ] Complete model tests:
   - [ ] Audit existing model tests (Address, Country, Currency, Note, Upload)
-  - [ ] Add tests for User model
+  - [x] Add tests for User model
   - [ ] Add tests for Image model
   - [ ] Add tests for Document model
   - [ ] Add tests for Background Job model
