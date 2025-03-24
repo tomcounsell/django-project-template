@@ -30,6 +30,9 @@ THIRD_PARTY_APPS = [
     "rest_framework_api_key",
     "django_filters",
     "django_htmx",
+    "unfold",  # Django Unfold for admin site
+    "unfold.contrib.filters",  # Optional: for Unfold filters
+    "unfold.contrib.forms",  # Optional: for Unfold form components
 ]
 
 PROJECT_APPS = [
@@ -83,7 +86,7 @@ TEMPLATES = [
                 # 'django.template.context_processors.media',
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.static",
-                "django.contrib.messages.context_processors.messages",
+                "django.contrib.messages.context_processors.messages"
             ],
         },
     },
@@ -93,7 +96,7 @@ TEMPLATES = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
-    # BASE_DIR / "static",
+    BASE_DIR / "static",
     BASE_DIR / "apps" / "public" / "static",
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -137,6 +140,42 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REQUEST_IGNORE_PATHS = (
     r'^admin/',
 )
+
+# Django Unfold settings
+UNFOLD = {
+    "SITE_TITLE": "PhotOps Admin",
+    "SITE_HEADER": "PhotOps Content Database",
+    "SITE_URL": "/",
+    "SITE_ICON": None,  # Relative path to icon (e.g. "img/favicon.png")
+    "DASHBOARD_CALLBACK": None,  # Callable to customize the dashboard
+    "STYLES": [
+        "css/output.css",  # Tailwind CSS output file
+    ],  
+    "SCRIPTS": [],  # Additional JS files to include
+    "SIDEBAR": {
+        "show_search": True,  # Show search in sidebar
+        "show_all_applications": False,  # Show all applications in sidebar
+        "navigation": []  # Custom navigation items
+    },
+    "TABS": [],  # Custom tabs configuration
+    "EXTENSIONS": {
+        "modeltranslation": False,  # Enable modeltranslation integration
+    },
+    "COLORS": {
+        "primary": {
+            "50": "239, 246, 255",
+            "100": "219, 234, 254",
+            "200": "191, 219, 254",
+            "300": "147, 197, 253",
+            "400": "96, 165, 250",
+            "500": "59, 130, 246",
+            "600": "37, 99, 235",
+            "700": "29, 78, 216",
+            "800": "30, 64, 175",
+            "900": "30, 58, 138",
+        },
+    },
+}
 
 # SSL settings for production
 if PRODUCTION or STAGE:

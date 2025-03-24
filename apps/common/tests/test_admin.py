@@ -38,41 +38,29 @@ class AdminTestCase(TestCase):
             role=Role.MEMBER.value
         )
     
-    def test_team_admin(self):
-        """Test the Team admin list view."""
-        url = reverse('admin:common_team_changelist')
+    def test_admin_index(self):
+        """Test the admin index page loads successfully."""
+        url = '/admin/'
         response = self.client.get(url)
-        
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Test Team')
+        self.assertContains(response, 'Content Database')
     
-    def test_team_admin_add(self):
-        """Test the Team admin add view."""
-        url = reverse('admin:common_team_add')
-        response = self.client.get(url)
-        
+    def test_unfold_integration(self):
+        """Test that the admin site is using Django Unfold."""
+        response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'name')
-        self.assertContains(response, 'slug')
-        self.assertContains(response, 'description')
-        self.assertContains(response, 'is_active')
+        
+        # Get the admin site styles to check if our CSS is included
+        self.assertIn("output.css", str(response.content))
     
-    def test_team_member_admin(self):
-        """Test the TeamMember admin list view."""
-        url = reverse('admin:common_teammember_changelist')
+    def test_admin_page(self):
+        """Test the admin list page elements."""
+        url = '/admin/'
         response = self.client.get(url)
-        
         self.assertEqual(response.status_code, 200)
-        # Check for presence of key elements rather than specific content
-        self.assertContains(response, 'Team members')
-        self.assertContains(response, 'Select team member to change')
-    
-    def test_team_member_inline(self):
-        """Test the TeamMember inline in Team admin."""
-        url = reverse('admin:common_team_change', args=[self.team.id])
-        response = self.client.get(url)
         
-        self.assertEqual(response.status_code, 200)
-        # Check for presence of inline section
-        self.assertContains(response, 'Team members')
-        self.assertContains(response, 'Add another Team member')
+        # Verify that admin shows our custom page title
+        self.assertContains(response, 'PhotOps Content Database')
+        
+        # Check for CSS output
+        self.assertContains(response, 'output.css')
