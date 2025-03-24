@@ -63,27 +63,27 @@ class TeamModelTestCase(TestCase):
         )
         
         # Add members with different roles
-        TeamMember.objects.create(team=team, user=self.user1, role=Role.OWNER)
-        TeamMember.objects.create(team=team, user=self.user2, role=Role.ADMIN)
-        TeamMember.objects.create(team=team, user=self.user3, role=Role.MEMBER)
+        TeamMember.objects.create(team=team, user=self.user1, role=Role.OWNER.value)
+        TeamMember.objects.create(team=team, user=self.user2, role=Role.ADMIN.value)
+        TeamMember.objects.create(team=team, user=self.user3, role=Role.MEMBER.value)
         
         # Check team members
         self.assertEqual(team.members.count(), 3)
         self.assertEqual(team.get_owners().count(), 1)
-        self.assertEqual(team.get_admins().count(), 1)
+        self.assertEqual(team.get_admins().count(), 2)  # Owner and admin
         
         # Check roles
         owner = TeamMember.objects.get(team=team, user=self.user1)
-        self.assertEqual(owner.role, Role.OWNER)
+        self.assertEqual(owner.role, Role.OWNER.value)
         self.assertTrue(owner.is_owner)
         
         admin = TeamMember.objects.get(team=team, user=self.user2)
-        self.assertEqual(admin.role, Role.ADMIN)
+        self.assertEqual(admin.role, Role.ADMIN.value)
         self.assertTrue(admin.is_admin)
         self.assertFalse(admin.is_owner)
         
         member = TeamMember.objects.get(team=team, user=self.user3)
-        self.assertEqual(member.role, Role.MEMBER)
+        self.assertEqual(member.role, Role.MEMBER.value)
         self.assertFalse(member.is_admin)
         
     def test_user_teams(self):
@@ -95,12 +95,12 @@ class TeamModelTestCase(TestCase):
         team3 = Team.objects.create(name="Team 3", slug="team-3", is_active=True)
         
         # Add user1 to all teams with different roles
-        TeamMember.objects.create(team=team1, user=self.user1, role=Role.OWNER)
-        TeamMember.objects.create(team=team2, user=self.user1, role=Role.ADMIN)
-        TeamMember.objects.create(team=team3, user=self.user1, role=Role.MEMBER)
+        TeamMember.objects.create(team=team1, user=self.user1, role=Role.OWNER.value)
+        TeamMember.objects.create(team=team2, user=self.user1, role=Role.ADMIN.value)
+        TeamMember.objects.create(team=team3, user=self.user1, role=Role.MEMBER.value)
         
         # Add user2 to team1 only
-        TeamMember.objects.create(team=team1, user=self.user2, role=Role.MEMBER)
+        TeamMember.objects.create(team=team1, user=self.user2, role=Role.MEMBER.value)
         
         # User1 should be in 3 teams
         self.assertEqual(self.user1.teams.count(), 3)
@@ -108,7 +108,7 @@ class TeamModelTestCase(TestCase):
         # User1 should own 1 team
         owned_teams = Team.objects.filter(
             teammember__user=self.user1, 
-            teammember__role=Role.OWNER
+            teammember__role=Role.OWNER.value
         )
         self.assertEqual(owned_teams.count(), 1)
         
@@ -125,9 +125,9 @@ class TeamModelTestCase(TestCase):
             is_active=True
         )
         
-        TeamMember.objects.create(team=team, user=self.user1, role=Role.OWNER)
-        TeamMember.objects.create(team=team, user=self.user2, role=Role.ADMIN)
-        TeamMember.objects.create(team=team, user=self.user3, role=Role.MEMBER)
+        TeamMember.objects.create(team=team, user=self.user1, role=Role.OWNER.value)
+        TeamMember.objects.create(team=team, user=self.user2, role=Role.ADMIN.value)
+        TeamMember.objects.create(team=team, user=self.user3, role=Role.MEMBER.value)
         
         # Permission checks
         self.assertTrue(team.user_is_member(self.user1))

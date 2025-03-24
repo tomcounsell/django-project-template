@@ -16,12 +16,12 @@
   - [x] Implement missing tests for Annotatable behavior
   - [x] Create standalone behavior tests that run without Django setup
 - [ ] Complete model tests:
-  - [ ] Audit existing model tests (Address, Country, Currency, Note, Upload)
+  - [x] Audit existing model tests (Address, Country, Currency, Note, Upload)
   - [x] Add tests for User model
   - [x] Add tests for Image model
   - [x] Add tests for Document model
   - [x] Add tests for Background Job model
-  - [ ] Add tests for City model
+  - [x] Add tests for City model
 - [ ] Add API endpoint tests with APITestCase
 - [ ] Add view tests with proper request mocking
 - [ ] Create comprehensive test fixtures for all models
