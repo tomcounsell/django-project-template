@@ -18,6 +18,7 @@ class TeamModelTestCase(TestCase):
         self.user1 = UserFactory.create()
         self.user2 = UserFactory.create()
         self.user3 = UserFactory.create()
+        self.anonymous_user = None  # For testing unauthenticated user cases
 
     def test_team_creation(self):
         """Test that a team can be created with valid data."""
@@ -145,3 +146,53 @@ class TeamModelTestCase(TestCase):
         self.assertTrue(team.user_can_delete(self.user1))
         self.assertFalse(team.user_can_delete(self.user2))
         self.assertFalse(team.user_can_delete(self.user3))
+
+    def test_string_representations(self):
+        """Test the string representations of Team and TeamMember models."""
+        from apps.common.models.team import Team, TeamMember, Role
+        
+        team = Team.objects.create(
+            name="Test Team",
+            slug="test-team",
+            is_active=True
+        )
+        
+        team_member = TeamMember.objects.create(
+            team=team, 
+            user=self.user1, 
+            role=Role.OWNER.value
+        )
+        
+        # Test Team.__str__
+        self.assertEqual(str(team), "Test Team")
+        
+        # Test TeamMember.__str__
+        expected_str = f"{self.user1} (Owner) in Test Team"
+        self.assertEqual(str(team_member), expected_str)
+        
+    def test_unauthenticated_user_permissions(self):
+        """Test team permission methods with unauthenticated user."""
+        from apps.common.models.team import Team
+        
+        team = Team.objects.create(
+            name="Test Team",
+            slug="test-team",
+            is_active=True
+        )
+        
+        # Test with None user
+        self.assertFalse(team.user_is_member(self.anonymous_user))
+        self.assertFalse(team.user_can_manage(self.anonymous_user))
+        self.assertFalse(team.user_can_edit(self.anonymous_user))
+        self.assertFalse(team.user_can_delete(self.anonymous_user))
+        
+        # Create a user without authentication
+        from unittest.mock import Mock
+        unauthenticated_user = Mock()
+        unauthenticated_user.is_authenticated = False
+        
+        # Test with unauthenticated user
+        self.assertFalse(team.user_is_member(unauthenticated_user))
+        self.assertFalse(team.user_can_manage(unauthenticated_user))
+        self.assertFalse(team.user_can_edit(unauthenticated_user))
+        self.assertFalse(team.user_can_delete(unauthenticated_user))

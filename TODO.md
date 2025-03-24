@@ -75,10 +75,11 @@
 - [x] Create TeamMember model with role and permission fields
 - [x] Implement Team-User relationship (many-to-many through TeamMember)
 - [x] Add permission checking methods and decorators
-- [ ] Create migrations for new models
-- [ ] Add admin interface for Team management
+- [x] Create migrations for new models
+- [x] Add admin interface for Team management
 - [ ] Implement basic Team-related views (create, join, manage)
 - [x] Add tests for Team models and permissions
+- [x] Improve test coverage for Team model to reach 100%
 
 ## Documentation
 - [x] Update CLAUDE.md with development guidelines
