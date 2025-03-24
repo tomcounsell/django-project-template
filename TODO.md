@@ -18,7 +18,7 @@
 - [ ] Complete model tests:
   - [ ] Audit existing model tests (Address, Country, Currency, Note, Upload)
   - [x] Add tests for User model
-  - [ ] Add tests for Image model
+  - [x] Add tests for Image model
   - [ ] Add tests for Document model
   - [ ] Add tests for Background Job model
   - [ ] Add tests for City model
