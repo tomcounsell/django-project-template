@@ -1,38 +1,137 @@
 """
-Tests for the Loops API client.
+Unit tests for the LoopsClient
 """
-from unittest import mock
-
-from django.test import TestCase
+import pytest
+from unittest.mock import patch, MagicMock
+from django.test import override_settings
 
 from apps.integration.loops.client import LoopsClient, LoopsAPIError
 
 
-class LoopsClientTestCase(TestCase):
-    """Test case for the Loops API client."""
+@override_settings(DEBUG=True)
+class LoopsClientDebugModeTestCase:
+    """Test LoopsClient in DEBUG mode"""
+    
+    def setup_method(self):
+        self.client = LoopsClient(api_key="test_key")
+        
+    def test_transactional_email_debug_mode(self):
+        """Test transactional_email in DEBUG mode"""
+        result = self.client.transactional_email(
+            to_email="test@example.com",
+            transactional_id="test_id",
+            data_variables={"key": "value"}
+        )
+        assert result == {"success": True}
+        
+    def test_event_debug_mode(self):
+        """Test event in DEBUG mode"""
+        result = self.client.event(
+            to_email="test@example.com",
+            event_name="test_event",
+            event_properties={"prop": "value"}
+        )
+        assert result == {"success": True}
 
-    def setUp(self):
-        """Set up the test case."""
-        self.client = LoopsClient(api_key="test_api_key")
-        self.mock_response = mock.Mock()
-        self.mock_response.json.return_value = {"success": True, "data": {}}
 
-    @mock.patch("requests.request")
-    def test_test_api_key(self, mock_request):
-        """Test the test_api_key method."""
-        # TODO: Implement test for test_api_key
-
-    @mock.patch("requests.request")
-    def test_transactional_email(self, mock_request):
-        """Test the transactional_email method."""
-        # TODO: Implement test for transactional_email
-
-    @mock.patch("requests.request")
-    def test_event(self, mock_request):
-        """Test the event method."""
-        # TODO: Implement test for event
-
-    @mock.patch("requests.request")
-    def test_api_error_handling(self, mock_request):
-        """Test error handling in API requests."""
-        # TODO: Implement test for API error handling
+@override_settings(DEBUG=False, LOCAL=False)
+class LoopsClientLiveTestCase:
+    """Test LoopsClient in live mode with mocked requests"""
+    
+    def setup_method(self):
+        self.client = LoopsClient(api_key="test_key")
+        
+    @patch("apps.integration.loops.client.requests.request")
+    def test_transactional_email_success(self, mock_request):
+        """Test successful transactional_email request"""
+        # Setup the mock
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": True}
+        mock_request.return_value = mock_response
+        
+        # Call the method
+        result = self.client.transactional_email(
+            to_email="test@example.com",
+            transactional_id="test_id",
+            data_variables={"key": "value"}
+        )
+        
+        # Verify the result and request
+        assert result == {"success": True}
+        mock_request.assert_called_once()
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1].endswith("/transactional")
+        assert call_args[1]["json"]["email"] == "test@example.com"
+        assert call_args[1]["json"]["transactionalId"] == "test_id"
+        
+    @patch("apps.integration.loops.client.requests.request")
+    def test_transactional_email_failure(self, mock_request):
+        """Test failed transactional_email request"""
+        # Setup the mock
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": False, "message": "API error"}
+        mock_request.return_value = mock_response
+        
+        # Call the method and check for exception
+        with pytest.raises(LoopsAPIError, match="API error"):
+            self.client.transactional_email(
+                to_email="test@example.com",
+                transactional_id="test_id",
+                data_variables={"key": "value"}
+            )
+            
+    @patch("apps.integration.loops.client.requests.request")
+    def test_event_success(self, mock_request):
+        """Test successful event request"""
+        # Setup the mock
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": True}
+        mock_request.return_value = mock_response
+        
+        # Call the method
+        result = self.client.event(
+            to_email="test@example.com",
+            event_name="test_event",
+            event_properties={"prop": "value"}
+        )
+        
+        # Verify the result and request
+        assert result == {"success": True}
+        mock_request.assert_called_once()
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1].endswith("/events/send")
+        assert call_args[1]["json"]["email"] == "test@example.com"
+        assert call_args[1]["json"]["eventName"] == "test_event"
+        
+    @patch("apps.integration.loops.client.requests.request")
+    def test_network_error(self, mock_request):
+        """Test network error handling"""
+        # Setup the mock to raise an exception
+        mock_request.side_effect = Exception("Network error")
+        
+        # Call the method and check for exception
+        with pytest.raises(LoopsAPIError, match="Network error"):
+            self.client.event(
+                to_email="test@example.com",
+                event_name="test_event"
+            )
+            
+    @patch("apps.integration.loops.client.requests.request")
+    def test_api_key_validation(self, mock_request):
+        """Test API key validation endpoint"""
+        # Setup the mock
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"success": True}
+        mock_request.return_value = mock_response
+        
+        # Call the method
+        result = self.client.test_api_key()
+        
+        # Verify the request
+        assert result == {"success": True}
+        mock_request.assert_called_once()
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "GET"
+        assert call_args[0][1].endswith("/api-key")

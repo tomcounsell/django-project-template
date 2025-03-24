@@ -1,9 +1,12 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from icecream import ic
 import requests
+import logging
 
-from settings import LOOPS_API_KEY
+from settings import LOOPS_API_KEY, DEBUG
+
+logger = logging.getLogger(__name__)
 
 
 class LoopsClient:
@@ -16,8 +19,8 @@ class LoopsClient:
         self,
         method: str,
         endpoint: str,
-        params: Optional[Dict] = None,
-        json: Optional[Dict] = None,
+        params: Optional[dict] = None,
+        json: Optional[dict] = None,
     ) -> dict:
         """
         Make an API request to Loops.so
@@ -28,6 +31,16 @@ class LoopsClient:
         :param json: JSON data for the request body
         :return: Parsed JSON response
         """
+        # In debug mode, just log the request details and return success
+        if DEBUG:
+            logger.info(
+                f"[DEBUG MODE] Loops API request would have been: {method} {endpoint}"
+            )
+            logger.info(f"[DEBUG MODE] Headers: Authorization: Bearer {self.api_key}")
+            logger.info(f"[DEBUG MODE] Params: {params}")
+            logger.info(f"[DEBUG MODE] JSON: {json}")
+            return {"success": True}
+            
         url = f"{self.BASE_URL}{endpoint}"
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -53,7 +66,7 @@ class LoopsClient:
         except requests.RequestException as e:
             raise LoopsAPIError(f"API request failed: {str(e)}")
 
-    def test_api_key(self) -> Dict:
+    def test_api_key(self) -> dict:
         """
         Test the API key
 
@@ -64,36 +77,74 @@ class LoopsClient:
         return response
 
     def transactional_email(
-        self, to_email: str, transactional_id: str, data_variables: dict = None
+        self, to_email: str, transactional_id: str, data_variables: dict = None, **kwargs
     ) -> dict:
         """
         Send a transactional email
 
-        :param str to_email: The contact’s email address. If there is no contact
+        :param str to_email: The contact's email address. If there is no contact
                           with this email, one will be created.
         :param str transactional_id: The ID of the transactional email to send.
         :param str data_variables: An object containing contact data as defined
                                   by the data variables added to the
                                   transactional email template.
         """
+        # In debug mode, just log the request details and return success
+        if DEBUG:
+            logger.info(f"[DEBUG MODE] Would have sent transactional email:")
+            logger.info(f"[DEBUG MODE] To: {to_email}")
+            logger.info(f"[DEBUG MODE] Template ID: {transactional_id}")
+            logger.info(f"[DEBUG MODE] Data variables: {data_variables}")
+            if kwargs.get('bcc'):
+                logger.info(f"[DEBUG MODE] BCC: {kwargs.get('bcc')}")
+            return {"success": True}
+
+        json_data = {
+            "email": to_email,
+            "transactionalId": transactional_id,
+            "dataVariables": data_variables or {},
+        }
+        
+        # Add BCC if provided
+        if kwargs.get('bcc'):
+            json_data["bcc"] = kwargs.get('bcc')
+            
         return self._make_request(
             method="POST",
             endpoint="/transactional",
-            json={
-                "email": to_email,
-                "transactionalId": transactional_id,
-                "dataVariables": data_variables or {},
-            },
+            json=json_data,
         )
 
-    def event(self, to_email: str, event_name: str) -> dict:
+    def event(
+        self, to_email: str, event_name: str, event_properties: Optional[dict] = None
+    ) -> dict:
         """
         Send an event to Loops
 
-        :param str to_email: The contact’s email address. If there is no contact
+        :param str to_email: The contact's email address. If there is no contact
                           with this email, one will be created.
         :param str event_name: The name of the event
         """
+        # In debug mode, just log the request details and return success
+        if DEBUG:
+            logger.info(f"[DEBUG MODE] Would have sent Loops event:")
+            logger.info(f"[DEBUG MODE] To: {to_email}")
+            logger.info(f"[DEBUG MODE] Event: {event_name}")
+            logger.info(f"[DEBUG MODE] Properties: {event_properties}")
+            return {"success": True}
+            
+        # For LOCAL mode (kept for backwards compatibility)
+        from settings import LOCAL
+        if LOCAL and not DEBUG:  # Only use this if LOCAL is true but DEBUG is false
+            ic(
+                "simulate sending email with",
+                {
+                    "email": to_email,
+                    "eventName": event_name,
+                    "eventProperties": event_properties or {},
+                },
+            )
+            return {"success": True}
 
         return self._make_request(
             method="POST",
@@ -101,6 +152,7 @@ class LoopsClient:
             json={
                 "email": to_email,
                 "eventName": event_name,
+                "eventProperties": event_properties or {},
             },
         )
 
