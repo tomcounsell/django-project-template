@@ -21,11 +21,20 @@ class BackgroundJob(models.Model):
     def execution_time_humanized(self) -> str:
         if not self.start_run_at:
             return ""
-        seconds = ((self.end_run_at or datetime.today()) - self.start_run_at).seconds
-        hours = seconds // 3600
-        seconds -= hours * 3600
-        minutes = seconds // 60
-        seconds -= minutes * 60
+        
+        from django.utils import timezone
+        # Use timezone.now() which returns an aware datetime
+        end_time = self.end_run_at or timezone.now()
+        
+        # Calculate the time difference in seconds
+        delta = end_time - self.start_run_at
+        total_seconds = delta.total_seconds()
+        
+        # Calculate hours, minutes, and seconds
+        hours, remainder = divmod(int(total_seconds), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        
+        # Format the string
         return (
             (f"{hours} hr, " if hours else "")
             + (f"{minutes} min, " if minutes or hours else "")

@@ -8,6 +8,8 @@
 - **Tests**: `DJANGO_SETTINGS_MODULE=settings pytest` (all tests in project)
 - **Single test**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase -v`
 - **Coverage**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
+- **HTML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html`
+- **XML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml` (for CI integrations)
 - **Format code**: `black . && isort .`
 - **Lint & type check**: `flake8 . && mypy .`
 
@@ -34,8 +36,18 @@
 - **Organization**:
   - Model tests: `apps/{app_name}/tests/test_models/`
   - View tests: `apps/{app_name}/tests/test_views/`
+  - Behavior tests: `apps/common/tests/test_behaviors/`
   - Factory classes: `apps/common/tests/factories.py`
-- **Coverage**: Aim for 100% test coverage for models and behavior mixins
+- **Running Tests**:
+  - Django tests: `DJANGO_SETTINGS_MODULE=settings pytest`
+  - Behavior mixins: `python test_behaviors.py` (standalone tests)
+  - With coverage: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
+- **Python 3.12**: Use standalone behavior tests (`test_behaviors.py`) for Python 3.12 compatibility
+- **Coverage**: 
+  - Aim for 100% test coverage for models and behavior mixins
+  - Use `.coveragerc` file to configure coverage settings and exclusions
+  - Generate HTML reports with `--cov-report=html` for visual analysis
+  - Check coverage in CI pipelines with `--cov-report=xml`
 
 ## Development Process
 1. Check TODO.md to identify next priority item

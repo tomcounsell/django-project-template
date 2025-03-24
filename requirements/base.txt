@@ -12,8 +12,8 @@ gunicorn
 whitenoise
 django-storages
 django-widget-tweaks
-django-components
 django-htmx
+django-unfold
 black
 flake8
 pytest

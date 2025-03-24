@@ -1,0 +1,22 @@
+<div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+  <div class="flex items-center justify-between">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Teams</h3>
+    <a href="{% url 'admin:common_team_changelist' %}" class="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600">
+      View all
+    </a>
+  </div>
+  
+  <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <!-- Total Teams -->
+    <div class="flex flex-col p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+      <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Teams</span>
+      <span class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ total_teams }}</span>
+    </div>
+    
+    <!-- Active Teams -->
+    <div class="flex flex-col p-3 bg-green-50 rounded-lg dark:bg-green-900">
+      <span class="text-sm font-medium text-green-600 dark:text-green-300">Active Teams</span>
+      <span class="mt-1 text-2xl font-bold text-green-600 dark:text-green-300">{{ active_teams }}</span>
+    </div>
+  </div>
+</div>

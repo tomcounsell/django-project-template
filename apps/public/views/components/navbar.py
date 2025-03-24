@@ -1,19 +1,18 @@
 """
-Navigation bar component definition.
+Navigation bar context function.
 """
-from django_components import component
+from django.http import HttpRequest
 
 
-@component.register("nav-navbar")
-class Navbar(component.Component):
+def get_navbar_context(request: HttpRequest, active_thing_id=None):
     """
-    Main navigation bar component shown at the top of all pages.
-    Displays the site logo, navigation menu, and account options.
+    Return context for the navbar.
+    
+    Args:
+        request: The HttpRequest object
+        active_thing_id: Optional ID of the currently active item
+        
+    Returns:
+        dict: Context variables for the navbar template
     """
-    template_name = "nav/navbar.html"
-
-    def get_context_data(self, active_thing_id=None):
-        """Return context for the navbar."""
-        return {}
-
-    # Media class will be added back when implementing Tailwind
+    return {}

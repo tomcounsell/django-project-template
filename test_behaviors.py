@@ -2,6 +2,8 @@
 Standalone test file for behavior mixins that doesn't require Django setup.
 
 Run with: python test_behaviors.py
+
+For coverage report: python -m coverage run test_behaviors.py && python -m coverage report
 """
 import unittest
 from datetime import datetime, timedelta

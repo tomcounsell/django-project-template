@@ -7,6 +7,8 @@ from .image import Image
 from .user import User
 from .note import Note
 from .team import Team, TeamMember, Role
+from .city import City
+from .blog_post import BlogPost
 
 __all__ = [
     "Country",
@@ -20,4 +22,6 @@ __all__ = [
     "Team",
     "TeamMember",
     "Role",
+    "City",
+    "BlogPost",
 ]
