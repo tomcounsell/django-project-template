@@ -2,3 +2,7 @@
 django-browser-reload
 Werkzeug
 aider-chat
+pytest-cov
+icecream
+mypy
+django-stubs

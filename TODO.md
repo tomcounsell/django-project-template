@@ -4,8 +4,8 @@
 
 ### 1. Test Coverage Improvement (100% goal)
 - [x] Create test factory classes for common models
-- [ ] Set up coverage tools (pytest-cov) and reporting
-- [ ] Add coverage check to CI pipeline with target thresholds
+- [x] Set up coverage tools (pytest-cov) and reporting
+- [x] Add coverage check to CI pipeline with target thresholds
 - [x] Create test mixins for common test patterns
 - [x] Complete behavior mixin tests:
   - [x] Audit existing tests for Timestampable, Authorable behaviors

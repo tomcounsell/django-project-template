@@ -1,6 +1,9 @@
 
 # Django Project Template
 
+[![Test and Coverage](https://github.com/yourusername/django-project-template/actions/workflows/test.yml/badge.svg)](https://github.com/yourusername/django-project-template/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/yourusername/django-project-template/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/django-project-template)
+
 Technologies: Python, Django, PostgreSQL, 
 API: Django Rest Framework
 Web: HTMX, Tailwind CSS
@@ -99,16 +102,25 @@ Run Django-integrated tests with:
 
 ```bash
 # Run all tests
-python manage.py test
+DJANGO_SETTINGS_MODULE=settings pytest
 
 # Run specific app tests
-python manage.py test apps.common.tests
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/
 
 # Run specific test case
-python manage.py test apps.common.tests.test_behaviors.test_timestampable
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_behaviors/test_timestampable.py
+
+# Run with code coverage
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps
+
+# Generate HTML coverage report
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html
 
 # Run standalone behavior mixin tests (no Django setup required)
 python test_behaviors.py
+
+# Run standalone behavior tests with coverage
+python -m coverage run test_behaviors.py && python -m coverage report
 ```
 
 For Python 3.12 compatibility, use the standalone test script when working with behavior mixins.
