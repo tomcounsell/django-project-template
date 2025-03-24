@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
-from apps.common.models import User, Team, TeamMember
+from apps.common.models import User, Team, TeamMember, BlogPost
 
 
 @admin.register(User)
@@ -96,3 +96,70 @@ class TeamMemberAdmin(ModelAdmin):
         )
     
     role_badge.short_description = 'Role'
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(ModelAdmin):
+    list_display = ('title', 'author_display', 'location_display', 'publishing_status', 'expiration_status')
+    list_filter = ('published_at', 'expired_at')
+    search_fields = ('title', 'subtitle', 'content', 'tags')
+    date_hierarchy = 'created_at'
+    readonly_fields = ('created_at', 'modified_at', 'authored_at')
+    
+    fieldsets = (
+        ("Content", {
+            "fields": ("title", "subtitle", "content", "featured_image", "reading_time_minutes", "tags")
+        }),
+        ("Author Information", {
+            "fields": ("author", "is_author_anonymous", "authored_at")
+        }),
+        ("Publication Status", {
+            "fields": ("published_at", "edited_at", "unpublished_at")
+        }),
+        ("Expiration", {
+            "fields": ("valid_at", "expired_at")
+        }),
+        ("Location", {
+            "fields": ("address", "latitude", "longitude")
+        }),
+        ("Permalink", {
+            "fields": ("slug",)
+        }),
+        ("Timestamps", {
+            "fields": ("created_at", "modified_at")
+        }),
+    )
+    
+    def author_display(self, obj):
+        return obj.author_display_name
+    
+    def location_display(self, obj):
+        if obj.address:
+            return format_html(
+                '<span class="unfold-badge bg-blue-500 text-white">{}</span>',
+                str(obj.address)[:30]
+            )
+        return "-"
+        
+    def publishing_status(self, obj):
+        if obj.is_published:
+            return format_html(
+                '<span class="unfold-badge bg-green-500 text-white">Published</span>'
+            )
+        return format_html(
+            '<span class="unfold-badge bg-gray-500 text-white">Draft</span>'
+        )
+    
+    def expiration_status(self, obj):
+        if obj.is_expired:
+            return format_html(
+                '<span class="unfold-badge bg-red-500 text-white">Expired</span>'
+            )
+        return format_html(
+            '<span class="unfold-badge bg-green-500 text-white">Active</span>'
+        )
+    
+    author_display.short_description = "Author"
+    location_display.short_description = "Location"
+    publishing_status.short_description = "Status"
+    expiration_status.short_description = "Expiration"

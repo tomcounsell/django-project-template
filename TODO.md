@@ -84,8 +84,8 @@
 ## Documentation
 - [x] Update CLAUDE.md with development guidelines
 - [x] Update CONTRIBUTING.md to match new project directions
-- [ ] Create detailed setup guide for new developers
-- [ ] Add example usage for each behavior mixin
+- [x] Create detailed setup guide for new developers
+- [x] Add example usage for each behavior mixin
 - [ ] Document HTMX integration patterns with examples
 - [ ] Add API documentation with OpenAPI/Swagger
 - [ ] Create architecture diagram showing app relationships
