@@ -17,23 +17,29 @@ This guide complements the main [README.md](/README.md) and provides specific in
 
 ## Code Style
 - **Python**: PEP 8 with Black formatter (line length 88); use type hints with mypy
-- **Models**: Follow [behavior mixins](/apps/common/models/CONVENTIONS.md) pattern; datetime fields end with `_at`
+- **Models**: Follow [behavior mixins](/docs/MODEL_CONVENTIONS.md) pattern; datetime fields end with `_at`
   - See [README.md](/README.md#behavior-mixins) for full list of available behavior mixins
 - **Imports**: Group by standard lib, third-party, Django, local apps
 - **Methods**: Verb phrases for methods, nouns for properties
-- **HTMX**: Use `MainContentView` mixin for partial template rendering
+- **HTMX**: Use `HTMXView` for HTMX-specific views and `MainContentView` for standard pages
 - **Error handling**: Explicit error messages; form validation; use message framework
 - **HTML/CSS**: Kebab-case for CSS classes, snake_case for ids; Tailwind for styling
 - **Documentation**: Docstrings for models, complex functions, and behavior mixins
 
 ## Frontend Guidelines
 - **HTMX**: Preferred for interactive functionality over JavaScript
+- **View Classes**:
+  - Use `MainContentView` for standard pages (from `apps.public.helpers`)
+  - Use `HTMXView` for HTMX-specific components (from `apps.public.helpers`)
+  - Add `TeamSessionMixin` when team context is needed
 - **JavaScript**: Only use inline attributes (onclick, etc.) when necessary
 - **No Scripts**: Avoid adding `<script>` tags unless explicitly required
 - **Tailwind CSS**: Use for styling instead of custom CSS where possible
 - **Templates**: Place in root `/templates` directory, not in app directories
 
-For more details on template structure and patterns, see [Template Pattern](/README.md#template-pattern) in the README.
+For detailed conventions on templates and views, see:
+- [Template Conventions](/docs/TEMPLATE_CONVENTIONS.md)
+- [View Conventions](/docs/VIEW_CONVENTIONS.md)
 
 ## Testing Practice
 - **TDD Approach**: Write tests BEFORE implementing features
@@ -60,7 +66,9 @@ For more details on template structure and patterns, see [Template Pattern](/REA
 - [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) - Contribution guidelines
 - [docs/TODO.md](/docs/TODO.md) - Current tasks and priorities
 - [docs/BEHAVIOR_MIXINS.md](/docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
-- [apps/common/models/CONVENTIONS.md](/apps/common/models/CONVENTIONS.md) - Model conventions
+- [docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md) - Model conventions
+- [docs/TEMPLATE_CONVENTIONS.md](/docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
+- [docs/VIEW_CONVENTIONS.md](/docs/VIEW_CONVENTIONS.md) - View classes and HTMX integration
 
 ## Development Process
 1. Check [docs/TODO.md](/docs/TODO.md) to identify next priority item

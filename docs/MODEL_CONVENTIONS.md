@@ -1,8 +1,6 @@
 # Django Model Conventions
 
-This document has been moved to [/docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md). 
-
-Please update any links to reference the new location.
+This document outlines the conventions and best practices for models in this Django project. Following these guidelines ensures consistency, maintainability, and best practices throughout the codebase.
 
 ## General Model Structure
 
@@ -32,7 +30,7 @@ The standard model structure follows this order:
 - Use lowercase with underscores (snake_case)
 - Boolean fields should start with `is_` or `has_`
 - Date/time fields should end with `_at` (e.g., `activated_at`, `reviewed_at`)
-- Foreign keys should use the model name in singular form and refrence with a string (e.g., `app.Author`, `common.User`)
+- Foreign keys should use the model name in singular form and reference with a string (e.g., `"app.Author"`, `"common.User"`)
 - Related names should be plural (e.g., `related_name="addresses"`)
 
 ### Properties and Methods
@@ -71,13 +69,15 @@ The project uses abstract behavior mixins to encapsulate common model behaviors.
 
 ### Available Behaviors
 
-- `Timestampable`: Adds creation and modification timestamps
-- `Publishable`: Manages publishing state and timestamps
-- `Authorable`: Handles authorship and attribution
-- `Locatable`: Adds location-related fields
-- `Permalinkable`: Provides permalink functionality
-- `Expirable`: Manages expiration states
-- `Annotatable`: Allows for annotations
+- `Timestampable`: Adds `created_at` and `modified_at` fields with automatic updates
+- `Publishable`: Manages content publishing workflow with `is_published`, `published_at`, and `unpublished_at`
+- `Authorable`: Tracks content authors with anonymous option (`author`, `authored_at`, `is_author_anonymous`)
+- `Locatable`: Adds location data with address and coordinate fields
+- `Permalinkable`: Manages URL slugs and permalink generation with `slug` field
+- `Expirable`: Handles content expiration with `expired_at` field and validity tracking
+- `Annotatable`: Provides notes relationship management for adding annotations to models
+
+For detailed usage examples of these behaviors, see the `BlogPost` model in `apps/common/models/blog_post.py`, which demonstrates all available behaviors in a real-world example.
 
 ### Behavior Implementation Guidelines
 
@@ -123,6 +123,8 @@ class MyModel(Timestampable, Publishable, models.Model):
 - Implement `serialized` property for API responses
 - Keep model methods focused on model-specific logic
 - Use proper error handling in model methods
+- Use type hints for all methods and properties
+- Follow verb phrases for methods, nouns for properties
 
 ### 2. Field Choices
 - Use appropriate field types for the data
@@ -141,15 +143,19 @@ class MyModel(Timestampable, Publishable, models.Model):
 - Consider adding db_index=True for frequently queried fields
 
 ## Forms
-- Forms related to a model should be defined in the same file
+- Forms related to a model should be defined in a separate file in the `apps/<app_name>/forms/` directory
 - Use ModelForm when possible
 - Explicitly specify fields in Meta class
+- Add appropriate widgets and validation
 
 ## Testing
-- Each model should have corresponding test cases
+- Each model should have corresponding test cases in `apps/<app_name>/tests/test_models/`
 - Test edge cases and validation
 - Include tests for model methods and properties
 - Test database constraints and unique fields
+- Use factory classes in `apps/common/tests/factories.py` to create test instances
+- Test behavior mixins in isolation using `apps/common/tests/test_behaviors/`
+- Aim for 100% test coverage for models and behavior mixins
 
 ## Migrations
 - Keep migrations focused and atomic

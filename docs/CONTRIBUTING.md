@@ -46,7 +46,7 @@ Thank you for your interest in contributing to this Django project template! Thi
   black . && isort . && flake8 . && mypy .
   ```
 - Use type hints for all function parameters and return values
-- Follow the model conventions in `apps/common/models/CONVENTIONS.md`
+- Follow the model conventions in [MODEL_CONVENTIONS.md](MODEL_CONVENTIONS.md)
 - Group imports: standard library, third-party, Django, local apps
 
 ### Testing

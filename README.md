@@ -17,10 +17,16 @@ Integrations:
 
 ## Setup and Documentation
 
+### Getting Started
 - For detailed setup instructions, see [Setup Guide](docs/SETUP_GUIDE.md)
 - For contribution guidelines, see [Contributing Guide](docs/CONTRIBUTING.md)
 - For current tasks and priorities, see [TODO List](docs/TODO.md)
 - For development practices, see [Development Guide](CLAUDE.md)
+
+### Coding Standards
+- For model conventions and best practices, see [Model Conventions](docs/MODEL_CONVENTIONS.md)
+- For template guidelines and patterns, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
+- For view classes and HTMX integration, see [View Conventions](docs/VIEW_CONVENTIONS.md)
 
 
 # Project Structure
@@ -38,7 +44,9 @@ This project uses standard Django templates with the following patterns:
 
 Templates are primarily stored in two locations:
 - `/templates`: Global templates used across multiple apps
-- `/apps/public/templates`: Public frontend templates
+- `/apps/public/templates`: Public frontend templates (being migrated to `/templates`)
+
+For detailed template conventions, naming patterns, and best practices, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md).
 
 - `apps/`: Contains all applications that make up the project.
 - `settings/`: Configuration settings for the entire Django project.

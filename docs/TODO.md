@@ -19,12 +19,17 @@
 - [ ] Consolidate static files from apps/public/static to root static directory
 - [ ] Update static file references in templates
 - [ ] Remove "dont_put_things_here.txt" from static directory
+- [ ] Audit {% block _ %} and {% endblock _ %} in templates and use best practices
+  - [ ] {% block content %} is the standard block for main content
+  - [ ] additional blocks for header, footer, navbar, aside, etc.
+  - [ ] Add comments to explain block usage
+  - [✅] Document the use of blocks in docs/TEMPLATE_CONVENTIONS.md
 - [ ] Reorganize templates for better HTMX integration
   - [ ] Create dedicated partial template directory structure
   - [ ] Implement standardized naming convention for partials
   - [ ] Add template documentation in comments
-- [ ] Document HTMX integration patterns with examples
-- [ ] Update documentation on template patterns
+- [✅] Document HTMX integration patterns with examples in docs/VIEW_CONVENTIONS.md and docs/TEMPLATE_CONVENTIONS.md
+- [✅] Update documentation on template patterns
 
 ### 2. Extend Test Coverage
 - [ ] Add API endpoint tests with APITestCase
