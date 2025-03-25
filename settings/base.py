@@ -96,6 +96,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    # Removed app-specific static directory as per consolidation in TODO.md
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 

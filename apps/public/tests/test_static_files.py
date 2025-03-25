@@ -1,47 +1,42 @@
+"""
+Tests to verify static files are properly migrated from app to root directory.
+"""
 import os
-import unittest
+from django.test import TestCase
 from django.conf import settings
 
 
-class StaticFilesMigrationTestCase(unittest.TestCase):
-    """Tests for verifying static files after migration to root dirs."""
+class StaticFilesTestCase(TestCase):
+    """Test that static files exist in the expected directories."""
 
-    def test_css_files_exist_in_root(self):
-        """Verify base.css exists in root static directory."""
-        css_base_path = os.path.join(
-            settings.BASE_DIR, 'static', 'css', 'base.css'
-        )
-        self.assertTrue(
-            os.path.exists(css_base_path),
-            "base.css not found in root static directory"
-        )
-
-    def test_js_files_exist_in_root(self):
-        """Verify base.js exists in root static directory."""
-        js_base_path = os.path.join(
-            settings.BASE_DIR, 'static', 'js', 'base.js'
-        )
-        self.assertTrue(
-            os.path.exists(js_base_path),
-            "base.js not found in root static directory"
-        )
-
-    def test_favicon_exists_in_root(self):
-        """Verify favicon.png exists in root static directory."""
-        static_path = os.path.join(
-            settings.BASE_DIR, 'static', 'assets', 'favicon.png'
-        )
-        self.assertTrue(
-            os.path.exists(static_path),
-            "favicon.png not found in root static directory"
-        )
-
-    def test_logo_exists_in_root(self):
-        """Verify logo-yudame.png exists in root static directory."""
-        static_path = os.path.join(
-            settings.BASE_DIR, 'static', 'assets', 'img', 'logo-yudame.png'
-        )
-        self.assertTrue(
-            os.path.exists(static_path),
-            "logo-yudame.png not found in root static directory"
-        )
+    def test_static_files_exist(self):
+        """
+        Test that static files exist in the expected directories.
+        This test checks both the app static directory and root static directory.
+        """
+        app_static_dir = os.path.join(settings.BASE_DIR, "apps/public/static")
+        root_static_dir = os.path.join(settings.BASE_DIR, "static")
+        
+        # After migration, these files should be in the root static directory
+        required_static_files = [
+            "assets/favicon.png",
+            "assets/img/logo-yudame.png",
+            "css/base.css",
+            "js/base.js"
+        ]
+        
+        for static_path in required_static_files:
+            # Check if file exists in the app dir
+            app_file_path = os.path.join(app_static_dir, static_path)
+            root_file_path = os.path.join(root_static_dir, static_path)
+            
+            # File should no longer exist in the app directory 
+            # (We've completed the migration)
+            self.assertFalse(os.path.isfile(app_file_path), 
+                          f"Static file {static_path} should not exist in app static directory after migration")
+            
+            # After migration, file should be in root directory
+            self.assertTrue(os.path.isfile(root_file_path), 
+                         f"Static file {static_path} should be in root static directory")
+            
+            # We're already checking this above, so no need to check again

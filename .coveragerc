@@ -19,4 +19,4 @@ exclude_lines =
     raise ImportError
 
 [html]
-directory = coverage_html_report
+directory = apps/common/tests/coverage_html_report

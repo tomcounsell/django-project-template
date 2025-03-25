@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Reset Password{% endblock %}
+
+{% block content %}
+<div class="container mx-auto max-w-md px-4 py-12">
+  <div class="text-center mb-8">
+    <h1 class="text-2xl font-bold mb-2">Reset Your Password</h1>
+    <p class="text-gray-600">
+      Enter your email address below, and we'll send you instructions to reset your password.
+    </p>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <form method="post">
+      {% csrf_token %}
+      
+      {% if form.non_field_errors %}
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+      
+      <div class="mb-4">
+        <label for="{{ form.email.id_for_label }}" class="block text-gray-700 font-semibold mb-2">
+          Email Address
+        </label>
+        {{ form.email }}
+        {% if form.email.errors %}
+          <p class="text-red-500 text-sm mt-1">{{ form.email.errors.0 }}</p>
+        {% endif %}
+      </div>
+      
+      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+        Send Reset Link
+      </button>
+    </form>
+    
+    <div class="mt-4 text-center">
+      <a href="{% url 'public:account-login' %}" class="text-blue-500 hover:text-blue-700">
+        Return to login
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

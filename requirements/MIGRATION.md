@@ -14,7 +14,7 @@ This document details the steps taken to migrate this project from pip-tools to 
 
 ## Migration Steps Completed
 
-1. Created a new `requirements/uv` directory
+1. Reorganized the `requirements/` directory
 2. Created simplified requirements files:
    - `base.txt` - Essential packages only
    - `dev.txt` - Development dependencies
@@ -51,8 +51,8 @@ Basic usage:
 pip install uv
 
 # Install dependencies
-./requirements/uv/install.sh dev  # For development
-./requirements/uv/install.sh prod  # For production
+./requirements/install.sh dev  # For development
+./requirements/install.sh prod  # For production
 ```
 
 ## For Deployments
@@ -60,7 +60,7 @@ pip install uv
 A requirements.txt file is automatically generated for deployment platforms:
 
 ```bash
-./requirements/uv/generate_deployment_requirements.sh
+./requirements/generate_deployment_requirements.sh
 ```
 
 This creates a requirements.txt file in the project root that can be used by platforms like Render or Heroku.
@@ -69,5 +69,5 @@ This creates a requirements.txt file in the project root that can be used by pla
 
 Run the test script to verify the uv setup:
 ```bash
-./requirements/uv/test.sh
+./requirements/test.sh
 ```

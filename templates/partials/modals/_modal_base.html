@@ -1,0 +1,78 @@
+{% extends "partials/_partial_base.html" %}
+
+<!-- 
+  Base Modal Template
+  ==================
+  
+  Purpose:
+  Foundation template for all modal dialogs in the application.
+  Provides consistent structure, styling, and behavior.
+  
+  Context Variables:
+  - modal_id: Unique ID for the modal (required)
+  - modal_title: Title shown in the header (required)
+  - modal_size: Size variant (options: 'sm', 'md', 'lg', 'xl', default: 'md')
+  - close_on_backdrop: Whether clicking outside closes the modal (default: true)
+  - z_index: Z-index value for stacking modals (default: 1000)
+  
+  Blocks:
+  - modal_header: Header content (has default implementation)
+  - modal_body: Main content area (must override)
+  - modal_footer: Footer with actions (must override)
+  
+  HTMX Integration:
+  - Designed to be loaded via HTMX into a dedicated modal container
+  - Use hx-swap="innerHTML" when targeting modal containers
+  
+  Usage:
+  (extends "partials/modals/_modal_base.html")
+  
+  (block modal_body)
+    <!-- Your modal content here -->
+  (endblock)
+  
+  (block modal_footer)
+    <!-- Your action buttons here -->
+  (endblock)
+  
+  Note: Replace parentheses with curly braces and percent signs in actual code
+-->
+
+{% block content %}
+<div 
+  id="{{ modal_id }}"
+  class="modal-overlay modal-{{ modal_size|default:'md' }}"
+  style="z-index: {{ z_index|default:1000 }};"
+  {% if close_on_backdrop|default:True %}
+  onclick="if(event.target.id === '{{ modal_id }}') this.remove()"
+  {% endif %}
+>
+  <div class="modal-dialog" role="dialog" aria-labelledby="{{ modal_id }}-title" aria-modal="true">
+    {% block modal_header %}
+    <div class="modal-header">
+      <h3 id="{{ modal_id }}-title">{{ modal_title }}</h3>
+      <button 
+        type="button" 
+        class="modal-close-button"
+        aria-label="Close"
+        onclick="this.closest('.modal-overlay').remove()"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endblock modal_header %}
+    
+    <div class="modal-body">
+      {% block modal_body %}
+      <!-- Modal body content goes here -->
+      {% endblock modal_body %}
+    </div>
+    
+    <div class="modal-footer">
+      {% block modal_footer %}
+      <!-- Modal footer content goes here -->
+      {% endblock modal_footer %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

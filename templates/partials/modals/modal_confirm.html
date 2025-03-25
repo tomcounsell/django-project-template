@@ -1,0 +1,57 @@
+{% extends "partials/modals/_modal_base.html" %}
+
+{# 
+  Confirmation Modal Partial
+  =========================
+  
+  Purpose:
+  Provides a reusable confirmation dialog for actions that need user verification.
+  This partial can be loaded dynamically via HTMX.
+  
+  Context Variables:
+  - modal_id: Unique ID for the modal (default: "confirm-modal")
+  - modal_title: Dialog title (default: "Confirm Action")
+  - message: Confirmation message to display (required)
+  - confirm_url: URL to submit confirmation to (required)
+  - confirm_method: HTTP method for confirmation (default: 'post')
+  - confirm_text: Text for confirm button (default: 'Confirm')
+  - cancel_text: Text for cancel button (default: 'Cancel')
+  - confirm_class: CSS class for confirm button (default: 'btn-primary')
+  - cancel_class: CSS class for cancel button (default: 'btn-secondary')
+  - target: HTMX target for the confirmation action (default: '#content')
+  - swap: HTMX swap method (optional)
+  
+  HTMX Integration:
+  Load this modal dynamically:
+  
+  <button
+    hx-get="{% url 'confirm_delete' item.id %}"
+    hx-target="#modal-container"
+    hx-swap="innerHTML"
+  >
+    Delete Item
+  </button>
+  <div id="modal-container"></div>
+#}
+
+{% block modal_body %}
+  <p>{{ message }}</p>
+{% endblock modal_body %}
+
+{% block modal_footer %}
+  <button
+    class="{{ cancel_class|default:'btn-secondary' }}"
+    onclick="this.closest('.modal-overlay').remove()"
+  >
+    {{ cancel_text|default:"Cancel" }}
+  </button>
+  
+  <button
+    class="{{ confirm_class|default:'btn-primary' }}"
+    hx-{{ confirm_method|default:"post" }}="{{ confirm_url }}"
+    hx-target="{{ target|default:'#content' }}"
+    {% if swap %}hx-swap="{{ swap }}"{% endif %}
+  >
+    {{ confirm_text|default:"Confirm" }}
+  </button>
+{% endblock modal_footer %}
