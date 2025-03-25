@@ -11,6 +11,10 @@ Hosting: Render, AWS-S3
 Integrations: 
     Loops for transactional email
     OpenAI for GPTs
+    
+Planned Integrations:
+    File uploads (evaluating options)
+    Stripe for payments
 
 ## Setup and Documentation
 
