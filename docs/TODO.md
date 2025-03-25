@@ -62,8 +62,7 @@
 - [✅] Audit apps/communication for models and functionality to merge
 - [✅] Migrate communication models to apps/common
 - [✅] Remove apps/communication after successful migration
-
-Note: The Telegram integration references a TelegramBotMembership model that will need to be reimplemented separately.
+- [✅] Remove unused integrations (Telegram, Slack, Transloadit)
 
 ## Documentation Tasks
 - [✅] Document HTMX integration patterns with examples

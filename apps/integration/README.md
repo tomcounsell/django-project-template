@@ -6,17 +6,6 @@ The Integration app handles connections to third-party services and platforms, p
 
 ## Features
 
-### Telegram Integration
-
-- **Commands**: Command framework for telegram bot interactions
-- **Telegram Client**: Interface with Telegram Bot API
-- **Utilities**: Helper functions for Telegram messaging
-
-### Slack Integration
-
-- **Manifest**: Configuration for Slack app
-- **API Client**: (To be implemented) Interface with Slack API
-
 ### Loops Integration
 
 - **Client**: API client for Loops service
@@ -31,13 +20,17 @@ The Integration app follows these principles:
 3. **Error Handling**: Robust error handling for external services
 4. **Testability**: Mock interfaces for testing without external dependencies
 
-## Usage Example (Telegram)
+## Usage Example (Loops)
 
 ```python
-from apps.integration.telegram import send_message
+from apps.integration.loops.shortcuts import send_transactional_email
 
-# Send message to a Telegram chat
-send_message(chat_id="123456789", text="Hello from the application!")
+# Send an email using Loops
+send_transactional_email(
+    email="user@example.com",
+    template_id="welcome_email",
+    context={"name": "User Name"}
+)
 ```
 
 ## Development Guidelines

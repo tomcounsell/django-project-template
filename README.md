@@ -9,11 +9,8 @@ API: Django Rest Framework
 Web: HTMX, Tailwind CSS
 Hosting: Render, AWS-S3
 Integrations: 
-    Transloadit for uploading and processing images
     Loops for transactional email
-    Stripe for payments
     OpenAI for GPTs
-    Telegram for chatbot
 
 ## Setup and Documentation
 
