@@ -8,7 +8,9 @@ The Public app handles all user-facing web interfaces, providing the front-end e
 
 ### Views
 
-- **MainContentView**: Base view mixin for handling HTMX partial rendering
+- **MainContentView**: Base view class for rendering templates with consistent handling
+- **HTMXView**: Specialized view for HTMX interactions with OOB support
+- **TeamSessionMixin**: Mixin for handling team-specific views and permissions
 - **Account**: User authentication and account management views
 - **Components**: Reusable UI components (to be replaced with standard templates)
 
@@ -43,6 +45,18 @@ The Public app follows these architectural principles:
 
 - Place all new templates in the root `/templates` directory (not app-specific)
 - Use HTMX for interactive features instead of custom JavaScript
-- Follow the MainContentView pattern for handling HTMX requests
+- For view classes:
+  - Use `MainContentView` for standard page rendering
+  - Use `HTMXView` for HTMX-specific interactions with OOB support
+  - Add `TeamSessionMixin` for views that need team context
 - Use Tailwind for styling instead of custom CSS
 - Avoid adding `<script>` tags to templates unless absolutely necessary
+
+## Helpers Package
+
+The `apps.public.helpers` package contains reusable view classes and mixins:
+
+- `MainContentView`: Base view class for all template rendering
+- `HTMXView`: Specialized view for HTMX requests with out-of-band support
+- `SessionStateMixin`: Basic session state handling
+- `TeamSessionMixin`: Team context and authorization

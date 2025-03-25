@@ -76,9 +76,6 @@ class TeamSettingsView(TeamSessionMixin, MainContentView):
         return self.render(request)
 ```
 
-### 3. BusinessSessionMixin
-
-Legacy mixin for backward compatibility with existing business-centric code. This wraps TeamSessionMixin for models that still use the Business model.
 
 ## View Organization
 
