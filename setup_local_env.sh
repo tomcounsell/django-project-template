@@ -35,6 +35,11 @@ print_error() {
     echo -e "${RED}✗ $1${NC}"
 }
 
+# URL encode function for database names
+url_encode_db_name() {
+    echo "$1" | sed 's/-/%2D/g'
+}
+
 # Start script
 print_header "Django Project Template - Setup Script"
 echo "This script will set up your local development environment."
@@ -82,43 +87,52 @@ else
     print_warning "Node.js not found. It's recommended for frontend assets using Tailwind CSS."
 fi
 
-# Step 4: Set up virtual environment
-print_header "4. Setting up Python virtual environment"
-if [ ! -d "venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv venv
-    print_success "Virtual environment created."
+# Step 4-5: Set up virtual environment and install dependencies with uv
+print_header "4. Setting up Python virtual environment with uv"
+
+# Check if uv is installed
+if ! command -v uv &> /dev/null; then
+    echo "Installing uv package manager..."
+    pip install --user uv
+    print_success "uv installed."
 else
-    print_success "Virtual environment already exists."
+    print_success "uv already installed."
 fi
 
+# Remove existing venv if it exists (fresh setup)
+if [ -d ".venv" ]; then
+    echo "Removing existing virtual environment for a fresh setup..."
+    rm -rf .venv
+fi
+
+echo "Creating virtual environment with uv..."
+uv venv
+
 echo "Activating virtual environment..."
-source venv/bin/activate
+source .venv/bin/activate
 print_success "Virtual environment activated."
 
-# Step 5: Install dependencies
-print_header "5. Installing dependencies"
+print_header "5. Installing dependencies with uv"
+echo "Installing project dependencies with uv..."
 
-# Check if we've already done this step in a previous run
-if grep -q "DEPENDENCIES_INSTALLED" $LOCK_FILE; then
-    print_success "Dependencies were already installed in a previous run."
-    echo "To reinstall dependencies, run: ./requirements/install.sh dev"
+if [ -f "requirements/dev.txt" ]; then
+    echo "Installing from requirements/dev.txt..."
+    uv pip install -r requirements/dev.txt
+    print_success "Dependencies installed successfully with uv."
 else
-    echo "Installing uv package manager..."
-    pip install uv
-    print_success "uv installed."
-
-    echo "Installing project dependencies..."
-    if [ -f "requirements/install.sh" ]; then
-        ./requirements/install.sh dev
-        print_success "Dependencies installed successfully."
-        # Mark this step as completed
-        echo "DEPENDENCIES_INSTALLED=true" >> $LOCK_FILE
+    # Fallback to requirements.txt if dev.txt doesn't exist
+    if [ -f "requirements.txt" ]; then
+        echo "Installing from requirements.txt..."
+        uv pip install -r requirements.txt
+        print_success "Dependencies installed successfully with uv."
     else
-        print_error "requirements/install.sh not found. Cannot install dependencies."
+        print_error "No requirements file found. Cannot install dependencies."
         exit 1
     fi
 fi
+
+# Mark as completed
+echo "DEPENDENCIES_INSTALLED=true" >> $LOCK_FILE
 
 # Step 6: Check environment files
 print_header "6. Checking environment configuration"
@@ -178,8 +192,8 @@ db_name=""
 if grep -q "^DATABASE_URL=" ".env.local"; then
     db_url=$(grep "^DATABASE_URL=" ".env.local" | cut -d'=' -f2)
     if [[ $db_url == postgres://* ]]; then
-        # Extract DB name from postgres URL
-        db_name=$(echo $db_url | sed -E 's/.*\/([^?]*).*/\1/')
+        # Extract DB name from postgres URL (handle URL encoded chars)
+        db_name=$(echo $db_url | sed -E 's/.*\/([^?]*)(\?.*)?$/\1/' | sed 's/%2D/-/g')
         print_success "Found database name in .env.local: $db_name"
     fi
 fi
@@ -202,12 +216,15 @@ if [ -z "$db_name" ]; then
         read -s -p "Database password (input will be hidden): " db_password
         echo ""
         
+        # Encode database name for URL if it contains hyphens
+        db_name_url=$(url_encode_db_name "$db_name")
+        
         # Update the DATABASE_URL in .env.local
         if grep -q "^DATABASE_URL=" ".env.local"; then
-            sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name|" ".env.local"
+            sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url|" ".env.local"
             rm -f ".env.local.bak"
         else
-            echo "DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name" >> ".env.local"
+            echo "DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url" >> ".env.local"
         fi
         print_success "Updated DATABASE_URL in .env.local"
         # Mark this step as completed
@@ -233,53 +250,157 @@ else
     echo "Please ensure database '$db_name' exists before proceeding."
 fi
 
+# Ensure we retry database creation if not found or access issue
+if [ -n "$db_name" ] && command -v createdb > /dev/null; then
+    # Double-check with createdb - some users might have permissions with createdb but not psql
+    if ! createdb "$db_name" 2>/dev/null; then
+        echo "Note: Database might already exist or there may be permission issues."
+    else
+        print_success "Database '$db_name' created with createdb."
+    fi
+fi
+
 echo "Attempting to connect to database..."
+DB_CONNECTION_SUCCESS=false
+
+# First try with the standard connection check
 if python -c "from django.db import connection; connection.cursor()" 2>/dev/null; then
     print_success "Database connection successful."
+    DB_CONNECTION_SUCCESS=true
 else
-    print_warning "Could not connect to database. Please check your database configuration in .env.local."
-    echo "You may need to adjust database credentials or create the database manually."
+    # Second try with the migrate check command - sometimes this works even when the first check fails
+    if python manage.py migrate --check >/dev/null 2>&1; then
+        print_success "Database connection successful (verified with migrate --check)."
+        DB_CONNECTION_SUCCESS=true
+    else
+        print_warning "Could not connect to database. Please check your database configuration in .env.local."
+        
+        # Offer some common solutions
+        echo "Common issues and solutions:"
+        echo "1. Database password might be incorrect"
+        echo "2. Database might not exist or user doesn't have access"
+        echo "3. PostgreSQL service might not be running"
+        
+        # Offer to edit the configuration
+        echo "Would you like to update the database configuration? (y/n)"
+        read update_db_config
+        if [[ $update_db_config == "y" || $update_db_config == "Y" ]]; then
+            # Ask for database username and password
+            read -p "Database username [postgres]: " db_user
+            db_user=${db_user:-postgres}
+            
+            read -s -p "Database password (input will be hidden): " db_password
+            echo ""
+            
+            # Encode database name for URL if it contains hyphens
+            db_name_url=$(url_encode_db_name "$db_name")
+            
+            # Update the DATABASE_URL in .env.local
+            if grep -q "^DATABASE_URL=" ".env.local"; then
+                sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url|" ".env.local"
+                rm -f ".env.local.bak"
+            else
+                echo "DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url" >> ".env.local"
+            fi
+            print_success "Updated DATABASE_URL in .env.local"
+            
+            # Try to connect again
+            echo "Attempting to connect to database again..."
+            if python -c "from django.db import connection; connection.cursor()" 2>/dev/null; then
+                print_success "Database connection successful after reconfiguration."
+                DB_CONNECTION_SUCCESS=true
+            else
+                print_warning "Still unable to connect to database."
+                echo "Please check if PostgreSQL is running and that the credentials are correct."
+                echo "You may need to modify .env.local manually or restart the script."
+            fi
+        else
+            echo "Skipping database reconfiguration. You'll need to update .env.local manually."
+        fi
+    fi
 fi
 
-# Step 9: Run migrations
+# Step 9: Run migrations only if database connection was successful
 print_header "9. Setting up database schema"
 
-# Check if we've already done this step in this run
-if grep -q "MIGRATIONS_RUN" $LOCK_FILE; then
-    print_success "Migrations were already run in this session."
+# Don't run migrations if we couldn't connect to the database
+if [ "$DB_CONNECTION_SUCCESS" = false ]; then
+    print_warning "Skipping migrations since database connection failed."
+    echo "After fixing your database connection, run:"
+    echo "  python manage.py migrate"
 else
-    echo "Would you like to run database migrations? (y/n)"
-    read run_migrations
-    if [[ $run_migrations == "y" || $run_migrations == "Y" ]]; then
-        echo "Running migrations..."
-        python manage.py migrate
-        print_success "Migrations completed."
-        # Mark this step as completed
-        echo "MIGRATIONS_RUN=true" >> $LOCK_FILE
+    # Check if we've already done this step in this run
+    if grep -q "MIGRATIONS_RUN" $LOCK_FILE; then
+        print_success "Migrations were already run in this session."
     else
-        print_warning "Skipping migrations. You'll need to run them manually:"
-        echo "  python manage.py migrate"
+        echo "Would you like to run database migrations? (y/n)"
+        read run_migrations
+        if [[ $run_migrations == "y" || $run_migrations == "Y" ]]; then
+            echo "Running migrations..."
+            python manage.py migrate
+            print_success "Migrations completed."
+            # Mark this step as completed
+            echo "MIGRATIONS_RUN=true" >> $LOCK_FILE
+        else
+            print_warning "Skipping migrations. You'll need to run them manually:"
+            echo "  python manage.py migrate"
+        fi
     fi
 fi
 
-# Step 10: Check for superuser
+# Step 10: Check for superuser (only if database connection is successful)
 print_header "10. Checking for superuser"
-superuser_exists=$(python -c "import django; django.setup(); from django.contrib.auth import get_user_model; User = get_user_model(); print(User.objects.filter(is_superuser=True).exists())" 2>/dev/null)
 
-if [ "$superuser_exists" = "True" ]; then
-    print_success "Superuser already exists."
+if [ "$DB_CONNECTION_SUCCESS" = false ]; then
+    print_warning "Skipping superuser check since database connection failed."
+    echo "After fixing your database connection and running migrations, create a superuser with:"
+    echo "  python manage.py createsuperuser"
 else
-    echo "Would you like to create a superuser now? (y/n)"
-    read create_superuser
-    if [[ $create_superuser == "y" || $create_superuser == "Y" ]]; then
-        python manage.py createsuperuser
+    # Use a safer approach to check for superuser
+    echo "Checking for superusers..."
+    # Simple approach without the complex Python one-liner that was causing issues
+    if python manage.py shell -c "from django.contrib.auth import get_user_model; print(get_user_model().objects.filter(is_superuser=True).exists())" 2>/dev/null; then
+        superuser_exists="True"
+        print_success "Superuser exists."
     else
-        print_warning "Skipping superuser creation. You can create one later with 'python manage.py createsuperuser'"
+        superuser_exists="False"
+        echo "No superuser found."
+    fi
+
+    if [ "$superuser_exists" = "True" ]; then
+        print_success "Superuser already exists."
+    else
+        echo "Would you like to create a superuser now? (y/n)"
+        read create_superuser
+        if [[ $create_superuser == "y" || $create_superuser == "Y" ]]; then
+            python manage.py createsuperuser
+        else
+            print_warning "Skipping superuser creation. You can create one later with 'python manage.py createsuperuser'"
+        fi
     fi
 fi
 
-# Step 11: Check frontend dependencies
-print_header "11. Frontend dependencies check"
+# Step 11: Ensure static directories exist
+print_header "11. Setting up static directories"
+if [ ! -d "static" ]; then
+    echo "Creating root static directory..."
+    mkdir -p static
+    print_success "Root static directory created."
+else
+    print_success "Root static directory already exists."
+fi
+
+# Create key static subdirectories
+for dir in css js assets img; do
+    if [ ! -d "static/$dir" ]; then
+        echo "Creating static/$dir directory..."
+        mkdir -p "static/$dir"
+        print_success "static/$dir directory created."
+    fi
+done
+
+# Step 12: Check frontend dependencies
+print_header "12. Frontend dependencies check"
 if [ -f "package.json" ]; then
     echo "Checking for frontend dependencies..."
     if [ -d "node_modules" ] && [ -f "node_modules/.package-lock.json" ]; then
@@ -302,13 +423,62 @@ fi
 # Final instructions
 print_header "Setup Complete!"
 echo -e "Your local development environment is now set up."
-echo -e "\nTo start the development server, run:"
+
+# Activate the virtual environment for the current shell
+VENV_ACTIVATE=". .venv/bin/activate"
+
+echo -e "\nFor best results, save these commands for your current shell session:"
+echo -e "${BOLD}${VENV_ACTIVATE}${NC}"
+echo -e "# This activates the virtual environment for the current shell session"
+
+echo -e "\nTo start the development server (with virtual environment activated):"
 echo -e "  ${BOLD}python manage.py runserver${NC}"
+
 echo -e "\nTo watch and compile CSS with Tailwind (in a separate terminal):"
 echo -e "  ${BOLD}npm run watch:css${NC}"
+
 echo -e "\nFor more information, check the documentation in docs/ and CLAUDE.md"
 
 # Keep the lock file for future runs
 echo -e "\nProgress tracking file created at ${LOCK_FILE}"
 echo -e "This file helps avoid redundant operations if you run the script again."
 echo -e "To force a fresh setup, delete this file before running the script again."
+
+# Execute the activate command in the current shell
+# Note: This will only work if the script is executed with "source" or "."
+echo -e "\nAttempting to activate virtual environment for this shell session..."
+if [[ "$0" != "${BASH_SOURCE[0]}" ]]; then
+    # Script is being sourced, we can modify parent shell
+    # Note: We've already activated it earlier in the script, just confirming that it will persist
+    echo -e "${GREEN}✓ Virtual environment activated for current shell session${NC}"
+else
+    # Script is not being sourced, can't modify parent shell
+    echo -e "${YELLOW}⚠ This script was run directly, not with 'source'${NC}"
+    echo -e "${YELLOW}⚠ The virtual environment will not remain activated after the script ends${NC}"
+    echo -e "${YELLOW}⚠ To activate the virtual environment, run:${NC}"
+    echo -e "${BOLD}${VENV_ACTIVATE}${NC}"
+fi
+
+# Final success message with ASCII art
+echo -e "${GREEN}"
+cat << "EOF"
+
+ __   __  _   _  ____    _    __  __  _____    
+ \ \ / / | | | ||  _ \  / \  |  \/  || ____|   
+  \ V /  | | | || | | |/ _ \ | |\/| ||  _|     
+   | |   | |_| || |_| / ___ \| |  | || |___    
+   |_|    \___/ |____/_/   \_\_|  |_||_____|   
+
+ (o_o)   (^_^)   (*_*)   (>_<)   (o_O)
+  /|\     _|_     /|\     /|\     _|_
+  / \     / \     / \     _|_     / \
+
+EOF
+echo -e "${NC}"
+
+echo -e "${GREEN}Your Django development environment is ready!${NC}"
+echo -e "\nSetup completed successfully! 🎉\n"
+
+# Make sure we end cleanly without any commands that might close the shell
+echo "Script execution completed at: $(date)"
+# DO NOT add any exit, exec, or other terminal-affecting commands here!

@@ -18,7 +18,7 @@ Integrations:
 ## Setup and Documentation
 
 ### Getting Started
-- **Quick Start**: Run `./setup_local_env.sh` for automated local environment setup
+- **Quick Start**: Run `source setup_local_env.sh` for automated local environment setup with activated virtual environment
 - For detailed setup instructions, see [Setup Guide](docs/SETUP_GUIDE.md)
 - For contribution guidelines, see [Contributing Guide](docs/CONTRIBUTING.md)
 - For current tasks and priorities, see [TODO List](docs/TODO.md)

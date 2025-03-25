@@ -25,8 +25,8 @@ cd django-project-template
 # Make the setup script executable
 chmod +x setup_local_env.sh
 
-# Run the setup script
-./setup_local_env.sh
+# Run the setup script (with source to enable virtual environment activation)
+source setup_local_env.sh
 ```
 
 The setup script will:
