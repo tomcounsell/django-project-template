@@ -15,6 +15,7 @@ Integrations:
 Planned Integrations:
     File uploads (evaluating options)
     Stripe for payments
+    Twilio for SMS
 
 ## Setup and Documentation
 
