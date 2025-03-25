@@ -38,12 +38,12 @@ class MainContentView(View):
             if getattr(request, 'htmx', False):
                 # For HTMX requests, use partial template by default, unless explicitly requested
                 if request.GET.get("hx-get", "") == "page":
-                    self.context["base_template"] = "_base.html"
+                    self.context["base_template"] = "base.html"
                 else:
-                    self.context["base_template"] = "_partial.html"
+                    self.context["base_template"] = "partial.html"
             else:
                 # For regular requests, always use full base template
-                self.context["base_template"] = "_base.html"
+                self.context["base_template"] = "base.html"
                 
         # Add login status to context
         self.context["just_logged_in"] = request.session.get("just_logged_in", False)

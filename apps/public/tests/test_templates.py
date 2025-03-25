@@ -65,7 +65,7 @@ class TemplateBlocksTestCase(TestCase):
             block_pattern = r'{%\s*block\s+' + block_name + r'.*?%}'
             self.assertTrue(re.search(block_pattern, content), 
                             f"Required block '{block_name}' not found in _base.html")
-    
+
     
     def test_page_templates_use_standard_blocks(self):
         """Test that page templates use the standard blocks defined in conventions"""

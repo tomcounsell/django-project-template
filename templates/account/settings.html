@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "base.html" %}
 {% load static %}
 
 {# 
@@ -29,11 +29,13 @@
   - Clear error messaging for validation issues
   
   Integration:
-  Displays in the center content area of the base template, providing
+  Displays in the main content area of the base template, providing
   access to account management functionality in a clean, organized interface.
 #}
 
-{% block center_content %}
+{% block title %}Account Settings{% endblock %}
+
+{% block content %}
 
 <div>
   <header>
@@ -130,4 +132,4 @@
 
 </div>
 
-{% endblock center_content %}
+{% endblock content %}

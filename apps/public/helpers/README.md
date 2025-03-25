@@ -68,15 +68,3 @@ class TeamSettingsView(TeamSessionMixin, MainContentView):
 2. For HTMX-specific components, use `HTMXView`
 3. When team context is needed, add `TeamSessionMixin`
 4. Import these components from `apps.public.helpers` (not from views directory)
-
-## Migration from Legacy Code
-
-If you're using the old `main_content_view.py` module:
-
-```python
-# Old import
-from apps.public.views.main_content_view import MainContentView
-
-# New import
-from apps.public.helpers import MainContentView, HTMXView, TeamSessionMixin
-```

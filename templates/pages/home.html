@@ -1,6 +1,6 @@
-{% extends "_base.html" %}
+{% extends "base.html" %}
 
-{# 
+<!-- 
   Home Page
   =========
   
@@ -20,13 +20,13 @@
   - Focused content that guides users to appropriate actions
   
   Integration:
-  Displays in the center content area of the base template, with potential
-  for sidebar navigation in the left column and supplementary information
-  in the right column.
-#}
+  Displays in the main content area of the base template.
+-->
 
-{% block center_content %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
   {# Main content area for the home page #}
   <h1 class="text-3xl font-bold text-center">Welcome to Django Project Template</h1>
 
-{% endblock center_content %}
+{% endblock content %}

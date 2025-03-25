@@ -1,4 +1,4 @@
-{# 
+<!-- 
   Form Modal
   =========
   
@@ -24,13 +24,13 @@
   Load this modal dynamically:
   
   <button
-    hx-get="{% url 'load_form_modal' %}"
+    hx-get="/path/to/load-form-modal/"
     hx-target="#primary-modal-container"
     hx-swap="innerHTML"
   >
     Open Form
   </button>
-#}
+-->
 
 {% extends "components/modals/modal_base.html" %}
 {% load i18n %}

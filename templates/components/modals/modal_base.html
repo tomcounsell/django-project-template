@@ -1,4 +1,4 @@
-{# 
+<!--
   Modal Base Template
   ==================
   
@@ -23,18 +23,8 @@
   - Designed to be loaded via HTMX into a dedicated modal container
   - Use hx-target="#primary-modal-container" or "#secondary-modal-container"
   - Always use hx-swap="innerHTML"
-  
-  Usage:
-  {% extends "components/modals/modal_base.html" %}
-  
-  {% block modal_body %}
-    <!-- Your modal content here -->
-  {% endblock %}
-  
-  {% block modal_footer %}
-    <!-- Your action buttons here -->
-  {% endblock %}
-#}
+
+-->
 
 <!-- Modal Overlay (background) -->
 <div class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40" onclick="if(event.target === this) this.closest('.modal-container').innerHTML = ''">

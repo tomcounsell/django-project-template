@@ -1,4 +1,4 @@
-{# 
+<!-- 
   partial.html - Base Template for HTMX Partial Content
   ===================================================
   
@@ -8,20 +8,22 @@
   as it's intended to be loaded via HTMX requests for partial page updates.
   
   Usage:
-  {% extends "partial.html" %}
+  (extends "partial.html")
   
-  {% block content %}
+  (block content)
     <!-- Partial content here -->
-  {% endblock %}
+  (endblock)
   
   Out-of-band (OOB) Updates:
   For HTMX OOB updates, set is_oob=True in the view context, then include elements with hx-swap-oob.
   
   Example:
-  {% if is_oob %}
+  (if is_oob)
     <div id="notification-count" hx-swap-oob="true">{{ count }}</div>
-  {% endif %}
-#}
+  (endif)
+  
+  Note: Parentheses above represent curly braces with percent signs in actual template syntax
+-->
 
 {% block content %}
   <!-- This block is replaced with actual content in child templates -->

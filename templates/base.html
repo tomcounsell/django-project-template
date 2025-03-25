@@ -1,7 +1,7 @@
 {% load django_htmx %}
 {% load static %}
 
-{# 
+<!-- 
   base.html - Primary Layout Template
   ==================================
   
@@ -18,16 +18,7 @@
   - aside: Sidebar content (optional)
   - footer_content: Custom footer content (optional)
   - scripts: Page-specific JavaScript
-  
-  Usage:
-  {% extends "base.html" %}
-  
-  {% block title %}Page Title{% endblock %}
-  
-  {% block content %}
-    <!-- Your main content here -->
-  {% endblock %}
-#}
+-->
 
 <!DOCTYPE html>
 <html lang="en" data-csrf-token="{{ csrf_token }}">
@@ -45,10 +36,10 @@
   <meta name="description" content="{% block meta_description %}A modern Django project template{% endblock %}">
   {% block meta %}
     <!-- Open Graph / Social Meta Tags -->
-    <meta property="og:title" content="{% block og_title %}{% block meta_title %}{{ self.title }}{% endblock %}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}{{ self.meta_description }}{% endblock %}">
+    <meta property="og:title" content="{{ self.title }}">
+    <meta property="og:description" content="{{ self.meta_description }}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
   {% endblock %}
   
   <!-- Core CSS -->
@@ -118,11 +109,6 @@
   
   <!-- Modals System -->
   {% include "layout/modals.html" %}
-  
-  <!-- Legacy Modal Container (for backwards compatibility) -->
-  <div id="modal-container">
-    {% block modals %}{% endblock %}
-  </div>
   
   <!-- Core JavaScript -->
   <!-- HTMX -->

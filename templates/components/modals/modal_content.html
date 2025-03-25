@@ -1,4 +1,4 @@
-{# 
+<!--
   Content Modal
   ============
   
@@ -27,28 +27,28 @@
   >
     Show Content
   </button>
-#}
+-->
 
 {% extends "components/modals/modal_base.html" %}
 
 {% block modal_body %}
-  <div class="prose prose-sm sm:prose max-w-none">
+<div class="prose prose-sm sm:prose max-w-none">
     {% block content_block %}
-      {{ content|safe }}
+    {{ content|safe }}
     {% endblock %}
-  </div>
+</div>
 {% endblock modal_body %}
 
 {% block modal_footer %}
-  {% if actions %}
-    {{ actions|safe }}
-  {% endif %}
-  
-  <button
-    type="button"
-    class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-    onclick="this.closest('.modal-container').innerHTML = ''"
-  >
+{% if actions %}
+{{ actions|safe }}
+{% endif %}
+
+<button
+        type="button"
+        class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+        onclick="this.closest('.modal-container').innerHTML = ''"
+>
     {{ close_text|default:"Close" }}
-  </button>
+</button>
 {% endblock modal_footer %}

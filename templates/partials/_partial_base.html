@@ -1,4 +1,4 @@
-{# 
+<!-- 
   _partial_base.html - Base template for HTMX partial components
   ============================================================
   
@@ -12,16 +12,18 @@
   - Optional CSS classes: Apply styling as needed
   
   Usage:
-  {% extends "partials/_partial_base.html" %}
-  {% block content %}
+  (extends "partials/_partial_base.html")
+  (block content)
     <!-- Component-specific content here -->
-  {% endblock content %}
+  (endblock content)
   
   Notes:
   - Partials should NOT include layout elements like navigation or footers
   - Each partial should be focused on a single responsibility
   - Partials can be embedded in full pages via HTMX or directly with include
-#}
+  
+  Note: Replace parentheses with curly braces and percent signs in actual code
+-->
 
 {% block content %}
   {# Primary content for the partial template #}

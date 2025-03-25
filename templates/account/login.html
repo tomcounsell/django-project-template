@@ -1,13 +1,12 @@
-{% extends "pages/onboarding.html" %}
+{% extends "base.html" %}
 
-{# 
+<!-- 
   Login Page
   ==========
   
   Purpose:
   Provides user authentication functionality with a simple login form.
-  This template extends from "pages/onboarding.html" which sets up the appropriate
-  layout for authentication-related screens.
+  This template follows the standard template conventions by extending base.html.
   
   Form Elements:
   - Email field: Uses the username field from the authentication form
@@ -22,12 +21,14 @@
   - Visual feedback for form validation
   
   Integration:
-  This template displays in the center content area of the base template.
+  This template displays in the main content area of the base template.
   It's part of the authentication flow that includes login, registration,
   and password reset functionality.
-#}
+-->
 
-{% block center_content %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
   <section>
     <div>
       <div>
@@ -81,4 +82,4 @@
       </div>
     </div>
   </section>
-{% endblock center_content %}
+{% endblock content %}

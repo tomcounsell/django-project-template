@@ -87,7 +87,7 @@ class MainContentViewTestCase(TestCase):
         
         # Check that context contains url and base_template
         self.assertEqual(view.context['url'], '/test-url/')
-        self.assertEqual(view.context['base_template'], '_base.html')
+        self.assertEqual(view.context['base_template'], 'base.html')
         
     @patch('django.template.loader.get_template')
     @patch('django.shortcuts.render')

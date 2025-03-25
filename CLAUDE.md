@@ -10,8 +10,8 @@ This guide complements the main [README.md](/README.md) and provides specific in
 - **Tests**: `DJANGO_SETTINGS_MODULE=settings pytest` (all tests in project)
 - **Single test**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase -v`
 - **Coverage**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
-- **HTML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html`
-- **XML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml` (for CI integrations)
+- **HTML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report`
+- **XML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:apps/common/tests/coverage.xml` (for CI integrations)
 - **Format code**: `black . && isort .`
 - **Lint & type check**: `flake8 . && mypy .`
 
@@ -51,9 +51,9 @@ For detailed conventions on templates and views, see:
   - Factory classes: `apps/common/tests/factories.py`
 - **Running Tests**:
   - Django tests: `DJANGO_SETTINGS_MODULE=settings pytest`
-  - Behavior mixins: `python test_behaviors.py` (standalone tests)
+  - Behavior mixins: `python docs/tests/test_behaviors.py` (standalone tests)
   - With coverage: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
-- **Python 3.12**: Use standalone behavior tests (`test_behaviors.py`) for Python 3.12 compatibility
+- **Python 3.12**: Use standalone behavior tests (`docs/tests/test_behaviors.py`) for Python 3.12 compatibility
 - **Coverage**: 
   - Aim for 100% test coverage for models and behavior mixins
   - Use `.coveragerc` file to configure coverage settings and exclusions

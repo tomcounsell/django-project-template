@@ -159,7 +159,8 @@ class MyModel(Timestampable, Publishable, models.Model):
 
 ## Version Control
 - Include meaningful commit messages for model changes
-- Document breaking changes in model structure
-- Keep track of deprecated fields and methods
+- This is a template repo - not actively being served, so therefor...
+  - Do Not Document breaking changes in model structure
+  - Do Not Keep track of deprecated fields and methods
 
 Remember to follow these conventions when creating or modifying models to maintain consistency across the project.

@@ -46,6 +46,7 @@
 - [✅] Create pyproject.toml with project metadata
 - [✅] Update build.sh script to use uv for dependency installation
 - [✅] Setup pre-commit hooks for code quality (black, isort, flake8, mypy)
+- [ ] remove any and all support for backwards compatibility
 
 ### 4. User Experience Improvements
 - [✅] Implement basic Team-related views (create, join, manage)
