@@ -1,0 +1,132 @@
+{# 
+  Form Modal
+  =========
+  
+  Purpose:
+  Reusable modal dialog containing a form.
+  This template can be loaded dynamically via HTMX.
+  
+  Context Variables:
+  - modal_id: Unique ID for the modal (default: "form-modal")
+  - modal_title: Title of the form dialog (required)
+  - form: Django form instance (required)
+  - submit_url: URL to submit the form to (required)
+  - submit_method: HTTP method for form submission (default: 'post')
+  - submit_text: Text for submit button (default: 'Submit')
+  - cancel_text: Text for cancel button (default: 'Cancel')
+  - target: HTMX target for form submission response (default: '#content')
+  - swap: HTMX swap method (optional)
+  - trigger: HTMX trigger for form submission (optional)
+  - form_id: ID attribute for the form element (default: "{modal_id}-form")
+  - use_form_components: Whether to use form components for rendering (default: true)
+  
+  HTMX Integration:
+  Load this modal dynamically:
+  
+  <button
+    hx-get="{% url 'load_form_modal' %}"
+    hx-target="#primary-modal-container"
+    hx-swap="innerHTML"
+  >
+    Open Form
+  </button>
+#}
+
+{% extends "components/modals/modal_base.html" %}
+{% load i18n %}
+
+{% block modal_body %}
+  <form id="{{ form_id|default:modal_id|add:'-form' }}"
+        hx-{{ submit_method|default:"post" }}="{{ submit_url }}"
+        hx-target="{{ target|default:'#content' }}"
+        {% if swap %}hx-swap="{{ swap }}"{% endif %}
+        {% if trigger %}hx-trigger="{{ trigger }}"{% endif %}
+        {% if enctype %}enctype="{{ enctype }}"{% endif %}
+        class="space-y-4"
+  >
+    {% csrf_token %}
+    
+    {% if form.non_field_errors %}
+      {% if use_form_components|default:True %}
+        {% include "components/forms/form_errors.html" with errors=form.non_field_errors %}
+      {% else %}
+        <div class="rounded-md bg-red-50 p-4 mb-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                {% trans "There were errors with your submission" %}
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc pl-5 space-y-1">
+                  {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+    
+    {% if use_form_components|default:True %}
+      {% for field in form %}
+        {% if field.field.widget.input_type == 'checkbox' %}
+          {% include "components/forms/checkbox.html" with field=field %}
+        {% elif field.field.widget.input_type == 'select' or field.field.widget.input_type == 'selectmultiple' %}
+          {% include "components/forms/select.html" with field=field %}
+        {% elif field.field.widget.input_type == 'textarea' %}
+          {% include "components/forms/textarea.html" with field=field %}
+        {% elif field.field.widget.input_type == 'radio' %}
+          {% include "components/forms/radio_set.html" with field=field %}
+        {% else %}
+          {% include "components/forms/text_input.html" with field=field %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% for field in form %}
+        <div class="form-group">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-red-600 text-sm mt-1">
+              {{ field.errors }}
+            </div>
+          {% endif %}
+          {% if field.help_text %}
+            <div class="text-gray-500 text-sm mt-1">
+              {{ field.help_text }}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    {% block form_extra_fields %}
+      {# Add any additional form fields here #}
+    {% endblock %}
+  </form>
+{% endblock modal_body %}
+
+{% block modal_footer %}
+  <button
+    type="button"
+    class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+    onclick="this.closest('.modal-container').innerHTML = ''"
+  >
+    {{ cancel_text|default:"Cancel" }}
+  </button>
+  
+  <button
+    type="button"
+    class="px-4 py-2 rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+    onclick="document.getElementById('{{ form_id|default:modal_id|add:'-form' }}').requestSubmit(); setTimeout(() => { if (!document.querySelector('.field-errors')) this.closest('.modal-container').innerHTML = '' }, 300)"
+  >
+    {{ submit_text|default:"Submit" }}
+  </button>
+{% endblock modal_footer %}
