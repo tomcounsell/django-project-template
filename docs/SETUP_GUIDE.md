@@ -11,7 +11,41 @@ Before you begin, ensure you have the following installed on your machine:
 - PostgreSQL 14+
 - Node.js 18+ and npm (for frontend assets)
 
-## Step 1: Clone the Repository
+## Automated Setup (Recommended)
+
+The project includes an automated setup script that handles most of the setup process for you:
+
+```bash
+# Clone the main repository
+git clone https://github.com/yudame/django-project-template.git
+
+# Change to the project directory
+cd django-project-template
+
+# Make the setup script executable
+chmod +x setup_local_env.sh
+
+# Run the setup script
+./setup_local_env.sh
+```
+
+The setup script will:
+1. Check prerequisites (Python, PostgreSQL, Node.js)
+2. Set up a Python virtual environment
+3. Install dependencies
+4. Create configuration files
+5. Set up the database
+6. Run migrations
+7. Prompt to create a superuser
+8. Set up frontend dependencies
+
+The script is idempotent, so it's safe to run multiple times. It tracks progress in a `.setup_progress` file to avoid repeating steps unnecessarily.
+
+## Manual Setup
+
+If you prefer to set up manually or need more control over the process, follow these steps:
+
+### Step 1: Clone the Repository
 
 ```bash
 # Clone the main repository
@@ -21,7 +55,7 @@ git clone https://github.com/yudame/django-project-template.git
 cd django-project-template
 ```
 
-## Step 2: Set Up Python Environment and Dependencies
+### Step 2: Set Up Python Environment and Dependencies
 
 ```bash
 # Create a virtual environment
@@ -40,7 +74,7 @@ pip install uv
 ./requirements/install.sh dev
 ```
 
-## Step 3: Set Up Environment Variables
+### Step 3: Set Up Environment Variables
 
 ```bash
 # Copy the local settings template
@@ -63,7 +97,7 @@ Important environment variables to configure in your `.env.local` file:
 - Third-party integration keys (Loops, Supabase, etc.)
 - Social authentication credentials
 
-## Step 4: Database Setup
+### Step 4: Database Setup
 
 ```bash
 # Create a PostgreSQL database
@@ -73,14 +107,14 @@ createdb django_project_template
 python manage.py migrate
 ```
 
-## Step 5: Create Superuser
+### Step 5: Create Superuser
 
 ```bash
 # Create an admin user
 python manage.py createsuperuser
 ```
 
-## Step 6: Run the Development Server
+### Step 6: Run the Development Server
 
 ```bash
 # Start the Django development server
@@ -89,14 +123,14 @@ python manage.py runserver
 
 The site should now be accessible at `http://127.0.0.1:8000/`
 
-## Step 7: Frontend Setup (if needed)
+### Step 7: Frontend Setup (if needed)
 
 ```bash
 # Install frontend dependencies
 npm install
 
 # Run Tailwind CSS in watch mode
-npm run dev
+npm run watch:css
 ```
 
 ## Alternative: Using Docker
