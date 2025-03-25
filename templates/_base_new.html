@@ -1,4 +1,5 @@
-{% load django_htmx %} {% load static %}
+{% load django_htmx %}
+{% load static %}
 
 {# 
   _base_new.html - Alternative Layout Template with Web Awesome Components
@@ -40,7 +41,7 @@
 
     <!--FAVICON-->
     <!--iOS and Android icons-->
-    <link rel="icon" href="{{ STATIC_URL }}assets/favicon.png" />
+    <link rel="icon" href="{% static 'assets/favicon.png' %}" />
 
     <title id="tab_title">Django Project Template {% if debug %}DEBUG{% endif %}</title>
 
@@ -63,7 +64,7 @@
     ></script>
 
     <!--BASE CSS-->
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css?v=2" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2" />
 
     <!-- Tailwind CSS will be added here later -->
     
@@ -118,7 +119,7 @@
 
     <!--Javascript Placed at the end of the document. Pages load faster. -->
     <!--BASE JS-->
-    <script src="{{ STATIC_URL }}js/base.js?v=1"></script>
+    <script src="{% static 'js/base.js' %}?v=1"></script>
     <!-- Component JS files will be added when implementing Tailwind -->
 
     <!--FOR TEMPLATES TO LOAD MORE JS-->
