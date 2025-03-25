@@ -1,5 +1,6 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
+from django.urls import reverse_lazy
 
 from .views import account
 from .views.teams.team_views import (
@@ -48,6 +49,56 @@ urlpatterns += [
     #     account.AccountCreateView.as_view(),
     #     name="account-create",
     # ),
+    
+    # Password reset routes
+    path(
+        "account/password/reset/",
+        auth_views.PasswordResetView.as_view(
+            template_name='account/password/reset.html',
+            email_template_name='account/password/reset_email.html',
+            success_url=reverse_lazy('public:password-reset-done')
+        ),
+        name="password-reset",
+    ),
+    path(
+        "account/password/reset/done/",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name='account/password/reset_done.html'
+        ),
+        name="password-reset-done",
+    ),
+    path(
+        "account/password/reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name='account/password/reset_confirm.html',
+            success_url=reverse_lazy('public:password-reset-complete')
+        ),
+        name="password-reset-confirm",
+    ),
+    path(
+        "account/password/reset/complete/",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name='account/password/reset_complete.html'
+        ),
+        name="password-reset-complete",
+    ),
+    
+    # Password change routes (for authenticated users)
+    path(
+        "account/password/change/",
+        auth_views.PasswordChangeView.as_view(
+            template_name='account/password/change.html',
+            success_url=reverse_lazy('public:password-change-done')
+        ),
+        name="password-change",
+    ),
+    path(
+        "account/password/change/done/",
+        auth_views.PasswordChangeDoneView.as_view(
+            template_name='account/password/change_done.html'
+        ),
+        name="password-change-done",
+    ),
 ]
 
 # Team URLs
