@@ -51,6 +51,6 @@ The common app should be used for any functionality that:
 ## Development Guidelines
 
 - All models should follow the behavior mixin pattern when appropriate
-- Follow naming conventions in `models/CONVENTIONS.md`
+- Follow naming conventions in [/docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md)
 - Write thorough tests for all models and utilities
 - Maintain backward compatibility when modifying core models

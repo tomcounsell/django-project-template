@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{# 
+  Account Settings Page
+  ====================
+  
+  Purpose:
+  Allows users to manage their account settings, including personal information
+  and password changes. This page is accessible only to authenticated users.
+  
+  Section 1: Basic Information
+  - First Name: User's first name
+  - Last Name: User's last name
+  - Email: User's email address (also serves as username)
+  - Save button: Updates the user's basic information
+  
+  Section 2: Password Management
+  - Current password: Verification of existing password
+  - New password: Field for entering a new password
+  - Confirm password: Verification field to prevent typos
+  - Update password button: Changes the user's password
+  - Error display: Shows password-related errors (mismatch, invalid format, etc.)
+  
+  User Experience:
+  - Segmented interface with clear section headers
+  - Validation feedback for form fields
+  - Separate submission buttons for each section to prevent unintended changes
+  - Clear error messaging for validation issues
+  
+  Integration:
+  Displays in the main content area of the base template, providing
+  access to account management functionality in a clean, organized interface.
+#}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block content %}
+
+<div>
+  <header>
+    <p>Basic Info</p>
+  </header>
+  <div>
+    <form method="post">
+      {% csrf_token %}
+      <div>
+        <div>
+          <div>
+            <label>First Name</label>
+            <div>
+              {{ user_form.first_name }}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <label>Last Name</label>
+            <div>
+              {{ user_form.last_name }}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <label>Email</label>
+            <div>
+              {{ user_form.email }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div>
+          <button type="submit">Save</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div>
+  <header>
+    <p>Change Password</p>
+  </header>
+
+  <div>
+    <form method="post">
+      {% load widget_tweaks %}{% csrf_token %}
+      <div>
+        <label>Current password</label>
+        <div>
+          {{ password_form.old_password }}
+        </div>
+        {% if password_form.old_password.errors %}
+          <p>{{ password_form.old_password.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div>
+        <label>New password</label>
+        <div>
+          {{ password_form.new_password1 }}
+        </div>
+        {% if password_form.new_password1.errors %}
+          <p>{{ password_form.new_password1.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div>
+        <label>Confirm new password</label>
+        <div>
+          {{ password_form.new_password2 }}
+        </div>
+        {% if password_form.new_password2.errors %}
+          <p>{{ password_form.new_password2.errors.0 }}</p>
+        {% endif %}
+      </div>
+      <div>
+        <div>
+          <button type="submit">Update password</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <footer>
+    {% if password_form.errors %}
+      {% for error in password_form.non_field_errors %}
+        <p>{{ error|escape }}</p>
+      {% endfor %}
+    {% endif %}
+  </footer>
+
+</div>
+
+{% endblock content %}

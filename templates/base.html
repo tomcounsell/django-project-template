@@ -1,0 +1,128 @@
+{% load django_htmx %}
+{% load static %}
+
+<!-- 
+  base.html - Primary Layout Template
+  ==================================
+  
+  Purpose:
+  This is the main layout template that provides the common structure for all pages.
+  It defines the HTML skeleton, imports necessary CSS/JS dependencies, and sets up
+  the standard blocks for content organization.
+  
+  Block Structure:
+  - title: Page title
+  - meta: Meta tags for SEO and social sharing
+  - extra_css: Page-specific CSS
+  - content: Main page content area
+  - aside: Sidebar content (optional)
+  - footer_content: Custom footer content (optional)
+  - scripts: Page-specific JavaScript
+-->
+
+<!DOCTYPE html>
+<html lang="en" data-csrf-token="{{ csrf_token }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'assets/favicon.png' %}" />
+  
+  <!-- Title -->
+  <title>{% block title %}Django Project Template{% endblock %}{% if debug %} (DEBUG){% endif %}</title>
+  
+  <!-- Meta Tags -->
+  <meta name="description" content="{% block meta_description %}A modern Django project template{% endblock %}">
+  {% block meta %}
+    <!-- Open Graph / Social Meta Tags -->
+    <meta property="og:title" content="{{ self.title }}">
+    <meta property="og:description" content="{{ self.meta_description }}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  {% endblock %}
+  
+  <!-- Core CSS -->
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/c83e8fd695.js" crossorigin="anonymous"></script>
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2">
+  
+  <!-- Page-specific CSS -->
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans antialiased" 
+      {% if debug %}hx-ext="debug"{% endif %}
+      onkeydown="if(event.key==='Escape'){const m=document.querySelector('#primary-modal-container .modal-overlay, #secondary-modal-container .modal-overlay');if(m)m.closest('.modal-container').innerHTML='';}"
+>
+  
+  <!-- Header/Navbar -->
+  {% block header %}
+    {% include "layout/navbar.html" %}
+  {% endblock %}
+  
+  <!-- Flash Messages -->
+  {% block messages %}
+    {% include "messages/toast.html" %}
+  {% endblock %}
+  
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto px-4 py-6 md:py-8" id="main" hx-history-elt>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      
+      <!-- Main Content Area -->
+      <div class="md:col-span-{% block content_width %}8{% endblock %}">
+        {% block content %}
+          <!-- Main content goes here -->
+        {% endblock %}
+      </div>
+      
+      <!-- Sidebar (if enabled) -->
+      {% block sidebar_enabled %}{% endblock %}
+      {% if sidebar_enabled|default:False or block.super %}
+        <aside class="md:col-span-4">
+          {% block aside %}
+            <!-- Sidebar content goes here -->
+          {% endblock %}
+        </aside>
+      {% endif %}
+      
+    </div>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8 mt-auto">
+    <div class="container mx-auto px-4">
+      {% block footer %}
+        {% include "layout/footer.html" %}
+      {% endblock %}
+    </div>
+  </footer>
+  
+  <!-- Modals System -->
+  {% include "layout/modals.html" %}
+  
+  <!-- Core JavaScript -->
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  {% if debug %}<script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>{% endif %}
+  {% django_htmx_script %}
+  
+  <!-- HyperScript (for declarative JavaScript) -->
+  <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+  
+  <!-- Base JavaScript -->
+  <script src="{% static 'js/base.js' %}?v=1"></script>
+  
+  <!-- Page-specific JavaScript -->
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -58,6 +58,10 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+coverage_html_report/
+**/coverage_html_report/
+apps/common/tests/coverage_html_report/
+apps/common/tests/coverage.xml
 
 # Translations
 *.mo
@@ -119,11 +123,7 @@ staticfiles/
 
 .DS_Store
 
-node_modules/
-static/vendor/bootstrap-theme/docs/
-static/vendor/bootstrap-theme/scss/
 *.rdb
-static/theme-dashboard.zip
 .idea/
 Pipfile
 .gcloudignore
@@ -134,8 +134,5 @@ datasets/
 *.pkl
 *tar..gz
 
-_toms_studies_/fast_ai/fastbook-master/
-apps/finance/_legacy_/
-/apps/finance/test.py
 static/temp/*
 .env.local

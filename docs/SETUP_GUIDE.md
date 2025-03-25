@@ -11,7 +11,41 @@ Before you begin, ensure you have the following installed on your machine:
 - PostgreSQL 14+
 - Node.js 18+ and npm (for frontend assets)
 
-## Step 1: Clone the Repository
+## Automated Setup (Recommended)
+
+The project includes an automated setup script that handles most of the setup process for you:
+
+```bash
+# Clone the main repository
+git clone https://github.com/yudame/django-project-template.git
+
+# Change to the project directory
+cd django-project-template
+
+# Make the setup script executable
+chmod +x setup_local_env.sh
+
+# Run the setup script (with source to enable virtual environment activation)
+source setup_local_env.sh
+```
+
+The setup script will:
+1. Check prerequisites (Python, PostgreSQL, Node.js)
+2. Set up a Python virtual environment
+3. Install dependencies
+4. Create configuration files
+5. Set up the database
+6. Run migrations
+7. Prompt to create a superuser
+8. Set up frontend dependencies
+
+The script is idempotent, so it's safe to run multiple times. It tracks progress in a `.setup_progress` file to avoid repeating steps unnecessarily.
+
+## Manual Setup
+
+If you prefer to set up manually or need more control over the process, follow these steps:
+
+### Step 1: Clone the Repository
 
 ```bash
 # Clone the main repository
@@ -21,7 +55,7 @@ git clone https://github.com/yudame/django-project-template.git
 cd django-project-template
 ```
 
-## Step 2: Set Up Python Environment and Dependencies
+### Step 2: Set Up Python Environment and Dependencies
 
 ```bash
 # Create a virtual environment
@@ -40,26 +74,30 @@ pip install uv
 ./requirements/install.sh dev
 ```
 
-## Step 3: Set Up Environment Variables
+### Step 3: Set Up Environment Variables
 
 ```bash
-# Create a local environment file
-touch .env.local
+# Copy the local settings template
+cp settings/local_template.py settings/local.py
+
+# Copy the environment variables example file
+cp .env.example .env.local
 
 # Edit the file with your specific configuration
 nano .env.local  # or use your preferred editor
 ```
 
-Example of what to include in your `.env.local` file:
-
-Important environment variables to configure:
+Important environment variables to configure in your `.env.local` file:
 
 - `DEBUG`: Set to `True` for development
-- `SECRET_KEY`: A random string for crypto operations
-- `DATABASE_URL`: PostgreSQL connection string
+- `SECRET_KEY`: A random string (50 characters) for crypto operations
+- `DATABASE_URL`: PostgreSQL connection string (or DB_NAME, DB_USER, etc.)
 - `DJANGO_SETTINGS_MODULE`: Set to `settings` for development
+- AWS credentials (if using S3)
+- Third-party integration keys (Loops, Supabase, etc.)
+- Social authentication credentials
 
-## Step 4: Database Setup
+### Step 4: Database Setup
 
 ```bash
 # Create a PostgreSQL database
@@ -69,14 +107,14 @@ createdb django_project_template
 python manage.py migrate
 ```
 
-## Step 5: Create Superuser
+### Step 5: Create Superuser
 
 ```bash
 # Create an admin user
 python manage.py createsuperuser
 ```
 
-## Step 6: Run the Development Server
+### Step 6: Run the Development Server
 
 ```bash
 # Start the Django development server
@@ -85,15 +123,32 @@ python manage.py runserver
 
 The site should now be accessible at `http://127.0.0.1:8000/`
 
-## Step 7: Frontend Setup (if needed)
+### Step 7: Frontend Setup (if needed)
 
 ```bash
 # Install frontend dependencies
 npm install
 
 # Run Tailwind CSS in watch mode
-npm run dev
+npm run watch:css
 ```
+
+## Alternative: Using Docker
+
+If you prefer to use Docker for development:
+
+```bash
+# Create a .env.local file from the example
+cp .env.example .env.local
+
+# Build and start the containers
+docker-compose up -d
+
+# Create a superuser
+docker-compose exec web python manage.py createsuperuser
+```
+
+Visit http://127.0.0.1:8000/ to see your Docker-based application running.
 
 ## Common Development Tasks
 
@@ -154,6 +209,18 @@ git push -u origin feature/new-feature-name
 # Create a pull request (on GitHub website)
 ```
 
+### Deployment
+
+For deployments to platforms like Render or Heroku:
+
+```bash
+# Generate the requirements.txt file needed for deployment
+./requirements/generate_deployment_requirements.sh
+
+# This will create a requirements.txt file in the project root 
+# which can be used by deployment platforms
+```
+
 ## Project Structure Overview
 
 ### Key Directories
@@ -205,8 +272,8 @@ If you need assistance:
 ## Next Steps
 
 After setting up your development environment:
-1. Review the architecture and code conventions in `CONTRIBUTING.md`
+1. Review the architecture and code conventions in [CONTRIBUTING.md](CONTRIBUTING.md)
 2. Explore the behavior mixins in `apps/common/behaviors/`
 3. Look at existing models to understand patterns and conventions
 4. Read up on HTMX integration for adding interactive frontend features
-5. Check the TODO.md file to identify areas where you can contribute
+5. Check the [TODO.md](TODO.md) file to identify areas where you can contribute

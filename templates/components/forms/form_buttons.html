@@ -1,0 +1,36 @@
+{% comment %}
+Form Buttons Component
+
+Provides consistent layout and styling for form action buttons.
+
+Parameters:
+- submit_text: Text for the submit button (optional, defaults to "Save")
+- cancel_url: URL for the cancel button (optional, if provided a cancel button will be shown)
+- cancel_text: Text for the cancel button (optional, defaults to "Cancel")
+- align: Alignment of the buttons (optional, "left", "center", "right", "between", defaults to "right")
+- submit_class: Additional CSS classes for submit button (optional)
+- cancel_class: Additional CSS classes for cancel button (optional)
+
+Usage:
+{% include "components/forms/form_buttons.html" with submit_text="Create Account" %}
+{% include "components/forms/form_buttons.html" with submit_text="Update" cancel_url=back_url %}
+{% include "components/forms/form_buttons.html" with submit_text="Save Changes" cancel_url=back_url cancel_text="Go Back" align="between" %}
+{% endcomment %}
+
+{% with btn_align=align|default:"right" %}
+<div class="mt-6 flex {% if btn_align == 'center' %}justify-center{% elif btn_align == 'left' %}justify-start{% elif btn_align == 'right' %}justify-end{% elif btn_align == 'between' %}justify-between{% endif %} 
+            items-center space-x-4">
+  
+  {% if cancel_url %}
+    <a href="{{ cancel_url }}" 
+       class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md {{ cancel_class }}">
+      {{ cancel_text|default:"Cancel" }}
+    </a>
+  {% endif %}
+  
+  <button type="submit" 
+          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md {{ submit_class }}">
+    {{ submit_text|default:"Save" }}
+  </button>
+</div>
+{% endwith %}
