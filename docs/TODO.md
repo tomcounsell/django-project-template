@@ -19,8 +19,8 @@
 - [✅] Update docs accordingly to reflect the change on only use root template directory
 - [✅] Consolidate static files from apps/public/static to root static directory
 - [✅] Update docs accordingly to reflect the change on only use root static directory
-- [ ] Update static file references in templates
-- [ ] Remove "dont_put_things_here.txt" from static directory
+- [✅] Update static file references in templates
+- [✅] Remove "dont_put_things_here.txt" from static directory (file not found/already removed)
 - [ ] Audit {% block _ %} and {% endblock _ %} in templates and use best practices
   - [ ] {% block content %} is the standard block for main content
   - [ ] additional blocks for header, footer, navbar, aside, etc.
