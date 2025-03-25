@@ -42,6 +42,7 @@ PROJECT_APPS = [
     'apps.communication',
     'apps.api',
     'apps.public',  # for web front-end
+    'apps.ai',  # AI integrations and agents
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
