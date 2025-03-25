@@ -4,12 +4,11 @@ This document outlines the conventions and best practices for Django templates i
 
 ## Directory Structure
 
-Templates are organized in two primary locations:
+Templates are organized in a single location:
 
-- `/templates`: Global templates used across multiple apps
-- `/apps/public/templates`: Public frontend templates (being migrated to `/templates`)
+- `/templates`: All templates for the project
 
-All new templates should be placed in the root `/templates` directory, not in app-specific directories.
+Templates should never be placed in app-specific directories to maintain consistency and simplify template inheritance.
 
 ## Template Types
 
@@ -99,7 +98,7 @@ For out-of-band (OOB) updates, use the `hx-swap-oob` attribute:
 ## Naming Conventions
 
 - **Files**: Use lowercase with underscores for filenames (e.g., `user_profile.html`, `team_list.html`)
-- **Templates in apps**: Should follow the format `{app_name}/{feature}/{name}.html`
+- **Template Organization**: Templates should be organized by feature or purpose, such as `pages/`, `account/`, `layout/`, etc.
 - **CSS Classes**: Use kebab-case (e.g., `user-card`, `nav-item`)
 - **HTML IDs**: Use snake_case (e.g., `user_profile`, `team_list`)
 - **Block Names**: Use lowercase with underscores (e.g., `{% block page_content %}`)
