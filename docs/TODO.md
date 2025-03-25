@@ -61,7 +61,9 @@
 - [✅] Add apps.ai to INSTALLED_APPS
 - [✅] Audit apps/communication for models and functionality to merge
 - [✅] Migrate communication models to apps/common
-- [ ] Remove apps/communication after successful migration
+- [✅] Remove apps/communication after successful migration
+
+Note: The Telegram integration references a TelegramBotMembership model that will need to be reimplemented separately.
 
 ## Documentation Tasks
 - [✅] Document HTMX integration patterns with examples

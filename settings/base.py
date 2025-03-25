@@ -39,7 +39,6 @@ PROJECT_APPS = [
     'theme',  # django-tailwind app
     'apps.common',
     'apps.integration',
-    'apps.communication',
     'apps.api',
     'apps.public',  # for web front-end
     'apps.ai',  # AI integrations and agents
