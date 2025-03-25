@@ -14,11 +14,9 @@ from django.db import models
 from django.utils.text import slugify
 
 from apps.common.models import (
-    Address, BlogPost, City, Country, Currency, Document,
-    Image, Note, Team, TeamMember, Upload
+    Address, BlogPost, City, Country, Currency, Document, Email,
+    Image, Note, SMS, Team, TeamMember, Upload
 )
-from apps.communication.models.email import Email
-from apps.communication.models.sms import SMS
 
 User = get_user_model()
 T = TypeVar('T', bound=models.Model)
