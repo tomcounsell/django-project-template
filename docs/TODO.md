@@ -49,7 +49,7 @@
 
 ### 4. User Experience Improvements
 - [✅] Implement basic Team-related views (create, join, manage)
-- [ ] Add user authentication templates (reset password, etc.)
+- [✅] Add user authentication templates (reset password, etc.)
 - [ ] Create reusable form components
 - [ ] Modernize base templates with best practices
 
