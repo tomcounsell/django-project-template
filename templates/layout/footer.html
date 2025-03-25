@@ -1,33 +1,79 @@
+{% load static %}
+
 {# 
   Footer Component
-  ==============
+  ===============
   
   Purpose:
-  Site footer that appears at the bottom of all pages. Provides copyright
-  information, legal links, and attribution for the site.
-  
-  Content:
-  - Copyright notice: Shows the current year and site name
-  - Site attribution: "served by Django Project Template"
-  - (Future: Could include links to terms, privacy policy, etc.)
-  
-  Appearance:
-  - Subtle, minimal design that doesn't compete with page content
-  - Right-aligned text with smaller font size
-  - Full width with consistent positioning across pages
-  
-  Integration:
-  This component is included in the base template and appears at the
-  bottom of every page, providing consistent legal information and branding.
+  Site-wide footer that appears at the bottom of all pages.
+  Provides links to important pages, legal information, and site metadata.
 #}
 
-<footer style="position: relative; bottom: 0; width: 100%;">
-  <div style="text-align: right; font-size: 0.8em;">
-    <p>
-      served by
-      <a href="#" target="_blank">Django Project Template</a>
-      ©
-      <span>{% now "Y" %}</span>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+  <!-- Company/Project Info -->
+  <div class="md:col-span-2">
+    <div class="flex items-center mb-4">
+      <img class="h-8 w-auto mr-2" src="{% static 'assets/favicon.png' %}" alt="Logo">
+      <span class="text-white font-medium text-lg">Django Project</span>
+    </div>
+    <p class="text-gray-300 mb-4">
+      A modern Django project template with best practices, HTMX integration, and comprehensive test coverage.
+    </p>
+    <p class="text-gray-400 text-sm">
+      &copy; {% now "Y" %} Django Project Template. All rights reserved.
     </p>
   </div>
-</footer>
+  
+  <!-- Quick Links -->
+  <div>
+    <h3 class="text-white font-semibold mb-4">Resources</h3>
+    <ul class="space-y-2">
+      <li>
+        <a href="https://docs.djangoproject.com/" class="text-gray-300 hover:text-white transition">
+          Django Documentation
+        </a>
+      </li>
+      <li>
+        <a href="https://htmx.org/docs/" class="text-gray-300 hover:text-white transition">
+          HTMX Documentation
+        </a>
+      </li>
+      <li>
+        <a href="https://tailwindcss.com/docs" class="text-gray-300 hover:text-white transition">
+          Tailwind CSS
+        </a>
+      </li>
+      {% if user.is_staff %}
+        <li>
+          <a href="{% url 'admin:index' %}" class="text-gray-300 hover:text-white transition">
+            Admin Dashboard
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+  
+  <!-- Legal/Policy Links -->
+  <div>
+    <h3 class="text-white font-semibold mb-4">Legal</h3>
+    <ul class="space-y-2">
+      <li>
+        <a href="#" class="text-gray-300 hover:text-white transition">
+          Privacy Policy
+        </a>
+      </li>
+      <li>
+        <a href="#" class="text-gray-300 hover:text-white transition">
+          Terms of Service
+        </a>
+      </li>
+      <li>
+        <a href="#" class="text-gray-300 hover:text-white transition">
+          Cookie Policy
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+{% block footer_content %}{% endblock %}
