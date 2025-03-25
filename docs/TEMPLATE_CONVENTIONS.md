@@ -116,6 +116,14 @@ class ProfileView(MainContentView):
 - Mobile-first approach (default styles are for mobile)
 - Test all templates on multiple screen sizes
 
+### Tailwind CSS Limitations with Django Templates
+
+- **IMPORTANT**: Tailwind cannot recognize dynamic class names created with Django template syntax
+- ❌ **Avoid**: `md:col-span-{% block content_width %}8{% endblock %}` 
+- ✅ **Instead**: Include all potential variants: `md:col-span-8 md:col-span-9 md:col-span-10`
+- ✅ **Alternative**: Use CSS custom properties or JavaScript for dynamic values
+- This is because Tailwind performs static analysis at build time and cannot process Django template variables or blocks
+
 ## Best Practices
 
 1. **Template Names**:

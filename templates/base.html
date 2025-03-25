@@ -101,11 +101,23 @@
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
 
     <!-- Main Content Area -->
-    <div class="md:col-span-{% block content_width %}8{% endblock %}">
+    <div class="md:col-span-8 md:col-span-9 md:col-span-10 md:col-span-12">
       {% block content %}
         <!-- Main content goes here -->
       {% endblock %}
     </div>
+    
+    <script>
+      // Apply the correct column span based on the content type
+      document.addEventListener('DOMContentLoaded', function() {
+        const contentDiv = document.querySelector('main .md\\:col-span-8');
+        const sidebarEnabled = {% block content_width %}8{% endblock %};
+        
+        if (contentDiv) {
+          contentDiv.className = contentDiv.className.replace(/md:col-span-\d+/g, `md:col-span-${sidebarEnabled}`);
+        }
+      });
+    </script>
 
     <!-- Sidebar (if enabled) -->
     {% block sidebar_enabled %}{% endblock %}

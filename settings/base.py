@@ -36,7 +36,7 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
-    'theme',
+    'theme',  # django-tailwind app
     'apps.common',
     'apps.integration',
     'apps.communication',
