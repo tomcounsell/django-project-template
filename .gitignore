@@ -58,6 +58,10 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+coverage_html_report/
+**/coverage_html_report/
+apps/common/tests/coverage_html_report/
+apps/common/tests/coverage.xml
 
 # Translations
 *.mo
