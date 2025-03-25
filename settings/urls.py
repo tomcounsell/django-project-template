@@ -9,7 +9,6 @@ urlpatterns = [
     path("", include("apps.public.urls", namespace="public")),
 ]
 
-
 # # Django Rest Framework API Docs
 # API_TITLE, API_DESCRIPTION = "ProjectName API", ""
 # urlpatterns += [

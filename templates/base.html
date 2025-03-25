@@ -25,15 +25,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- Favicon -->
-  <link rel="icon" href="{% static 'assets/favicon.png' %}" />
-  
+  <link rel="icon" href="{% static 'assets/favicon.png' %}"/>
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2"/>
+
   <!-- Title -->
   <title>{% block title %}Django Project Template{% endblock %}{% if debug %} (DEBUG){% endif %}</title>
-  
+
   <!-- Meta Tags -->
   <meta name="description" content="{% block meta_description %}A modern Django project template{% endblock %}">
+
   {% block meta %}
     <!-- Open Graph / Social Meta Tags -->
     <meta property="og:title" content="{{ self.title }}">
@@ -41,88 +45,107 @@
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
   {% endblock %}
-  
+
   <!-- Core CSS -->
-  <!-- Tailwind CSS -->
-  <link rel="stylesheet" href="{% static 'css/output.css' %}">
-  
+
+  <!--TAILWIND CSS-->
+  {% load static tailwind_tags %}
+  {% tailwind_css %}
+  <!--FOR TEMPLATES TO LOAD MORE CSS-->
+  {% block css %}{% endblock css %}
+  <!-- DJANGO COMPONENT'S CSS -->
+  {% component_css_dependencies %}
+
+  <!-- JQUERY -->
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
+          integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+
+  <!--HTMX-->
+  <script src="https://unpkg.com/htmx.org@2.0.3"
+          integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
+          crossorigin="anonymous"></script>
+  {% django_htmx_script %}
+
+  <!-- APPLICATION WEB COMPONENTS -->
+  <script type="module" src="{% static 'webcomponents/_webcomponents.js' %}?v=2"></script>
+
+  <!--BASE JS-->
+  <script src="{% static 'js/base.js' %}?v=3" defer></script>
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  
+
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/c83e8fd695.js" crossorigin="anonymous"></script>
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2">
-  
+
   <!-- Page-specific CSS -->
   {% block extra_css %}{% endblock %}
 </head>
 
-<body class="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans antialiased" 
+<body class="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans antialiased"
       {% if debug %}hx-ext="debug"{% endif %}
       onkeydown="if(event.key==='Escape'){const m=document.querySelector('#primary-modal-container .modal-overlay, #secondary-modal-container .modal-overlay');if(m)m.closest('.modal-container').innerHTML='';}"
 >
-  
-  <!-- Header/Navbar -->
-  {% block header %}
-    {% include "layout/navbar.html" %}
-  {% endblock %}
-  
-  <!-- Flash Messages -->
-  {% block messages %}
-    {% include "messages/toast.html" %}
-  {% endblock %}
-  
-  <!-- Main Content -->
-  <main class="flex-grow container mx-auto px-4 py-6 md:py-8" id="main" hx-history-elt>
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      
-      <!-- Main Content Area -->
-      <div class="md:col-span-{% block content_width %}8{% endblock %}">
-        {% block content %}
-          <!-- Main content goes here -->
-        {% endblock %}
-      </div>
-      
-      <!-- Sidebar (if enabled) -->
-      {% block sidebar_enabled %}{% endblock %}
-      {% if sidebar_enabled|default:False or block.super %}
-        <aside class="md:col-span-4">
-          {% block aside %}
-            <!-- Sidebar content goes here -->
-          {% endblock %}
-        </aside>
-      {% endif %}
-      
-    </div>
-  </main>
-  
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-8 mt-auto">
-    <div class="container mx-auto px-4">
-      {% block footer %}
-        {% include "layout/footer.html" %}
+
+<!-- Header/Navbar -->
+{% block header %}
+  {% include "layout/navbar.html" %}
+{% endblock %}
+
+<!-- Flash Messages -->
+{% block messages %}
+  {% include "messages/toast.html" %}
+{% endblock %}
+
+<!-- Main Content -->
+<main class="flex-grow container mx-auto px-4 py-6 md:py-8" id="main" hx-history-elt>
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+    <!-- Main Content Area -->
+    <div class="md:col-span-{% block content_width %}8{% endblock %}">
+      {% block content %}
+        <!-- Main content goes here -->
       {% endblock %}
     </div>
-  </footer>
-  
-  <!-- Modals System -->
-  {% include "layout/modals.html" %}
-  
-  <!-- Core JavaScript -->
-  <!-- HTMX -->
-  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-  {% if debug %}<script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>{% endif %}
-  {% django_htmx_script %}
-  
-  <!-- HyperScript (for declarative JavaScript) -->
-  <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-  
-  <!-- Base JavaScript -->
-  <script src="{% static 'js/base.js' %}?v=1"></script>
-  
-  <!-- Page-specific JavaScript -->
-  {% block scripts %}{% endblock %}
+
+    <!-- Sidebar (if enabled) -->
+    {% block sidebar_enabled %}{% endblock %}
+    {% if sidebar_enabled|default:False or block.super %}
+      <aside class="md:col-span-4">
+        {% block aside %}
+          <!-- Sidebar content goes here -->
+        {% endblock %}
+      </aside>
+    {% endif %}
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8 mt-auto">
+  <div class="container mx-auto px-4">
+    {% block footer %}
+      {% include "layout/footer.html" %}
+    {% endblock %}
+  </div>
+</footer>
+
+<!-- Modals System -->
+{% include "layout/modals.html" %}
+
+<!-- Core JavaScript -->
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@1.9.6"></script>
+{% if debug %}
+  <script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>{% endif %}
+{% django_htmx_script %}
+
+<!-- HyperScript (for declarative JavaScript) -->
+<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+
+<!-- Base JavaScript -->
+<script src="{% static 'js/base.js' %}?v=1"></script>
+
+<!-- Page-specific JavaScript -->
+{% block scripts %}{% endblock %}
 </body>
 </html>

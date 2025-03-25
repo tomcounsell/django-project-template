@@ -2,6 +2,7 @@
 django-browser-reload
 Werkzeug
 aider-chat
+django-tailwind[reload]
 pytest
 pytest-django
 pytest-cov

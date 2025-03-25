@@ -2,13 +2,14 @@
 Core Django settings common to all environments.
 """
 import mimetypes
-import os
-from pathlib import Path
 
-from settings.env import BASE_DIR, DEBUG, LOCAL, PRODUCTION, STAGE, HOSTNAME
+from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
 
 # Application definition
 DJANGO_APPS = [
+    "unfold",  # before django.contrib.admin
+    # "unfold.contrib.filters",  # Optional: for Unfold filters
+    # "unfold.contrib.forms",  # Optional: for Unfold form components
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -30,20 +31,24 @@ THIRD_PARTY_APPS = [
     "rest_framework_api_key",
     "django_filters",
     "django_htmx",
-    "unfold",  # Django Unfold for admin site
-    "unfold.contrib.filters",  # Optional: for Unfold filters
-    "unfold.contrib.forms",  # Optional: for Unfold form components
+    "django_components",
+    "tailwind",
 ]
 
 PROJECT_APPS = [
+    'theme',
     'apps.common',
-    # 'apps.integration',
+    'apps.integration',
     'apps.communication',
+    'apps.api',
     'apps.public',  # for web front-end
-    # 'apps.api',  # for API
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
+if LOCAL:
+    INSTALLED_APPS += [
+        "django_browser_reload",
+    ]
 SITE_ID = 1
 
 # Middleware configuration
@@ -64,6 +69,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    "django_components.middleware.ComponentDependencyMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 # URL configuration
@@ -77,7 +84,6 @@ TEMPLATES = [
         "DIRS": [
             BASE_DIR / "templates",
         ],
-        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -87,6 +93,21 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.contrib.messages.context_processors.messages"
             ],
+            "loaders": [
+                (
+                    'django.template.loaders.cached.Loader', [
+                        # Default Django loader
+                        'django.template.loaders.filesystem.Loader',
+                        # Including this is the same as APP_DIRS=True
+                        'django.template.loaders.app_directories.Loader',
+                        # Components loader
+                        'django_components.template_loader.Loader',
+                    ]
+                )
+            ],
+            "builtins": [
+                'django_components.templatetags.component_tags',
+            ]
         },
     },
 ]
@@ -96,8 +117,17 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    # Removed app-specific static directory as per consolidation in TODO.md
+    # Removed app-specific static directory for consolidation
 ]
+
+STATICFILES_FINDERS = [
+    # Default finders
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # Django-Components
+    # "django_components.finders.ComponentsFileSystemFinder",
+]
+
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 mimetypes.add_type("text/javascript", ".js", True)
@@ -140,6 +170,24 @@ REQUEST_IGNORE_PATHS = (
     r'^admin/',
 )
 
+# Django-Components
+COMPONENTS = {
+    "dirs": [
+        BASE_DIR / "apps" / "public" / "components",
+    ],
+    "app_dirs": [],
+    "reload_on_template_change": True,
+}
+
+
+# Tailwind CSS settings
+TAILWIND_APP_NAME = 'theme'
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+NPM_BIN_PATH = "npm"
+
 # Django Unfold settings
 UNFOLD = {
     "SITE_TITLE": "ProjectName Admin",
@@ -149,7 +197,7 @@ UNFOLD = {
     "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",  # Customize dashboard
     "STYLES": [
         "css/output.css",  # Tailwind CSS output file
-    ],  
+    ],
     "SCRIPTS": [],  # Additional JS files to include
     "SIDEBAR": {
         "show_search": True,  # Show search in sidebar
