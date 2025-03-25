@@ -48,7 +48,7 @@
 - [✅] Setup pre-commit hooks for code quality (black, isort, flake8, mypy)
 
 ### 4. User Experience Improvements
-- [ ] Implement basic Team-related views (create, join, manage)
+- [✅] Implement basic Team-related views (create, join, manage)
 - [ ] Add user authentication templates (reset password, etc.)
 - [ ] Create reusable form components
 - [ ] Modernize base templates with best practices
