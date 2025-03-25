@@ -9,6 +9,10 @@
 - ✅ Implemented Team models with permissions system
 - ✅ Removed component framework dependencies
 - ✅ Upgraded to uv for dependency management
+- ✅ Audit template blocks and implement best practices
+- ✅ Reorganize templates for better HTMX integration
+- ✅ Add API endpoint tests with APITestCase
+- ✅ Add view tests with proper request mocking
 
 ## Current Priority Tasks
 
@@ -35,7 +39,7 @@
 
 ### 2. Extend Test Coverage
 - [✅] Add API endpoint tests with APITestCase
-- [ ] Add view tests with proper request mocking
+- [✅] Add view tests with proper request mocking
 - [ ] Create comprehensive test fixtures for all models
 
 ### 3. Dependency Management Improvements
@@ -59,7 +63,7 @@
 - [ ] Remove apps/communication after successful migration
 
 ## Documentation Tasks
-- [ ] Document HTMX integration patterns with examples
+- [✅] Document HTMX integration patterns with examples
 - [ ] Add API documentation with OpenAPI/Swagger
 - [ ] Create architecture diagram showing app relationships
 
