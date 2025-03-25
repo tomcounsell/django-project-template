@@ -1,0 +1,50 @@
+{% extends "partials/modals/_modal_base.html" %}
+
+{# 
+  Secondary Modal Partial
+  ======================
+  
+  Purpose:
+  Secondary modal dialog that sits at a higher z-index.
+  Use when you need a modal on top of another modal.
+  
+  Context Variables:
+  - modal_id: Unique ID for the modal (default: "secondary-modal")
+  - modal_title: Dialog title (required)
+  - modal_size: Size variant (options: 'sm', 'md', 'lg', 'xl', default: 'md')
+  - z_index: Z-index value (default: 1100, higher than primary modal)
+  
+  Blocks:
+  - modal_body: Main content area (must override)
+  - modal_footer: Footer with actions (must override)
+  
+  HTMX Integration:
+  Load this modal dynamically:
+  
+  <button
+    hx-get="{% url 'secondary_modal_view' %}"
+    hx-target="#secondary-modal-container"
+    hx-swap="innerHTML"
+  >
+    Open Secondary Modal
+  </button>
+  <div id="secondary-modal-container"></div>
+#}
+
+{% block content %}
+{{ block.super }}
+{% endblock content %}
+
+{% block modal_header %}
+<div class="modal-header modal-header-secondary">
+  <h3 id="{{ modal_id|default:'secondary-modal' }}-title">{{ modal_title }}</h3>
+  <button 
+    type="button" 
+    class="modal-close-button"
+    aria-label="Close"
+    onclick="this.closest('.modal-overlay').remove()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endblock modal_header %}

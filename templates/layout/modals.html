@@ -1,0 +1,24 @@
+{# 
+  Modal Containers
+  ===============
+  
+  Purpose:
+  Provides containers for primary and secondary modals.
+  Include this partial in your base layout template.
+  
+  Usage:
+  1. Include this in your base template:
+     {% include "layout/modals.html" %}
+     
+  2. Target the modals with HTMX:
+     - For primary modal: hx-target="#primary-modal-container"
+     - For secondary modal: hx-target="#secondary-modal-container"
+     
+  3. Always use hx-swap="innerHTML" when loading modals
+#}
+
+<!-- Primary Modal Container -->
+<div id="primary-modal-container"></div>
+
+<!-- Secondary Modal Container (higher z-index) -->
+<div id="secondary-modal-container"></div>
