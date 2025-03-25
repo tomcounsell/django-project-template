@@ -13,8 +13,8 @@
 ## Current Priority Tasks
 
 ### 1. Template and Static File Organization
-- [ ] Audit all app-level template directories and create migration plan
-- [ ] Move templates from apps/public/templates to root templates directory
+- [✅] Audit all app-level template directories and create migration plan
+- [✅] Move templates from apps/public/templates to root templates directory
 - [ ] Update template references in views and URL configurations
 - [ ] Update docs accordingly to reflect the change on only use root template directory
 - [ ] Consolidate static files from apps/public/static to root static directory
