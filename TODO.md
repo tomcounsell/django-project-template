@@ -13,12 +13,12 @@
 ## Current Priority Tasks
 
 ### 1. Template and Static File Organization
-- [ ] Audit all app-level template directories and create migration plan
-- [ ] Move templates from apps/public/templates to root templates directory
-- [ ] Update template references in views and URL configurations
-- [ ] Consolidate static files from apps/public/static to root static directory
-- [ ] Update static file references in templates
-- [ ] Remove "dont_put_things_here.txt" from static directory
+- [x] Audit all app-level template directories and create migration plan
+- [x] Move templates from apps/public/templates to root templates directory
+- [x] Update template references in views and URL configurations
+- [x] Consolidate static files from apps/public/static to root static directory
+- [x] Update static file references in templates
+- [x] Remove "dont_put_things_here.txt" from static directory
 - [ ] Reorganize templates for better HTMX integration
   - [ ] Create dedicated partial template directory structure
   - [ ] Implement standardized naming convention for partials
