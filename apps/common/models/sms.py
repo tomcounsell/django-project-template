@@ -9,6 +9,7 @@ class SMS(timestampable.Timestampable, models.Model):
     SMS model for storing text messages and their metadata.
     Used for sending SMS, tracking delivery status, and logging.
     """
+
     to_number = models.CharField(max_length=15)
     from_number = models.CharField(max_length=15, null=True, blank=True)
     body = models.TextField(default="")
@@ -28,17 +29,17 @@ class SMS(timestampable.Timestampable, models.Model):
     def mark_as_sent(self):
         """Marks the SMS as having been sent."""
         self.sent_at = timezone.now()
-        self.save(update_fields=['sent_at'])
+        self.save(update_fields=["sent_at"])
 
     def mark_as_read(self):
         """Marks the SMS as having been read by the recipient."""
         self.read_at = timezone.now()
-        self.save(update_fields=['read_at'])
+        self.save(update_fields=["read_at"])
 
     def send(self):
         """
         Sends the SMS via SMS service integration.
-        
+
         Note: This is a placeholder method. In a real implementation,
         this would integrate with a SMS service provider like Twilio.
         """
