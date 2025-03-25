@@ -69,6 +69,7 @@ For detailed conventions on templates and views, see:
 - [docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md) - Model conventions
 - [docs/TEMPLATE_CONVENTIONS.md](/docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
 - [docs/VIEW_CONVENTIONS.md](/docs/VIEW_CONVENTIONS.md) - View classes and HTMX integration
+- [docs/TEST_CONVENTIONS.md](/docs/TEST_CONVENTIONS.md) - Testing practices and organization
 
 ## Development Process
 1. Check [docs/TODO.md](/docs/TODO.md) to identify next priority item
