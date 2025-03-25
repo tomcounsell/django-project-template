@@ -26,10 +26,10 @@
   - [✅] additional blocks for header, footer, navbar, aside, etc.
   - [✅] Add comments to explain block usage
   - [✅] Document the use of blocks in docs/TEMPLATE_CONVENTIONS.md
-- [ ] Reorganize templates for better HTMX integration
-  - [ ] Create dedicated partial template directory structure
-  - [ ] Implement standardized naming convention for partials
-  - [ ] Add template documentation in comments
+- [✅] Reorganize templates for better HTMX integration
+  - [✅] Create dedicated partial template directory structure
+  - [✅] Implement standardized naming convention for partials
+  - [✅] Add template documentation in comments
 - [✅] Document HTMX integration patterns with examples in docs/VIEW_CONVENTIONS.md and docs/TEMPLATE_CONVENTIONS.md
 - [✅] Update documentation on template patterns
 

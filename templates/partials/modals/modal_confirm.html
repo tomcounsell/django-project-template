@@ -1,0 +1,73 @@
+{% extends "partials/_partial_base.html" %}
+
+{# 
+  Confirmation Modal Partial
+  =========================
+  
+  Purpose:
+  Provides a reusable confirmation dialog for actions that need user verification.
+  This partial can be loaded dynamically via HTMX.
+  
+  Context Variables:
+  - title: Modal title text (required)
+  - message: Confirmation message to display (required)
+  - confirm_url: URL to submit the confirmation to (required)
+  - confirm_method: HTTP method for confirmation (default: 'post')
+  - confirm_text: Text for confirm button (default: 'Confirm')
+  - cancel_text: Text for cancel button (default: 'Cancel')
+  
+  HTMX Integration:
+  - Modal is loaded via HTMX into a target element
+  - Confirm button triggers specified action via HTMX
+  - Cancel button removes modal
+  
+  Usage:
+  <button
+    hx-get="{% url 'confirm_delete' item.id %}"
+    hx-target="#modal-container"
+  >
+    Delete Item
+  </button>
+  <div id="modal-container"></div>
+#}
+
+{% block content %}
+<div 
+  id="modal-container"
+  class="modal-overlay"
+  _="on click if event.target.id == 'modal-container' then remove me"
+>
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3>{{ title|default:"Confirm Action" }}</h3>
+      <button 
+        type="button" 
+        class="close-button"
+        _="on click remove closest .modal-overlay"
+      >×</button>
+    </div>
+    
+    <div class="modal-body">
+      <p>{{ message }}</p>
+    </div>
+    
+    <div class="modal-footer">
+      <button
+        class="btn-secondary"
+        _="on click remove closest .modal-overlay"
+      >
+        {{ cancel_text|default:"Cancel" }}
+      </button>
+      
+      <button
+        class="btn-primary"
+        hx-{{ confirm_method|default:"post" }}="{{ confirm_url }}"
+        hx-target="{{ target|default:"#content" }}"
+        {% if swap %}hx-swap="{{ swap }}"{% endif %}
+      >
+        {{ confirm_text|default:"Confirm" }}
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock content %}
