@@ -1,5 +1,7 @@
 # Django Project Template - Development Guide
 
+This guide complements the main [README.md](/README.md) and provides specific instructions for developers contributing to this project. For project overview, structure, and features, see the [README.md](/README.md).
+
 ## Commands
 - **Setup**: `python -m venv venv && source venv/bin/activate && pip install uv && ./requirements/install.sh dev`
 - **Environment**: `cp .env.example .env.local` (then edit with your private keys)
@@ -16,6 +18,7 @@
 ## Code Style
 - **Python**: PEP 8 with Black formatter (line length 88); use type hints with mypy
 - **Models**: Follow [behavior mixins](/apps/common/models/CONVENTIONS.md) pattern; datetime fields end with `_at`
+  - See [README.md](/README.md#behavior-mixins) for full list of available behavior mixins
 - **Imports**: Group by standard lib, third-party, Django, local apps
 - **Methods**: Verb phrases for methods, nouns for properties
 - **HTMX**: Use `MainContentView` mixin for partial template rendering
@@ -29,6 +32,8 @@
 - **No Scripts**: Avoid adding `<script>` tags unless explicitly required
 - **Tailwind CSS**: Use for styling instead of custom CSS where possible
 - **Templates**: Place in root `/templates` directory, not in app directories
+
+For more details on template structure and patterns, see [Template Pattern](/README.md#template-pattern) in the README.
 
 ## Testing Practice
 - **TDD Approach**: Write tests BEFORE implementing features
@@ -49,18 +54,30 @@
   - Generate HTML reports with `--cov-report=html` for visual analysis
   - Check coverage in CI pipelines with `--cov-report=xml`
 
+## Documentation
+- [README.md](/README.md) - Project overview, features and structure
+- [docs/SETUP_GUIDE.md](/docs/SETUP_GUIDE.md) - Detailed setup instructions
+- [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) - Contribution guidelines
+- [docs/TODO.md](/docs/TODO.md) - Current tasks and priorities
+- [docs/BEHAVIOR_MIXINS.md](/docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
+- [apps/common/models/CONVENTIONS.md](/apps/common/models/CONVENTIONS.md) - Model conventions
+
 ## Development Process
-1. Check TODO.md to identify next priority item
-2. Confirm feature implementation with team lead
+1. Check [docs/TODO.md](/docs/TODO.md) to identify next priority item
+2. Think deeply to plan out next steps and how to implement the feature
 3. Write tests covering all expected behaviors
 4. Run tests to verify they fail (proving tests work correctly)
 5. Implement just enough code to make tests pass
-6. Refactor while keeping tests passing
-7. Commit at logical milestones with descriptive messages
-8. Update TODO.md with completed items
+6. Commit changes to your working branch
+7. Review and Refactor your work. Simplify if possible without sacrificing functionality
+8. Commit changes when all tests are passing
+9. Continue to achieve 100% test coverage
+10. Update [docs/TODO.md](/docs/TODO.md) with updated plans and marking items completed when they have 100% test coverage
 
 ## Architecture
 - Move away from component frameworks to standard Django templates
 - Consolidate static files and templates to root directories
 - Use uv for dependency management (transitioning from requirements files)
-- Organize apps by domain (common, public, api, ai)
+- Organize apps by domain (common, public, api, ai, integrations)
+
+For detailed project structure and app descriptions, refer to the [Project Structure](/README.md#project-structure) section in the README.

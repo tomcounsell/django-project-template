@@ -21,7 +21,8 @@ Thank you for your interest in contributing to this Django project template! Thi
    ```bash
    python -m venv venv
    source venv/bin/activate
-   pip install -r requirements/dev.txt
+   pip install uv
+   ./requirements/install.sh dev
    cp .env.example .env.local  # Edit with your private keys
    ```
 
@@ -53,11 +54,15 @@ Thank you for your interest in contributing to this Django project template! Thi
 - Write tests before implementing features
 - Run tests with coverage reporting:
   ```bash
-  pytest --cov=apps
+  DJANGO_SETTINGS_MODULE=settings pytest --cov=apps
   ```
 - Test isolated units with proper mocking
 - For behavior mixins, create tests that verify all functionality
+  ```bash
+  python test_behaviors.py
+  ```
 - For model tests, verify field constraints and model methods
+- Never use SQLite for tests since the app uses Postgres JSON fields
 
 ### Directory Structure
 
@@ -84,7 +89,7 @@ Thank you for your interest in contributing to this Django project template! Thi
 
 1. **Ensure all tests pass** with 100% coverage for your changes
 2. **Update documentation** relevant to your changes
-3. **Add your changes to the CHANGELOG.md** under Unreleased section
+3. **Update the [docs/TODO.md](docs/TODO.md)** to mark completed tasks
 4. **Create a pull request** with a clear description of changes
 5. **Address reviewer feedback** promptly
 
@@ -97,7 +102,7 @@ Thank you for your interest in contributing to this Django project template! Thi
 
 ## High Priority Contributions
 
-See [TODO.md](TODO.md) for our current priorities, especially:
+See [docs/TODO.md](docs/TODO.md) for our current priorities, especially:
 1. Improving test coverage
 2. Template and static file consolidation
 3. Removing component framework dependencies
