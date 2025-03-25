@@ -16,7 +16,9 @@
 - [ ] Audit all app-level template directories and create migration plan
 - [ ] Move templates from apps/public/templates to root templates directory
 - [ ] Update template references in views and URL configurations
+- [ ] Update docs accordingly to reflect the change on only use root template directory
 - [ ] Consolidate static files from apps/public/static to root static directory
+- [ ] Update docs accordingly to reflect the change on only use root static directory
 - [ ] Update static file references in templates
 - [ ] Remove "dont_put_things_here.txt" from static directory
 - [ ] Audit {% block _ %} and {% endblock _ %} in templates and use best practices
