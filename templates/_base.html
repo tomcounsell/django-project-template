@@ -66,6 +66,9 @@
     <!--Tailwind CSS-->
     <link rel="stylesheet" href="{% static 'css/output.css' %}" />
     
+    <!--Component CSS-->
+    <link rel="stylesheet" href="{% static 'css/components/modals.css' %}" />
+    
     <!--FOR TEMPLATES TO LOAD MORE CSS-->
     {% block css %} {% endblock css %}
   </head>
@@ -105,6 +108,10 @@
         {% block footer %}
           {% include "layout/footer.html" %}
         {% endblock footer %}
+        
+        {% block modals %}
+          {% include "layout/modals.html" %}
+        {% endblock modals %}
       </div>
     </div>
     {% endblock body_inner_html %}
