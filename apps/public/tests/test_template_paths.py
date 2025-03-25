@@ -40,9 +40,8 @@ class TemplatePathsTestCase(TestCase):
                           f"Template {template_path} should be in root template directory")
             
             # After full migration, template should not be in app directory
-            # This part will fail until we remove the old templates
-            # self.assertFalse(os.path.isfile(app_file_path),
-            #               f"Template {template_path} should not be in app template directory after migration")
+            self.assertFalse(os.path.isfile(app_file_path),
+                          f"Template {template_path} should not be in app template directory after migration")
 
     def test_view_uses_templates(self):
         """Test that views can access the templates from the root directory."""
