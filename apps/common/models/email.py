@@ -1,4 +1,4 @@
-from datetime import datetime
+# No need for datetime import as we use timezone.now() instead
 import urllib.request
 from django.utils import timezone
 from django.core.mail import EmailMessage
@@ -13,31 +13,26 @@ class Email(timestampable.Timestampable, models.Model):
     Email model for storing email messages and their metadata.
     Used for sending emails, tracking delivery status, and logging.
     """
+
     to_address = models.CharField(max_length=140)
     from_address = models.CharField(
-        max_length=140, 
-        default="Support <support@example.com>"
+        max_length=140, default="Support <support@example.com>"
     )
     subject = models.TextField(max_length=140)
     body = models.TextField(default="")
     attachments = models.ManyToManyField(
-        Upload, 
-        blank=True,
-        related_name='common_email_attachments'
+        Upload, blank=True, related_name="common_email_attachments"
     )
 
     # Email type options
     NOTIFICATION, CONFIRMATION, PASSWORD = 0, 1, 2
     TYPE_CHOICES = (
-        (NOTIFICATION, 'notification'),
-        (CONFIRMATION, 'confirmation'),
-        (PASSWORD, 'password'),
+        (NOTIFICATION, "notification"),
+        (CONFIRMATION, "confirmation"),
+        (PASSWORD, "password"),
     )
     type = models.SmallIntegerField(
-        choices=TYPE_CHOICES, 
-        null=True, 
-        blank=True, 
-        default=NOTIFICATION
+        choices=TYPE_CHOICES, null=True, blank=True, default=NOTIFICATION
     )
 
     # Tracking fields
@@ -72,7 +67,7 @@ class Email(timestampable.Timestampable, models.Model):
     def send(self, require_confirmation=False):
         """
         Prepares and sends the email.
-        
+
         Args:
             require_confirmation: If True, sends immediately and returns result.
                                  If False, queues for sending later.
@@ -85,12 +80,12 @@ class Email(timestampable.Timestampable, models.Model):
         self.body = self.body or self.createBody()
 
         # Save before sending
-        self.save()  
+        self.save()
 
         # Create message object if not already created
-        if not hasattr(self, 'email'):
+        if not hasattr(self, "email"):
             self.email = self.createMessageObject()
-            
+
         # Configure email message
         self.email.subject = self.subject
         self.email.body = self.body
@@ -112,14 +107,14 @@ class Email(timestampable.Timestampable, models.Model):
     def send_now(self):
         """
         Sends the email immediately.
-        
+
         Returns:
             bool: True if successful, False if there was an error.
         """
         try:
             self.email.send(fail_silently=False)
             self.sent_at = timezone.now()
-            self.save(update_fields=['sent_at'])
+            self.save(update_fields=["sent_at"])
             return True
         except Exception:
             return False
@@ -129,8 +124,8 @@ class Email(timestampable.Timestampable, models.Model):
         # In a real implementation, this would add the email to a queue
         # For now, we'll just simulate sending
         self.send_now()
-        
+
     def mark_as_read(self):
         """Marks the email as having been read by the recipient."""
         self.read_at = timezone.now()
-        self.save(update_fields=['read_at'])
+        self.save(update_fields=["read_at"])
