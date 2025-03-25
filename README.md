@@ -49,8 +49,8 @@ For detailed template conventions, naming patterns, and best practices, see [Tem
 
 - `apps/`: Contains all applications that make up the project.
 - `settings/`: Configuration settings for the entire Django project.
-- `static/`: Global static files such as CSS, JS, and images.
-- `templates/`: Global HTML templates.
+- `static/`: All static files (CSS, JS, images) for the project. No app-specific static directories.
+- `templates/`: All HTML templates for the project. No app-specific template directories.
 - `build.sh`: Build script for Render deployment
 - `requirements.txt`: Lists all Python dependencies.
 - `runtime.txt`: Specifies the Python runtime.
