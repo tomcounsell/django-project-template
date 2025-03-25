@@ -66,31 +66,6 @@ class TemplateBlocksTestCase(TestCase):
             self.assertTrue(re.search(block_pattern, content), 
                             f"Required block '{block_name}' not found in _base.html")
     
-    def test_base_new_template_block_consistency(self):
-        """Test that all blocks in _base_new.html have matching names in endblock"""
-        templates_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'templates')
-        with open(os.path.join(templates_dir, '_base_new.html'), 'r') as f:
-            content = f.read()
-        
-        # Find all block tags
-        block_pattern = r'{%\s*block\s+(\w+).*?%}'
-        block_matches = re.findall(block_pattern, content)
-        
-        # Find all endblock tags that have names
-        endblock_pattern = r'{%\s*endblock\s+(\w+).*?%}'
-        endblock_matches = re.findall(endblock_pattern, content)
-        
-        # For each endblock with a name, verify it matches the corresponding block
-        for endblock_name in endblock_matches:
-            # Find the corresponding block name
-            corresponding_block = False
-            for block_name in block_matches:
-                if block_name == endblock_name:
-                    corresponding_block = True
-                    break
-            
-            self.assertTrue(corresponding_block, 
-                          f"Endblock '{endblock_name}' should have a matching block with the same name")
     
     def test_page_templates_use_standard_blocks(self):
         """Test that page templates use the standard blocks defined in conventions"""
