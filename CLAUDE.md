@@ -51,9 +51,9 @@ For detailed conventions on templates and views, see:
   - Factory classes: `apps/common/tests/factories.py`
 - **Running Tests**:
   - Django tests: `DJANGO_SETTINGS_MODULE=settings pytest`
-  - Behavior mixins: `python docs/tests/test_behaviors.py` (standalone tests)
+  - Behavior mixins: `python apps/common/behaviors/tests/test_behaviors.py` (standalone tests)
   - With coverage: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
-- **Python 3.12**: Use standalone behavior tests (`docs/tests/test_behaviors.py`) for Python 3.12 compatibility
+- **Python 3.12**: Use standalone behavior tests (`apps/common/behaviors/tests/test_behaviors.py`) for Python 3.12 compatibility
 - **Coverage**: 
   - Aim for 100% test coverage for models and behavior mixins
   - Use `.coveragerc` file to configure coverage settings and exclusions
