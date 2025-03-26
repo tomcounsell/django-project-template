@@ -9,14 +9,21 @@ from settings.env import LOCAL
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', "")
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', "")
 AWS_STORAGE_BUCKET_NAME = AWS_S3_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', "")
+AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 AWS_OPTIONS = {
     'AWS_ACCESS_KEY_ID': AWS_ACCESS_KEY_ID,
     'AWS_SECRET_ACCESS_KEY': AWS_SECRET_ACCESS_KEY,
     'AWS_STORAGE_BUCKET_NAME': AWS_S3_BUCKET_NAME,
+    'AWS_REGION': AWS_REGION,
 }
 AWS_DEFAULT_ACL = 'public-read'
 AWS_SNS_NAME = os.environ.get('AWS_SNS_NAME', "")
 AWS_STATIC_URL = f'https://{AWS_S3_BUCKET_NAME}.s3.amazonaws.com/' if AWS_S3_BUCKET_NAME else ""
+
+# File upload settings
+AWS_MAX_UPLOAD_SIZE = int(os.environ.get('AWS_MAX_UPLOAD_SIZE', 10485760))  # 10MB default
+AWS_UPLOAD_BUCKET = os.environ.get('AWS_UPLOAD_BUCKET', AWS_S3_BUCKET_NAME)
+AWS_UPLOAD_PREFIX = os.environ.get('AWS_UPLOAD_PREFIX', 'uploads')
 
 # S3 for static files in production
 if not LOCAL and AWS_S3_BUCKET_NAME:
