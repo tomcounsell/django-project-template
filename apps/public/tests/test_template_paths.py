@@ -21,13 +21,13 @@ class TemplatePathsTestCase(TestCase):
         
         # After migration, these files should be in the root templates directory
         required_templates = [
-            "_base.html",
+            "base.html",
             "pages/home.html",
             "account/login.html",
             "layout/footer.html",
-            "nav/navbar.html",
-            "nav/account_menu.html",
-            "messages/toast.html"
+            "layout/nav/navbar.html",
+            "layout/nav/account_menu.html",
+            "layout/messages/toast.html"
         ]
         
         for template_path in required_templates:
