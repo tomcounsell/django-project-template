@@ -249,6 +249,41 @@ else
     echo "Please set LOOPS_API_KEY in .env.local."
 fi
 
+# AI Integration check
+print_header "Checking AI integration configurations..."
+
+# OpenAI check
+print_success "Checking OpenAI configuration..."
+if grep -q "^OPENAI_API_KEY=" "$env_file"; then
+    openai_key=$(grep "^OPENAI_API_KEY=" "$env_file" | cut -d'=' -f2)
+    
+    if [ -n "$openai_key" ]; then
+        print_success "OpenAI API key is configured."
+    else
+        print_warning "OpenAI API key is empty. AI features might not work properly."
+        echo "Please set OPENAI_API_KEY in .env.local."
+    fi
+else
+    print_warning "OpenAI API key is not set. AI features might not work properly."
+    echo "Please set OPENAI_API_KEY in .env.local."
+fi
+
+# Anthropic check
+print_success "Checking Anthropic configuration..."
+if grep -q "^ANTHROPIC_API_KEY=" "$env_file"; then
+    anthropic_key=$(grep "^ANTHROPIC_API_KEY=" "$env_file" | cut -d'=' -f2)
+    
+    if [ -n "$anthropic_key" ]; then
+        print_success "Anthropic API key is configured."
+    else
+        print_warning "Anthropic API key is empty. AI features might not work properly."
+        echo "Please set ANTHROPIC_API_KEY in .env.local."
+    fi
+else
+    print_warning "Anthropic API key is not set. AI features might not work properly."
+    echo "Please set ANTHROPIC_API_KEY in .env.local."
+fi
+
 # Step 8: Check and setup database
 print_header "8. Checking and setting up database"
 

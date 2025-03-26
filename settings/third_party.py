@@ -47,3 +47,9 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
 # Social Auth
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', '')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', '')
+
+# AI Integration Settings
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
+OPENAI_ORG_ID = os.environ.get('OPENAI_ORG_ID', '')
+ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+ANTHROPIC_VERSION = os.environ.get('ANTHROPIC_VERSION', '2023-06-01')
