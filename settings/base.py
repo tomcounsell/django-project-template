@@ -31,7 +31,6 @@ THIRD_PARTY_APPS = [
     "rest_framework_api_key",
     "django_filters",
     "django_htmx",
-    "django_components",
     "tailwind",
 ]
 
@@ -97,15 +96,8 @@ TEMPLATES = [
                     'django.template.loaders.cached.Loader', [
                         # Default Django loader
                         'django.template.loaders.filesystem.Loader',
-                        # Including this is the same as APP_DIRS=True
-                        'django.template.loaders.app_directories.Loader',
-                        # Components loader
-                        'django_components.template_loader.Loader',
                     ]
                 )
-            ],
-            "builtins": [
-                'django_components.templatetags.component_tags',
             ]
         },
     },
@@ -122,9 +114,6 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = [
     # Default finders
     "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # Django-Components
-    # "django_components.finders.ComponentsFileSystemFinder",
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
