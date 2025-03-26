@@ -1,8 +1,8 @@
-{% extends "_base.html" %}
+{% extends "base.html" %}
 
 {# Example of a list page that uses modal dialogs #}
 
-{% block center_content %}
+{% block content %}
 <div class="items-container">
   <div class="header-actions">
     <h1>Items</h1>
@@ -23,4 +23,4 @@
     {% include "partials/lists/list_items.html" with items=items %}
   </div>
 </div>
-{% endblock center_content %}
+{% endblock content %}
