@@ -1,4 +1,4 @@
-{% extends "partials/_partial_base.html" %}
+{% extends "components/_component_base.html" %}
 
 {# 
   Team Members List Partial
@@ -18,7 +18,7 @@
   - Remove buttons trigger member removal via HTMX
   
   Usage:
-  {% include "partials/lists/list_team_members.html" with members=team.members.all team=team %}
+  {% include "components/lists/list_team_members.html" with members=team.members.all team=team %}
 #}
 
 {% block content %}
