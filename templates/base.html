@@ -52,7 +52,9 @@
   {% load static tailwind_tags %}
   {% tailwind_css %}
   <!--FOR TEMPLATES TO LOAD MORE CSS-->
-  {% block css %}{% endblock css %}
+  {% block css %}
+    {# Additional page-specific CSS can be included here #}
+  {% endblock css %}
   <!-- DJANGO COMPONENT'S CSS -->
   {% component_css_dependencies %}
 
