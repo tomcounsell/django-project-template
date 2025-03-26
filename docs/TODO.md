@@ -63,11 +63,11 @@
 - [✅] Migrate communication models to apps/common
 - [✅] Remove apps/communication after successful migration
 - [✅] Remove unused integrations (Telegram, Slack, Transloadit)
-- [ ] Choose and implement new file upload integration
-  - [ ] Evaluate options (AWS S3 direct, Cloudinary, Uploadcare, etc.)
-  - [ ] Implement Upload model integration with chosen service
-  - [ ] Add documentation for file upload patterns
-  - [ ] Add tests for file upload functionality
+- [✅] Choose and implement new file upload integration
+  - [✅] Evaluate options (AWS S3 direct, Cloudinary, Uploadcare, etc.)
+  - [✅] Implement Upload model integration with chosen service (AWS S3)
+  - [✅] Add documentation for file upload patterns
+  - [✅] Add tests for file upload functionality
 - [ ] Implement Stripe payment integration
   - [ ] Create integration/stripe/ module with client and helpers
   - [ ] Implement basic payment and subscription models
