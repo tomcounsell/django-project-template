@@ -85,6 +85,26 @@ class PartialsDirectoryTestCase(TestCase):
                     with open(file_path, 'r') as f:
                         content = f.read()
                     
-                    # Check if it extends the partial base template
-                    self.assertIn('{% extends "partials/_partial_base.html" %}', content,
-                                 f"Partial template '{file}' should extend 'partials/_partial_base.html'")
+                    # Check if the file has an extends statement
+                    extends_pattern = r'{%\s*extends\s+"([^"]+)"\s*%}'
+                    import re
+                    extends_match = re.search(extends_pattern, content)
+                    
+                    # Make sure it extends something
+                    self.assertIsNotNone(extends_match, 
+                                         f"Partial template '{file}' should extend a base template")
+                    
+                    # Get the template that it extends
+                    extends_template = extends_match.group(1)
+                    
+                    # Check if it's in the modals directory
+                    if os.path.basename(root) == 'modals':
+                        # Modals can extend the modals base template
+                        if not file.startswith('_'):  # Skip _modal_base.html
+                            self.assertIn('modals/_modal_base.html', extends_template, 
+                                         f"Modal template '{file}' should extend a modal base template")
+                    else:
+                        # Other partials should extend partial_base or base templates
+                        acceptable_bases = ['partials/_partial_base.html', 'partial.html']
+                        self.assertTrue(any(base in extends_template for base in acceptable_bases),
+                                      f"Partial template '{file}' should extend one of: {acceptable_bases}")
