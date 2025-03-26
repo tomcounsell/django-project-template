@@ -70,9 +70,11 @@ class UserViewSet(
             .first()
         )
         if user_account_with_same_email:
-            return Response(
-                status=status.HTTP_401_UNAUTHORIZED,
-                data={"status": "user already registered, please login"},
+            from apps.common.utilities.logger import AuthenticationError
+            raise AuthenticationError(
+                message="User already registered with this email. Please login instead.",
+                code="email_already_registered",
+                details={"email": request.data.get("email")}
             )
 
         # Update API keys in user_api_keys JSONField
@@ -158,23 +160,25 @@ class UserViewSet(
                     serializer = self.get_serializer(auth_user, many=False)
                     return Response(serializer.data)
 
+        from apps.common.utilities.logger import AuthenticationError
+        
         if (
             not success
             and not request.data.get("four_digit_code", None)
             and not user.is_email_verified
         ):
-            return Response(
-                status=status.HTTP_401_UNAUTHORIZED,
-                data={"status": "email not verified, verify email and try again"},
+            raise AuthenticationError(
+                message="Email not verified. Please verify your email and try again.",
+                code="email_not_verified"
             )
 
         elif not success:
-            return Response(
-                status=status.HTTP_401_UNAUTHORIZED,
-                data={"status": "password or code incorrect"},
+            raise AuthenticationError(
+                message="Authentication failed. Password or verification code is incorrect.",
+                code="invalid_credentials"
             )
 
-        return Response(
-            status=status.HTTP_401_UNAUTHORIZED,
-            data={"status": "unknown authentication error"},
+        raise AuthenticationError(
+            message="Authentication failed. Please check your credentials and try again.",
+            code="authentication_failed"
         )

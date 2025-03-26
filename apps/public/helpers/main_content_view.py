@@ -6,8 +6,10 @@ from django.shortcuts import render as django_render
 from django.views import View
 from django_htmx import http as htmx
 
+from apps.common.utilities.logger import ErrorHandlingMixin
 
-class MainContentView(View):
+
+class MainContentView(ErrorHandlingMixin, View):
     """
     Base view class for general views in the project.
     
