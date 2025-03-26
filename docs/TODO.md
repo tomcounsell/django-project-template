@@ -63,27 +63,37 @@
 - [✅] Migrate communication models to apps/common
 - [✅] Remove apps/communication after successful migration
 - [✅] Remove unused integrations (Telegram, Slack, Transloadit)
-- [✅] Choose and implement new file upload integration
-  - [✅] Evaluate options (AWS S3 direct, Cloudinary, Uploadcare, etc.)
-  - [✅] Implement Upload model integration with chosen service (AWS S3)
-  - [✅] Add documentation for file upload patterns
-  - [✅] Add tests for file upload functionality
-- [ ] Implement Stripe payment integration
-  - [ ] Create integration/stripe/ module with client and helpers
-  - [ ] Implement basic payment and subscription models
-  - [ ] Set up webhook handlers for events
-  - [ ] Add documentation and usage examples
-- [✅] Implement Twilio SMS integration
-  - [✅] Create integration/twilio/ module with client and helper functions
-  - [✅] Connect with SMS model in common app
-  - [✅] Implement phone number verification flow
-  - [✅] Add webhook handlers for delivery status
-  - [✅] Create tests and documentation
 
 ## Documentation Tasks
 - [✅] Document HTMX integration patterns with examples
 - [ ] Add API documentation with OpenAPI/Swagger
 - [ ] Create architecture diagram showing app relationships
+
+## Code Quality Tasks
+- [ ] Implement consistent error handling strategy
+- [ ] Refactor redundant template logic
+- [ ] Update to latest Django version
+- [ ] Standardize form validation approach
+- [ ] Improve type annotations across codebase
+
+## Frontend Tasks
+- [ ] Create a design system component library
+- [ ] Create a web fetch agent using Firecrawl that copies components into a local design system component library
+- [ ] Create unified CSS approach (Tailwind only)
+- [✅] Migrate from manual Tailwind to django-tailwind package
+- [ ] Implement responsive layouts and design patterns for mobile devices
+- [ ] Add dark mode support via Tailwind Theme
+- [ ] Add 5 more popular Tailwind themes (3 light and 2 dark) hint: see DaisyUI themes
+- [ ] Add internationalization support
+- [ ] Build example pages for
+  - [ ] Landing page  
+  - [ ] About / Info page
+  - [ ] Pricing and Stripe Checkout page
+  - [ ] Blog / Newsfeed page
+- [ ] Create documentation for frontend development patterns
+- [ ] Add tests for frontend components
+- [ ] Create documentation for a11y best practices
+- [ ] Apply those best practices to existing pages
 
 ## Infrastructure Tasks
 - [ ] Dockerize the application with proper configuration
@@ -100,19 +110,21 @@
 - [ ] Create deployment pipeline for staging/production
 - [ ] Setup monitoring and error tracking
 
-## Code Quality Tasks
-- [ ] Implement consistent error handling strategy
-- [ ] Refactor redundant template logic
-- [ ] Update to latest Django version
-- [ ] Standardize form validation approach
-- [ ] Improve type annotations across codebase
-
-## Frontend Tasks
-- [ ] Implement design system components
-- [ ] Add JavaScript bundling with Webpack/Vite
-- [ ] Create unified CSS approach (Tailwind only)
-- [✅] Migrate from manual Tailwind to django-tailwind package
-- [ ] Implement responsive layouts
-- [ ] Add dark mode support
-- [ ] Add internationalization support
-- [ ] Integrate payment processing example
+## Integration Tasks
+- [ ] Choose and implement new file upload integration
+  - [ ] Evaluate options (AWS S3 + Cloudinary)
+  - [ ] Implement Upload model integration with S3
+  - [ ] Add methods for transformation using Cloudinary API
+  - [ ] Add documentation for file upload and transformation patterns
+  - [ ] Add tests for file upload and transformation functionality
+- [ ] Implement Stripe payment integration
+  - [ ] Create integration/stripe/ module with client and helpers
+  - [ ] Implement basic payment and subscription models
+  - [ ] Set up webhook handlers for events
+  - [ ] Add documentation and usage examples
+- [ ] Implement Twilio SMS integration
+  - [ ] Create integration/twilio/ module with client and helper functions
+  - [ ] Connect with SMS model in common app
+  - [ ] Implement phone number verification flow
+  - [ ] Add webhook handlers for delivery status
+  - [ ] Create tests and documentation

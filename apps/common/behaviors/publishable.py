@@ -13,11 +13,11 @@ class Publishable(models.Model):
     @property
     def is_published(self):
         now = timezone.now()
-        if (
-            self.published_at
-            and self.published_at < now
-            and not (self.unpublished_at and self.unpublished_at < now)
-        ):
+        # If unpublished_at is more recent than published_at, the item is unpublished
+        if self.unpublished_at and (not self.published_at or self.unpublished_at > self.published_at):
+            return False
+        # Item is published if it has a published_at date in the past
+        elif self.published_at and self.published_at < now:
             return True
         else:
             return False

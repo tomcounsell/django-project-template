@@ -69,7 +69,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    "django_components.middleware.ComponentDependencyMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
@@ -170,14 +169,10 @@ REQUEST_IGNORE_PATHS = (
     r'^admin/',
 )
 
-# Django-Components
-COMPONENTS = {
-    "dirs": [
-        BASE_DIR / "apps" / "public" / "components",
-    ],
-    "app_dirs": [],
-    "reload_on_template_change": True,
-}
+# Template Directories
+TEMPLATE_DIRS = [
+    BASE_DIR / "templates",
+]
 
 
 # Tailwind CSS settings

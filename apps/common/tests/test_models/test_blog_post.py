@@ -10,7 +10,7 @@ class BlogPostModelTestCase(TestCase):
     """Test case for BlogPost model."""
 
     def setUp(self):
-        self.user = UserFactory()
+        self.user = UserFactory.create()
         self.blog_post = BlogPost.objects.create(
             title="Test Blog Post",
             subtitle="A subtitle for testing",
@@ -161,11 +161,14 @@ class BlogPostModelTestCase(TestCase):
     # Testing Permalinkable behavior
     def test_permalinkable_behavior(self):
         """Test the permalinkable behavior."""
-        self.assertIsNone(self.blog_post.slug)
-        
-        # Test slug auto-generation from slug_source
-        self.blog_post.save()
+        # Automatic slug generation is tested
         self.assertEqual(self.blog_post.slug, "test-blog-post")
+        
+        # Test slug updating
+        self.blog_post.title = "Updated Title"
+        self.blog_post.slug = None
+        self.blog_post.save()
+        self.assertEqual(self.blog_post.slug, "updated-title")
 
     # Testing Annotatable behavior
     def test_annotatable_behavior(self):

@@ -23,9 +23,8 @@ class Permalinkable(models.Model):
     #     return (self.url_name, (), url_kwargs)
 
 
-@receiver(pre_save, sender=Permalinkable)
+@receiver(pre_save)
 def pre_save_slug(sender, instance, *args, **kwargs):
-    if not issubclass(sender, Permalinkable):
-        return
-    if not instance.slug and hasattr(instance, "slug_source"):
-        instance.slug = slugify(instance.slug_source)
+    if hasattr(sender, 'mro') and Permalinkable in sender.mro():
+        if not instance.slug and hasattr(instance, "slug_source"):
+            instance.slug = slugify(instance.slug_source)

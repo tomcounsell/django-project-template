@@ -3,7 +3,7 @@ Unit tests for the Loops shortcuts
 """
 import pytest
 from unittest.mock import patch, MagicMock
-from django.test import override_settings
+from django.test import TestCase, override_settings
 
 from apps.common.models import User
 from apps.integration.loops.shortcuts import (
@@ -13,10 +13,11 @@ from apps.integration.loops.shortcuts import (
 
 
 @override_settings(DEBUG=True)
-class LoopsShortcutsTestCase:
+class LoopsShortcutsTestCase(TestCase):
     """Test Loops shortcuts"""
     
-    def setup_method(self):
+    def setUp(self):
+        super().setUp()
         self.user = MagicMock(spec=User)
         self.user.email = "test@example.com"
         self.user.get_full_name.return_value = "Test User"

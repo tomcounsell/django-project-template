@@ -1,14 +1,13 @@
 black
 Django
-django-components==0.102
 django-cors-headers
 django-debug-toolbar
 django-extensions
 django-filter
 django-htmx
-django-rest-auth
 django-storages
 django-tailwind
+django-timezone-field
 django-unfold
 django-widget-tweaks
 djangorestframework
