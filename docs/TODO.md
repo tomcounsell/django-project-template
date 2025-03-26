@@ -1,130 +1,86 @@
 # TODO List for Django Project Template
 
+## Current System Architecture
+
+This project follows a clean architecture with:
+- Root-level template and static directories (no app-specific templates)
+- Behavior mixins for reusable model functionality
+- HTMX-centric frontend development with minimal JavaScript
+- Tailwind CSS for styling through django-tailwind
+- Core apps: common, api, public, ai, integration
+
 ## Completed Tasks ✅
-- ✅ Added comprehensive behavior mixin examples with BlogPost model
+- ✅ Implemented behavior mixin examples with BlogPost model
 - ✅ Created detailed setup guide for new developers
 - ✅ Implemented Loops email integration with tests
 - ✅ Improved test coverage for models and behaviors
 - ✅ Upgraded admin interface with Django Unfold and Tailwind
 - ✅ Implemented Team models with permissions system
-- ✅ Removed component framework dependencies
+- ✅ Removed legacy component framework dependencies
 - ✅ Upgraded to uv for dependency management
-- ✅ Audit template blocks and implement best practices
-- ✅ Reorganize templates for better HTMX integration
-- ✅ Add API endpoint tests with APITestCase
-- ✅ Add view tests with proper request mocking
+- ✅ Standardized template blocks following best practices
+- ✅ Organized templates for optimal HTMX integration
+- ✅ Added comprehensive API endpoint tests with APITestCase
+- ✅ Added view tests with proper request mocking
+- ✅ Consolidated all templates to the root template directory
+- ✅ Consolidated all static files to the root static directory
+- ✅ Removed all app-specific template directories
+- ✅ Created AI app with initial models and views
+- ✅ Migrated communication models to common app
+- ✅ Removed legacy support and backward compatibility code
+- ✅ Implemented comprehensive test suite for key components
 
-## Current Priority Tasks
-
-### 1. Template and Static File Organization
-- [✅] Audit all app-level template directories and create migration plan
-- [✅] Move templates from apps/public/templates to root templates directory
-- [✅] Update template references in views and URL configurations
-- [✅] Update docs accordingly to reflect the change on only use root template directory
-- [✅] Consolidate static files from apps/public/static to root static directory
-- [✅] Update docs accordingly to reflect the change on only use root static directory
-- [✅] Update static file references in templates
-- [✅] Remove "dont_put_things_here.txt" from static directory (file not found/already removed)
-- [✅] Audit {% block _ %} and {% endblock _ %} in templates and use best practices
-  - [✅] {% block content %} is the standard block for main content
-  - [✅] additional blocks for header, footer, navbar, aside, etc.
-  - [✅] Add comments to explain block usage
-  - [✅] Document the use of blocks in docs/TEMPLATE_CONVENTIONS.md
-- [✅] Reorganize templates for better HTMX integration
-  - [✅] Create dedicated partial template directory structure
-  - [✅] Implement standardized naming convention for partials
-  - [✅] Add template documentation in comments
-- [✅] Document HTMX integration patterns with examples in docs/VIEW_CONVENTIONS.md and docs/TEMPLATE_CONVENTIONS.md
-- [✅] Update documentation on template patterns
-
-### 2. Extend Test Coverage
-- [✅] Add API endpoint tests with APITestCase
-- [✅] Add view tests with proper request mocking
-- [✅] Create comprehensive test fixtures for all models
-
-### 3. Dependency Management Improvements
-- [✅] Create pyproject.toml with project metadata
-- [✅] Update build.sh script to use uv for dependency installation
-- [✅] Setup pre-commit hooks for code quality (black, isort, flake8, mypy)
-- [✅] Remove legacy dependencies and patterns
-
-### 4. User Experience Improvements
-- [✅] Implement basic Team-related views (create, join, manage)
-- [✅] Add user authentication templates (reset password, etc.)
-- [✅] Create reusable form components
-- [✅] Modernize base templates with best practices
-
-### 5. App Restructuring
-- [✅] Create new apps/ai/ directory structure 
-- [✅] Set up apps/ai/__init__.py, apps.py, models, views, and urls
-- [✅] Create initial models for AI agent workflows
-- [✅] Add apps.ai to INSTALLED_APPS
-- [✅] Audit apps/communication for models and functionality to merge
-- [✅] Migrate communication models to apps/common
-- [✅] Remove apps/communication after successful migration
-- [✅] Remove unused integrations (Telegram, Slack, Transloadit)
-
-## Documentation Tasks
-- [✅] Document HTMX integration patterns with examples
+## Documentation Priorities
+- ✅ Document HTMX integration patterns with examples
 - [ ] Add API documentation with OpenAPI/Swagger
 - [ ] Create architecture diagram showing app relationships
 
-## Code Quality Tasks
+## Code Quality Priorities
 - [ ] Implement consistent error handling strategy
 - [ ] Refactor redundant template logic
 - [ ] Update to latest Django version
 - [ ] Standardize form validation approach
 - [ ] Improve type annotations across codebase
 
-## Frontend Tasks
-- [ ] Create a design system component library
-- [ ] Create a web fetch agent using Firecrawl that copies components into a local design system component library
+## Frontend Priorities
+- ✅ Migrate from manual Tailwind to django-tailwind package
 - [ ] Create unified CSS approach (Tailwind only)
-- [✅] Migrate from manual Tailwind to django-tailwind package
-- [ ] Implement responsive layouts and design patterns for mobile devices
+- [ ] Create a design system component library
+- [ ] Implement responsive layouts for mobile devices
 - [ ] Add dark mode support via Tailwind Theme
-- [ ] Add 5 more popular Tailwind themes (3 light and 2 dark) hint: see DaisyUI themes
+- [ ] Add 5 more popular Tailwind themes (3 light, 2 dark)
 - [ ] Add internationalization support
-- [ ] Build example pages for
+- [ ] Build example pages:
   - [ ] Landing page  
-  - [ ] About / Info page
-  - [ ] Pricing and Stripe Checkout page
-  - [ ] Blog / Newsfeed page
-- [ ] Create documentation for frontend development patterns
+  - [ ] About page
+  - [ ] Pricing/Stripe Checkout page
+  - [ ] Blog/Newsfeed page
 - [ ] Add tests for frontend components
-- [ ] Create documentation for a11y best practices
-- [ ] Apply those best practices to existing pages
+- [ ] Implement accessibility best practices
 
-## Infrastructure Tasks
-- [ ] Dockerize the application with proper configuration
-  - [ ] Update Dockerfile for production use
-  - [ ] Create docker-compose.yml for local development
-  - [ ] Add Docker documentation and examples
+## Infrastructure Priorities
+- [ ] Dockerize application with proper configuration
+  - [ ] Update Dockerfile for production
+  - [ ] Create docker-compose.yml for development
   - [ ] Implement multi-stage builds for efficiency
-- [ ] Standardize environment variable and secrets management
-  - [ ] Replace settings/local.py with .env file approach
-  - [ ] Update documentation for environment setup
-  - [ ] Create .env.example with all required variables
-  - [ ] Update settings to load from environment variables
-- [ ] Add GitHub Actions workflow for testing
-- [ ] Create deployment pipeline for staging/production
-- [ ] Setup monitoring and error tracking
+- [ ] Standardize environment variable management
+  - [ ] Use .env file approach
+  - [ ] Update settings to use environment variables
+- [ ] Set up CI/CD pipelines
+  - [ ] Add GitHub Actions for testing
+  - [ ] Create deployment pipeline for staging/production
+- [ ] Implement monitoring and error tracking
 
-## Integration Tasks
-- [ ] Choose and implement new file upload integration
-  - [ ] Evaluate options (AWS S3 + Cloudinary)
-  - [ ] Implement Upload model integration with S3
-  - [ ] Add methods for transformation using Cloudinary API
-  - [ ] Add documentation for file upload and transformation patterns
-  - [ ] Add tests for file upload and transformation functionality
-- [ ] Implement Stripe payment integration
-  - [ ] Create integration/stripe/ module with client and helpers
-  - [ ] Implement basic payment and subscription models
-  - [ ] Set up webhook handlers for events
-  - [ ] Add documentation and usage examples
-- [ ] Implement Twilio SMS integration
-  - [ ] Create integration/twilio/ module with client and helper functions
-  - [ ] Connect with SMS model in common app
-  - [ ] Implement phone number verification flow
-  - [ ] Add webhook handlers for delivery status
-  - [ ] Create tests and documentation
+## Integration Priorities
+- [ ] File Upload Integration
+  - [ ] Implement AWS S3 integration for Upload model
+  - [ ] Add image transformation capabilities
+  - [ ] Add comprehensive tests
+- [ ] Payment Processing
+  - [ ] Implement Stripe integration
+  - [ ] Create subscription models
+  - [ ] Set up webhook handlers
+- [ ] SMS Capabilities
+  - [ ] Implement Twilio integration
+  - [ ] Add phone verification flow
+  - [ ] Set up delivery status tracking
