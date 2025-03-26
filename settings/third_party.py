@@ -31,6 +31,12 @@ SERVER_EMAIL = os.environ.get("SERVER_EMAIL", "server@example.com")
 # Loops integration
 LOOPS_API_KEY = os.environ.get("LOOPS_API_KEY", "")
 
+# Twilio integration
+TWILIO_ENABLED = os.environ.get("TWILIO_ENABLED", "False").lower() == "true"
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
+
 # Social Auth
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', '')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', '')

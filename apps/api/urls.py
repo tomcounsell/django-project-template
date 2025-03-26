@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from apps.api.views import user
+from apps.api.views import user, twilio
 
 # These auth endpoints are commented out since they don't exist yet
 # Will be implemented in future
@@ -32,6 +32,9 @@ urlpatterns = [
     # path("auth/logout/", logout_view, name="logout"),
     # path("auth/password/change/", password_change_view, name="password_change"),
     # path("auth/me/", me_view, name="me"),
+    
+    # Twilio webhook endpoint
+    path("webhooks/twilio/", twilio.twilio_webhook, name="twilio-webhook"),
 ]
 
 # # JWT AUTH
