@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from datetime import timedelta
 
 from apps.common.behaviors import Timestampable
 
@@ -8,10 +7,10 @@ from apps.common.behaviors import Timestampable
 class TodoItem(Timestampable, models.Model):
     """
     A model representing an internal system improvement task.
-    
+
     Allows tracking of system enhancements, bug fixes, and other internal tasks
     with priorities, categories, and assignees.
-    
+
     Attributes:
         title (str): Brief description of the task
         description (str): Detailed explanation of what needs to be done
@@ -22,7 +21,7 @@ class TodoItem(Timestampable, models.Model):
         due_at (DateTimeField): When this task should be completed by
         completed_at (DateTimeField): When this task was marked as completed
     """
-    
+
     # Priority choices
     PRIORITY_LOW = "LOW"
     PRIORITY_MEDIUM = "MEDIUM"
@@ -32,7 +31,7 @@ class TodoItem(Timestampable, models.Model):
         (PRIORITY_MEDIUM, "Medium"),
         (PRIORITY_HIGH, "High"),
     ]
-    
+
     # Category choices
     CATEGORY_GENERAL = "GENERAL"
     CATEGORY_FRONTEND = "FRONTEND"
@@ -54,7 +53,7 @@ class TodoItem(Timestampable, models.Model):
         (CATEGORY_DOCUMENTATION, "Documentation"),
         (CATEGORY_TESTING, "Testing"),
     ]
-    
+
     # Status choices
     STATUS_TODO = "TODO"
     STATUS_IN_PROGRESS = "IN_PROGRESS"
@@ -66,7 +65,7 @@ class TodoItem(Timestampable, models.Model):
         (STATUS_BLOCKED, "Blocked"),
         (STATUS_DONE, "Done"),
     ]
-    
+
     # Fields
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
@@ -94,20 +93,20 @@ class TodoItem(Timestampable, models.Model):
     )
     due_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
-    
+
     # MODEL PROPERTIES
     @property
     def is_completed(self):
         """Returns whether this todo item is completed."""
         return self.status == self.STATUS_DONE
-    
+
     @property
     def is_overdue(self):
         """Returns whether this todo item is past its due date."""
         if not self.due_at:
             return False
         return self.due_at < timezone.now()
-    
+
     @property
     def days_until_due(self):
         """Returns the number of days until the due date (negative if overdue)."""
@@ -115,15 +114,15 @@ class TodoItem(Timestampable, models.Model):
             return None
         delta = self.due_at - timezone.now()
         return delta.days
-    
+
     @property
     def time_remaining_display(self):
         """Returns a human-readable representation of time remaining."""
         if not self.due_at:
             return "No due date"
-        
+
         days = self.days_until_due
-        
+
         if days > 1:
             return f"{days} days remaining"
         elif days == 1:
@@ -134,45 +133,45 @@ class TodoItem(Timestampable, models.Model):
             return "Overdue by 1 day"
         else:
             return f"Overdue by {abs(days)} days"
-    
+
     # MODEL FUNCTIONS
     def __str__(self):
         return f"{self.title} ({self.priority})"
-    
+
     def complete(self):
         """Mark this todo item as completed."""
         self.status = self.STATUS_DONE
         self.completed_at = timezone.now()
         self.save()
-    
+
     def reopen(self):
         """Reopen this todo item."""
         self.status = self.STATUS_TODO
         self.completed_at = None
         self.save()
-    
+
     def set_priority(self, priority):
         """Set the priority of this todo item."""
         if priority not in dict(self.PRIORITY_CHOICES):
             raise ValueError(f"Invalid priority: {priority}")
         self.priority = priority
         self.save()
-    
+
     def set_status(self, status):
         """Set the status of this todo item."""
         if status not in dict(self.STATUS_CHOICES):
             raise ValueError(f"Invalid status: {status}")
-        
+
         self.status = status
-        
+
         # Update completed_at if status is DONE
         if status == self.STATUS_DONE:
             self.completed_at = timezone.now()
         elif self.completed_at:  # Reset completed_at if status is not DONE
             self.completed_at = None
-            
+
         self.save()
-    
+
     class Meta:
         verbose_name = "Todo Item"
         verbose_name_plural = "Todo Items"
