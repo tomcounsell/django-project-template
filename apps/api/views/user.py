@@ -22,7 +22,6 @@ class UserFilter(FilterSet):
             "is_active",
             "is_staff",
             "is_beta_tester",
-            "is_premium_member",
             "last_login",
             # "api_calls_count",
         )

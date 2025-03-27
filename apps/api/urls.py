@@ -25,7 +25,7 @@ api_router.register(
 )
 
 # Auth endpoints will be added later
-urlpatterns = [
+urlpatterns = api_router.urls + [
     # Example auth endpoints (currently commented out)
     # path("auth/csrf/", csrf_view, name="csrf"),
     # path("auth/login/", login_view, name="login"),

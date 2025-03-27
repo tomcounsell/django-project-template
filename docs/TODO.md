@@ -34,7 +34,7 @@ This project follows a clean architecture with:
 
 ## Documentation Priorities
 - ✅ Document HTMX integration patterns with examples
-- [ ] Add API documentation with OpenAPI/Swagger
+- ✅ Add API documentation with OpenAPI/Swagger
 - [ ] Create architecture diagram showing app relationships
 
 ## Code Quality Priorities

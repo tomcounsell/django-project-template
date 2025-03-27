@@ -27,7 +27,21 @@ The API app is built on Django REST Framework and follows these principles:
 2. **Authentication**: Token-based authentication
 3. **Permissions**: Fine-grained permission control
 4. **Serialization**: Conversion between Python objects and API formats
-5. **Documentation**: API documentation with OpenAPI/Swagger (to be implemented)
+5. **Documentation**: API documentation with OpenAPI/Swagger
+
+## API Documentation
+
+API documentation is provided using drf-yasg (Django REST Framework Yet Another Swagger Generator) with both Swagger UI and ReDoc interfaces:
+
+- **Swagger UI**: Interactive API documentation at `/api/swagger/`
+- **ReDoc**: Alternative documentation interface at `/api/redoc/`
+- **OpenAPI Schema**: Raw JSON schema at `/api/swagger/?format=json`
+
+These interfaces provide:
+- Complete endpoint listing with request/response formats
+- Interactive testing capability
+- Authentication support
+- Model schema definitions
 
 ## Endpoints
 

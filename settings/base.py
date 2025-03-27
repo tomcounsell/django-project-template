@@ -32,6 +32,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "django_htmx",
     "tailwind",
+    "drf_yasg",
 ]
 
 PROJECT_APPS = [
@@ -96,6 +97,7 @@ TEMPLATES = [
                     'django.template.loaders.cached.Loader', [
                         # Default Django loader
                         'django.template.loaders.filesystem.Loader',
+                        'django.template.loaders.app_directories.Loader',
                     ]
                 )
             ]
@@ -228,3 +230,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50,
 }
+
+# DRF-YASG (Swagger/OpenAPI) settings
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': True,
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        },
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'DEFAULT_MODEL_RENDERING': 'example',
+}
+
+# Silence the warning about compat renderers
+SWAGGER_USE_COMPAT_RENDERERS = False
