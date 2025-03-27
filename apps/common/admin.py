@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
-from apps.common.models import User, Team, TeamMember, BlogPost
+from apps.common.models import User, Team, TeamMember, BlogPost, TodoItem
 
 
 @admin.register(User)
@@ -163,3 +163,95 @@ class BlogPostAdmin(ModelAdmin):
     location_display.short_description = "Location"
     publishing_status.short_description = "Status"
     expiration_status.short_description = "Expiration"
+
+
+@admin.register(TodoItem)
+class TodoItemAdmin(ModelAdmin):
+    list_display = ('title', 'priority_badge', 'category_badge', 'status_badge', 'assignee_display', 'due_date_display')
+    list_filter = ('priority', 'category', 'status', 'assignee')
+    search_fields = ('title', 'description')
+    date_hierarchy = 'created_at'
+    readonly_fields = ('created_at', 'modified_at', 'completed_at')
+    
+    fieldsets = (
+        ("Task Information", {
+            "fields": ("title", "description", "priority", "category", "status")
+        }),
+        ("Assignment", {
+            "fields": ("assignee", "due_at")
+        }),
+        ("Completion", {
+            "fields": ("completed_at",)
+        }),
+        ("Timestamps", {
+            "fields": ("created_at", "modified_at")
+        }),
+    )
+    
+    def priority_badge(self, obj):
+        colors = {
+            'HIGH': 'bg-red-500',
+            'MEDIUM': 'bg-yellow-500',
+            'LOW': 'bg-blue-500'
+        }
+        return format_html(
+            '<span class="unfold-badge {} text-white">{}</span>',
+            colors.get(obj.priority, 'bg-gray-500'),
+            obj.get_priority_display()
+        )
+    
+    def category_badge(self, obj):
+        colors = {
+            'FRONTEND': 'bg-purple-500',
+            'BACKEND': 'bg-blue-500',
+            'API': 'bg-green-500',
+            'DATABASE': 'bg-yellow-500',
+            'PERFORMANCE': 'bg-orange-500',
+            'SECURITY': 'bg-red-500',
+            'DOCUMENTATION': 'bg-gray-500',
+            'TESTING': 'bg-teal-500',
+            'GENERAL': 'bg-gray-500',
+        }
+        return format_html(
+            '<span class="unfold-badge {} text-white">{}</span>',
+            colors.get(obj.category, 'bg-gray-500'),
+            obj.get_category_display()
+        )
+    
+    def status_badge(self, obj):
+        colors = {
+            'TODO': 'bg-blue-500',
+            'IN_PROGRESS': 'bg-yellow-500',
+            'BLOCKED': 'bg-red-500',
+            'DONE': 'bg-green-500'
+        }
+        return format_html(
+            '<span class="unfold-badge {} text-white">{}</span>',
+            colors.get(obj.status, 'bg-gray-500'),
+            obj.get_status_display()
+        )
+    
+    def assignee_display(self, obj):
+        if obj.assignee:
+            return f"{obj.assignee.first_name} {obj.assignee.last_name}"
+        return "-"
+    
+    def due_date_display(self, obj):
+        if not obj.due_at:
+            return "-"
+        
+        if obj.is_overdue:
+            return format_html(
+                '<span class="unfold-badge bg-red-500 text-white">{}</span>',
+                obj.time_remaining_display
+            )
+        return format_html(
+            '<span class="unfold-badge bg-blue-500 text-white">{}</span>',
+            obj.time_remaining_display
+        )
+    
+    priority_badge.short_description = "Priority"
+    category_badge.short_description = "Category" 
+    status_badge.short_description = "Status"
+    assignee_display.short_description = "Assignee"
+    due_date_display.short_description = "Due Date"

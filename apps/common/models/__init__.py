@@ -11,6 +11,7 @@ from .city import City
 from .blog_post import BlogPost
 from .email import Email
 from .sms import SMS
+from .todo import TodoItem
 
 __all__ = [
     "Country",
@@ -28,4 +29,5 @@ __all__ = [
     "BlogPost",
     "Email",
     "SMS",
+    "TodoItem",
 ]
