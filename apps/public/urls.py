@@ -11,6 +11,7 @@ from .views.teams.member_views import (
     add_team_member, change_member_role, 
     remove_team_member, leave_team
 )
+from .views.todos import todo_views
 
 app_name = "public"
 
@@ -122,4 +123,14 @@ urlpatterns += [
         name="remove-team-member"
     ),
     path("teams/<slug:team_slug>/leave/", leave_team, name="leave-team"),
+]
+
+# Todo URLs
+urlpatterns += [
+    path("todos/", todo_views.TodoListView.as_view(), name="todo-list"),
+    path("todos/create/", todo_views.TodoCreateView.as_view(), name="todo-create"),
+    path("todos/<int:pk>/", todo_views.TodoDetailView.as_view(), name="todo-detail"),
+    path("todos/<int:pk>/update/", todo_views.TodoUpdateView.as_view(), name="todo-update"),
+    path("todos/<int:pk>/delete/", todo_views.TodoDeleteView.as_view(), name="todo-delete"),
+    path("todos/<int:pk>/complete/", todo_views.TodoCompleteView.as_view(), name="todo-complete"),
 ]

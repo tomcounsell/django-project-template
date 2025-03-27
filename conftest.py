@@ -17,6 +17,9 @@ def pytest_configure(config):
     if not settings.configured:
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
         django.setup()
+    
+    # Set TESTING flag for error handling in utilities/logger.py
+    settings.TESTING = True
 
 
 @pytest.fixture(scope="session")
