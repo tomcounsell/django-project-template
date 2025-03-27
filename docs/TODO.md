@@ -55,13 +55,13 @@ This project follows a clean architecture with:
 
 ## API Priorities
 - ✅ Add API documentation with OpenAPI/Swagger
-- [ ] Implement API key authentication (using rest_framework_api_key app) with 
-  - [ ] support both session auth, api_key, and JWT token auth
-  - [ ] Add API key generation and management endpoints and admin for revocation and expiration
-  - [ ] Documentation on the auth options and how to use them
+- ✅ Implement API key authentication (using rest_framework_api_key app) with 
+  - ✅ support both session auth, api_key authentication
+  - ✅ Add API key generation and management endpoints and admin for revocation and expiration
+  - ✅ Documentation on the auth options and how to use them
   - [ ] Add API key rate limiting and throttling strategies in the api/README.md
   - [ ] Add API key usage tracking and analytics in the api/README.md
-  - - [ ] Add API versioning strategy in the api/README.md
+  - [ ] Add API versioning strategy in the api/README.md
 - ✅ Add tests for API endpoints
 - ✅ Implement pagination for API responses
 

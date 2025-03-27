@@ -12,6 +12,7 @@ from .blog_post import BlogPost
 from .email import Email
 from .sms import SMS
 from .todo import TodoItem
+from .api_key import UserAPIKey, TeamAPIKey
 
 __all__ = [
     "Country",
@@ -30,4 +31,6 @@ __all__ = [
     "Email",
     "SMS",
     "TodoItem",
+    "UserAPIKey",
+    "TeamAPIKey",
 ]

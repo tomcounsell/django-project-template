@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from apps.common.models import TodoItem
 from apps.api.serializers import TodoItemSerializer, TodoItemListSerializer
+from apps.common.utilities.drf_permissions import HasAnyAPIKey
 
 
 class TodoItemViewSet(viewsets.ModelViewSet):
@@ -14,11 +15,15 @@ class TodoItemViewSet(viewsets.ModelViewSet):
 
     Provides CRUD operations for TodoItem model and additional endpoints
     for filtering and actions like complete and reopen.
+    
+    Authentication:
+    - Session Authentication: For browser-based access
+    - API Key Authentication: For programmatic access using X-API-KEY header
     """
 
     queryset = TodoItem.objects.all()
     serializer_class = TodoItemSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated | HasAnyAPIKey]
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,

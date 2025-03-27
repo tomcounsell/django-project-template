@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
-from apps.common.models import User, Team, TeamMember, BlogPost, TodoItem
+from rest_framework_api_key.admin import APIKeyModelAdmin
+from apps.common.models import User, Team, TeamMember, BlogPost, TodoItem, UserAPIKey, TeamAPIKey
 
 
 @admin.register(User)
@@ -255,3 +256,21 @@ class TodoItemAdmin(ModelAdmin):
     status_badge.short_description = "Status"
     assignee_display.short_description = "Assignee"
     due_date_display.short_description = "Due Date"
+
+
+@admin.register(UserAPIKey)
+class UserAPIKeyAdmin(APIKeyModelAdmin):
+    list_display = ('name', 'user', 'prefix', 'created_at', 'revoked')
+    list_filter = ('revoked',)
+    search_fields = ('name', 'prefix', 'user__username', 'user__email')
+    autocomplete_fields = ['user']
+    readonly_fields = ('created_at', 'modified_at')
+    
+    
+@admin.register(TeamAPIKey)
+class TeamAPIKeyAdmin(APIKeyModelAdmin):
+    list_display = ('name', 'team', 'prefix', 'created_at', 'revoked')
+    list_filter = ('revoked',)
+    search_fields = ('name', 'prefix', 'team__name')
+    autocomplete_fields = ['team']
+    readonly_fields = ('created_at', 'modified_at')
