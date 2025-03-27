@@ -30,6 +30,7 @@ Planned Integrations:
 - For model conventions and best practices, see [Model Conventions](docs/MODEL_CONVENTIONS.md)
 - For template guidelines and patterns, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
 - For view classes and HTMX integration, see [View Conventions](docs/VIEW_CONVENTIONS.md)
+- For project architecture overview, see [Architecture](docs/ARCHITECTURE.md)
 
 
 # Project Structure

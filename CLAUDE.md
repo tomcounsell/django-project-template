@@ -65,6 +65,7 @@ For detailed conventions on templates and views, see:
 - [docs/SETUP_GUIDE.md](/docs/SETUP_GUIDE.md) - Detailed setup instructions
 - [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) - Contribution guidelines
 - [docs/TODO.md](/docs/TODO.md) - Current tasks and priorities
+- [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md) - Project architecture and app relationships
 - [docs/BEHAVIOR_MIXINS.md](/docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
 - [docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md) - Model conventions
 - [docs/TEMPLATE_CONVENTIONS.md](/docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
@@ -89,4 +90,6 @@ For detailed conventions on templates and views, see:
 - Use uv for dependency management (transitioning from requirements files)
 - Organize apps by domain (common, public, api, ai, integrations)
 
-For detailed project structure and app descriptions, refer to the [Project Structure](/README.md#project-structure) section in the README.
+For detailed project structure and app descriptions, refer to:
+- [Project Structure](/README.md#project-structure) section in the README
+- [Architecture Document](/docs/ARCHITECTURE.md) for a visual overview and app relationships
