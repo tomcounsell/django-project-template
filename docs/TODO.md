@@ -136,7 +136,7 @@ This project follows a clean architecture with:
     - [x] Create TodoItem model in common app
     - [x] Add priority, category, and status fields
     - [x] Create admin interface for managing todos
-    - [ ] Implement API endpoints for todo management
+    - [x] Implement API endpoints for todo management
   - [ ] Sentry integration for error tracking
     - [ ] Configure Sentry SDK with proper environment settings
     - [ ] Create webhook handler for Sentry issue events

@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework import routers
-from apps.api.views import user, twilio
+from apps.api.views import user, twilio, todo
 
 # These auth endpoints are commented out since they don't exist yet
 # Will be implemented in future
@@ -22,6 +22,11 @@ api_router = routers.DefaultRouter()
 api_router.register(
     r"users",
     user.UserViewSet,
+)
+
+api_router.register(
+    r"todos",
+    todo.TodoItemViewSet,
 )
 
 # Auth endpoints will be added later
