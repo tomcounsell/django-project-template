@@ -31,6 +31,7 @@ This project follows a clean architecture with:
 - ✅ Implemented comprehensive test suite for key components
 - ✅ Implemented consistent error handling system with centralized logging
 - ✅ Standardized form validation approach with enhanced model forms
+- ✅ Implemented Stripe integration for payment processing
 
 ## Documentation Priorities
 - ✅ Document HTMX integration patterns with examples
@@ -77,8 +78,9 @@ This project follows a clean architecture with:
 - [ ] Build example pages:
   - [ ] Landing page  
   - [ ] About page
-  - [ ] Pricing/Stripe Checkout page
+  - [ ] Pricing page with Stripe Checkout integration
   - [ ] Blog/Newsfeed page
+  - [ ] User subscription management page
 - [ ] Add tests for frontend components
 - [ ] Implement accessibility best practices
 
