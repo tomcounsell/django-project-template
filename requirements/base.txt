@@ -12,6 +12,7 @@ django-unfold
 django-widget-tweaks
 djangorestframework
 djangorestframework-api-key
+drf-yasg
 flake8
 ipython
 psycopg2

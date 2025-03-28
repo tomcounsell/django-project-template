@@ -31,7 +31,7 @@
 <nav role="navigation" aria-label="main navigation">
   <div>
     <a href="/">
-      <img src="{% static 'assets/img/logo.png' %}" width="28" height="28"  alt="Django Project Template Logo"/>
+      <img src="{% static 'assets/img/logo-yudame.png' %}" width="28" height="28"  alt="Django Project Template Logo"/>
     </a>
 
     <a role="button" id="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -55,7 +55,7 @@
         {#      {% include "nav/search.html" %}#}
       {% endif  %}
       {# Can be included directly or as a component #}
-      {% include "nav/account_menu.html" %}
+      {% include "layout/nav/account_menu.html" %}
       {# Alternative: {% component "nav-account_menu" %}{% endcomponent %} #}
     </div>
 

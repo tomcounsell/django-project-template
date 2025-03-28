@@ -105,20 +105,25 @@ TEMPLATES = [
     },
 ]
 
-# Static files and media
+# Static files (CSS, JavaScript, Images)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
+# Additional locations of static files
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    # Removed app-specific static directory for consolidation
 ]
 
 STATICFILES_FINDERS = [
     # Default finders
     "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Media files (User uploaded files)
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 
 mimetypes.add_type("text/javascript", ".js", True)
 mimetypes.add_type("text/css", ".css", True)
