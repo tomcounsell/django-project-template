@@ -9,7 +9,7 @@ ADMIN_SITE_TITLE = "ProjectName"
 ADMIN_SITE_URL = None
 ADMIN_INDEX_TITLE = "Content Database"
 
-# Django Unfold settings - minimal version to get it working
+# Django Unfold settings - enhanced version
 UNFOLD = {
     "SITE_TITLE": "ProjectName Admin",
     "SITE_HEADER": "ProjectName Content Database",
@@ -17,7 +17,28 @@ UNFOLD = {
     "SITE_ICON": None,
     "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",
     "STYLES": [
-        "css/output.css",
+        "/static/css/output.css",
+    ],
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+    },
+    # Tabs configuration for detail pages
+    "TABS": [
+        {
+            "model": "common.User",
+            "items": [
+                {"title": _("Profile"), "link": "profile", "template": "admin/user/profile.html"},
+                {"title": _("Security"), "link": "security", "template": "admin/user/security.html"},
+            ],
+        },
+        {
+            "model": "common.Team",
+            "items": [
+                {"title": _("Team Info"), "link": "team-info", "template": "admin/team/info.html"},
+                {"title": _("Members"), "link": "members", "template": "admin/team/members.html"},
+            ],
+        },
     ],
     "COLORS": {
         "primary": {
@@ -33,4 +54,5 @@ UNFOLD = {
             "900": "30, 58, 138",
         },
     },
+    "APP_LIST_CALLBACK": "apps.common.admin_dashboard.filter_admin_app_list",
 }

@@ -66,6 +66,17 @@ This project follows a clean architecture with:
 - ✅ Add tests for API endpoints
 - ✅ Implement pagination for API responses
 
+## Admin Site
+  1. ✅ Add detailed sidebar navigation with proper model organization
+  2. ✅ Configure tabs for User and Team detail pages correctly
+  3. ✅ Fix template issues in the user profile template
+  4. ✅ Add missing styling for the admin interface (output.css is missing)
+  5. Implement proper admin actions in ModelAdmin classes
+  6. Complete the admin dashboard with working widgets
+  7. Add custom filters and search for admin models
+  8. ✅ Fix the time zone warning for User.date_joined
+  9. Implement responsive design for admin templates
+  10. Set up proper icons for all admin models
 
 ## Frontend Priorities
 - ✅ Migrate from manual Tailwind to django-tailwind package

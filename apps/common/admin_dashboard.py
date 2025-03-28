@@ -41,7 +41,10 @@ def get_admin_dashboard(request, context=None):
     active_users = User.objects.filter(is_active=True).count()
     staff_users = User.objects.filter(is_staff=True).count()
     superusers = User.objects.filter(is_superuser=True).count()
-    recent_users = User.objects.filter(date_joined__gte=now().date()).count()
+    
+    # Make sure we use a timezone-aware datetime
+    today = now().date()
+    recent_users = User.objects.filter(date_joined__date=today).count()
     
     # Team statistics
     team_count = Team.objects.count()
