@@ -13,6 +13,8 @@ from .email import Email
 from .sms import SMS
 from .todo import TodoItem
 from .api_key import UserAPIKey, TeamAPIKey
+from .subscription import Subscription
+from .payment import Payment
 
 __all__ = [
     "Country",
@@ -33,4 +35,6 @@ __all__ = [
     "TodoItem",
     "UserAPIKey",
     "TeamAPIKey",
+    "Subscription",
+    "Payment",
 ]

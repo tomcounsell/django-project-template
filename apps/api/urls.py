@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from rest_framework import routers, permissions
-from apps.api.views import user, twilio, todo, api_key
+from apps.api.views import user, twilio, todo, api_key, stripe
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
@@ -66,8 +66,9 @@ urlpatterns = api_router.urls + [
     # path("auth/password/change/", password_change_view, name="password_change"),
     # path("auth/me/", me_view, name="me"),
     
-    # Twilio webhook endpoint
+    # Webhook endpoints
     path("webhooks/twilio/", twilio.twilio_webhook, name="twilio-webhook"),
+    path("webhooks/stripe/", stripe.stripe_webhook_view, name="stripe-webhook"),
     
     # API Documentation with Swagger/ReDoc
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

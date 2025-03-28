@@ -18,9 +18,9 @@ class User(AbstractUser, Timestampable):
     is_beta_tester = models.BooleanField(default=False)
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
 
-    # stripe_customer = models.ForeignKey(
-    #     "djstripe.Customer", null=True, blank=True, on_delete=models.PROTECT
-    # )
+    # Stripe integration
+    stripe_customer_id = models.CharField(max_length=255, blank=True, default="")
+    has_payment_method = models.BooleanField(default=False)
 
     # MODEL PROPERTIES
     @property
@@ -57,6 +57,39 @@ class User(AbstractUser, Timestampable):
             self.agreed_to_terms_at = timezone.now()
         elif value is False and self.is_agreed_to_terms:
             self.agreed_to_terms_at = None
+            
+    @property
+    def has_active_subscription(self) -> bool:
+        """
+        Check if the user has an active subscription.
+        
+        Returns:
+            bool: True if the user has an active subscription, False otherwise
+        """
+        return hasattr(self, 'subscriptions') and self.subscriptions.filter(active=True).exists()
+
+    @property
+    def active_subscriptions(self):
+        """
+        Get the user's active subscriptions.
+        
+        Returns:
+            QuerySet: The user's active subscriptions
+        """
+        if not hasattr(self, 'subscriptions'):
+            return []
+            
+        return self.subscriptions.filter(status__in=['active', 'trialing'])
+    
+    @property
+    def has_stripe_customer(self) -> bool:
+        """
+        Check if the user has a Stripe customer ID.
+        
+        Returns:
+            bool: True if the user has a Stripe customer ID, False otherwise
+        """
+        return bool(self.stripe_customer_id)
 
     # MODEL FUNCTIONS
     def __str__(self):
@@ -73,3 +106,30 @@ class User(AbstractUser, Timestampable):
                 return f"{self.email} (unverified)"
         except:
             return f"User {self.id}"
+            
+    def get_active_subscription(self):
+        """
+        Get the user's active subscription.
+        
+        Returns:
+            Subscription: The user's active subscription, or None if not found
+        """
+        if not hasattr(self, 'subscriptions'):
+            return None
+            
+        return self.subscriptions.filter(status__in=['active', 'trialing']).first()
+        
+    def get_payment_history(self, limit=10):
+        """
+        Get the user's payment history.
+        
+        Args:
+            limit: Maximum number of payments to return
+            
+        Returns:
+            QuerySet: The user's payment history
+        """
+        if not hasattr(self, 'payments'):
+            return []
+            
+        return self.payments.all()[:limit]

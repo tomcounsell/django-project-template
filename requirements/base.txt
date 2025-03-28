@@ -22,3 +22,4 @@ python-dotenv
 dj-database-url
 gunicorn
 whitenoise
+stripe
