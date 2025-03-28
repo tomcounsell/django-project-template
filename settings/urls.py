@@ -3,6 +3,14 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from settings.env import DEBUG, LOCAL
+from settings.unfold import ADMIN_SITE_HEADER, ADMIN_SITE_TITLE, ADMIN_SITE_URL, ADMIN_INDEX_TITLE
+
+# Configure Django's built-in admin
+admin.autodiscover()
+admin.site.site_header = ADMIN_SITE_HEADER
+admin.site.site_title = ADMIN_SITE_TITLE
+admin.site.site_url = ADMIN_SITE_URL
+admin.site.index_title = ADMIN_INDEX_TITLE
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -12,12 +20,8 @@ urlpatterns = [
     path('api/', include('apps.api.urls')),
 ]
 
-# Built-In AUTH and ADMIN
-admin.autodiscover()
-admin.site.site_header = "ProjectName Content Database"
-admin.site.site_title = "ProjectName"
-admin.site.site_url = None
-admin.site.index_title = "Content Database"
+# Admin URL
+# Admin configuration is in settings/unfold.py
 urlpatterns += [
     path("admin/", admin.site.urls),
 ]

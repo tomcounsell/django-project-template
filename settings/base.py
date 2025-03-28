@@ -8,8 +8,12 @@ from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
 # Application definition
 DJANGO_APPS = [
     "unfold",  # before django.contrib.admin
-    # "unfold.contrib.filters",  # Optional: for Unfold filters
-    # "unfold.contrib.forms",  # Optional: for Unfold form components
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -170,7 +174,6 @@ TEMPLATE_DIRS = [
     BASE_DIR / "templates",
 ]
 
-
 # Tailwind CSS settings
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
@@ -179,41 +182,8 @@ INTERNAL_IPS = [
 
 NPM_BIN_PATH = "npm"
 
-# Django Unfold settings
-UNFOLD = {
-    "SITE_TITLE": "ProjectName Admin",
-    "SITE_HEADER": "ProjectName Content Database",
-    "SITE_URL": "/",
-    "SITE_ICON": None,  # Relative path to icon (e.g. "img/favicon.png")
-    "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",  # Customize dashboard
-    "STYLES": [
-        "css/output.css",  # Tailwind CSS output file
-    ],
-    "SCRIPTS": [],  # Additional JS files to include
-    "SIDEBAR": {
-        "show_search": True,  # Show search in sidebar
-        "show_all_applications": False,  # Show all applications in sidebar
-        "navigation": []  # Custom navigation items
-    },
-    "TABS": [],  # Custom tabs configuration
-    "EXTENSIONS": {
-        "modeltranslation": False,  # Enable modeltranslation integration
-    },
-    "COLORS": {
-        "primary": {
-            "50": "239, 246, 255",
-            "100": "219, 234, 254",
-            "200": "191, 219, 254",
-            "300": "147, 197, 253",
-            "400": "96, 165, 250",
-            "500": "59, 130, 246",
-            "600": "37, 99, 235",
-            "700": "29, 78, 216",
-            "800": "30, 64, 175",
-            "900": "30, 58, 138",
-        },
-    },
-}
+# Import Unfold settings
+from settings.unfold import UNFOLD
 
 # SSL settings for production
 if PRODUCTION or STAGE:

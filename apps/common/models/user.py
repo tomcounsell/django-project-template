@@ -11,6 +11,7 @@ from apps.common.behaviors import Timestampable
 
 class User(AbstractUser, Timestampable):
     phone_number = models.CharField(max_length=15, default="", blank=True)
+    biography = models.TextField(_("Biography"), blank=True, default="")
 
     # birthdate = models.DateField(null=True, blank=True)
 
