@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
+from rest_framework.schemas import get_schema_view
 
 from settings.env import DEBUG, LOCAL
 from settings.unfold import ADMIN_SITE_HEADER, ADMIN_SITE_TITLE, ADMIN_SITE_URL, ADMIN_INDEX_TITLE
@@ -18,6 +19,18 @@ urlpatterns = [
     
     # API URLs
     path('api/', include('apps.api.urls')),
+    
+    # API Schema and Documentation
+    path('api/schema/', get_schema_view(
+        title="Django Project Template API",
+        description="API for Django Project Template",
+        version="1.0.0",
+    ), name='openapi-schema'),
+    
+    path('api/docs/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url': 'openapi-schema'}
+    ), name='swagger-ui'),
 ]
 
 # Admin URL

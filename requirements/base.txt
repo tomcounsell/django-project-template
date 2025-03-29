@@ -13,6 +13,8 @@ django-widget-tweaks
 djangorestframework
 djangorestframework-api-key
 drf-yasg
+pyyaml  # Required for OpenAPI schema generation
+uritemplate  # Required for OpenAPI schema generation
 flake8
 ipython
 psycopg2
