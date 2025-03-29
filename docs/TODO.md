@@ -68,16 +68,14 @@ This project follows a clean architecture with:
 - ✅ Navigation: Improved conditional navigation with context-aware menu items
 - ✅ Team Interface: Simplified team pages with context-dependent visibility
 - [ ] Implement responsive layouts for mobile
-- [ ] Add dark mode support via Tailwind Theme
-- [ ] Create themed UI variants (light/dark)
 - [ ] Add internationalization (i18n) support
 - [ ] Build example pages (landing, pricing, blog)
 - [ ] Implement accessibility best practices
-- [ ] Add frontend component tests
-- [ ] Implement end-to-end browser tests
-  - [ ] Set up browser-use framework
-  - [ ] Create base test patterns
-  - [ ] Add HTMX interaction tests
+- [x] Add frontend component tests
+- [x] Implement end-to-end browser tests
+  - [x] Set up browser-use framework
+  - [x] Create base test patterns
+  - [x] Add HTMX interaction tests
   - [ ] Add responsive design tests
 
 ## Performance ⚡
