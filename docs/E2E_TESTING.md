@@ -5,6 +5,8 @@ This document describes how to perform end-to-end (E2E) testing for the Django P
 > ⚠️ **Note**: This document is based on practical implementations found in:
 > - `apps/public/tests/test_admin_e2e.py`: Testing admin login/logout workflows
 > - `apps/public/tests/test_account_settings_e2e.py`: Testing user account settings functionality
+> - `apps/public/tests/test_todo_workflow.py`: Testing Todo item creation and completion
+> - `apps/public/tests/test_todo_visual.py`: Visual testing of the Todo workflow
 > 
 > Each example demonstrates both standard Django tests and browser-based tests using similar patterns.
 
@@ -298,6 +300,29 @@ You can extend the E2E testing framework by:
 
 ## Example Implementations
 
+### Todo Workflow Testing
+
+See `apps/public/tests/test_todo_workflow.py` and `apps/public/tests/test_todo_visual.py` for comprehensive testing of the Todo feature:
+
+1. **Standard Django Testing Approach (`test_todo_workflow.py`)**:
+   - Creating a new Todo item
+   - Verifying it appears in the list view
+   - Marking it as complete
+   - Verifying its status changes to "Done"
+   - Testing with Django's test client for reliable assertions
+
+2. **Visual Testing Approach (`test_todo_visual.py`)**:
+   - Browser-based testing with Playwright
+   - Visual verification through screenshots
+   - Highlighting specific elements for documentation
+   - Walking through the entire user workflow visually
+
+3. **Manual Testing Helper (`test_todo_manual.py`)**:
+   - Creating test users and sample data
+   - Providing instructions for manual testing
+   - Assisting in documentation creation
+   - Useful for complex interactions that are difficult to automate
+
 ### Admin Interface Testing
 
 See `apps/public/tests/test_admin_e2e.py` for testing the Django admin interface. This example demonstrates:
@@ -319,14 +344,59 @@ See `apps/public/tests/test_account_settings_e2e.py` for testing user account fu
 
 ### Key Implementation Patterns
 
-Both examples showcase important patterns:
+All examples showcase these important patterns:
 
-1. **Dual-layer testing**: Each flow is tested with both Django's TestCase and browser-use
-2. **Proper URL naming**: Using namespaced URLs (`public:account-settings` instead of hardcoded URLs)
+1. **Multi-layer testing**: Using both Django's TestCase and browser-based tests for complete coverage
+2. **Proper URL naming**: Using namespaced URLs (`public:todo-list`) instead of hardcoded URLs
 3. **Form context variables**: Accessing the specific form context variables used in the view
 4. **Server availability checking**: Automatically skipping tests when the server isn't running
 5. **Screenshot capturing**: Taking screenshots at key points to aid debugging
-6. **Unique test data**: Using UUIDs to generate unique usernames for each test run
+6. **Unique test data**: Using UUIDs to generate unique test data for each test run
+7. **Test isolation**: Each test performs its own setup and cleanup
+8. **Flexible selectors**: Using multiple selector strategies to find elements reliably
+9. **Error handling**: Gracefully handling failures with error screenshots
+
+### Tips for Effective E2E Testing
+
+1. **Start with Django client tests**: Always implement standard Django test client tests before browser tests. They're faster, more reliable, and easier to debug.
+
+2. **Layer your testing strategy**:
+   - Unit tests for model, utility, and service methods
+   - Integration tests for views and form processing
+   - Browser tests for UI workflows and HTMX interactions
+
+3. **Handling authentication challenges**:
+   - Use `client.force_login()` in Django tests
+   - For browser tests, consider setting session cookies directly
+   - Create specific test users with controlled permissions
+
+4. **Avoiding flaky tests**:
+   - Don't rely on exact CSS selectors that might change
+   - Prefer data attributes or text content for element selection
+   - Use flexible timeouts rather than fixed delays
+   - Implement retry mechanisms for intermittent failures
+
+5. **Troubleshooting browser tests**:
+   - Use `headless=False` to watch the test in real-time
+   - Capture screenshots at each step
+   - Use `slow_mo` to slow down interactions for visibility
+   - Print page content when elements aren't found
+
+6. **Testing HTMX interactions**:
+   - Wait for HTMX requests to complete before assertions
+   - Verify both element interactions and resulting content
+   - Test out-of-band updates to multiple page regions
+   - Use adequate timeouts for complex HTMX workflows
+
+7. **Documentation Integration**:
+   - Use screenshot tests as part of your documentation process
+   - Create dedicated screenshot directories by feature
+   - Run visual tests before major releases to update docs
+
+8. **Resource Considerations**:
+   - Run E2E tests separately from unit/integration tests
+   - Consider running a subset of critical E2E tests in CI
+   - Use proper cleanup to avoid test database pollution
 
 ## Related Documentation
 
