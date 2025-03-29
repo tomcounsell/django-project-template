@@ -100,7 +100,7 @@ def test_user(django_db_setup):
     return user, username, password
 
 @browser_test
-@asyncio_mark
+@pytest.mark.asyncio
 class TestTodoCompleteWorkflow(E2ETestBase):
     """Test the complete workflow for Todo items."""
     

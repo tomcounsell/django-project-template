@@ -58,26 +58,40 @@ For detailed conventions on templates and views, see:
 ## Testing Practice
 - **TDD Approach**: Write tests BEFORE implementing features
 - **Database**: Never use SQLite for tests since app uses Postgres JSON fields
+- **Test Categories**:
+  - **Unit Tests**: Test individual functions, classes, or small components
+  - **Integration Tests**: Test interactions between components
+  - **E2E Tests**: Test complete user workflows with browser automation
+  - **Visual Tests**: Test the visual appearance of UI components
+  - **API Tests**: Test REST API endpoints and responses
 - **Organization**:
   - Model tests: `apps/{app_name}/tests/test_models/`
   - View tests: `apps/{app_name}/tests/test_views/`
   - Behavior tests: `apps/common/tests/test_behaviors/`
+  - E2E tests: `apps/{app_name}/tests/test_e2e_*.py`
+  - Visual tests: `apps/{app_name}/tests/test_visual_*.py`
   - Factory classes: `apps/common/tests/factories.py`
 - **Running Tests**:
-  - Django tests: `DJANGO_SETTINGS_MODULE=settings pytest`
-  - Behavior mixins: `python apps/common/behaviors/tests/test_behaviors.py` (standalone tests)
-  - With coverage: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
+  - All tests: `./test.sh`
+  - Specific type: `./test.sh --type unit|integration|e2e|visual|api`
+  - With coverage: `./test.sh --coverage`
+  - With HTML report: `./test.sh --html-report`
+  - Browser tests: `./test.sh --browser --no-headless`
+  - For detailed test management: `python tools/testing/test_manager.py run|list|report --category all|unit|integration|e2e|visual|api`
+- **Browser Testing**:
+  - E2E tests: `python tools/testing/browser_test_runner.py apps/**/tests/test_e2e_*.py`
+  - Visual tests: `python tools/testing/browser_test_runner.py apps/**/tests/test_visual_*.py`
 - **Python 3.12**: Use standalone behavior tests (`apps/common/behaviors/tests/test_behaviors.py`) for Python 3.12 compatibility
 - **Coverage**: 
   - Aim for 100% test coverage for models and behavior mixins
-  - Use `.coveragerc` file to configure coverage settings and exclusions
-  - Generate HTML reports with `--cov-report=html` for visual analysis
-  - Check coverage in CI pipelines with `--cov-report=xml`
+  - Generate HTML reports with `./test.sh --html-report`
+  - Check coverage in CI pipelines with `./test.sh --xml-report`
 - **Test Requirements**:
   - New features require tests
   - Bug fixes must include regression tests
   - Test edge cases and error conditions
   - For async code, use anyio (not asyncio)
+  - Use pytest markers to categorize tests (e.g., `@pytest.mark.e2e`)
 
 ## Documentation
 - [README.md](README.md) - Project overview, features and structure
