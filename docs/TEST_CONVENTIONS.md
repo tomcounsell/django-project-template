@@ -2,6 +2,8 @@
 
 This document outlines the testing approach, conventions, and best practices for the Django Project Template. Following these guidelines will ensure consistency across the codebase and maintain high test coverage.
 
+> **New Feature**: The project now supports end-to-end browser testing using browser-use/Playwright. For detailed information about this testing capability, see [E2E_TESTING.md](E2E_TESTING.md). The current document has been updated to include guidance on when to use different testing approaches.
+
 ## Core Testing Principles
 
 1. **Test-Driven Development (TDD)**
@@ -67,6 +69,26 @@ apps/
   - `test_api_returns_404_for_nonexistent_resource`
 
 ## Test Types and Their Implementation
+
+### Choosing the Right Test Type
+
+This project supports several types of tests, each appropriate for different scenarios:
+
+1. **Model Tests**: For testing data models, properties, methods, and validations
+2. **View Tests**: For testing view logic, template rendering, and basic user interactions
+3. **API Tests**: For testing REST API endpoints, serialization, and authentication
+4. **Behavior Tests**: For testing reusable behavior mixins
+5. **End-to-End Tests**: For testing complete user workflows through the browser
+
+When to use each approach:
+
+| Test Type | When to Use | When Not to Use |
+|-----------|-------------|-----------------|
+| Model Tests | Testing properties, methods, validations, signals | Testing user interactions |
+| View Tests | Testing view logic, context data, template rendering | Testing browser behavior, HTMX interactions |
+| API Tests | Testing API endpoints, serializers, authentication | Testing user interfaces |
+| Behavior Tests | Testing reusable mixins, inheritance | Testing application-specific logic |
+| End-to-End Tests | Testing complete user flows, HTMX interactions, forms | Unit testing, performance-critical paths |
 
 ### Model Tests
 
@@ -354,6 +376,45 @@ class EmailServiceTestCase(TestCase):
         self.assertEqual(kwargs['json']['to'], 'user@example.com')
 ```
 
+### End-to-End Tests
+
+End-to-end tests simulate real user interactions with the application through an actual browser. They're particularly valuable for testing HTMX interactions and complex user flows.
+
+```python
+# Example browser-based test using browser-use and Playwright
+@browser_test
+@asyncio_mark
+class AccountSettingsBrowserTestCase(TestCase):
+    """Tests for account settings using browser automation."""
+    
+    async def test_update_profile_browser(self, page):
+        """Test updating profile information using a real browser."""
+        # Check if server is running
+        if not await self.is_server_running():
+            pytest.skip("Django server not running")
+        
+        # Login
+        login_success = await self.login_user(page)
+        assert login_success, "Login failed"
+        
+        # Navigate to settings page and interact with it
+        await page.goto(f"{self.server_url}/account/settings")
+        await page.fill('input[name="first_name"]', 'Updated')
+        await page.fill('input[name="last_name"]', 'FromBrowser')
+        
+        # Take screenshot for debugging
+        await self.take_screenshot(page, "settings_filled.png")
+        
+        # Submit the form
+        await page.click('button[type="submit"]')
+        
+        # Verify success
+        page_content = await page.content()
+        assert "success" in page_content.lower()
+```
+
+For detailed conventions on writing end-to-end tests, see [E2E_TESTING.md](E2E_TESTING.md).
+
 ## Common Pitfalls
 
 1. **Database Leakage**: Ensure tests clean up after themselves to avoid test interdependence
@@ -364,6 +425,9 @@ class EmailServiceTestCase(TestCase):
 6. **Timezone Issues**: Be explicit about datetime comparisons and aware of timezone settings
    - Use timezone.now() instead of naive datetime objects
    - Consider using filter_warnings in pyproject.toml for persistent warnings
+7. **Browser Dependency**: For end-to-end tests, remember they depend on a running server
+8. **URL Name Changes**: Using URL names with reverse() instead of hardcoded paths prevents tests from breaking when URLs change
+9. **Over-reliance on E2E Tests**: Use them for integration points, not for testing every bit of functionality
 
 ## Best Practices
 
@@ -374,5 +438,22 @@ class EmailServiceTestCase(TestCase):
 5. **Test Edge Cases**: Consider boundary values and special cases
 6. **Follow AAA Pattern**: Arrange, Act, Assert - keep these sections clear and separate
 7. **Parameterize Similar Tests**: Use `pytest.mark.parametrize` for testing multiple similar cases
+8. **Layer Your Tests**: Use a combination of fast unit tests and more comprehensive E2E tests
+9. **Duplicate Critical Tests**: Test critical paths with both Django TestCase and browser-use for maximum confidence
+10. **Test HTMX Interactions**: Use browser-use for testing HTMX behavior that can't be tested with standard Django tests
+
+## Choosing Between Browser and Django TestCase
+
+| Feature | Django TestCase | Browser-Use/Playwright |
+|---------|----------------|------------------------|
+| Speed | Fast | Slow |
+| Setup Complexity | Simple | Complex (requires running server) |
+| Dependencies | Minimal | Multiple (browser-use, playwright, etc.) |
+| HTMX Testing | Limited | Comprehensive |
+| Visual Verification | None | Screenshots |
+| Form Interactions | Basic | Advanced (clicks, typing, etc.) |
+| JS Dependency | Cannot test JS | Can test JS-dependent features |
+| Reliability | Highly reliable | More prone to timing/environment issues |
+| Recommended For | Unit testing, basic form submission | Complex user flows, HTMX, visual testing |
 
 By following these testing conventions, you'll ensure maintainable, reliable tests that provide confidence in the codebase.

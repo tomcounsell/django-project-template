@@ -83,6 +83,11 @@ This project follows a clean architecture with:
 - [ ] Build example pages (landing, pricing, blog)
 - [ ] Implement accessibility best practices
 - [ ] Add frontend component tests
+- [ ] Implement end-to-end browser tests
+  - [ ] Set up browser-use framework
+  - [ ] Create base test patterns
+  - [ ] Add HTMX interaction tests
+  - [ ] Add responsive design tests
 
 ## Performance ⚡
 - [ ] Implement database query optimization

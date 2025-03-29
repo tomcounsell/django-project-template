@@ -10,6 +10,11 @@ icecream
 mypy
 django-stubs
 
+# End-to-end browser testing (Python 3.11+ compatible)
+# browser-use>=0.3.0
+# playwright>=1.40.0
+# pytest-asyncio>=0.23.0
+
 # Documentation
 sphinx
 sphinx-rtd-theme
