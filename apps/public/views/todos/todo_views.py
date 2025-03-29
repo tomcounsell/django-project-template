@@ -238,28 +238,45 @@ class TodoDeleteView(LoginRequiredMixin, HTMXView):
 
 
 class TodoCompleteView(LoginRequiredMixin, HTMXView):
-    """View for marking a todo item as complete."""
-    
-    template_name = "todos/partials/todo_row.html"
+    """View for marking a todo item as done or not done."""
     
     def post(self, request, *args, **kwargs):
-        """Mark the todo item as complete."""
+        """Mark the todo item as done or not done."""
         todo_id = kwargs.get("pk")
         todo = get_object_or_404(TodoItem, id=todo_id)
         
-        # Use the model's complete method
-        todo.complete()
+        # Check if we're marking as incomplete
+        mark_incomplete = request.GET.get('mark_incomplete', False)
+        
+        if mark_incomplete:
+            # Mark as incomplete (reopen)
+            if todo.status == "DONE":
+                todo.status = "TODO"  # Reset to TODO status
+                todo.completed_at = None
+                todo.save()
+                messages.success(request, f"Todo '{todo.title}' was marked as not done.")
+        else:
+            # Use the model's complete method to mark as done
+            todo.complete()
+            messages.success(request, f"Todo '{todo.title}' was marked as done.")
+        
+        # Set up the context
+        self.context["todo"] = todo
         
         # Handle both HTMX and regular requests
         if getattr(request, "htmx", False):
-            # For HTMX requests, return the updated row HTML
-            messages.success(request, f"Todo '{todo.title}' was marked as completed.")
-            self.context["todo"] = todo
+            # Check which view triggered this based on target
+            target = request.headers.get('HX-Target', '')
             
-            # Render the row with the tr wrapper to match the target
-            row_html = f'<tr id="todo-row-{todo.id}">{render_to_string(self.template_name, self.context, request=request)}</tr>'
-            return HttpResponse(row_html)
+            if 'todo-row' in target:
+                # For list view updates
+                self.template_name = "todos/partials/todo_row.html"
+                row_html = f'<tr id="todo-row-{todo.id}">{render_to_string(self.template_name, self.context, request=request)}</tr>'
+                return HttpResponse(row_html)
+            else:
+                # For detail view updates
+                self.template_name = "todos/partials/todo_detail.html"
+                return self.render(request)
         else:
             # For standard requests, redirect to the detail page
-            messages.success(request, f"Todo '{todo.title}' was marked as completed.")
             return redirect("public:todo-detail", pk=todo.id)
