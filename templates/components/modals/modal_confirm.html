@@ -1,3 +1,5 @@
+{% extends "components/modals/modal_base.html" %}
+
 {% comment %}
   Confirmation Modal
   =================
@@ -31,8 +33,6 @@
     Delete Item
   </button>
 {% endcomment %}
-
-{% extends "components/modals/modal_base.html" %}
 
 {% block modal_body %}
   <div class="flex items-start space-x-4">
@@ -71,7 +71,7 @@
   <button
     type="button"
     class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors {{ cancel_class|default:'' }}"
-    onclick="this.closest('.modal-container').innerHTML = ''"
+    onclick="const container = this.closest('.modal-container'); if (container) container.innerHTML = ''"
   >
     {{ cancel_text|default:"Cancel" }}
   </button>
@@ -80,10 +80,13 @@
     type="button"
     class="px-4 py-2 rounded-md text-white {% if icon == 'danger' %}bg-red-600 hover:bg-red-700 focus:ring-red-500{% else %}bg-primary-600 hover:bg-primary-700 focus:ring-primary-500{% endif %} focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors {{ confirm_class|default:'' }}"
     hx-{{ confirm_method|default:"post" }}="{{ confirm_url }}"
-    hx-target="{{ target|default:'#content' }}"
+    {% if target %}hx-target="{{ target }}"{% endif %}
     {% if swap %}hx-swap="{{ swap }}"{% endif %}
     {% if trigger %}hx-trigger="{{ trigger }}"{% endif %}
-    onclick="setTimeout(() => { this.closest('.modal-container').innerHTML = '' }, 100)"
+    hx-vals='{% if redirect_after %}{"redirect_after": "{{ redirect_after }}"}{% endif %}'
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+    {% if is_list_view and row_id %}hx-on:click="document.addEventListener('todoDeleted-{{ row_id|cut:'todo-row-' }}', function() { htmx.remove('#{{ row_id }}') });"{% endif %}
+    onclick="const container = this.closest('.modal-container'); setTimeout(() => { if (container) container.innerHTML = '' }, 100)"
   >
     {{ confirm_text|default:"Confirm" }}
   </button>

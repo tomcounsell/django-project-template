@@ -120,7 +120,13 @@
 
     <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
       <div>
-        <a href="{% url 'public:todo-delete' todo.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+        <button 
+          hx-get="{% url 'public:todo-delete-modal' todo.id %}"
+          hx-target="#primary-modal-container"
+          hx-swap="innerHTML"
+          class="text-red-600 hover:text-red-900 border border-red-300 rounded px-3 py-1 text-sm hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500">
+          Delete
+        </button>
       </div>
       <div>
         {% if todo.status != "DONE" %}

@@ -133,6 +133,7 @@ urlpatterns += [
     path("todos/<int:pk>/", todo_views.TodoDetailView.as_view(), name="todo-detail"),
     path("todos/<int:pk>/update/", todo_views.TodoUpdateView.as_view(), name="todo-update"),
     path("todos/<int:pk>/delete/", todo_views.TodoDeleteView.as_view(), name="todo-delete"),
+    path("todos/<int:pk>/delete-modal/", todo_views.TodoDeleteModalView.as_view(), name="todo-delete-modal"),
     path("todos/<int:pk>/complete/", todo_views.TodoCompleteView.as_view(), name="todo-complete"),
 ]
 

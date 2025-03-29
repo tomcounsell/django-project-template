@@ -1,0 +1,81 @@
+<td class="px-6 py-4 whitespace-nowrap">
+  <a href="{% url 'public:todo-detail' todo.id %}" class="text-blue-600 hover:text-blue-900">
+    {{ todo.title }}
+  </a>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if todo.priority == "HIGH" %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+      High
+    </span>
+  {% elif todo.priority == "MEDIUM" %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+      Medium
+    </span>
+  {% else %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+      Low
+    </span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {{ todo.get_category_display }}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if todo.status == "DONE" %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+      Done
+    </span>
+  {% elif todo.status == "IN_PROGRESS" %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+      In Progress
+    </span>
+  {% elif todo.status == "BLOCKED" %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+      Blocked
+    </span>
+  {% else %}
+    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+      To Do
+    </span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if todo.assignee %}
+    {{ todo.assignee.get_full_name|default:todo.assignee.username }}
+  {% else %}
+    <span class="text-gray-400">Unassigned</span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if todo.due_at %}
+    {% if todo.is_overdue %}
+      <span class="text-red-600">{{ todo.due_at|date:"M d, Y" }}</span>
+    {% else %}
+      {{ todo.due_at|date:"M d, Y" }}
+    {% endif %}
+  {% else %}
+    <span class="text-gray-400">No due date</span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+  <a href="{% url 'public:todo-update' todo.id %}" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
+  <button 
+    hx-get="{% url 'public:todo-delete-modal' todo.id %}"
+    hx-target="#primary-modal-container"
+    hx-swap="innerHTML"
+    hx-ext="remove-with-animation"
+    class="text-red-600 hover:text-red-900 border-none bg-transparent p-0 cursor-pointer">
+    Delete
+  </button>
+  {% if todo.status != "DONE" %}
+    <button 
+      hx-post="{% url 'public:todo-complete' todo.id %}"
+      hx-target="#todo-row-{{ todo.id }}"
+      hx-swap="outerHTML"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      class="text-green-600 hover:text-green-900 ml-2 border-none bg-transparent p-0 cursor-pointer">
+      Complete
+    </button>
+  {% endif %}
+</td>

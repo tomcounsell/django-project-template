@@ -74,3 +74,60 @@ function toggleMobileMenu() {
 document.body.addEventListener("htmx:configRequest", function(configEvent){
     configEvent.detail.headers['X-CSRFToken'] = document.querySelector('html').getAttribute('data-csrf-token');
 });
+
+// Custom extension for removing elements with animation
+htmx.defineExtension('remove-with-animation', {
+    onEvent: function(name, evt) {
+        if (name === 'htmx:beforeRemove') {
+            const elt = evt.detail.target;
+            evt.detail.removeHandler = function() {
+                elt.style.opacity = '0';
+                elt.style.maxHeight = '0';
+                elt.style.overflow = 'hidden';
+                
+                // After animation completes, actually remove the element
+                setTimeout(function() {
+                    elt.remove();
+                }, 500); // Match the duration in CSS
+            };
+        }
+    }
+});
+
+// Ensure logout form submits properly
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all logout buttons and add event listeners
+    const logoutForms = document.querySelectorAll('.logout-form');
+    
+    logoutForms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            // Prevent the default form behavior
+            event.preventDefault();
+            
+            // Create FormData object
+            const formData = new FormData(form);
+            
+            // Use fetch to submit the form via POST
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('html').getAttribute('data-csrf-token')
+                },
+                credentials: 'same-origin'
+            }).then(response => {
+                if (response.redirected) {
+                    // If the response is a redirect, follow it
+                    window.location.href = response.url;
+                } else {
+                    // Reload the page if not redirected
+                    window.location.reload();
+                }
+            }).catch(error => {
+                console.error('Logout error:', error);
+                // Reload the page anyway
+                window.location.reload();
+            });
+        });
+    });
+});
