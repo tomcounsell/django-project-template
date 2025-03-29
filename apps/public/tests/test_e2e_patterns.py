@@ -66,29 +66,60 @@ LOCAL_TEST_SERVER_URL = "http://localhost:8000"
 User = get_user_model()
 
 
+try:
+    from apps.public.tests.e2e_test_config import (
+        SERVER_URL, BROWSER_CONFIG, VIEWPORTS, SCREENSHOTS_BASE_DIR, 
+        is_server_running, ensure_directories
+    )
+except ImportError:
+    # Default values if the config module is not available
+    SERVER_URL = "http://localhost:8000"
+    BROWSER_CONFIG = {
+        "headless": True,
+        "slow_mo": 100,
+        "browser_type": "chromium",
+        "default_timeout": 5000,
+        "navigation_timeout": 10000,
+    }
+    VIEWPORTS = {
+        "desktop": {"width": 1280, "height": 800},
+    }
+    SCREENSHOTS_BASE_DIR = "test_screenshots"
+    
+    def ensure_directories():
+        """Create screenshot directory if it doesn't exist."""
+        import os
+        os.makedirs(SCREENSHOTS_BASE_DIR, exist_ok=True)
+    
+    def is_server_running(host="localhost", port=8000):
+        """Check if the Django server is running."""
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((host, port))
+        sock.close()
+        return result == 0
+
 class EndToEndTestConfig:
     """Configuration class for end-to-end tests."""
     
     # Test server URL to use
-    server_url: str = LOCAL_TEST_SERVER_URL
+    server_url: str = SERVER_URL
     
     # Playwright browser options
-    headless: bool = True  # Set to False to see browser actions during tests
-    slow_mo: int = 0  # Milliseconds to slow down browser actions (useful for debugging)
-    
-    # Browser type: 'chromium', 'firefox', or 'webkit'
-    browser_type: str = 'chromium'
+    headless: bool = BROWSER_CONFIG["headless"]
+    slow_mo: int = BROWSER_CONFIG["slow_mo"]
+    browser_type: str = BROWSER_CONFIG["browser_type"]
     
     # Viewport size for responsive testing
-    viewport_width: int = 1280
-    viewport_height: int = 720
+    viewport_width: int = VIEWPORTS["desktop"]["width"]
+    viewport_height: int = VIEWPORTS["desktop"]["height"]
     
     # Wait times in milliseconds
-    default_timeout: int = 5000
-    navigation_timeout: int = 10000
+    default_timeout: int = BROWSER_CONFIG["default_timeout"]
+    navigation_timeout: int = BROWSER_CONFIG["navigation_timeout"]
     
     # Screenshots directory relative to project root
-    screenshots_dir: str = 'test_screenshots'
+    screenshots_dir: str = SCREENSHOTS_BASE_DIR
 
 
 @pytest.fixture
@@ -142,11 +173,11 @@ class E2ETestBase:
     @classmethod
     def setup_class(cls):
         """Set up the test class."""
+        # Create necessary directories
+        ensure_directories()
+        
         # Check if a live server is running
-        import socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(('localhost', 8000))
-        if result != 0:
+        if not is_server_running():
             pytest.skip("Test server not running. Start with 'python manage.py runserver'")
     
     @staticmethod

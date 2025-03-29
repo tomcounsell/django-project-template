@@ -1,8 +1,11 @@
 """
 End-to-end tests for the account settings page functionality.
 
-This test file demonstrates how to test a user-facing feature with both
-Django's TestCase/Client and browser-use automation. These tests cover:
+DEPRECATED: The browser tests in this file have been migrated to test_account_browser.py
+which uses a more consistent pattern. Only the Django TestCase tests should be used from this file.
+
+This test file demonstrates how to test a user-facing feature with Django's TestCase/Client.
+These tests cover:
 1. Viewing account settings page
 2. Updating user profile information
 3. Changing password
@@ -177,8 +180,8 @@ class AccountSettingsTestCase(TestCase):
 
 
 @browser_test
-@asyncio_mark
-class AccountSettingsBrowserTestCase(TestCase):
+@pytest.mark.django_db
+class AccountSettingsBrowserTestCase:
     """Tests for account settings using browser automation."""
     
     # Screenshot directory
@@ -193,6 +196,13 @@ class AccountSettingsBrowserTestCase(TestCase):
         
         # Server URL
         cls.server_url = "http://localhost:8000"
+        
+        # Check if server is running
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex(('localhost', 8000))
+        if result != 0:
+            pytest.skip("Django server not running at http://localhost:8000")
     
     def setUp(self):
         """Set up a test user for each test."""
@@ -207,35 +217,6 @@ class AccountSettingsBrowserTestCase(TestCase):
             first_name="Browser",
             last_name="Test"
         )
-    
-    @pytest.fixture(scope="function")
-    async def browser(self):
-        """Fixture to provide a browser instance."""
-        # Start browser
-        playwright_obj = await playwright.async_api.async_playwright().start()
-        browser = await playwright_obj.chromium.launch(headless=True)
-        
-        yield browser
-        
-        # Cleanup
-        await browser.close()
-        await playwright_obj.stop()
-    
-    @pytest.fixture(scope="function")
-    async def context(self, browser):
-        """Fixture to provide a browser context."""
-        context = await browser.new_context(
-            viewport={"width": 1280, "height": 720}
-        )
-        yield context
-        await context.close()
-    
-    @pytest.fixture(scope="function")
-    async def page(self, context):
-        """Fixture to provide a browser page."""
-        page = await context.new_page()
-        yield page
-        await page.close()
     
     async def take_screenshot(self, page: "Page", filename: str) -> str:
         """Take a screenshot and save it to the screenshots directory."""
@@ -283,12 +264,27 @@ class AccountSettingsBrowserTestCase(TestCase):
             print(f"Login error: {e}")
             return False
     
+    # Define fixtures with pytest_asyncio
+    @pytest_asyncio.fixture
+    async def browser(self):
+        """Fixture to provide a browser instance."""
+        playwright_obj = await playwright.async_api.async_playwright().start()
+        browser = await playwright_obj.chromium.launch(headless=True)
+        yield browser
+        await browser.close()
+        await playwright_obj.stop()
+    
+    @pytest_asyncio.fixture
+    async def page(self, browser):
+        """Fixture to provide a browser page."""
+        context = await browser.new_context(viewport={"width": 1280, "height": 720})
+        page = await context.new_page()
+        yield page
+        await context.close()
+    
+    @pytest.mark.asyncio
     async def test_update_profile_browser(self, page):
         """Test updating profile information using a real browser."""
-        # Check if server is running
-        if not await self.is_server_running():
-            pytest.skip("Django server not running at http://localhost:8000")
-        
         # Login
         login_success = await self.login_user(page)
         assert login_success, "Login failed"
@@ -333,12 +329,9 @@ class AccountSettingsBrowserTestCase(TestCase):
         assert first_name_value == 'Updated', "First name not updated"
         assert last_name_value == 'FromBrowser', "Last name not updated"
     
+    @pytest.mark.asyncio
     async def test_failed_validation_browser(self, page):
         """Test form validation with invalid data using a real browser."""
-        # Check if server is running
-        if not await self.is_server_running():
-            pytest.skip("Django server not running at http://localhost:8000")
-        
         # Login
         login_success = await self.login_user(page)
         assert login_success, "Login failed"
