@@ -11,11 +11,11 @@ Hosting: Render, AWS-S3
 Integrations: 
     Loops for transactional email
     OpenAI for GPTs
+    Stripe for payments
+    Twilio for SMS
     
 Planned Integrations:
     File uploads (evaluating options)
-    Stripe for payments
-    Twilio for SMS
 
 ## Setup and Documentation
 
@@ -74,7 +74,7 @@ _Defines the application programming interface (API) layer, responsible for hand
 _General purpose and shared components for any applications. 
 This includes models, forms, views, and other components that are shared across multiple apps._
 
-_Key Features include 1. Enhanced User model with best practices for consumer-facing apps. 2. Common model behaviors like timestamping, authoring, etc. 3. Large collection of utility functions for common problems encountered while building applications._
+_Key Features include 1. Enhanced User model with best practices for consumer-facing apps. 2. Common model behaviors like timestamping, authoring, etc. 3. Large collection of utility functions for common problems encountered while building applications. 4. Communication-related models (SMS, Email) for handling notifications and messaging._
 
 #### Behavior Mixins
 
@@ -95,29 +95,12 @@ All behavior mixins have comprehensive test coverage (see `apps/common/tests/tes
   - `behaviors/`: Common model behaviors like timestamping.
   - `forms/`: Shared form definitions.
   - `migrations/`: Database migration scripts for common models.
-  - `models/`: General purpose model definitions.
+  - `models/`: General purpose model definitions including communication models (Email, SMS).
   - `serializers/`: Common serializer classes.
   - `tests/`: Tests for common functionality.
   - `utilities/`: Helper functions and classes.
   - `views/`: Shared views.
   - `admin.py`: Admin interface configurations.
-
-### Communication
-
-_Contains all communication-related modules and integration-specific logic. 
-Each type of communication has a model: SMS, Email, etc_
-
-- `apps/communication/`: communication app 
-  - `forms/`: Form definitions for the communication app.
-  - `migrations/`: Migration scripts for communication-related models.
-  - `models/`: Data models specific to communication.
-  - `static/`: Static files for the communication module.
-  - `templates/`: HTML templates for the communication module.
-  - `tests/`: Tests for communication features.
-  - `views/`: Views handling communication flows.
-  - `admin.py`: Admin configurations for communication.
-  - `apps.py`: Application settings for communication.
-  - `urls.py`: URL patterns for communication features.
 
 ### Integration
 

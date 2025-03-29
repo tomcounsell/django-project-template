@@ -119,7 +119,7 @@ For detailed conventions on templates and views, see:
 ## Architecture
 - Move away from component frameworks to standard Django templates
 - Consolidate static files and templates to root directories
-- Use uv for dependency management (transitioning from requirements files)
+- Use uv for dependency management
 - Organize apps by domain (common, public, api, ai, integrations)
 
 ## Code Quality Tools
