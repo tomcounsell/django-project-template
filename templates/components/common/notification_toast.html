@@ -1,0 +1,69 @@
+{% extends "components/_component_base.html" %}
+
+{# 
+  Toast Notification Component
+  =========================
+  
+  Purpose:
+  Displays temporary notification messages to provide feedback to users.
+  This component can be loaded dynamically via HTMX for out-of-band updates.
+  
+  Context Variables:
+  - messages: List of message objects from Django's message framework
+  
+  HTMX Integration:
+  - Auto-dismisses after a timeout using Hyperscript
+  - Can be triggered via hx-trigger from other components
+  
+  Usage:
+  <!-- Direct inclusion -->
+  {% include "components/common/notification_toast.html" %}
+  
+  <!-- Out-of-band update -->
+  <div 
+    id="toast-container" 
+    hx-get="{% url 'messages' %}" 
+    hx-trigger="showMessage from:body"
+  ></div>
+#}
+
+{% block content %}
+<div 
+  id="toast-container"
+  hx-swap-oob="true"
+>
+  {% if messages %}
+  <div class="toast-messages">
+    {% for message in messages %}
+    <div 
+      class="toast {{ message.tags }}"
+      _="on load wait 5s then add .fade-out then wait 500ms then remove me"
+    >
+      <div class="toast-icon">
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+          <i class="fas fa-check-circle"></i>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+          <i class="fas fa-exclamation-circle"></i>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+          <i class="fas fa-exclamation-triangle"></i>
+        {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+          <i class="fas fa-info-circle"></i>
+        {% else %}
+          <i class="fas fa-comment"></i>
+        {% endif %}
+      </div>
+      
+      <div class="toast-content">
+        {{ message }}
+      </div>
+      
+      <button 
+        class="toast-close"
+        _="on click add .fade-out to closest .toast then wait 500ms then remove closest .toast"
+      >×</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

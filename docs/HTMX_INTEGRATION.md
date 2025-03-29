@@ -1,44 +1,59 @@
 # HTMX Integration Guide
 
-This document explains how to use HTMX with the Django Project Template, focusing on the partials directory structure, naming conventions, and common patterns.
+This document explains how to use HTMX with the Django Project Template, focusing on the component directory structure, naming conventions, and common patterns.
 
-## Partials Directory Structure
+## Template Directory Structure
 
-The `templates/partials` directory is organized by component type:
+The project's template structure is organized as follows:
 
 ```
 templates/
 │
-└── partials/
-    ├── _partial_base.html  # Base template for all partials
-    ├── forms/              # Form components
-    │   ├── form_user.html
-    │   └── ...
-    ├── lists/              # List components
-    │   ├── list_team_members.html
-    │   └── ...
-    ├── cards/              # Card components
-    │   ├── card_team.html
-    │   └── ...
-    ├── modals/             # Modal dialogs
-    │   ├── modal_confirm.html
-    │   └── ...
-    └── common/             # Common UI components
-        ├── notification_toast.html
+├── base.html          # Main base template for full pages
+├── partial.html       # Base template for HTMX partial updates
+│
+├── components/        # Reusable UI components
+│   ├── _component_base.html     # Base template for all components
+│   ├── forms/         # Form components
+│   │   ├── form_user.html
+│   │   └── ...
+│   ├── lists/         # List components
+│   │   ├── list_team_members.html
+│   │   └── ...
+│   ├── cards/         # Card components
+│   │   ├── card_team.html
+│   │   └── ...
+│   ├── modals/        # Modal dialogs
+│   │   ├── modal_base.html
+│   │   ├── modal_confirm.html
+│   │   └── ...
+│   └── common/        # Common UI components
+│       ├── notification_toast.html
+│       └── ...
+│
+└── layout/           # Page layout elements
+    ├── footer.html
+    ├── modals.html   # Modal containers
+    ├── navbar.html   # Main navigation bar
+    ├── messages/     # Notification/toast templates
+    │   └── toast.html
+    └── nav/          # Navigation components
+        ├── account_menu.html
+        ├── navbar.html
         └── ...
 ```
 
 ## Naming Conventions
 
-Partial templates follow this naming pattern:
+Component templates follow this naming pattern:
 
 - `{type}_{name}.html` (e.g., `form_user.html`, `list_team_members.html`)
-- Each file should be in a directory matching its type (e.g., form components go in `forms/`)
-- Base or utility templates start with underscore (e.g., `_partial_base.html`)
+- Each file should be in a directory matching its type (e.g., form components go in `components/forms/`)
+- Base or utility templates start with underscore (e.g., `_component_base.html`)
 
-## Using Partials with HTMX
+## Using Components with HTMX
 
-### 1. Loading Partials Dynamically
+### 1. Loading Components Dynamically
 
 ```html
 <!-- Button to load a form via HTMX -->
@@ -110,14 +125,14 @@ For triggering actions based on events:
 ></div>
 ```
 
-## Common Partials
+## Common Components
 
-### Form Partials
+### Form Components
 
-Form partials handle input collection and submission:
+Form components handle input collection and submission:
 
 ```html
-{% extends "partials/_partial_base.html" %}
+{% extends "components/_component_base.html" %}
 
 {% block content %}
 <form hx-post="{{ submit_url }}" hx-target="{{ target|default:'#form-response' }}">
@@ -128,12 +143,12 @@ Form partials handle input collection and submission:
 {% endblock %}
 ```
 
-### List Partials
+### List Components
 
-List partials display collections of items:
+List components display collections of items:
 
 ```html
-{% extends "partials/_partial_base.html" %}
+{% extends "components/_component_base.html" %}
 
 {% block content %}
 <div id="item-list">
@@ -151,44 +166,42 @@ List partials display collections of items:
 {% endblock %}
 ```
 
-### Modal Partials
+### Modal Components
 
-Modal partials provide dialogs for confirmations:
+Modal components provide dialogs for confirmations:
 
 ```html
-{% extends "partials/_partial_base.html" %}
+{% extends "components/modals/modal_base.html" %}
 
-{% block content %}
-<div class="modal-overlay">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <button hx-post="{{ confirm_url }}" hx-target="{{ target }}">
-      {{ confirm_text|default:"Confirm" }}
-    </button>
-  </div>
+{% block modal_content %}
+<div class="modal-content">
+  <!-- Modal content -->
+  <button hx-post="{{ confirm_url }}" hx-target="{{ target }}">
+    {{ confirm_text|default:"Confirm" }}
+  </button>
 </div>
 {% endblock %}
 ```
 
 ## Best Practices
 
-1. **Focused Components**: Each partial should have a single responsibility
+1. **Focused Components**: Each component should have a single responsibility
 2. **Clear Documentation**: Include comments describing purpose, required context, and usage examples
-3. **Progressive Enhancement**: Ensure partials work without JavaScript when possible
+3. **Progressive Enhancement**: Ensure components work without JavaScript when possible
 4. **Clear Targeting**: Use explicit `id` attributes for HTMX targets
 5. **Error Handling**: Include error states and validation feedback
 6. **Consistent Structure**: Follow the established naming and directory conventions
-7. **Reusability**: Design partials to be reusable across the application
+7. **Reusability**: Design components to be reusable across the application
 
 ## Integration with Views
 
-Partials work with the `HTMXView` class from `apps.public.helpers`:
+Components work with the `HTMXView` class from `apps.public.helpers`:
 
 ```python
 from apps.public.helpers import HTMXView
 
 class TeamMemberListView(HTMXView):
-    template_name = "partials/lists/list_team_members.html"
+    template_name = "components/lists/list_team_members.html"
     
     def get_context_data(self):
         context = super().get_context_data()
@@ -198,18 +211,18 @@ class TeamMemberListView(HTMXView):
         return context
 ```
 
-## Testing HTMX Partials
+## Testing HTMX Components
 
 Test both the rendering and HTMX interaction:
 
 ```python
 from django.test import TestCase, Client
 
-class PartialTestCase(TestCase):
-    def test_form_partial_renders(self):
+class ComponentTestCase(TestCase):
+    def test_form_component_renders(self):
         response = self.client.get('/form/user/', HTTP_HX_REQUEST='true')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'partials/forms/form_user.html')
+        self.assertTemplateUsed(response, 'components/forms/form_user.html')
     
     def test_form_submission_via_htmx(self):
         response = self.client.post(
@@ -219,6 +232,30 @@ class PartialTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         # Check for expected content in response
+```
+
+## Out-of-Band Updates with HTMXView
+
+For views that need to update multiple parts of the page:
+
+```python
+class CreateTeamView(TeamSessionMixin, HTMXView):
+    template_name = "components/forms/team_form.html"
+    oob_templates = {
+        "team_list": "components/lists/team_list.html",
+        "messages": "layout/messages/toast.html"
+    }
+    
+    def post(self, request, *args, **kwargs):
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            team = form.save()
+            messages.success(request, "Team created successfully!")
+            self.context["teams"] = request.user.teams.all()
+            return self.render(request)
+        
+        self.context["form"] = form
+        return self.render(request)
 ```
 
 ## Related Documentation

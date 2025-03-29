@@ -1,7 +1,8 @@
 {% load django_htmx %}
 {% load static %}
+{% load component_tags %}
 
-<!-- 
+{% comment %}
   base.html - Primary Layout Template
   ==================================
   
@@ -18,7 +19,7 @@
   - aside: Sidebar content (optional)
   - footer_content: Custom footer content (optional)
   - scripts: Page-specific JavaScript
--->
+{% endcomment %}
 
 <!DOCTYPE html>
 <html lang="en" data-csrf-token="{{ csrf_token }}">
@@ -52,7 +53,9 @@
   {% load static tailwind_tags %}
   {% tailwind_css %}
   <!--FOR TEMPLATES TO LOAD MORE CSS-->
-  {% block css %}{% endblock css %}
+  {% block css %}
+    {# Additional page-specific CSS can be included here #}
+  {% endblock css %}
   <!-- DJANGO COMPONENT'S CSS -->
   {% component_css_dependencies %}
 
@@ -65,9 +68,6 @@
           integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
           crossorigin="anonymous"></script>
   {% django_htmx_script %}
-
-  <!-- APPLICATION WEB COMPONENTS -->
-  <script type="module" src="{% static 'webcomponents/_webcomponents.js' %}?v=2"></script>
 
   <!--BASE JS-->
   <script src="{% static 'js/base.js' %}?v=3" defer></script>
@@ -88,12 +88,12 @@
 
 <!-- Header/Navbar -->
 {% block header %}
-  {% include "layout/navbar.html" %}
+  {% include "layout/nav/navbar.html" %}
 {% endblock %}
 
 <!-- Flash Messages -->
 {% block messages %}
-  {% include "messages/toast.html" %}
+  {% include "layout/messages/toast.html" %}
 {% endblock %}
 
 <!-- Main Content -->

@@ -9,6 +9,12 @@ from .note import Note
 from .team import Team, TeamMember, Role
 from .city import City
 from .blog_post import BlogPost
+from .email import Email
+from .sms import SMS
+from .todo import TodoItem
+from .api_key import UserAPIKey, TeamAPIKey
+from .subscription import Subscription
+from .payment import Payment
 
 __all__ = [
     "Country",
@@ -24,4 +30,11 @@ __all__ = [
     "Role",
     "City",
     "BlogPost",
+    "Email",
+    "SMS",
+    "TodoItem",
+    "UserAPIKey",
+    "TeamAPIKey",
+    "Subscription",
+    "Payment",
 ]

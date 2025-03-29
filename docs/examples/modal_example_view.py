@@ -37,7 +37,7 @@ def load_confirm_delete_modal(request, item_id):
         'target': '#item-list',  # Update the item list after deletion
     }
     
-    return render(request, 'partials/modals/modal_confirm.html', context)
+    return render(request, 'components/modals/modal_confirm.html', context)
 
 
 def load_item_form_modal(request, item_id=None):
@@ -63,7 +63,7 @@ def load_item_form_modal(request, item_id=None):
         'target': '#item-list',  # Update the item list after form submission
     }
     
-    return render(request, 'partials/modals/modal_form.html', context)
+    return render(request, 'components/modals/modal_form.html', context)
 
 
 def load_secondary_confirmation_modal(request, item_id):
@@ -82,7 +82,7 @@ def load_secondary_confirmation_modal(request, item_id):
         'z_index': 1100,  # Higher z-index to appear above the primary modal
     }
     
-    return render(request, 'partials/modals/modal_secondary.html', context)
+    return render(request, 'components/modals/modal_secondary.html', context)
 
 
 # Example HTMX action handlers
@@ -94,7 +94,7 @@ def delete_item(request, item_id):
     
     # Return updated item list as HTMX response
     items = Item.objects.all()
-    return render(request, 'partials/lists/list_items.html', {'items': items})
+    return render(request, 'components/lists/list_items.html', {'items': items})
 
 
 def create_or_update_item(request, item_id=None):
@@ -109,7 +109,7 @@ def create_or_update_item(request, item_id=None):
         form.save()
         # Return updated item list as HTMX response
         items = Item.objects.all()
-        return render(request, 'partials/lists/list_items.html', {'items': items})
+        return render(request, 'components/lists/list_items.html', {'items': items})
     else:
         # Return form with errors in the same modal
         context = {
@@ -120,4 +120,4 @@ def create_or_update_item(request, item_id=None):
             'submit_text': item_id and 'Save Changes' or 'Create',
             'target': '#item-list',
         }
-        return render(request, 'partials/modals/modal_form.html', context)
+        return render(request, 'components/modals/modal_form.html', context)

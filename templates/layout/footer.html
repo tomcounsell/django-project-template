@@ -1,13 +1,13 @@
 {% load static %}
 
-<!-- 
+{% comment %}
   Footer Component
   ===============
   
   Purpose:
   Site-wide footer that appears at the bottom of all pages.
   Provides links to important pages, legal information, and site metadata.
--->
+{% endcomment %}
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
   <!-- Company/Project Info -->
@@ -76,4 +76,5 @@
   </div>
 </div>
 
+{# Extension point for adding custom content to the footer #}
 {% block footer_content %}{% endblock %}

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.common.utilities.serializers import WritableSerializerMethodField
+from apps.common.utilities.processing.serializers import WritableSerializerMethodField
 from apps.common.models import User
 from typing import Optional
 
@@ -37,9 +37,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             "email",
             "first_name",
             "last_name",
-            "organization_name",
             "is_staff",
-            "is_premium_member",
             "is_beta_tester",
             "is_agreed_to_terms",
             "created_at",

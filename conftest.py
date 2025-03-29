@@ -11,12 +11,15 @@ import pytest
 from django.conf import settings
 
 
-def pytest_configure():
+def pytest_configure(config):
     """Configure Django for pytest if not already done."""
     # Check if Django is already configured
     if not settings.configured:
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
         django.setup()
+    
+    # Set TESTING flag for error handling in utilities/logger.py
+    settings.TESTING = True
 
 
 @pytest.fixture(scope="session")

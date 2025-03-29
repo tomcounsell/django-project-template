@@ -1,4 +1,3 @@
-import six
 from rest_framework import serializers
 from timezone_field import TimeZoneField as TimeZoneModelField
 
@@ -9,7 +8,7 @@ class TimeZoneField(serializers.ChoiceField):
         super().__init__(TimeZoneModelField.CHOICES + [(None, "")], **kwargs)
 
     def to_representation(self, value):
-        return six.text_type(super().to_representation(value))
+        return str(super().to_representation(value))
 
 
 # https://github.com/encode/django-rest-framework/issues/2734#issuecomment-478077325

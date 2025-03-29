@@ -3,16 +3,18 @@ Unit tests for the LoopsClient
 """
 import pytest
 from unittest.mock import patch, MagicMock
+from django.test import TestCase
 from django.test import override_settings
 
 from apps.integration.loops.client import LoopsClient, LoopsAPIError
 
 
 @override_settings(DEBUG=True)
-class LoopsClientDebugModeTestCase:
+class LoopsClientDebugModeTestCase(TestCase):
     """Test LoopsClient in DEBUG mode"""
     
-    def setup_method(self):
+    def setUp(self):
+        super().setUp()
         self.client = LoopsClient(api_key="test_key")
         
     def test_transactional_email_debug_mode(self):
@@ -35,10 +37,11 @@ class LoopsClientDebugModeTestCase:
 
 
 @override_settings(DEBUG=False, LOCAL=False)
-class LoopsClientLiveTestCase:
+class LoopsClientLiveTestCase(TestCase):
     """Test LoopsClient in live mode with mocked requests"""
     
-    def setup_method(self):
+    def setUp(self):
+        super().setUp()
         self.client = LoopsClient(api_key="test_key")
         
     @patch("apps.integration.loops.client.requests.request")

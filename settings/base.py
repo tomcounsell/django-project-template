@@ -8,8 +8,12 @@ from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
 # Application definition
 DJANGO_APPS = [
     "unfold",  # before django.contrib.admin
-    # "unfold.contrib.filters",  # Optional: for Unfold filters
-    # "unfold.contrib.forms",  # Optional: for Unfold form components
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -31,17 +35,17 @@ THIRD_PARTY_APPS = [
     "rest_framework_api_key",
     "django_filters",
     "django_htmx",
-    "django_components",
     "tailwind",
+    "drf_yasg",
 ]
 
 PROJECT_APPS = [
     'theme',  # django-tailwind app
     'apps.common',
     'apps.integration',
-    'apps.communication',
     'apps.api',
     'apps.public',  # for web front-end
+    'apps.ai',  # AI integrations and agents
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -69,7 +73,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    "django_components.middleware.ComponentDependencyMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
@@ -98,37 +101,33 @@ TEMPLATES = [
                     'django.template.loaders.cached.Loader', [
                         # Default Django loader
                         'django.template.loaders.filesystem.Loader',
-                        # Including this is the same as APP_DIRS=True
                         'django.template.loaders.app_directories.Loader',
-                        # Components loader
-                        'django_components.template_loader.Loader',
                     ]
                 )
-            ],
-            "builtins": [
-                'django_components.templatetags.component_tags',
             ]
         },
     },
 ]
 
-# Static files and media
+# Static files (CSS, JavaScript, Images)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
+# Additional locations of static files
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    # Removed app-specific static directory for consolidation
 ]
 
 STATICFILES_FINDERS = [
     # Default finders
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # Django-Components
-    # "django_components.finders.ComponentsFileSystemFinder",
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Media files (User uploaded files)
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 
 mimetypes.add_type("text/javascript", ".js", True)
 mimetypes.add_type("text/css", ".css", True)
@@ -170,15 +169,10 @@ REQUEST_IGNORE_PATHS = (
     r'^admin/',
 )
 
-# Django-Components
-COMPONENTS = {
-    "dirs": [
-        BASE_DIR / "apps" / "public" / "components",
-    ],
-    "app_dirs": [],
-    "reload_on_template_change": True,
-}
-
+# Template Directories
+TEMPLATE_DIRS = [
+    BASE_DIR / "templates",
+]
 
 # Tailwind CSS settings
 TAILWIND_APP_NAME = 'theme'
@@ -188,41 +182,8 @@ INTERNAL_IPS = [
 
 NPM_BIN_PATH = "npm"
 
-# Django Unfold settings
-UNFOLD = {
-    "SITE_TITLE": "ProjectName Admin",
-    "SITE_HEADER": "ProjectName Content Database",
-    "SITE_URL": "/",
-    "SITE_ICON": None,  # Relative path to icon (e.g. "img/favicon.png")
-    "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",  # Customize dashboard
-    "STYLES": [
-        "css/output.css",  # Tailwind CSS output file
-    ],
-    "SCRIPTS": [],  # Additional JS files to include
-    "SIDEBAR": {
-        "show_search": True,  # Show search in sidebar
-        "show_all_applications": False,  # Show all applications in sidebar
-        "navigation": []  # Custom navigation items
-    },
-    "TABS": [],  # Custom tabs configuration
-    "EXTENSIONS": {
-        "modeltranslation": False,  # Enable modeltranslation integration
-    },
-    "COLORS": {
-        "primary": {
-            "50": "239, 246, 255",
-            "100": "219, 234, 254",
-            "200": "191, 219, 254",
-            "300": "147, 197, 253",
-            "400": "96, 165, 250",
-            "500": "59, 130, 246",
-            "600": "37, 99, 235",
-            "700": "29, 78, 216",
-            "800": "30, 64, 175",
-            "900": "30, 58, 138",
-        },
-    },
-}
+# Import Unfold settings
+from settings.unfold import UNFOLD
 
 # SSL settings for production
 if PRODUCTION or STAGE:
@@ -244,3 +205,22 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 50,
 }
+
+# DRF-YASG (Swagger/OpenAPI) settings
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': True,
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        },
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'DEFAULT_MODEL_RENDERING': 'example',
+}
+
+# Silence the warning about compat renderers
+SWAGGER_USE_COMPAT_RENDERERS = False

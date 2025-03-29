@@ -70,7 +70,7 @@ class HTMXView(MainContentView):
 
         # Always include message toasts in the OOB templates if there are messages
         if messages.get_messages(request) and "messages" not in oob_templates:
-            oob_templates["messages"] = "messages/toast.html"
+            oob_templates["messages"] = "layout/messages/toast.html"
 
         # Mark context as OOB if we have OOB templates
         if oob_templates:
@@ -117,7 +117,7 @@ class MyComponentView(TeamSessionMixin, HTMXView):
     template_name = "components/my_component.html"
     oob_templates = {
         "nav_menu": "components/nav_menu.html",
-        "messages": "messages/toast.html",
+        "messages": "layout/messages/toast.html",
     }
     push_url = "/my/component/url"
 

@@ -132,19 +132,6 @@ class LoopsClient:
             logger.info(f"[DEBUG MODE] Event: {event_name}")
             logger.info(f"[DEBUG MODE] Properties: {event_properties}")
             return {"success": True}
-            
-        # For LOCAL mode (kept for backwards compatibility)
-        from settings import LOCAL
-        if LOCAL and not DEBUG:  # Only use this if LOCAL is true but DEBUG is false
-            ic(
-                "simulate sending email with",
-                {
-                    "email": to_email,
-                    "eventName": event_name,
-                    "eventProperties": event_properties or {},
-                },
-            )
-            return {"success": True}
 
         return self._make_request(
             method="POST",

@@ -14,11 +14,9 @@ from django.db import models
 from django.utils.text import slugify
 
 from apps.common.models import (
-    Address, BlogPost, City, Country, Currency, Document,
-    Image, Note, Team, TeamMember, Upload
+    Address, BlogPost, City, Country, Currency, Document, Email,
+    Image, Note, SMS, Team, TeamMember, TodoItem, Upload
 )
-from apps.communication.models.email import Email
-from apps.communication.models.sms import SMS
 
 User = get_user_model()
 T = TypeVar('T', bound=models.Model)
@@ -372,4 +370,31 @@ class SMSFactory(ModelFactory):
                 data[key] = value()
                 
         data.update(kwargs)
+        return super().create(**data)
+
+
+class TodoItemFactory(ModelFactory):
+    """Factory for TodoItem model."""
+
+    model_class = TodoItem
+    default_data = {
+        'title': 'Test Todo Item',
+        'description': 'This is a test todo item with sample description.',
+        'priority': 'MEDIUM',
+        'category': 'GENERAL',
+        'status': 'TODO',
+        'assignee': None,  # Will be set in create method if needed
+        'due_at': None,
+    }
+
+    @classmethod
+    def create(cls, **kwargs) -> TodoItem:
+        """Create a todo item with valid defaults."""
+        data = cls.default_data.copy()
+        data.update(kwargs)
+        
+        # Create an assignee if one isn't provided
+        if not data.get('assignee'):
+            data['assignee'] = UserFactory.create()
+            
         return super().create(**data)

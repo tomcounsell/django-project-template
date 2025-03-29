@@ -9,3 +9,10 @@ pytest-cov
 icecream
 mypy
 django-stubs
+
+# Documentation
+sphinx
+sphinx-rtd-theme
+sphinx-autodoc-typehints
+myst-parser
+sphinxcontrib-django

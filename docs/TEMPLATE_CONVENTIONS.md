@@ -9,6 +9,9 @@ The project uses two primary base templates:
 1. `templates/base.html` - Main layout template for full pages
 2. `templates/partial.html` - Base template for HTMX partial updates
 
+Additionally, the project uses specialized base templates for components:
+- `templates/components/_component_base.html` - Base template for UI components
+
 ### base.html
 
 This template provides the complete HTML structure with:
@@ -50,6 +53,16 @@ For out-of-band updates, set `is_oob=True` in the view context:
 {% endif %}
 ```
 
+### Layout Organization
+
+The `templates/layout/` directory contains layout elements that make up the page structure:
+
+- `footer.html` - Site footer
+- `modals.html` - Modal containers
+- `navbar.html` - Main navigation bar
+- `messages/` - Notification/toast templates
+- `nav/` - Navigation components like navbar parts and account menu
+
 ## Component System
 
 Reusable UI components are organized in `templates/components/`:
@@ -58,6 +71,9 @@ Reusable UI components are organized in `templates/components/`:
 - `modals/` - Modal dialog templates
 - `buttons/` - Button components
 - `cards/` - Card components
+- `lists/` - List components
+
+Components extend from `components/_component_base.html` which provides basic structure and utility blocks.
 
 ### Form Components
 
@@ -137,7 +153,7 @@ class ProfileView(MainContentView):
    - Keep blocks focused on a single responsibility
 
 3. **Context Variables**:
-   - Document required and optional context variables in template comments
+   - Document required and optional context variables using Django comment tags `{% comment %}...{% endcomment %}`
    - Use descriptive variable names
    - Provide sensible defaults with the `|default` filter
 

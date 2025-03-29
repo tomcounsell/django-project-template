@@ -168,6 +168,7 @@ env_file=".env.local"
 required_vars=("SECRET_KEY" "DEBUG" "DATABASE_URL")
 missing_vars=()
 
+# Check for required variables
 for var in "${required_vars[@]}"; do
     if ! grep -q "^${var}=" "$env_file" || grep -q "^${var}=$" "$env_file"; then
         missing_vars+=("$var")
@@ -182,6 +183,105 @@ else
         echo " - $var"
     done
     echo "Please edit .env.local to set these variables."
+fi
+
+# Step 7b: Check integration variables
+print_header "7b. Checking integration configurations"
+
+# AWS S3 integration check
+print_success "Checking AWS S3 configuration..."
+if grep -q "^AWS_ACCESS_KEY_ID=" "$env_file" && grep -q "^AWS_SECRET_ACCESS_KEY=" "$env_file" && \
+   grep -q "^AWS_STORAGE_BUCKET_NAME=" "$env_file"; then
+    
+    aws_key=$(grep "^AWS_ACCESS_KEY_ID=" "$env_file" | cut -d'=' -f2)
+    aws_secret=$(grep "^AWS_SECRET_ACCESS_KEY=" "$env_file" | cut -d'=' -f2)
+    aws_bucket=$(grep "^AWS_STORAGE_BUCKET_NAME=" "$env_file" | cut -d'=' -f2)
+    
+    if [ -n "$aws_key" ] && [ -n "$aws_secret" ] && [ -n "$aws_bucket" ]; then
+        print_success "AWS S3 configuration is set up for file uploads."
+    else
+        print_warning "AWS S3 configuration is incomplete. File uploads might not work properly."
+        echo "Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_STORAGE_BUCKET_NAME in .env.local."
+    fi
+else
+    print_warning "AWS S3 configuration is not set up. File uploads might not work properly."
+    echo "Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_STORAGE_BUCKET_NAME in .env.local."
+fi
+
+# Twilio integration check
+print_success "Checking Twilio configuration..."
+if grep -q "^TWILIO_ENABLED=" "$env_file" && grep -q "^TWILIO_ACCOUNT_SID=" "$env_file" && \
+   grep -q "^TWILIO_AUTH_TOKEN=" "$env_file" && grep -q "^TWILIO_PHONE_NUMBER=" "$env_file"; then
+    
+    twilio_enabled=$(grep "^TWILIO_ENABLED=" "$env_file" | cut -d'=' -f2)
+    twilio_sid=$(grep "^TWILIO_ACCOUNT_SID=" "$env_file" | cut -d'=' -f2)
+    twilio_token=$(grep "^TWILIO_AUTH_TOKEN=" "$env_file" | cut -d'=' -f2)
+    twilio_phone=$(grep "^TWILIO_PHONE_NUMBER=" "$env_file" | cut -d'=' -f2)
+    
+    if [ "$twilio_enabled" = "True" ] || [ "$twilio_enabled" = "true" ]; then
+        if [ -n "$twilio_sid" ] && [ -n "$twilio_token" ] && [ -n "$twilio_phone" ]; then
+            print_success "Twilio SMS integration is enabled and configured."
+        else
+            print_warning "Twilio SMS integration is enabled but configuration is incomplete."
+            echo "Please set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in .env.local."
+        fi
+    else
+        print_warning "Twilio SMS integration is disabled. Set TWILIO_ENABLED=True to enable."
+    fi
+else
+    print_warning "Twilio SMS configuration is not set up. SMS functionality might not work properly."
+    echo "Please set TWILIO_ENABLED, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER in .env.local."
+fi
+
+# Loops integration check
+print_success "Checking Loops email configuration..."
+if grep -q "^LOOPS_API_KEY=" "$env_file"; then
+    loops_key=$(grep "^LOOPS_API_KEY=" "$env_file" | cut -d'=' -f2)
+    
+    if [ -n "$loops_key" ]; then
+        print_success "Loops email integration is configured."
+    else
+        print_warning "Loops API key is empty. Transactional emails might not work properly."
+        echo "Please set LOOPS_API_KEY in .env.local."
+    fi
+else
+    print_warning "Loops API key is not set. Transactional emails might not work properly."
+    echo "Please set LOOPS_API_KEY in .env.local."
+fi
+
+# AI Integration check
+print_header "Checking AI integration configurations..."
+
+# OpenAI check
+print_success "Checking OpenAI configuration..."
+if grep -q "^OPENAI_API_KEY=" "$env_file"; then
+    openai_key=$(grep "^OPENAI_API_KEY=" "$env_file" | cut -d'=' -f2)
+    
+    if [ -n "$openai_key" ]; then
+        print_success "OpenAI API key is configured."
+    else
+        print_warning "OpenAI API key is empty. AI features might not work properly."
+        echo "Please set OPENAI_API_KEY in .env.local."
+    fi
+else
+    print_warning "OpenAI API key is not set. AI features might not work properly."
+    echo "Please set OPENAI_API_KEY in .env.local."
+fi
+
+# Anthropic check
+print_success "Checking Anthropic configuration..."
+if grep -q "^ANTHROPIC_API_KEY=" "$env_file"; then
+    anthropic_key=$(grep "^ANTHROPIC_API_KEY=" "$env_file" | cut -d'=' -f2)
+    
+    if [ -n "$anthropic_key" ]; then
+        print_success "Anthropic API key is configured."
+    else
+        print_warning "Anthropic API key is empty. AI features might not work properly."
+        echo "Please set ANTHROPIC_API_KEY in .env.local."
+    fi
+else
+    print_warning "Anthropic API key is not set. AI features might not work properly."
+    echo "Please set ANTHROPIC_API_KEY in .env.local."
 fi
 
 # Step 8: Check and setup database

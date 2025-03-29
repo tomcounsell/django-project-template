@@ -1,101 +1,175 @@
 # TODO List for Django Project Template
 
+## Current System Architecture
+
+This project follows a clean architecture with:
+- Root-level template and static directories (no app-specific templates)
+- Behavior mixins for reusable model functionality
+- HTMX-centric frontend development with minimal JavaScript
+- Tailwind CSS for styling through django-tailwind
+- Core apps: common, api, public, ai, integration
+
 ## Completed Tasks ✅
-- ✅ Added comprehensive behavior mixin examples with BlogPost model
+- ✅ Implemented behavior mixin examples with BlogPost model
 - ✅ Created detailed setup guide for new developers
 - ✅ Implemented Loops email integration with tests
 - ✅ Improved test coverage for models and behaviors
 - ✅ Upgraded admin interface with Django Unfold and Tailwind
 - ✅ Implemented Team models with permissions system
-- ✅ Removed component framework dependencies
+- ✅ Removed legacy component framework dependencies
 - ✅ Upgraded to uv for dependency management
-- ✅ Audit template blocks and implement best practices
-- ✅ Reorganize templates for better HTMX integration
-- ✅ Add API endpoint tests with APITestCase
-- ✅ Add view tests with proper request mocking
+- ✅ Standardized template blocks following best practices
+- ✅ Organized templates for optimal HTMX integration
+- ✅ Added comprehensive API endpoint tests with APITestCase
+- ✅ Added view tests with proper request mocking
+- ✅ Consolidated all templates to the root template directory
+- ✅ Consolidated all static files to the root static directory
+- ✅ Removed all app-specific template directories
+- ✅ Created AI app with initial models and views
+- ✅ Migrated communication models to common app
+- ✅ Removed outdated dependencies and backward compatibility code
+- ✅ Implemented comprehensive test suite for key components
+- ✅ Implemented consistent error handling system with centralized logging
+- ✅ Standardized form validation approach with enhanced model forms
+- ✅ Implemented Stripe integration for payment processing
 
-## Current Priority Tasks
+## Documentation Priorities
+- ✅ Document HTMX integration patterns with examples
+- ✅ Add API documentation with OpenAPI/Swagger
+- ✅ Create architecture diagram showing app relationships
+- [ ] Implement automated documentation generation
+  - ✅ Set up Sphinx for Python code documentation
+  - ✅ Configure autodoc extensions for model/view documentation
+  - [ ] Create custom theme matching project styling
+  - ✅ Add documentation build step to CI pipeline
+  - ✅ Generate API documentation from docstrings and type hints
+  - [ ] Build searchable documentation site with versioning
+  - [ ] Create documentation deployment workflow to GitHub Pages
 
-### 1. Template and Static File Organization
-- [✅] Audit all app-level template directories and create migration plan
-- [✅] Move templates from apps/public/templates to root templates directory
-- [✅] Update template references in views and URL configurations
-- [✅] Update docs accordingly to reflect the change on only use root template directory
-- [✅] Consolidate static files from apps/public/static to root static directory
-- [✅] Update docs accordingly to reflect the change on only use root static directory
-- [✅] Update static file references in templates
-- [✅] Remove "dont_put_things_here.txt" from static directory (file not found/already removed)
-- [✅] Audit {% block _ %} and {% endblock _ %} in templates and use best practices
-  - [✅] {% block content %} is the standard block for main content
-  - [✅] additional blocks for header, footer, navbar, aside, etc.
-  - [✅] Add comments to explain block usage
-  - [✅] Document the use of blocks in docs/TEMPLATE_CONVENTIONS.md
-- [✅] Reorganize templates for better HTMX integration
-  - [✅] Create dedicated partial template directory structure
-  - [✅] Implement standardized naming convention for partials
-  - [✅] Add template documentation in comments
-- [✅] Document HTMX integration patterns with examples in docs/VIEW_CONVENTIONS.md and docs/TEMPLATE_CONVENTIONS.md
-- [✅] Update documentation on template patterns
-
-### 2. Extend Test Coverage
-- [✅] Add API endpoint tests with APITestCase
-- [✅] Add view tests with proper request mocking
-- [✅] Create comprehensive test fixtures for all models
-
-### 3. Dependency Management Improvements
-- [✅] Create pyproject.toml with project metadata
-- [✅] Update build.sh script to use uv for dependency installation
-- [✅] Setup pre-commit hooks for code quality (black, isort, flake8, mypy)
-- [ ] remove any and all support for backwards compatibility
-
-### 4. User Experience Improvements
-- [✅] Implement basic Team-related views (create, join, manage)
-- [✅] Add user authentication templates (reset password, etc.)
-- [✅] Create reusable form components
-- [✅] Modernize base templates with best practices
-
-### 5. App Restructuring
-- [ ] Create new apps/ai/ directory structure 
-- [ ] Set up apps/ai/__init__.py, apps.py, models, views, and urls
-- [ ] Create initial models for AI agent workflows
-- [ ] Add apps.ai to INSTALLED_APPS
-- [ ] Audit apps/communication for models and functionality to merge
-- [ ] Migrate communication models to apps/common
-- [ ] Remove apps/communication after successful migration
-
-## Documentation Tasks
-- [✅] Document HTMX integration patterns with examples
-- [ ] Add API documentation with OpenAPI/Swagger
-- [ ] Create architecture diagram showing app relationships
-
-## Infrastructure Tasks
-- [ ] Dockerize the application with proper configuration
-  - [ ] Update Dockerfile for production use
-  - [ ] Create docker-compose.yml for local development
-  - [ ] Add Docker documentation and examples
-  - [ ] Implement multi-stage builds for efficiency
-- [ ] Standardize environment variable and secrets management
-  - [ ] Replace settings/local.py with .env file approach
-  - [ ] Update documentation for environment setup
-  - [ ] Create .env.example with all required variables
-  - [ ] Update settings to load from environment variables
-- [ ] Add GitHub Actions workflow for testing
-- [ ] Create deployment pipeline for staging/production
-- [ ] Setup monitoring and error tracking
-
-## Code Quality Tasks
-- [ ] Implement consistent error handling strategy
+## Code Quality Priorities
+- ✅ Implement consistent error handling strategy
 - [ ] Refactor redundant template logic
 - [ ] Update to latest Django version
-- [ ] Standardize form validation approach
-- [ ] Improve type annotations across codebase
+- ✅ Standardize form validation approach
+- ✅ Improve type annotations across codebase and enhance docstrings
+- [ ] Review and condense this TODO list
 
-## Frontend Tasks
-- [ ] Implement design system components
-- [ ] Add JavaScript bundling with Webpack/Vite
+## API Priorities
+- ✅ Add API documentation with OpenAPI/Swagger
+- ✅ Implement API key authentication (using rest_framework_api_key app) with 
+  - ✅ support both session auth, api_key authentication
+  - ✅ Add API key generation and management endpoints and admin for revocation and expiration
+  - ✅ Documentation on the auth options and how to use them
+  - [ ] Add API key rate limiting and throttling strategies in the api/README.md
+  - [ ] Add API key usage tracking and analytics in the api/README.md
+  - [ ] Add API versioning strategy in the api/README.md
+- ✅ Add tests for API endpoints
+- ✅ Implement pagination for API responses
+
+## Admin Site
+  1. ✅ Add detailed sidebar navigation with proper model organization
+  2. ✅ Configure tabs for User and Team detail pages correctly
+  3. ✅ Fix template issues in the user profile template
+  4. ✅ Add missing styling for the admin interface (output.css is missing)
+  5. Implement proper admin actions in ModelAdmin classes
+  6. Complete the admin dashboard with working widgets
+  7. Add custom filters and search for admin models
+  8. ✅ Fix the time zone warning for User.date_joined
+  9. Implement responsive design for admin templates
+  10. Set up proper icons for all admin models
+
+## Frontend Priorities
+- ✅ Migrate from manual Tailwind to django-tailwind package
 - [ ] Create unified CSS approach (Tailwind only)
-- [✅] Migrate from manual Tailwind to django-tailwind package
-- [ ] Implement responsive layouts
-- [ ] Add dark mode support
+- [ ] Create a design system component library
+- [ ] Implement responsive layouts for mobile devices
+- [ ] Add dark mode support via Tailwind Theme
+- [ ] Add 5 more popular Tailwind themes (3 light, 2 dark)
 - [ ] Add internationalization support
-- [ ] Integrate payment processing example
+- [ ] Build example pages:
+  - [ ] Landing page  
+  - [ ] About page
+  - [ ] Pricing page with Stripe Checkout integration
+  - [ ] Blog/Newsfeed page
+  - [ ] User subscription management page
+- [ ] Add tests for frontend components
+- [ ] Implement accessibility best practices
+
+## Performance Optimization
+- [ ] Create comprehensive performance optimization guide
+  - [ ] Document database query optimization techniques
+  - [ ] Implement and document database indexing strategy
+  - [ ] Configure very basic Django caching for models and querysets and document advanced techniques
+  - [ ] Document how to utilize template fragment caching for HTMX components
+  - [ ] Implement an optional Redis as the primary cache backend (if a redis connection string is provided)
+  - [ ] 
+  - [ ] Add basic caching for API responses and document advanced techniques
+  - [ ] Document frontend optimization for HTMX interactions
+  - [ ] Configure static asset optimization (compression, bundling)
+  - [ ] Impplement and clearly document static asset management (using collectstatic on deploy and disable whitenoise)
+  - [ ] Add page speed optimization checklist
+  - [ ] Document content delivery strategies for Upload model
+  - [ ] Create performance testing scripts and baselines
+
+## Integration Priorities
+- [ ] File Upload Integration
+  - [ ] Implement AWS S3 integration for Upload model
+  - [ ] Add image transformation capabilities
+  - [ ] Add comprehensive tests
+- [x] Payment Processing
+  - [x] Implement Stripe integration
+  - [x] Create subscription models
+  - [x] Set up webhook handlers
+- [x] SMS Capabilities
+  - [x] Implement Twilio integration
+  - [x] Add phone verification flow
+  - [x] Set up delivery status tracking
+
+
+## DevOps Integration
+- [ ] Comprehensive CI/CD implementation
+  - [ ] Create GitHub Actions workflows
+    - [ ] Test workflow (pytest, coverage)  
+    - [ ] Lint workflow (black, isort, flake8, mypy)
+    - [ ] Security check workflow (bandit, safety)
+    - [ ] Build and publish workflow
+  - [ ] Set up GitLab CI/CD configuration alternative
+  - [ ] Create deployment templates
+    - [ ] Render
+    - [ ] Fly.io
+    - [ ] Documentation for how to choose and how to use and links to the official documentation
+    - [ ] Create deployment guide in settings/HOW_TO/DEPLOYMENT.md
+  - [ ] Implement blue/green deployment strategy
+  - [ ] Set up staging environment configuration (see existing flags in settings init and base.py)
+  - [ ] Confirm secrets management strategy using .env files and environment variables on production
+
+## Observability Stack
+- [ ] Build comprehensive monitoring and observability solution
+  - [x] Implement internal todo model for system improvements
+    - [x] Create TodoItem model in common app
+    - [x] Add priority, category, and status fields
+    - [x] Create admin interface for managing todos
+    - [x] Implement API endpoints for todo management
+  - [ ] Sentry integration for error tracking
+    - [ ] Configure Sentry SDK with proper environment settings
+    - [ ] Create webhook handler for Sentry issue events
+    - [ ] Build automation to create todo items from Sentry issues
+    - [ ] Implement user context for better error tracking
+    - [ ] Add performance monitoring with Sentry transactions
+  - [ ] Implement structured logging
+    - [ ] Configure JSON logging format
+    - [ ] Add request ID tracking across services
+    - [ ] Create log correlation with error tracking
+    - [ ] Implement log levels and categories
+
+## Infrastructure Priorities
+- [ ] Dockerize application with proper configuration
+  - [ ] Update Dockerfile for production
+  - [ ] Create docker-compose.yml for development
+  - [ ] Implement multi-stage builds for efficiency
+  - [ ] Add health checks and graceful shutdown
+- [ ] Standardize environment variable management
+  - [ ] Review .env file approach
+  - [ ] Review settings to use environment variables
+  - [ ] Create validation for required environment variables
+  - [ ] update the setup scripts accordingly

@@ -37,8 +37,8 @@ from apps.public.helpers import HTMXView, TeamSessionMixin
 class TeamDashboardComponent(TeamSessionMixin, HTMXView):
     template_name = "components/team_dashboard.html"
     oob_templates = {
-        "sidebar": "components/sidebar.html",
-        "messages": "messages/toast.html"
+        "sidebar": "components/common/sidebar.html",
+        "messages": "layout/messages/toast.html"
     }
     push_url = "/team/dashboard"
     

@@ -2,6 +2,13 @@
 
 This guide complements the main [README.md](/README.md) and provides specific instructions for developers contributing to this project. For project overview, structure, and features, see the [README.md](/README.md).
 
+## Package Management
+- **ONLY use uv**: For all package and dependency management
+- **Installation**: `uv add package`
+- **Run tools**: `uv run tool`
+- **Upgrading packages**: `uv add --dev package --upgrade-package package`
+- **FORBIDDEN**: `uv pip install`, `@latest` syntax
+
 ## Commands
 - **Setup**: `python -m venv venv && source venv/bin/activate && pip install uv && ./requirements/install.sh dev`
 - **Environment**: `cp .env.example .env.local` (then edit with your private keys)
@@ -25,6 +32,13 @@ This guide complements the main [README.md](/README.md) and provides specific in
 - **Error handling**: Explicit error messages; form validation; use message framework
 - **HTML/CSS**: Kebab-case for CSS classes, snake_case for ids; Tailwind for styling
 - **Documentation**: Docstrings for models, complex functions, and behavior mixins
+- **Functions**: Must be focused and small (single responsibility)
+- **Type hints**: Required for all code
+- **Formatting guidelines**:
+  - Line length: 88 chars maximum
+  - Strings: use parentheses for line wrapping
+  - Function calls: multi-line with proper indentation
+  - Imports: split into multiple lines when needed
 
 ## Frontend Guidelines
 - **HTMX**: Preferred for interactive functionality over JavaScript
@@ -59,12 +73,18 @@ For detailed conventions on templates and views, see:
   - Use `.coveragerc` file to configure coverage settings and exclusions
   - Generate HTML reports with `--cov-report=html` for visual analysis
   - Check coverage in CI pipelines with `--cov-report=xml`
+- **Test Requirements**:
+  - New features require tests
+  - Bug fixes must include regression tests
+  - Test edge cases and error conditions
+  - For async code, use anyio (not asyncio)
 
 ## Documentation
 - [README.md](/README.md) - Project overview, features and structure
 - [docs/SETUP_GUIDE.md](/docs/SETUP_GUIDE.md) - Detailed setup instructions
 - [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) - Contribution guidelines
 - [docs/TODO.md](/docs/TODO.md) - Current tasks and priorities
+- [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md) - Project architecture and app relationships
 - [docs/BEHAVIOR_MIXINS.md](/docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
 - [docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md) - Model conventions
 - [docs/TEMPLATE_CONVENTIONS.md](/docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
@@ -83,10 +103,36 @@ For detailed conventions on templates and views, see:
 9. Continue to achieve 100% test coverage
 10. Update [docs/TODO.md](/docs/TODO.md) with updated plans and marking items completed when they have 100% test coverage
 
+## Commit Guidelines
+- For bug fixes based on user reports:
+  ```bash
+  git commit --trailer "Reported-by:<name>"
+  ```
+- For commits related to GitHub issues:
+  ```bash
+  git commit --trailer "Github-Issue:#<number>"
+  ```
+- Create detailed, focused commits
+- Run code formatters before committing
+- Check all changes with `git status` before committing
+
 ## Architecture
 - Move away from component frameworks to standard Django templates
 - Consolidate static files and templates to root directories
-- Use uv for dependency management (transitioning from requirements files)
+- Use uv for dependency management
 - Organize apps by domain (common, public, api, ai, integrations)
 
-For detailed project structure and app descriptions, refer to the [Project Structure](/README.md#project-structure) section in the README.
+## Code Quality Tools
+- **Ruff**: Code formatting and linting
+  - Format: `uv run ruff format .`
+  - Check: `uv run ruff check .`
+  - Fix: `uv run ruff check . --fix`
+- **Type Checking**:
+  - Tool: `uv run pyright`
+  - Requirements:
+    - Explicit None checks for Optional
+    - Type narrowing for strings
+
+For detailed project structure and app descriptions, refer to:
+- [Project Structure](/README.md#project-structure) section in the README
+- [Architecture Document](/docs/ARCHITECTURE.md) for a visual overview and app relationships

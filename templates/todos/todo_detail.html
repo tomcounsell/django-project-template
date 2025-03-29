@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ todo.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Todo Details</h1>
+    <div>
+      <a href="{% url 'public:todo-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded mr-2">
+        Back to List
+      </a>
+      <a href="{% url 'public:todo-update' todo.id %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+        Edit
+      </a>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div class="p-6">
+      <div class="flex justify-between items-start">
+        <h2 class="text-xl font-semibold mb-2">{{ todo.title }}</h2>
+        <div>
+          {% if todo.status == "DONE" %}
+            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+              Done
+            </span>
+          {% elif todo.status == "IN_PROGRESS" %}
+            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+              In Progress
+            </span>
+          {% elif todo.status == "BLOCKED" %}
+            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+              Blocked
+            </span>
+          {% else %}
+            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+              To Do
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if todo.description %}
+        <div class="mt-4">
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Description</h3>
+          <p class="text-gray-900">{{ todo.description|linebreaks }}</p>
+        </div>
+      {% endif %}
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Priority</h3>
+          <p class="text-gray-900">
+            {% if todo.priority == "HIGH" %}
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                High
+              </span>
+            {% elif todo.priority == "MEDIUM" %}
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                Medium
+              </span>
+            {% else %}
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                Low
+              </span>
+            {% endif %}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Category</h3>
+          <p class="text-gray-900">{{ todo.get_category_display }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Assignee</h3>
+          <p class="text-gray-900">
+            {% if todo.assignee %}
+              {{ todo.assignee.get_full_name|default:todo.assignee.username }}
+            {% else %}
+              <span class="text-gray-400">Unassigned</span>
+            {% endif %}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Due Date</h3>
+          <p class="text-gray-900">
+            {% if todo.due_at %}
+              {% if todo.is_overdue %}
+                <span class="text-red-600 font-medium">{{ todo.due_at|date:"M d, Y" }} ({{ todo.time_remaining_display }})</span>
+              {% else %}
+                {{ todo.due_at|date:"M d, Y" }} ({{ todo.time_remaining_display }})
+              {% endif %}
+            {% else %}
+              <span class="text-gray-400">No due date</span>
+            {% endif %}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Created</h3>
+          <p class="text-gray-900">{{ todo.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 mb-1">Last Updated</h3>
+          <p class="text-gray-900">{{ todo.modified_at|date:"M d, Y H:i" }}</p>
+        </div>
+
+        {% if todo.completed_at %}
+          <div>
+            <h3 class="text-sm font-medium text-gray-500 mb-1">Completed</h3>
+            <p class="text-gray-900">{{ todo.completed_at|date:"M d, Y H:i" }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between">
+      <div>
+        <a href="{% url 'public:todo-delete' todo.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+      </div>
+      <div>
+        {% if todo.status != "DONE" %}
+          <form method="post" action="{% url 'public:todo-complete' todo.id %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm">
+              Mark as Complete
+            </button>
+          </form>
+        {% else %}
+          <span class="text-green-600 font-medium">✓ Completed on {{ todo.completed_at|date:"M d, Y" }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
