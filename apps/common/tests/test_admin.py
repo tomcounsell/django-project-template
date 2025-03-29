@@ -65,7 +65,7 @@ class AdminTestCase(TestCase):
         url = '/admin/'
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Content Database')
+        self.assertContains(response, 'Database')
     
     def test_unfold_integration(self):
         """Test that the admin site is using Django Unfold."""
@@ -82,7 +82,7 @@ class AdminTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Verify that admin shows our custom page title
-        self.assertContains(response, 'ProjectName Content Database')
+        self.assertContains(response, 'ProjectName Database')
         
         # Check for CSS output
         self.assertContains(response, 'output.css')
@@ -96,7 +96,7 @@ class AdminTestCase(TestCase):
         # We may be running in a test environment where the dashboard callback
         # isn't fully registered or rendered. Let's check for basic 
         # admin elements instead of specific dashboard widgets.
-        self.assertContains(response, 'ProjectName Content Database')
+        self.assertContains(response, 'ProjectName Database')
         self.assertContains(response, 'output.css')
         
         # Check for modules that should be in the admin

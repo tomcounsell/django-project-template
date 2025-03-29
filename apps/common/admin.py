@@ -57,8 +57,8 @@ class BooleanFilter(SimpleListFilter):
     filter_function = None
     
     def __init__(self, request, params, model, model_admin):
-        self.filter_function = self.lookup_choices[2] if len(self.lookup_choices) > 2 else None
         super().__init__(request, params, model, model_admin)
+        self.filter_function = self.lookup_choices[2] if len(self.lookup_choices) > 2 else None
     
     def lookups(self, request, model_admin):
         return (

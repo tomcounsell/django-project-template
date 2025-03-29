@@ -247,7 +247,7 @@ class AdminTestCase(TestCase):
         """Test the admin index page loads successfully."""
         response = self.client.get('/admin/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Content Database')
+        self.assertContains(response, 'Database')
     
     def test_custom_dashboard(self):
         """Test the custom admin dashboard."""
@@ -255,7 +255,7 @@ class AdminTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Check for expected admin interface elements
-        self.assertContains(response, 'ProjectName Content Database')
+        self.assertContains(response, 'ProjectName Database')
         self.assertContains(response, 'output.css')
 ```
 

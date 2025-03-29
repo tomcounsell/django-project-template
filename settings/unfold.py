@@ -4,15 +4,15 @@ Django Unfold admin configuration settings
 from django.utils.translation import gettext_lazy as _
 
 # Admin site configuration - used in urls.py
-ADMIN_SITE_HEADER = "ProjectName Content Database"
+ADMIN_SITE_HEADER = "ProjectName Database"
 ADMIN_SITE_TITLE = "ProjectName"
 ADMIN_SITE_URL = None
-ADMIN_INDEX_TITLE = "Content Database"
+ADMIN_INDEX_TITLE = "Database"
 
 # Django Unfold settings - enhanced version
 UNFOLD = {
     "SITE_TITLE": "ProjectName Admin",
-    "SITE_HEADER": "ProjectName Content Database",
+    "SITE_HEADER": "ProjectName Database",
     "SITE_URL": "/",
     "SITE_ICON": None,
     "DASHBOARD_CALLBACK": "apps.common.admin_dashboard.get_admin_dashboard",
