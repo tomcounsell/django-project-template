@@ -35,12 +35,11 @@
 
 {% block title %}Account Settings{% endblock %}
 
-{% block content %}
-<div class="container mx-auto px-4 py-8">
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Account Settings</h1>
-  </div>
+{% block main_header %}
+  <h1 class="text-3xl font-bold tracking-tight text-navy-600">Account Settings</h1>
+{% endblock %}
 
+{% block content %}
   <!-- Basic Information Section -->
   <div class="bg-white shadow rounded-lg mb-8">
     <div class="p-6">
@@ -169,5 +168,4 @@
       Need help? <a href="#" class="font-medium text-navy-700 hover:text-navy-900">Contact support</a>
     </p>
   </div>
-</div>
 {% endblock content %}

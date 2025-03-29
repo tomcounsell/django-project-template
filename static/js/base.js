@@ -35,6 +35,41 @@ function trigger(target, eventName, detail = null) {
   }
 }
 
+// Toggle dropdown menu visibility
+function toggleDropdown(button) {
+  const menuId = button.getAttribute('aria-controls');
+  const menu = document.getElementById(menuId);
+  
+  if (!menu) return;
+  
+  const isExpanded = button.getAttribute('aria-expanded') === 'true';
+  button.setAttribute('aria-expanded', !isExpanded);
+  menu.classList.toggle('hidden', isExpanded);
+  
+  // Close dropdown when clicking outside
+  if (!isExpanded) {
+    document.addEventListener('click', function closeDropdown(e) {
+      if (!menu.contains(e.target) && !button.contains(e.target)) {
+        button.setAttribute('aria-expanded', 'false');
+        menu.classList.add('hidden');
+        document.removeEventListener('click', closeDropdown);
+      }
+    });
+  }
+}
+
+// Toggle mobile menu visibility
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const button = document.getElementById('mobile-menu-button');
+  
+  if (!menu || !button) return;
+  
+  const isExpanded = button.getAttribute('aria-expanded') === 'true';
+  button.setAttribute('aria-expanded', !isExpanded);
+  menu.classList.toggle('hidden', isExpanded);
+}
+
 // Add CSRF token to every request
 document.body.addEventListener("htmx:configRequest", function(configEvent){
     configEvent.detail.headers['X-CSRFToken'] = document.querySelector('html').getAttribute('data-csrf-token');

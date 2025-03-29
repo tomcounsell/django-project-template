@@ -2,10 +2,13 @@
 
 {% block title %}{{ form_title }}{% endblock %}
 
+{% block main_header %}
+  <h1 class="text-3xl font-bold tracking-tight text-navy-600">{{ form_title }}</h1>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">{{ form_title }}</h1>
+    <div class="flex-1"></div>
     <a href="{% url 'public:todo-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded">
       Back to List
     </a>
@@ -118,11 +121,10 @@
         <a href="{% url 'public:todo-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded mr-2">
           Cancel
         </a>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
           Save
         </button>
       </div>
     </form>
   </div>
-</div>
 {% endblock %}
