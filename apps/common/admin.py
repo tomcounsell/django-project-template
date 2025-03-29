@@ -2,12 +2,13 @@ import json
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import path, reverse
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.utils.timezone import now
 from django import forms
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework_api_key.admin import APIKeyModelAdmin
@@ -18,6 +19,8 @@ from unfold.contrib.filters.admin import (
     TextFilter, RangeDateFilter, RangeDateTimeFilter, 
     RangeNumericFilter, ChoicesDropdownFilter
 )
+from django.contrib.admin import SimpleListFilter, BooleanFieldListFilter
+import datetime
 from unfold.sections import TableSection, TemplateSection
 from unfold.components import BaseComponent, register_component
 from unfold.enums import ActionVariant
@@ -44,6 +47,182 @@ ADMIN_CATEGORIES = {
     'Communications': ['Email', 'SMS'],
     'Security': ['UserAPIKey', 'TeamAPIKey'],
 }
+
+
+# Custom Filters for Admin
+class BooleanFilter(SimpleListFilter):
+    """Custom boolean filter for non-boolean fields."""
+    title = 'Filter Title'
+    parameter_name = 'param'
+    filter_function = None
+    
+    def __init__(self, request, params, model, model_admin):
+        self.filter_function = self.lookup_choices[2] if len(self.lookup_choices) > 2 else None
+        super().__init__(request, params, model, model_admin)
+    
+    def lookups(self, request, model_admin):
+        return (
+            ('1', _('Yes')),
+            ('0', _('No')),
+        )
+    
+    def queryset(self, request, queryset):
+        if self.value() is None:
+            return queryset
+        
+        if self.filter_function:
+            return self.filter_function(queryset, self.value() == '1')
+        
+        return queryset
+
+
+class HasDescriptionFilter(BooleanFilter):
+    """Filter that shows todos with or without descriptions."""
+    title = _('Has Description')
+    parameter_name = 'has_description'
+    
+    def queryset(self, request, queryset):
+        if self.value() is None:
+            return queryset
+            
+        if self.value() == '1':
+            return queryset.exclude(description='')
+        else:
+            return queryset.filter(description='')
+
+
+class IsOverdueFilter(BooleanFilter):
+    """Filter that shows overdue todos."""
+    title = _('Is Overdue')
+    parameter_name = 'is_overdue'
+    
+    def queryset(self, request, queryset):
+        if self.value() is None:
+            return queryset
+            
+        now_date = datetime.datetime.now()
+        
+        if self.value() == '1':
+            return queryset.filter(
+                due_at__lt=now_date,
+                status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']
+            )
+        else:
+            return queryset.filter(
+                Q(due_at__gte=now_date) | Q(due_at__isnull=True) | Q(status='DONE')
+            )
+
+
+class DueInFilter(SimpleListFilter):
+    """Filter that shows todos due within a certain timeframe."""
+    title = _('Due In')
+    parameter_name = 'due_in'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('today', _('Due Today')),
+            ('tomorrow', _('Due Tomorrow')),
+            ('week', _('Due This Week')),
+            ('overdue', _('Overdue')),
+            ('month', _('Due This Month')),
+        )
+
+    def queryset(self, request, queryset):
+        today = datetime.datetime.now().date()
+        tomorrow = today + datetime.timedelta(days=1)
+        week_end = today + datetime.timedelta(days=7)
+        month_end = today + datetime.timedelta(days=30)
+        
+        if self.value() == 'today':
+            return queryset.filter(
+                due_at__date=today,
+                status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']
+            )
+        elif self.value() == 'tomorrow':
+            return queryset.filter(
+                due_at__date=tomorrow,
+                status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']
+            )
+        elif self.value() == 'week':
+            return queryset.filter(
+                due_at__date__range=[today, week_end],
+                status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']
+            )
+        elif self.value() == 'month':
+            return queryset.filter(
+                due_at__date__range=[today, month_end],
+                status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']
+            )
+        elif self.value() == 'overdue':
+            return queryset.filter(
+                due_at__lt=datetime.datetime.now(),
+                status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']
+            )
+        return queryset
+
+
+class UserAssignedFilter(SimpleListFilter):
+    """Filter that shows todos assigned to the current user."""
+    title = _('Assignment')
+    parameter_name = 'assigned'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('me', _('Assigned to me')),
+            ('unassigned', _('Unassigned')),
+            ('others', _('Assigned to others')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'me':
+            return queryset.filter(assignee=request.user)
+        elif self.value() == 'unassigned':
+            return queryset.filter(assignee__isnull=True)
+        elif self.value() == 'others':
+            return queryset.exclude(assignee=request.user).exclude(assignee__isnull=True)
+        return queryset
+
+
+class CompletedWithinFilter(SimpleListFilter):
+    """Filter that shows todos completed within a certain timeframe."""
+    title = _('Completed Within')
+    parameter_name = 'completed_within'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('today', _('Today')),
+            ('yesterday', _('Yesterday')),
+            ('week', _('This Week')),
+            ('month', _('This Month')),
+        )
+
+    def queryset(self, request, queryset):
+        today = datetime.datetime.now().date()
+        yesterday = today - datetime.timedelta(days=1)
+        week_start = today - datetime.timedelta(days=today.weekday())
+        month_start = today.replace(day=1)
+        
+        if self.value() == 'today':
+            return queryset.filter(
+                completed_at__date=today,
+                status='DONE'
+            )
+        elif self.value() == 'yesterday':
+            return queryset.filter(
+                completed_at__date=yesterday,
+                status='DONE'
+            )
+        elif self.value() == 'week':
+            return queryset.filter(
+                completed_at__date__gte=week_start,
+                status='DONE'
+            )
+        elif self.value() == 'month':
+            return queryset.filter(
+                completed_at__date__gte=month_start,
+                status='DONE'
+            )
+        return queryset
 
 
 @admin.register(User)
@@ -471,6 +650,13 @@ class TodoItemTemplateSection(TemplateSection):
 class TodoItemAdmin(ModelAdmin):
     list_display = ['display_header', 'priority_badge', 'category_badge', 'status_badge', 'assignee_display', 'due_date_display']
     list_filter = [
+        # Custom filters 
+        DueInFilter,
+        UserAssignedFilter,
+        CompletedWithinFilter,
+        HasDescriptionFilter,
+        IsOverdueFilter,
+        # Default filters
         ('priority', ChoicesDropdownFilter), 
         ('category', ChoicesDropdownFilter), 
         ('status', ChoicesDropdownFilter),
@@ -514,6 +700,21 @@ class TodoItemAdmin(ModelAdmin):
                 "mark_as_in_progress",
                 "mark_as_blocked",
                 "mark_as_todo"
+            ]
+        },
+        {
+            "title": _("Priority Actions"),
+            "variant": ActionVariant.PRIMARY,
+            "items": [
+                "set_high_priority",
+                "set_medium_priority",
+                "set_low_priority"
+            ]
+        },
+        {
+            "title": _("Date Actions"),
+            "items": [
+                "clear_due_date"
             ]
         }
     ]
@@ -629,6 +830,34 @@ class TodoItemAdmin(ModelAdmin):
         selected = request.POST.getlist('_selected_action')
         updated = TodoItem.objects.filter(id__in=selected).update(status='TODO', completed_at=None)
         messages.success(request, f'Successfully reset {updated} items to todo status')
+        return redirect('admin:common_todoitem_changelist')
+        
+    @action(description=_('Set High Priority'), icon="priority_high")
+    def set_high_priority(self, request):
+        selected = request.POST.getlist('_selected_action')
+        updated = TodoItem.objects.filter(id__in=selected).update(priority='HIGH')
+        messages.success(request, f'Successfully set {updated} items to high priority')
+        return redirect('admin:common_todoitem_changelist')
+    
+    @action(description=_('Set Medium Priority'), icon="low_priority")
+    def set_medium_priority(self, request):
+        selected = request.POST.getlist('_selected_action')
+        updated = TodoItem.objects.filter(id__in=selected).update(priority='MEDIUM')
+        messages.success(request, f'Successfully set {updated} items to medium priority')
+        return redirect('admin:common_todoitem_changelist')
+    
+    @action(description=_('Set Low Priority'), icon="low_priority")
+    def set_low_priority(self, request):
+        selected = request.POST.getlist('_selected_action')
+        updated = TodoItem.objects.filter(id__in=selected).update(priority='LOW')
+        messages.success(request, f'Successfully set {updated} items to low priority')
+        return redirect('admin:common_todoitem_changelist')
+        
+    @action(description=_('Clear Due Date'), icon="event_busy")
+    def clear_due_date(self, request):
+        selected = request.POST.getlist('_selected_action')
+        updated = TodoItem.objects.filter(id__in=selected).update(due_at=None)
+        messages.success(request, f'Successfully cleared due date for {updated} items')
         return redirect('admin:common_todoitem_changelist')
     
     # Detail actions
