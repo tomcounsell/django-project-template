@@ -14,33 +14,37 @@ Run the build script from the project root:
 
 ### Manual Build
 
-1. Change to the sphinx_docs directory:
+From the project root directory:
+
+1. Generate API documentation:
 
 ```bash
-cd docs/sphinx_docs
+cd docs/sphinx_docs && sphinx-apidoc -o source/api ../../apps --separate --force && cd -
 ```
 
-2. Generate API documentation:
+2. Build the HTML documentation:
 
 ```bash
-sphinx-apidoc -o source/api ../../apps --separate --force
+cd docs/sphinx_docs && make html && cd -
 ```
 
-3. Build the HTML documentation:
+3. View the documentation:
 
 ```bash
-make html
+open docs/sphinx_docs/build/html/index.html
 ```
 
-or on Windows:
+## Hosting on GitHub Pages
 
-```bat
-make.bat html
-```
+The documentation is automatically built and deployed to GitHub Pages whenever changes are pushed to the main branch. This is handled by a GitHub Actions workflow defined in `.github/workflows/docs.yml`.
 
-4. View the documentation:
+### Accessing the Documentation
 
-Open `build/html/index.html` in your web browser.
+The documentation is available at: `https://[username].github.io/[repository-name]/`
+
+### Manual Trigger
+
+You can manually trigger the documentation build and deployment process from the GitHub Actions tab by selecting the "Documentation" workflow and clicking "Run workflow".
 
 ## Documentation Structure
 
