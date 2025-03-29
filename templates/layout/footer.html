@@ -47,12 +47,14 @@ Provides links to important pages, legal information, and site metadata.
                     </a>
                 </li>
                 {% endif %}
+                {% if user.teams.exists %}
                 <li>
                     <a href="{% url 'public:team-list' %}"
                        class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-                        <i class="fas fa-users fa-fw mr-1"></i> Teams
+                        <i class="fas fa-users fa-fw mr-1"></i> Team
                     </a>
                 </li>
+                {% endif %}
                 <li>
                     <a href="{% url 'public:todo-list' %}"
                        class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
@@ -84,12 +86,6 @@ Provides links to important pages, legal information, and site metadata.
                         <i class="fas fa-paint-brush fa-fw mr-1"></i> Tailwind CSS
                     </a>
                 </li>
-                <li>
-                    <a href="https://github.com/django/django"
-                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-                        <i class="fab fa-github fa-fw mr-1"></i> Django GitHub
-                    </a>
-                </li>
             </ul>
         </div>
     </div>
@@ -118,15 +114,16 @@ Provides links to important pages, legal information, and site metadata.
 
             <!-- Social Links -->
             <div class="flex space-x-6">
-                <a href="#" class="text-gray-400 hover:text-white">
+                <a href="https://github.com/tomcounsell/django-project-template" target="_blank" class="text-gray-400 hover:text-white">
                     <span class="sr-only">GitHub</span>
                     <i class="fab fa-github fa-lg"></i>
                 </a>
-                <a href="#" class="text-gray-400 hover:text-white">
-                    <span class="sr-only">Twitter</span>
-                    <i class="fab fa-twitter fa-lg"></i>
+                <a href="http://x.com/tomcounsell" target="_blank" class="text-gray-400 hover:text-white">
+                    <span class="sr-only">X</span>
+                    <i class="fab fa-x-twitter fa-lg"></i>
                 </a>
-                <a href="#" class="text-gray-400 hover:text-white">
+                <a href="https://www.linkedin.com/in/tomcounsell/" target="_blank"
+                   class="text-gray-400 hover:text-white">
                     <span class="sr-only">LinkedIn</span>
                     <i class="fab fa-linkedin fa-lg"></i>
                 </a>
