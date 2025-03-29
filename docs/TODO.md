@@ -101,7 +101,10 @@ This project follows a clean architecture with:
 - [x] Implement CI/CD workflows
   - [x] GitHub Actions: tests, lint, security, build
   - [x] Fixed bug on deploy of github action for documentation page (updated from deprecated `actions/upload-artifact: v3`)
-- [ ] Create deployment templates (Render, Fly.io)
+- [x] Create deployment config for Render
+  - [x] Create build.sh script for Render deployments
+  - [x] Add render.yaml configuration file
+  - [x] Configure uvicorn ASGI worker with gunicorn
 - [ ] Implement blue/green deployment
 - [ ] Set up staging environment 
 - [ ] Configure secrets management

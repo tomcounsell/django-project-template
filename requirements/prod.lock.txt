@@ -16,7 +16,9 @@ certifi==2025.1.31
 charset-normalizer==3.4.1
     # via requests
 click==8.1.8
-    # via black
+    # via
+    #   black
+    #   uvicorn
 decorator==5.2.1
     # via ipython
 dj-database-url==2.3.0
@@ -70,6 +72,8 @@ flake8==7.1.2
     # via -r requirements/base.txt
 gunicorn==23.0.0
     # via -r requirements/base.txt
+h11==0.14.0
+    # via uvicorn
 idna==3.10
     # via requests
 inflection==0.5.1
@@ -161,6 +165,8 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.3.0
     # via requests
+uvicorn==0.34.0
+    # via -r requirements/prod.txt
 wcwidth==0.2.13
     # via prompt-toolkit
 whitenoise==6.9.0
