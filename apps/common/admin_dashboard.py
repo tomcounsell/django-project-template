@@ -1,6 +1,8 @@
 """
 Custom admin dashboard for the Django project template.
 """
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html
 from django.db.models import Count, Sum
@@ -46,6 +48,42 @@ def get_admin_dashboard(request, context=None):
     today = now().date()
     recent_users = User.objects.filter(date_joined__date=today).count()
     
+    # Calculate percentage stats for users
+    active_percentage = round((active_users / user_count) * 100) if user_count > 0 else 0
+    staff_percentage = round((staff_users / user_count) * 100) if user_count > 0 else 0
+    
+    # Calculate user growth data
+    last_month = today.replace(day=1) - datetime.timedelta(days=1)
+    last_month_start = last_month.replace(day=1)
+    users_last_month = User.objects.filter(date_joined__lt=today.replace(day=1)).count()
+    user_growth = round(((user_count - users_last_month) / users_last_month) * 100) if users_last_month > 0 else 0
+    
+    # Get recent user activity data for chart
+    last_week = today - datetime.timedelta(days=7)
+    logins = User.objects.filter(last_login__date__gte=last_week).values('last_login__date').annotate(count=Count('id'))
+    
+    user_activity = {}
+    max_activity = 1  # Default to avoid division by zero
+    
+    # Fill in data for the last 7 days
+    for i in range(7):
+        day = today - datetime.timedelta(days=i)
+        day_formatted = day.strftime('%b %d')
+        user_activity[day_formatted] = 0
+        
+    # Update with actual login data
+    for login in logins:
+        if login['last_login__date']:
+            day_formatted = login['last_login__date'].strftime('%b %d')
+            user_activity[day_formatted] = login['count']
+            max_activity = max(max_activity, login['count'])
+    
+    # Sort by date (most recent first)
+    user_activity = dict(sorted(user_activity.items(), key=lambda x: datetime.datetime.strptime(x[0], '%b %d'), reverse=True))
+    
+    # Get recently active users
+    recent_users = User.objects.filter(last_login__isnull=False).order_by('-last_login')[:5]
+    
     # Team statistics
     team_count = Team.objects.count()
     active_teams = Team.objects.filter(is_active=True).count()
@@ -58,6 +96,39 @@ def get_admin_dashboard(request, context=None):
         avg_team_size = 0
         
     largest_team = teams_with_members.order_by('-member_count').first()
+    
+    # Get team size distribution
+    team_sizes = {}
+    max_team_size = 1  # Default to avoid division by zero
+    
+    # Group teams by size ranges
+    size_ranges = {
+        '0': 0,
+        '1-5': 0,
+        '6-10': 0,
+        '11-20': 0,
+        '21+': 0
+    }
+    
+    for team in teams_with_members:
+        if team.member_count == 0:
+            size_ranges['0'] += 1
+        elif 1 <= team.member_count <= 5:
+            size_ranges['1-5'] += 1
+        elif 6 <= team.member_count <= 10:
+            size_ranges['6-10'] += 1
+        elif 11 <= team.member_count <= 20:
+            size_ranges['11-20'] += 1
+        else:
+            size_ranges['21+'] += 1
+    
+    # Convert to ordered dict and find max
+    team_sizes = size_ranges
+    if team_sizes:
+        max_team_size = max(team_sizes.values())
+    
+    # Get top teams by size
+    top_teams = teams_with_members.order_by('-member_count')[:5]
     
     # Todo statistics
     todo_count = TodoItem.objects.count()
@@ -107,52 +178,18 @@ def get_admin_dashboard(request, context=None):
                 # Users Widget with enhanced stats
                 {
                     "title": _("Users"),
-                    "content": f"""
-                        <div class="p-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <div>
-                                    <div class="text-3xl font-bold">{user_count}</div>
-                                    <div class="text-sm text-gray-500">Total Users</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-lg font-semibold text-green-600">+{recent_users} today</div>
-                                    <div class="text-sm text-gray-500">{active_users} active ({active_users/user_count*100:.1f}%)</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 grid grid-cols-3 gap-4">
-                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                                    <div class="text-center font-semibold">{active_users}</div>
-                                    <div class="text-center text-xs text-gray-600 dark:text-gray-400">Active</div>
-                                </div>
-                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                                    <div class="text-center font-semibold">{staff_users}</div>
-                                    <div class="text-center text-xs text-gray-600 dark:text-gray-400">Staff</div>
-                                </div>
-                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded">
-                                    <div class="text-center font-semibold">{superusers}</div>
-                                    <div class="text-center text-xs text-gray-600 dark:text-gray-400">Superusers</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <a href="{reverse('admin:common_user_changelist')}" 
-                                   class="inline-flex items-center px-3 py-1 border border-transparent text-sm rounded-md 
-                                   text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 
-                                   focus:ring-offset-2 focus:ring-blue-500">
-                                    <span class="material-symbols-outlined mr-1">person</span>
-                                    Manage Users
-                                </a>
-                                <a href="{reverse('admin:auth_group_changelist')}" 
-                                   class="ml-2 inline-flex items-center px-3 py-1 border border-gray-300 text-sm 
-                                   rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none 
-                                   focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <span class="material-symbols-outlined mr-1">groups</span>
-                                    Groups
-                                </a>
-                            </div>
-                        </div>
-                    """,
+                    "template": "admin/dashboard/users_summary.html",
+                    "context": {
+                        "total_users": user_count,
+                        "active_users": active_users,
+                        "staff_users": staff_users,
+                        "active_percentage": active_percentage,
+                        "staff_percentage": staff_percentage,
+                        "user_growth": user_growth,
+                        "user_activity": user_activity,
+                        "max_activity": max_activity,
+                        "recent_users": recent_users,
+                    },
                     "column": 1,
                     "order": 0,
                 },
@@ -160,55 +197,16 @@ def get_admin_dashboard(request, context=None):
                 # Teams Widget with enhanced stats
                 {
                     "title": _("Teams"),
-                    "content": f"""
-                        <div class="p-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <div>
-                                    <div class="text-3xl font-bold">{team_count}</div>
-                                    <div class="text-sm text-gray-500">Total Teams</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-lg font-semibold">{active_teams} active</div>
-                                    <div class="text-sm text-gray-500">avg {avg_team_size:.1f} members/team</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-3 mb-2 text-sm font-medium">Largest Team</div>
-                            {f'<div class="bg-gray-100 dark:bg-gray-800 p-2 rounded mb-4"><div class="font-semibold">{largest_team.name}</div><div class="text-xs text-gray-600 dark:text-gray-400">{largest_team.member_count} members</div></div>' if largest_team else '<div class="text-gray-500 mb-4">No teams with members</div>'}
-                            
-                            <div class="flex justify-between">
-                                <div class="">
-                                    <div class="text-sm font-semibold">{active_teams}</div>
-                                    <div class="text-xs text-gray-600 dark:text-gray-400">Active</div>
-                                </div>
-                                <div class="">
-                                    <div class="text-sm font-semibold">{team_count - active_teams}</div>
-                                    <div class="text-xs text-gray-600 dark:text-gray-400">Inactive</div>
-                                </div>
-                                <div class="">
-                                    <div class="text-sm font-semibold">{teams_with_members.count()}</div>
-                                    <div class="text-xs text-gray-600 dark:text-gray-400">With Members</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <a href="{reverse('admin:common_team_changelist')}" 
-                                   class="inline-flex items-center px-3 py-1 border border-transparent text-sm rounded-md 
-                                   text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 
-                                   focus:ring-offset-2 focus:ring-blue-500">
-                                    <span class="material-symbols-outlined mr-1">groups</span>
-                                    Manage Teams
-                                </a>
-                                <a href="{reverse('admin:common_teammember_changelist')}" 
-                                   class="ml-2 inline-flex items-center px-3 py-1 border border-gray-300 text-sm 
-                                   rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none 
-                                   focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <span class="material-symbols-outlined mr-1">person_add</span>
-                                    Manage Members
-                                </a>
-                            </div>
-                        </div>
-                    """,
+                    "template": "admin/dashboard/teams_summary.html",
+                    "context": {
+                        "total_teams": team_count,
+                        "active_teams": active_teams,
+                        "avg_team_size": round(avg_team_size, 1),
+                        "largest_team": largest_team,
+                        "team_sizes": team_sizes,
+                        "max_team_size": max_team_size,
+                        "top_teams": top_teams,
+                    },
                     "column": 1,
                     "order": 1,
                 },
@@ -216,63 +214,13 @@ def get_admin_dashboard(request, context=None):
                 # Todo Widget with status breakdown
                 {
                     "title": _("Todo Items"),
-                    "content": f"""
-                        <div class="p-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <div>
-                                    <div class="text-3xl font-bold">{todo_count}</div>
-                                    <div class="text-sm text-gray-500">Total Todos</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-lg font-semibold text-amber-600">{todo_stats['TODO'] + todo_stats['IN_PROGRESS'] + todo_stats['BLOCKED']} active</div>
-                                    <div class="text-sm text-red-500">{overdue_todos} overdue</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 grid grid-cols-4 gap-2">
-                                <div class="bg-blue-100 p-2 rounded text-center">
-                                    <div class="font-semibold text-blue-800">{todo_stats['TODO']}</div>
-                                    <div class="text-xs text-blue-800">Todo</div>
-                                </div>
-                                <div class="bg-yellow-100 p-2 rounded text-center">
-                                    <div class="font-semibold text-yellow-800">{todo_stats['IN_PROGRESS']}</div>
-                                    <div class="text-xs text-yellow-800">In Progress</div>
-                                </div>
-                                <div class="bg-red-100 p-2 rounded text-center">
-                                    <div class="font-semibold text-red-800">{todo_stats['BLOCKED']}</div>
-                                    <div class="text-xs text-red-800">Blocked</div>
-                                </div>
-                                <div class="bg-green-100 p-2 rounded text-center">
-                                    <div class="font-semibold text-green-800">{todo_stats['DONE']}</div>
-                                    <div class="text-xs text-green-800">Done</div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 flex items-center justify-between">
-                                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: {todo_stats['DONE']/max(todo_count, 1)*100}%"></div>
-                                </div>
-                                <div class="ml-2 text-xs text-gray-500">{todo_stats['DONE']/max(todo_count, 1)*100:.1f}%</div>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <a href="{reverse('admin:common_todoitem_changelist')}" 
-                                   class="inline-flex items-center px-3 py-1 border border-transparent text-sm rounded-md 
-                                   text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 
-                                   focus:ring-offset-2 focus:ring-blue-500">
-                                    <span class="material-symbols-outlined mr-1">check_box</span>
-                                    Manage Todos
-                                </a>
-                                <a href="{reverse('admin:common_todoitem_changelist')}?status=TODO" 
-                                   class="ml-2 inline-flex items-center px-3 py-1 border border-gray-300 text-sm 
-                                   rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none 
-                                   focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <span class="material-symbols-outlined mr-1">filter_list</span>
-                                    View Pending
-                                </a>
-                            </div>
-                        </div>
-                    """,
+                    "template": "admin/dashboard/todo_stats.html",
+                    "context": {
+                        "todo_stats": todo_stats,
+                        "total": todo_count,
+                        "overdue_todos": overdue_todos,
+                        "active_todos": todo_stats['TODO'] + todo_stats['IN_PROGRESS'] + todo_stats['BLOCKED'],
+                    },
                     "column": 1,
                     "order": 2,
                 },

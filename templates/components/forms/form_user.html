@@ -1,6 +1,6 @@
 {% extends "partials/_partial_base.html" %}
 
-{# 
+{% comment %}
   User Form Partial
   ================
   
@@ -20,7 +20,7 @@
   
   Usage:
   {% include "partials/forms/form_user.html" with form=user_form submit_url=user_create_url %}
-#}
+{% endcomment %}
 
 {% block content %}
 <form 
@@ -39,7 +39,7 @@
     {% endif %}
     
     <div class="form-fields">
-      {# First Name #}
+      {% comment %}First Name{% endcomment %}
       <div class="field">
         <label for="{{ form.first_name.id_for_label }}">First Name</label>
         <div class="control">
@@ -50,7 +50,7 @@
         {% endif %}
       </div>
       
-      {# Last Name #}
+      {% comment %}Last Name{% endcomment %}
       <div class="field">
         <label for="{{ form.last_name.id_for_label }}">Last Name</label>
         <div class="control">
@@ -61,7 +61,7 @@
         {% endif %}
       </div>
       
-      {# Email #}
+      {% comment %}Email{% endcomment %}
       <div class="field">
         <label for="{{ form.email.id_for_label }}">Email</label>
         <div class="control">

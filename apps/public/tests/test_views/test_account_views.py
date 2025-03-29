@@ -8,6 +8,8 @@ These tests verify that the account-related views:
 - Manage sessions correctly
 """
 
+import uuid
+
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -26,10 +28,13 @@ class AccountViewsTestCase(TestCase):
     def setUp(self):
         """Set up test data and utilities."""
         self.factory = RequestFactory()
+        self.username = f"testuser_{uuid.uuid4().hex[:8]}"
+        self.password = "testpassword123"
+        self.email = f"{self.username}@example.com"
         self.user = UserFactory.create(
-            username="testuser",
-            email="testuser@example.com",
-            password="testpassword123"
+            username=self.username,
+            email=self.email,
+            password=self.password
         )
         
     def _add_session_to_request(self, request):
@@ -56,8 +61,8 @@ class AccountViewsTestCase(TestCase):
         """Test successful login."""
         url = reverse('login')
         response = self.client.post(url, {
-            'username': 'testuser',
-            'password': 'testpassword123'
+            'username': self.username,
+            'password': self.password
         })
         
         # Should redirect after successful login
@@ -71,7 +76,7 @@ class AccountViewsTestCase(TestCase):
         """Test login with invalid credentials."""
         url = reverse('login')
         response = self.client.post(url, {
-            'username': 'testuser',
+            'username': self.username,
             'password': 'wrongpassword'
         })
         
@@ -143,7 +148,7 @@ class AccountViewsTestCase(TestCase):
         
     def test_home_view_unauthenticated(self):
         """Test that home view requires login."""
-        url = reverse('home')
+        url = reverse('public:home')
         response = self.client.get(url)
         
         # Should redirect to login page
@@ -152,9 +157,27 @@ class AccountViewsTestCase(TestCase):
         
     def test_home_view_authenticated(self):
         """Test that authenticated users can access home."""
-        self.client.login(username='testuser', password='testpassword123')
-        url = reverse('home')
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('public:home')
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'pages/home.html')
+        
+    def test_logout_functionality(self):
+        """Test that users can properly logout."""
+        # First login
+        self.client.login(username=self.username, password=self.password)
+        
+        # Verify login status
+        home_url = reverse('public:home')
+        response = self.client.get(home_url)
+        self.assertEqual(response.status_code, 200)
+        
+        # Then logout - use the client directly to log out
+        self.client.logout()
+        
+        # Verify user is now logged out
+        response = self.client.get(home_url)
+        self.assertEqual(response.status_code, 302)  # Should redirect to login page
+        self.assertIn('login', response.url)

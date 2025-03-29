@@ -15,7 +15,9 @@
   - title: Page title
   - meta: Meta tags for SEO and social sharing
   - extra_css: Page-specific CSS
+  - main_header: Header area with page title
   - content: Main page content area
+  - main_footer: Additional footer area
   - aside: Sidebar content (optional)
   - footer_content: Custom footer content (optional)
   - scripts: Page-specific JavaScript
@@ -54,7 +56,7 @@
   {% tailwind_css %}
   <!--FOR TEMPLATES TO LOAD MORE CSS-->
   {% block css %}
-    {# Additional page-specific CSS can be included here #}
+    {% comment %}Additional page-specific CSS can be included here{% endcomment %}
   {% endblock css %}
   <!-- DJANGO COMPONENT'S CSS -->
   {% component_css_dependencies %}
@@ -96,49 +98,64 @@
   {% include "layout/messages/toast.html" %}
 {% endblock %}
 
-<!-- Main Content -->
-<main class="flex-grow container mx-auto px-4 py-6 md:py-8" id="main" hx-history-elt>
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-
-    <!-- Main Content Area -->
-    <div class="md:col-span-8 md:col-span-9 md:col-span-10 md:col-span-12">
-      {% block content %}
-        <!-- Main content goes here -->
+<!-- Main Content Container -->
+<main class="flex-grow" id="main" hx-history-elt>
+  <!-- Main Header Area -->
+  <div id="main_header" class="bg-white shadow">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      {% block main_header %}
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">&nbsp;</h1>
       {% endblock %}
     </div>
-    
-    <script>
-      // Apply the correct column span based on the content type
-      document.addEventListener('DOMContentLoaded', function() {
-        const contentDiv = document.querySelector('main .md\\:col-span-8');
-        const sidebarEnabled = {% block content_width %}8{% endblock %};
-        
-        if (contentDiv) {
-          contentDiv.className = contentDiv.className.replace(/md:col-span-\d+/g, `md:col-span-${sidebarEnabled}`);
-        }
-      });
-    </script>
-
-    <!-- Sidebar (if enabled) -->
-    {% block sidebar_enabled %}{% endblock %}
-    {% if sidebar_enabled|default:False or block.super %}
-      <aside class="md:col-span-4">
-        {% block aside %}
-          <!-- Sidebar content goes here -->
+  </div>
+  
+  <!-- Content Area -->
+  <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <!-- Main Content Area -->
+      <div class="md:col-span-8 md:col-span-9 md:col-span-10 md:col-span-12">
+        {% block content %}
+          <!-- Main content goes here -->
         {% endblock %}
-      </aside>
-    {% endif %}
-
+      </div>
+      
+      <script>
+        // Apply the correct column span based on the content type
+        document.addEventListener('DOMContentLoaded', function() {
+          const contentDiv = document.querySelector('main .md\\:col-span-8');
+          const sidebarEnabled = {% block content_width %}12{% endblock %};
+          
+          if (contentDiv) {
+            contentDiv.className = contentDiv.className.replace(/md:col-span-\d+/g, `md:col-span-${sidebarEnabled}`);
+          }
+        });
+      </script>
+  
+      <!-- Sidebar (if enabled) -->
+      {% block sidebar_enabled %}{% endblock %}
+      {% if sidebar_enabled|default:False or block.super %}
+        <aside class="md:col-span-4">
+          {% block aside %}
+            <!-- Sidebar content goes here -->
+          {% endblock %}
+        </aside>
+      {% endif %}
+    </div>
+    
+    <!-- Main Footer Area -->
+    <div id="main_footer" class="mt-6">
+      {% block main_footer %}
+        <!-- Extra main area footer block -->
+      {% endblock %}
+    </div>
   </div>
 </main>
 
 <!-- Footer -->
-<footer class="bg-gray-800 text-white py-8 mt-auto">
-  <div class="container mx-auto px-4">
-    {% block footer %}
-      {% include "layout/footer.html" %}
-    {% endblock %}
-  </div>
+<footer class="bg-navy-900 text-white mt-auto">
+  {% block footer %}
+    {% include "layout/footer.html" %}
+  {% endblock %}
 </footer>
 
 <!-- Modals System -->

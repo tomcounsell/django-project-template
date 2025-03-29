@@ -31,6 +31,7 @@ Planned Integrations:
 - For template guidelines and patterns, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
 - For view classes and HTMX integration, see [View Conventions](docs/VIEW_CONVENTIONS.md)
 - For project architecture overview, see [Architecture](docs/ARCHITECTURE.md)
+- For end-to-end testing, see [E2E Testing](docs/E2E_TESTING.md)
 
 
 # Project Structure

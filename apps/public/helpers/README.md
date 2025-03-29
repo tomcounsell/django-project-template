@@ -26,16 +26,16 @@ Specialized view for HTMX requests with support for out-of-band (OOB) updates, U
 ```python
 from apps.public.helpers import HTMXView, TeamSessionMixin
 
-class TeamDashboardComponent(TeamSessionMixin, HTMXView):
-    template_name = "components/team_dashboard.html"
+class UserProfileComponent(HTMXView):
+    template_name = "components/user_profile.html"
     oob_templates = {
         "sidebar": "components/sidebar.html",
         "messages": "messages/toast.html"
     }
-    push_url = "/team/dashboard"
+    push_url = "/user/profile"
     
     def get(self, request, *args, **kwargs):
-        self.context["stats"] = get_team_stats(self.team)
+        self.context["user_data"] = get_user_data(request.user)
         return self.render(request)
 ```
 
