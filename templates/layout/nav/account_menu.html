@@ -57,9 +57,12 @@
           Admin Dashboard
         </a>
       {% endif %}
-      <a href="{% url 'public:account-logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-        Logout
-      </a>
+      <form method="post" action="{% url 'public:account-logout' %}" class="block px-0 py-0 logout-form">
+        {% csrf_token %}
+        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600" role="menuitem">
+          Logout
+        </button>
+      </form>
     </div>
   </div>
 {% else %}
