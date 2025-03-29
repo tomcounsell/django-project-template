@@ -79,12 +79,21 @@ The project uses a minimalist design system with a focused color palette:
 - **Consistent**: Uniform spacing, typography, and interaction patterns
 - **Accessible**: High contrast text and clear interactive elements
 
+### Icons
+- Font Awesome is used for all icons throughout the application
+- Use `fas` prefix for solid icons (e.g. `<i class="fas fa-user"></i>`)
+- Use `far` prefix for regular icons (e.g. `<i class="far fa-circle"></i>`)
+- Use `fab` prefix for brand icons (e.g. `<i class="fab fa-github"></i>`)
+- Add `fa-fw` class for fixed-width icons to ensure proper alignment
+- Use `fa-lg`, `fa-2x`, etc. for larger icons when needed
+
 ### Usage Examples
 - Primary buttons use navy background
 - Footer uses navy background with white text
 - Accent yellow is used sparingly for highlights and hover states
 - Links use navy color with yellow underlines on hover
 - Forms use consistent gray borders with navy focus states
+- Font Awesome icons are used with appropriate semantic meaning
 
 ## Component System
 
