@@ -2,7 +2,7 @@
 {% load static %}
 {% load component_tags %}
 
-<!-- 
+{% comment %}
   base.html - Primary Layout Template
   ==================================
   
@@ -19,7 +19,7 @@
   - aside: Sidebar content (optional)
   - footer_content: Custom footer content (optional)
   - scripts: Page-specific JavaScript
--->
+{% endcomment %}
 
 <!DOCTYPE html>
 <html lang="en" data-csrf-token="{{ csrf_token }}">

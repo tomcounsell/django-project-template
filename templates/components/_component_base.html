@@ -1,6 +1,6 @@
 {% extends "partial.html" %}
 
-<!-- 
+{% comment %}
   _component_base.html - Base template for HTMX components
   ===================================================
   
@@ -15,14 +15,14 @@
   Usage:
   {% extends "components/_component_base.html" %}
   {% block content %}
-    <!-- Component-specific content here -->
+    (Component-specific content here)
   {% endblock content %}
   
   Notes:
   - Components should NOT include layout elements like navigation or footers
   - Each component should be focused on a single responsibility
   - Components can be embedded in full pages via HTMX or directly with include
--->
+{% endcomment %}
 
 {% block content %}
   {# Primary content for the component template #}

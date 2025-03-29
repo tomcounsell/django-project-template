@@ -1,4 +1,4 @@
-{# 
+{% comment %}
   Account Menu Component
   =====================
   
@@ -23,7 +23,7 @@
   This component is included in the navbar and handles all user account
   management navigation. It adapts its display based on authentication state
   and user permissions.
-#}
+{% endcomment %}
 
 {% if user.is_authenticated %}
   <div id="account-dropdown">

@@ -153,7 +153,7 @@ class ProfileView(MainContentView):
    - Keep blocks focused on a single responsibility
 
 3. **Context Variables**:
-   - Document required and optional context variables in template comments
+   - Document required and optional context variables using Django comment tags `{% comment %}...{% endcomment %}`
    - Use descriptive variable names
    - Provide sensible defaults with the `|default` filter
 
