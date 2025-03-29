@@ -15,7 +15,11 @@ Provides links to important pages, legal information, and site metadata.
         <div class="md:col-span-2">
             <div class="flex items-center mb-4">
                 <img class="h-8 w-auto mr-2" src="{% static 'assets/favicon.png' %}" alt="Logo">
-                <span class="text-white font-medium text-lg">Django Project</span>
+                <span class="text-white font-medium text-lg">
+                    <a href="https://tomcounsell.com" target="_blank" title="Tom Counsell"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        Tom Counsell</a>'s Django Project Template
+                </span>
             </div>
             <p class="text-gray-300 mb-4">
                 A modern Django project template with best practices, HTMX integration, and comprehensive test coverage.
@@ -25,9 +29,42 @@ Provides links to important pages, legal information, and site metadata.
             </p>
         </div>
 
-        <!-- Quick Links -->
+        <!-- Project Resources -->
         <div>
-            <h3 class="text-white font-semibold mb-4">Resources</h3>
+            <h3 class="text-white font-semibold mb-4">Project Resources</h3>
+            <ul class="space-y-2">
+                <li>
+                    <a href="{% url 'public:ui-examples' %}"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-puzzle-piece fa-fw mr-1"></i> UI Components
+                    </a>
+                </li>
+                {% if user.is_staff %}
+                <li>
+                    <a href="{% url 'admin:index' %}"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-lock fa-fw mr-1"></i> Admin Dashboard
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{% url 'public:team-list' %}"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-users fa-fw mr-1"></i> Teams
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'public:todo-list' %}"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-tasks fa-fw mr-1"></i> Todo List
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- External Documentation -->
+        <div>
+            <h3 class="text-white font-semibold mb-4">External Links</h3>
             <ul class="space-y-2">
                 <li>
                     <a href="https://docs.djangoproject.com/"
@@ -47,37 +84,10 @@ Provides links to important pages, legal information, and site metadata.
                         <i class="fas fa-paint-brush fa-fw mr-1"></i> Tailwind CSS
                     </a>
                 </li>
-                {% if user.is_staff %}
                 <li>
-                    <a href="{% url 'admin:index' %}"
+                    <a href="https://github.com/django/django"
                        class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-                        <i class="fas fa-lock fa-fw mr-1"></i> Admin Dashboard
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-
-        <!-- Legal/Policy Links -->
-        <div>
-            <h3 class="text-white font-semibold mb-4">Legal</h3>
-            <ul class="space-y-2">
-                <li>
-                    <a href="#"
-                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-                        <i class="fas fa-shield-alt fa-fw mr-1"></i> Privacy Policy
-                    </a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-                        <i class="fas fa-file-contract fa-fw mr-1"></i> Terms of Service
-                    </a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-                        <i class="fas fa-cookie fa-fw mr-1"></i> Cookie Policy
+                        <i class="fab fa-github fa-fw mr-1"></i> Django GitHub
                     </a>
                 </li>
             </ul>
@@ -86,11 +96,27 @@ Provides links to important pages, legal information, and site metadata.
 
     <!-- Accent Bar -->
     <div class="mt-8 pt-8 border-t border-gray-700">
-        <div class="flex justify-between items-center">
-            <p class="text-gray-400 text-sm">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-400 text-sm mb-4 md:mb-0">
                 Made with <i class="fas fa-heart text-accent"></i>
-                by <a href="https://yuda.me" target="_blank" title="Yudame">Yudame</a>
+                by <a href="https://yuda.me" target="_blank" title="Yudame"
+                      class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">Yudame</a>
             </p>
+
+            <!-- Legal Links (now below the accent line) -->
+            <div class="flex flex-wrap space-x-4 mb-4 md:mb-0">
+                <a href="#" class="text-gray-400 hover:text-white text-sm">
+                    <i class="fas fa-shield-alt fa-fw mr-1"></i>Privacy
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white text-sm">
+                    <i class="fas fa-file-contract fa-fw mr-1"></i>Terms
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white text-sm">
+                    <i class="fas fa-cookie fa-fw mr-1"></i>Cookies
+                </a>
+            </div>
+
+            <!-- Social Links -->
             <div class="flex space-x-6">
                 <a href="#" class="text-gray-400 hover:text-white">
                     <span class="sr-only">GitHub</span>
@@ -109,5 +135,5 @@ Provides links to important pages, legal information, and site metadata.
     </div>
 </div>
 
-{# Extension point for adding custom content to the footer #}
+{% comment %}Extension point for adding custom content to the footer{% endcomment %}
 {% block footer_content %}{% endblock %}

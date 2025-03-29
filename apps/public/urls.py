@@ -3,6 +3,7 @@ from django.urls import path
 from django.urls import reverse_lazy
 
 from .views import account
+from .views import ComponentExamplesView
 from .views.teams.team_views import (
     TeamListView, TeamCreateView, TeamDetailView, 
     TeamUpdateView, TeamDeleteView
@@ -133,4 +134,9 @@ urlpatterns += [
     path("todos/<int:pk>/update/", todo_views.TodoUpdateView.as_view(), name="todo-update"),
     path("todos/<int:pk>/delete/", todo_views.TodoDeleteView.as_view(), name="todo-delete"),
     path("todos/<int:pk>/complete/", todo_views.TodoCompleteView.as_view(), name="todo-complete"),
+]
+
+# Component Examples
+urlpatterns += [
+    path("ui/examples/", ComponentExamplesView.as_view(), name="ui-examples"),
 ]

@@ -5,8 +5,8 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Todo List</h1>
-    <a href="{% url 'public:todo-create' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+    <h1 class="text-2xl font-bold text-gray-900">Todo List</h1>
+    <a href="{% url 'public:todo-create' %}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
       Create New Todo
     </a>
   </div>
@@ -181,7 +181,7 @@
   {% else %}
     <div class="bg-white shadow rounded-lg p-8 text-center">
       <p class="text-gray-500 mb-4">No todo items found.</p>
-      <a href="{% url 'public:todo-create' %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+      <a href="{% url 'public:todo-create' %}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
         Create Your First Todo
       </a>
     </div>

@@ -2,6 +2,8 @@
 
 This document outlines the conventions and best practices for templates in this Django project.
 
+> **TIP:** Visit the UI Component Examples page at `/ui/examples/` to see a live demonstration of all available components.
+
 ## Base Templates
 
 The project uses two primary base templates:
@@ -67,11 +69,56 @@ The `templates/layout/` directory contains layout elements that make up the page
 
 The project uses a minimalist design system with a focused color palette:
 
-### Colors
-- **Primary**: Deep navy blue (`navy-900: #0a192f`) for buttons and footer
-- **Accent**: Yellow (`accent: #ffd404`) for important highlights and interactive elements
-- **Grayscale**: Various shades of gray for general UI elements and text
-- **Feedback**: Standard colors for notifications (red for errors, green for success)
+### Color System
+- **Primary**: Deep navy blue from the theme palette:
+  - `navy-900: #0a192f` - Primary buttons, footer background
+  - `navy-800: #112240` - Button hover states
+  - `navy-700: #1d3557` - Borders, focus rings, secondary accents
+- **Accent**: Yellow (`accent: #ffd404`) used sparingly for important highlights and decorative elements
+- **Grayscale**: Consistent gray shades for UI elements and text:
+  - `gray-900` through `gray-700`: Primary and secondary text
+  - `gray-600` through `gray-400`: Tertiary text, icons, and disabled states
+  - `gray-300` through `gray-100`: Borders, dividers, and background variations
+  - `gray-50`: Very light background for secondary content areas
+- **Feedback**: Standard semantic colors for system feedback:
+  - Red: Errors and destructive actions
+  - Green: Success and completion states
+  - Yellow: Warnings and attention states
+
+### Standardized UI Elements
+
+#### Buttons
+- **Primary Buttons**:
+  ```html
+  class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm 
+  font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none 
+  focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+  ```
+
+- **Secondary/Gray Buttons**:
+  ```html
+  class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm 
+  font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none 
+  focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+  ```
+
+#### Links
+- **Standard Links**: `class="text-navy-700 hover:text-navy-900"`
+- **Subtle Links**: `class="text-gray-600 hover:text-navy-700 hover:underline"`
+
+#### Cards/Panels
+- **Standard Card**: `class="bg-white shadow rounded-lg p-6"`
+- **Bordered Card**: `class="bg-white shadow rounded-lg overflow-hidden"` with inner container `class="border-l-4 border-navy-700 p-6"`
+
+#### Form Elements
+- **Form Layout**: Use `space-y-6` for vertical spacing and `grid` for multi-column layouts
+- **Form Groups**: Apply consistent spacing with `class="mb-4"` or `class="space-y-2"`
+- **Form Labels**: `class="block text-sm font-medium text-gray-700 mb-2"`
+- **Form Inputs**: `class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm"`
+
+#### Badges/Pills
+- **Status Badges**: `class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-navy-100 text-navy-800"`
+- **Alternative Badges**: Use gray-scale for neutral states and standard semantic colors for others
 
 ### Design Principles
 - **Minimalist**: Clean layouts with ample white space
@@ -87,13 +134,11 @@ The project uses a minimalist design system with a focused color palette:
 - Add `fa-fw` class for fixed-width icons to ensure proper alignment
 - Use `fa-lg`, `fa-2x`, etc. for larger icons when needed
 
-### Usage Examples
-- Primary buttons use navy background
-- Footer uses navy background with white text
-- Accent yellow is used sparingly for highlights and hover states
-- Links use navy color with yellow underlines on hover
-- Forms use consistent gray borders with navy focus states
-- Font Awesome icons are used with appropriate semantic meaning
+### Page Structure Conventions
+- Use `container mx-auto px-4 py-8` for main page containers
+- Page titles with `text-2xl font-bold text-gray-900` and `mb-6`
+- Section headers with `text-xl font-semibold text-gray-900 mb-4`
+- Component headers with `text-lg font-medium text-gray-900 mb-4`
 
 ## Component System
 
@@ -106,6 +151,30 @@ Reusable UI components are organized in `templates/components/`:
 - `lists/` - List components
 
 Components extend from `components/_component_base.html` which provides basic structure and utility blocks.
+
+### UI Component Examples
+
+A live, interactive showcase of all available UI components is available at `/ui/examples/` or by clicking the "UI Components" link in the footer. This page demonstrates:
+
+- Form components (text inputs, textareas, checkboxes, selects, radio buttons, buttons)
+- Card layouts
+- Modal dialogs
+- List displays
+- Common UI elements (notifications, error messages)
+
+Use this page as a reference when implementing interfaces to ensure consistent design across the application.
+
+The examples page demonstrates the following standards:
+- Proper page container and layout structure
+- Standard headings and typography hierarchy
+- Button styles for primary and secondary actions
+- Card/panel layouts with consistent styling
+- Form element styling and organization
+- Consistent use of navy and grayscale color palette
+- Modal component usage and styling
+- Status badges and indicators
+
+Access this resource at `/ui/examples/` to see live implementations of all styled components.
 
 ### Form Components
 

@@ -34,7 +34,7 @@
 {% block modal_body %}
 <div class="prose prose-sm sm:prose max-w-none">
     {% block content_block %}
-    {# Content for the modal - can be provided via context variable or by overriding this block #}
+    {% comment %}Content for the modal - can be provided via context variable or by overriding this block{% endcomment %}
     {{ content|safe }}
 {% endblock %}
 </div>
