@@ -107,6 +107,7 @@ For detailed conventions on templates and views, see:
 - Create detailed, focused commits
 - Run code formatters before committing
 - Check all changes with `git status` before committing
+- Don't include co-authors in commit messages
 
 ## Architecture
 - Move away from component frameworks to standard Django templates
@@ -139,3 +140,4 @@ For detailed project structure and app descriptions, refer to:
 - **Browser-Use**: https://pypi.org/project/browser-use/
 - **uv Package Manager**: https://docs.astral.sh/uv/
 - **Ruff Linter**: https://docs.astral.sh/ruff/
+- **MCP Python SDK** https://raw.githubusercontent.com/modelcontextprotocol/python-sdk/refs/heads/main/README.md
