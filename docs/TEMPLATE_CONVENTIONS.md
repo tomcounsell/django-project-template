@@ -63,6 +63,29 @@ The `templates/layout/` directory contains layout elements that make up the page
 - `messages/` - Notification/toast templates
 - `nav/` - Navigation components like navbar parts and account menu
 
+## Design System and Color Palette
+
+The project uses a minimalist design system with a focused color palette:
+
+### Colors
+- **Primary**: Deep navy blue (`navy-900: #0a192f`) for buttons and footer
+- **Accent**: Yellow (`accent: #ffd404`) for important highlights and interactive elements
+- **Grayscale**: Various shades of gray for general UI elements and text
+- **Feedback**: Standard colors for notifications (red for errors, green for success)
+
+### Design Principles
+- **Minimalist**: Clean layouts with ample white space
+- **Focused**: Clear hierarchy and limited color usage
+- **Consistent**: Uniform spacing, typography, and interaction patterns
+- **Accessible**: High contrast text and clear interactive elements
+
+### Usage Examples
+- Primary buttons use navy background
+- Footer uses navy background with white text
+- Accent yellow is used sparingly for highlights and hover states
+- Links use navy color with yellow underlines on hover
+- Forms use consistent gray borders with navy focus states
+
 ## Component System
 
 Reusable UI components are organized in `templates/components/`:
@@ -80,8 +103,65 @@ Components extend from `components/_component_base.html` which provides basic st
 Form components provide consistent styling and error handling:
 
 ```html
-{% include "components/forms/text_input.html" with field=form.username %}
-{% include "components/forms/checkbox.html" with field=form.accept_terms %}
+<!-- Basic Input -->
+<div class="sm:col-span-3">
+  <label for="id_first_name" class="block text-sm font-medium text-gray-700">
+    First Name
+  </label>
+  <div class="mt-1">
+    <input type="text" name="first_name" id="id_first_name" value="{{ value|default:'' }}" 
+      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+  </div>
+  {% if errors %}
+    <p class="mt-2 text-sm text-red-600">{{ errors.0 }}</p>
+  {% endif %}
+</div>
+
+<!-- Form Buttons -->
+{% include "components/forms/form_buttons.html" with submit_text="Save Changes" %}
+```
+
+### Button Styles
+
+The project uses consistent button styling:
+
+```html
+<!-- Primary Button -->
+<button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+  Primary Action
+</button>
+
+<!-- Secondary Button -->
+<button type="button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-500">
+  Secondary Action
+</button>
+```
+
+### Toast Notifications
+
+Toast notifications use color-coded borders and icons:
+
+```html
+<div class="rounded-lg shadow-lg overflow-hidden bg-white border-l-4 border-green-500">
+  <div class="p-4 flex items-start">
+    <!-- Icon -->
+    <div class="flex-shrink-0 mr-3">
+      <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <!-- Content -->
+    <div class="flex-1">
+      <p class="text-sm text-gray-800">Operation successful!</p>
+    </div>
+    <!-- Close Button -->
+    <button class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-none">
+      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+</div>
 ```
 
 ### Modal System

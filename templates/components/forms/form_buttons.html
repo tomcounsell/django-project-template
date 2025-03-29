@@ -10,26 +10,28 @@ Parameters:
 - align: Alignment of the buttons (optional, "left", "center", "right", "between", defaults to "right")
 - submit_class: Additional CSS classes for submit button (optional)
 - cancel_class: Additional CSS classes for cancel button (optional)
+- secondary: Set to True if this is a secondary action (optional, defaults to False)
 
 Usage:
 {% include "components/forms/form_buttons.html" with submit_text="Create Account" %}
 {% include "components/forms/form_buttons.html" with submit_text="Update" cancel_url=back_url %}
 {% include "components/forms/form_buttons.html" with submit_text="Save Changes" cancel_url=back_url cancel_text="Go Back" align="between" %}
+{% include "components/forms/form_buttons.html" with submit_text="Archive" secondary=True %}
 {% endcomment %}
 
 {% with btn_align=align|default:"right" %}
 <div class="mt-6 flex {% if btn_align == 'center' %}justify-center{% elif btn_align == 'left' %}justify-start{% elif btn_align == 'right' %}justify-end{% elif btn_align == 'between' %}justify-between{% endif %} 
-            items-center space-x-4">
+          items-center space-x-4">
   
   {% if cancel_url %}
     <a href="{{ cancel_url }}" 
-       class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md {{ cancel_class }}">
+       class="px-4 py-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 text-sm font-medium {{ cancel_class }}">
       {{ cancel_text|default:"Cancel" }}
     </a>
   {% endif %}
   
   <button type="submit" 
-          class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md {{ submit_class }}">
+          class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white {% if secondary %}bg-gray-600 hover:bg-gray-700 focus:ring-gray-500{% else %}bg-navy-900 hover:bg-navy-800 focus:ring-navy-700{% endif %} focus:outline-none focus:ring-2 focus:ring-offset-2 {{ submit_class }}">
     {{ submit_text|default:"Save" }}
   </button>
 </div>

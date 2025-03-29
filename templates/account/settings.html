@@ -36,100 +36,136 @@
 {% block title %}Account Settings{% endblock %}
 
 {% block content %}
+<div class="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+  <h1 class="text-2xl font-semibold text-gray-900 mb-8 pb-2 border-b border-gray-200">Account Settings</h1>
 
-<div>
-  <header>
-    <p>Basic Info</p>
-  </header>
-  <div>
-    <form method="post">
-      {% csrf_token %}
-      <div>
-        <div>
-          <div>
-            <label>First Name</label>
-            <div>
-              {{ user_form.first_name }}
+  <!-- Basic Information Section -->
+  <div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-3 mb-5">
+        Basic Information
+      </h2>
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+          <!-- First Name -->
+          <div class="sm:col-span-3">
+            <label for="id_first_name" class="block text-sm font-medium text-gray-700">
+              First Name
+            </label>
+            <div class="mt-1">
+              <input type="text" name="first_name" id="id_first_name" value="{{ user_form.first_name.value|default:'' }}" 
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="sm:col-span-3">
+            <label for="id_last_name" class="block text-sm font-medium text-gray-700">
+              Last Name
+            </label>
+            <div class="mt-1">
+              <input type="text" name="last_name" id="id_last_name" value="{{ user_form.last_name.value|default:'' }}" 
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="sm:col-span-6">
+            <label for="id_email" class="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <div class="mt-1">
+              <input type="email" name="email" id="id_email" value="{{ user_form.email.value|default:'' }}" 
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
             </div>
           </div>
         </div>
-        <div>
-          <div>
-            <label>Last Name</label>
-            <div>
-              {{ user_form.last_name }}
-            </div>
-          </div>
-        </div>
-        <div>
-          <div>
-            <label>Email</label>
-            <div>
-              {{ user_form.email }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div>
-          <button type="submit">Save</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
 
-<div>
-  <header>
-    <p>Change Password</p>
-  </header>
-
-  <div>
-    <form method="post">
-      {% load widget_tweaks %}{% csrf_token %}
-      <div>
-        <label>Current password</label>
-        <div>
-          {{ password_form.old_password }}
+        <div class="pt-4">
+          <button type="submit" name="update_info" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+            Save Changes
+          </button>
         </div>
-        {% if password_form.old_password.errors %}
-          <p>{{ password_form.old_password.errors.0 }}</p>
-        {% endif %}
-      </div>
-      <div>
-        <label>New password</label>
-        <div>
-          {{ password_form.new_password1 }}
-        </div>
-        {% if password_form.new_password1.errors %}
-          <p>{{ password_form.new_password1.errors.0 }}</p>
-        {% endif %}
-      </div>
-      <div>
-        <label>Confirm new password</label>
-        <div>
-          {{ password_form.new_password2 }}
-        </div>
-        {% if password_form.new_password2.errors %}
-          <p>{{ password_form.new_password2.errors.0 }}</p>
-        {% endif %}
-      </div>
-      <div>
-        <div>
-          <button type="submit">Update password</button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 
-  <footer>
-    {% if password_form.errors %}
-      {% for error in password_form.non_field_errors %}
-        <p>{{ error|escape }}</p>
-      {% endfor %}
-    {% endif %}
-  </footer>
+  <!-- Password Change Section -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-4 py-5 sm:p-6">
+      <h2 class="text-lg font-medium text-gray-900 border-b border-gray-200 pb-3 mb-5">
+        Change Password
+      </h2>
 
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Current Password -->
+        <div>
+          <label for="id_old_password" class="block text-sm font-medium text-gray-700">
+            Current Password
+          </label>
+          <div class="mt-1">
+            <input type="password" name="old_password" id="id_old_password" 
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+          </div>
+          {% if password_form.old_password.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ password_form.old_password.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- New Password -->
+        <div>
+          <label for="id_new_password1" class="block text-sm font-medium text-gray-700">
+            New Password
+          </label>
+          <div class="mt-1">
+            <input type="password" name="new_password1" id="id_new_password1" 
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+          </div>
+          {% if password_form.new_password1.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ password_form.new_password1.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label for="id_new_password2" class="block text-sm font-medium text-gray-700">
+            Confirm New Password
+          </label>
+          <div class="mt-1">
+            <input type="password" name="new_password2" id="id_new_password2" 
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+          </div>
+          {% if password_form.new_password2.errors %}
+            <p class="mt-2 text-sm text-red-600">{{ password_form.new_password2.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" name="update_password" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+            Update Password
+          </button>
+        </div>
+      </form>
+
+      <!-- Password Form Errors -->
+      {% if password_form.errors %}
+        <div class="mt-6 p-4 border border-red-200 bg-red-50 rounded-md">
+          {% for error in password_form.non_field_errors %}
+            <p class="text-sm text-red-600">{{ error|escape }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Yellow Accent Element -->
+  <div class="mt-8 border-t-4 border-accent pt-6 px-4">
+    <p class="text-sm text-gray-500">
+      Need help? <a href="#" class="font-medium text-navy-700 hover:text-navy-900 hover:underline hover:decoration-accent hover:decoration-2">Contact support</a>
+    </p>
+  </div>
 </div>
-
 {% endblock content %}

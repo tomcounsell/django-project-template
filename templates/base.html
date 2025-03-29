@@ -133,12 +133,10 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-gray-800 text-white py-8 mt-auto">
-  <div class="container mx-auto px-4">
-    {% block footer %}
-      {% include "layout/footer.html" %}
-    {% endblock %}
-  </div>
+<footer class="bg-footer text-white mt-auto">
+  {% block footer %}
+    {% include "layout/footer.html" %}
+  {% endblock %}
 </footer>
 
 <!-- Modals System -->
