@@ -1,6 +1,6 @@
 # Django Project Template - Development Guide
 
-This guide complements the main [README.md](/README.md) and provides specific instructions for developers contributing to this project. For project overview, structure, and features, see the [README.md](/README.md).
+This guide complements the main [README.md](README.md) and provides specific instructions for developers contributing to this project. For project overview, structure, and features, see the [README.md](README.md).
 
 ## Package Management
 - **ONLY use uv**: For all package and dependency management
@@ -24,8 +24,8 @@ This guide complements the main [README.md](/README.md) and provides specific in
 
 ## Code Style
 - **Python**: PEP 8 with Black formatter (line length 88); use type hints with mypy
-- **Models**: Follow [behavior mixins](/docs/MODEL_CONVENTIONS.md) pattern; datetime fields end with `_at`
-  - See [README.md](/README.md#behavior-mixins) for full list of available behavior mixins
+- **Models**: Follow [behavior mixins](docs/MODEL_CONVENTIONS.md) pattern; datetime fields end with `_at`
+  - See [README.md](README.md#behavior-mixins) for full list of available behavior mixins
 - **Imports**: Group by standard lib, third-party, Django, local apps
 - **Methods**: Verb phrases for methods, nouns for properties
 - **HTMX**: Use `HTMXView` for HTMX-specific views and `MainContentView` for standard pages
@@ -52,8 +52,8 @@ This guide complements the main [README.md](/README.md) and provides specific in
 - **Templates**: Place in root `/templates` directory, not in app directories
 
 For detailed conventions on templates and views, see:
-- [Template Conventions](/docs/TEMPLATE_CONVENTIONS.md)
-- [View Conventions](/docs/VIEW_CONVENTIONS.md)
+- [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
+- [View Conventions](docs/VIEW_CONVENTIONS.md)
 
 ## Testing Practice
 - **TDD Approach**: Write tests BEFORE implementing features
@@ -80,19 +80,19 @@ For detailed conventions on templates and views, see:
   - For async code, use anyio (not asyncio)
 
 ## Documentation
-- [README.md](/README.md) - Project overview, features and structure
-- [docs/SETUP_GUIDE.md](/docs/SETUP_GUIDE.md) - Detailed setup instructions
-- [docs/CONTRIBUTING.md](/docs/CONTRIBUTING.md) - Contribution guidelines
-- [docs/TODO.md](/docs/TODO.md) - Current tasks and priorities
-- [docs/ARCHITECTURE.md](/docs/ARCHITECTURE.md) - Project architecture and app relationships
-- [docs/BEHAVIOR_MIXINS.md](/docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
-- [docs/MODEL_CONVENTIONS.md](/docs/MODEL_CONVENTIONS.md) - Model conventions
-- [docs/TEMPLATE_CONVENTIONS.md](/docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
-- [docs/VIEW_CONVENTIONS.md](/docs/VIEW_CONVENTIONS.md) - View classes and HTMX integration
-- [docs/TEST_CONVENTIONS.md](/docs/TEST_CONVENTIONS.md) - Testing practices and organization
+- [README.md](README.md) - Project overview, features and structure
+- [docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md) - Detailed setup instructions
+- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) - Contribution guidelines
+- [docs/TODO.md](docs/TODO.md) - Current tasks and priorities
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Project architecture and app relationships
+- [docs/BEHAVIOR_MIXINS.md](docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
+- [docs/MODEL_CONVENTIONS.md](docs/MODEL_CONVENTIONS.md) - Model conventions
+- [docs/TEMPLATE_CONVENTIONS.md](docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
+- [docs/VIEW_CONVENTIONS.md](docs/VIEW_CONVENTIONS.md) - View classes and HTMX integration
+- [docs/TEST_CONVENTIONS.md](docs/TEST_CONVENTIONS.md) - Testing practices and organization
 
 ## Development Process
-1. Check [docs/TODO.md](/docs/TODO.md) to identify next priority item
+1. Check [docs/TODO.md](docs/TODO.md) to identify next priority item
 2. Think deeply to plan out next steps and how to implement the feature
 3. Write tests covering all expected behaviors
 4. Run tests to verify they fail (proving tests work correctly)
@@ -101,17 +101,9 @@ For detailed conventions on templates and views, see:
 7. Review and Refactor your work. Simplify if possible without sacrificing functionality
 8. Commit changes when all tests are passing
 9. Continue to achieve 100% test coverage
-10. Update [docs/TODO.md](/docs/TODO.md) with updated plans and marking items completed when they have 100% test coverage
+10. Update [docs/TODO.md](docs/TODO.md) with updated plans and marking items completed when they have 100% test coverage
 
 ## Commit Guidelines
-- For bug fixes based on user reports:
-  ```bash
-  git commit --trailer "Reported-by:<name>"
-  ```
-- For commits related to GitHub issues:
-  ```bash
-  git commit --trailer "Github-Issue:#<number>"
-  ```
 - Create detailed, focused commits
 - Run code formatters before committing
 - Check all changes with `git status` before committing
@@ -134,5 +126,16 @@ For detailed conventions on templates and views, see:
     - Type narrowing for strings
 
 For detailed project structure and app descriptions, refer to:
-- [Project Structure](/README.md#project-structure) section in the README
-- [Architecture Document](/docs/ARCHITECTURE.md) for a visual overview and app relationships
+- [Project Structure](README.md#project-structure) section in the README
+- [Architecture Document](docs/ARCHITECTURE.md) for a visual overview and app relationships
+
+## Key Technology Documentation
+- **Django**: https://docs.djangoproject.com/en/5.0/
+- **Django REST Framework**: https://www.django-rest-framework.org/
+- **HTMX**: https://htmx.org/docs/
+- **Tailwind CSS**: https://tailwindcss.com/docs
+- **Unfold Admin**: https://unfoldadmin.com/docs/
+- **Pytest Django**: https://pytest-django.readthedocs.io/en/latest/
+- **Browser-Use**: https://pypi.org/project/browser-use/
+- **uv Package Manager**: https://docs.astral.sh/uv/
+- **Ruff Linter**: https://docs.astral.sh/ruff/
