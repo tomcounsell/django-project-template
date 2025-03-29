@@ -203,6 +203,62 @@ class UserAPITestCase(TestCase):
         self.assertEqual(response.data['username'], self.user.username)
 ```
 
+### Admin Tests
+
+Admin tests verify that Django admin customizations work correctly:
+
+```python
+# Example admin test
+import warnings
+from django.test import TestCase, Client, override_settings
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+
+# Filter out timezone warnings during tests
+warnings.filterwarnings(
+    "ignore", 
+    message="DateTimeField .* received a naive datetime", 
+    category=RuntimeWarning
+)
+
+@override_settings(ALLOWED_HOSTS=['testserver'])
+class AdminTestCase(TestCase):
+    def setUp(self):
+        # Use get_or_create to avoid duplicate user errors
+        self.user, created = get_user_model().objects.get_or_create(
+            username='admin_test',
+            defaults={
+                'email': 'admin_test@example.com',
+                'is_superuser': True,
+                'is_staff': True,
+                'date_joined': timezone.now(),  # Use timezone-aware datetime
+            }
+        )
+        
+        if created:
+            self.user.set_password('password123')
+            self.user.save()
+        
+        self.client = Client()
+        self.client.login(username='admin_test', password='password123')
+    
+    def test_admin_index(self):
+        """Test the admin index page loads successfully."""
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Content Database')
+    
+    def test_custom_dashboard(self):
+        """Test the custom admin dashboard."""
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for expected admin interface elements
+        self.assertContains(response, 'ProjectName Content Database')
+        self.assertContains(response, 'output.css')
+```
+
 ## Test Factories
 
 Use [factory_boy](https://factoryboy.readthedocs.io/) to create test objects:
@@ -306,6 +362,8 @@ class EmailServiceTestCase(TestCase):
 4. **Insufficient Coverage**: Ensure all edge cases are covered
 5. **Overlooking Permissions**: For views and API endpoints, test different permission scenarios
 6. **Timezone Issues**: Be explicit about datetime comparisons and aware of timezone settings
+   - Use timezone.now() instead of naive datetime objects
+   - Consider using filter_warnings in pyproject.toml for persistent warnings
 
 ## Best Practices
 
