@@ -98,9 +98,10 @@ This project follows a clean architecture with:
 - [ ] File Storage: AWS S3 integration with image transformations
 
 ## DevOps & Deployment 🚀
-- [ ] Implement CI/CD workflows
-  - [ ] GitHub Actions: tests, lint, security, build
-  - [ ] GitLab CI alternative configuration
+- [x] Implement CI/CD workflows
+  - [x] GitHub Actions: tests, lint, security, build
+  - [x] Fixed bug on deploy of github action for documentation page (updated from deprecated `actions/upload-artifact: v3`)
+  - [x] GitLab CI alternative configuration
 - [ ] Create deployment templates (Render, Fly.io)
 - [ ] Implement blue/green deployment
 - [ ] Set up staging environment 
