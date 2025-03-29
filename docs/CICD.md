@@ -36,16 +36,6 @@ The project includes several GitHub Actions workflows:
   - Builds Sphinx documentation
   - Deploys documentation to GitHub Pages (only from the `main` branch)
 
-## GitLab CI
-
-An alternative GitLab CI configuration is also provided in `.gitlab-ci.yml`:
-
-- **Stages**: lint → test → build → deploy
-- **Features**:
-  - Runs linting, security checks, and tests
-  - Builds Python package, frontend assets, and Docker image
-  - Supports deployment to staging and production environments
-  - Includes caching for dependencies to speed up builds
 
 ## Setting Up CI/CD
 
@@ -58,14 +48,6 @@ An alternative GitLab CI configuration is also provided in `.gitlab-ci.yml`:
    - In your repository settings, enable GitHub Pages
    - Select the source as "GitHub Actions"
 
-### GitLab CI
-
-1. **Variables**:
-   - `CI_REGISTRY_USER` and `CI_REGISTRY_PASSWORD`: For Docker registry access
-   - `STAGING_DEPLOY_WEBHOOK` and `PRODUCTION_DEPLOY_WEBHOOK`: Optional webhook URLs for deployment
-
-2. **Runner Setup**:
-   - Ensure your GitLab runner has Docker support if you're using the Docker image building feature
 
 ## Local CI Testing
 
@@ -100,5 +82,4 @@ The CI/CD setup supports multiple deployment environments:
 ## References
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [GitLab CI Documentation](https://docs.gitlab.com/ee/ci/)
 - [Codecov Documentation](https://docs.codecov.io/)
