@@ -1,102 +1,112 @@
 {% load static %}
 
 {% comment %}
-  Footer Component
-  ===============
-  
-  Purpose:
-  Site-wide footer that appears at the bottom of all pages.
-  Provides links to important pages, legal information, and site metadata.
+Footer Component
+===============
+
+Purpose:
+Site-wide footer that appears at the bottom of all pages.
+Provides links to important pages, legal information, and site metadata.
 {% endcomment %}
 
 <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-    <!-- Company/Project Info -->
-    <div class="md:col-span-2">
-      <div class="flex items-center mb-4">
-        <img class="h-8 w-auto mr-2" src="{% static 'assets/favicon.png' %}" alt="Logo">
-        <span class="text-white font-medium text-lg">Django Project</span>
-      </div>
-      <p class="text-gray-300 mb-4">
-        A modern Django project template with best practices, HTMX integration, and comprehensive test coverage.
-      </p>
-      <p class="text-gray-400 text-sm">
-        &copy; {% now "Y" %} Django Project Template. All rights reserved.
-      </p>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Company/Project Info -->
+        <div class="md:col-span-2">
+            <div class="flex items-center mb-4">
+                <img class="h-8 w-auto mr-2" src="{% static 'assets/favicon.png' %}" alt="Logo">
+                <span class="text-white font-medium text-lg">Django Project</span>
+            </div>
+            <p class="text-gray-300 mb-4">
+                A modern Django project template with best practices, HTMX integration, and comprehensive test coverage.
+            </p>
+            <p class="text-gray-400 text-sm">
+                &copy; {% now "Y" %} Django Project Template. All rights reserved.
+            </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+            <h3 class="text-white font-semibold mb-4">Resources</h3>
+            <ul class="space-y-2">
+                <li>
+                    <a href="https://docs.djangoproject.com/"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-book fa-fw mr-1"></i> Django Documentation
+                    </a>
+                </li>
+                <li>
+                    <a href="https://htmx.org/docs/"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-code fa-fw mr-1"></i> HTMX Documentation
+                    </a>
+                </li>
+                <li>
+                    <a href="https://tailwindcss.com/docs"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-paint-brush fa-fw mr-1"></i> Tailwind CSS
+                    </a>
+                </li>
+                {% if user.is_staff %}
+                <li>
+                    <a href="{% url 'admin:index' %}"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-lock fa-fw mr-1"></i> Admin Dashboard
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Legal/Policy Links -->
+        <div>
+            <h3 class="text-white font-semibold mb-4">Legal</h3>
+            <ul class="space-y-2">
+                <li>
+                    <a href="#"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-shield-alt fa-fw mr-1"></i> Privacy Policy
+                    </a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-file-contract fa-fw mr-1"></i> Terms of Service
+                    </a>
+                </li>
+                <li>
+                    <a href="#"
+                       class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
+                        <i class="fas fa-cookie fa-fw mr-1"></i> Cookie Policy
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
-    
-    <!-- Quick Links -->
-    <div>
-      <h3 class="text-white font-semibold mb-4">Resources</h3>
-      <ul class="space-y-2">
-        <li>
-          <a href="https://docs.djangoproject.com/" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-            <i class="fas fa-book fa-fw mr-1"></i> Django Documentation
-          </a>
-        </li>
-        <li>
-          <a href="https://htmx.org/docs/" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-            <i class="fas fa-code fa-fw mr-1"></i> HTMX Documentation
-          </a>
-        </li>
-        <li>
-          <a href="https://tailwindcss.com/docs" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-            <i class="fas fa-paint-brush fa-fw mr-1"></i> Tailwind CSS
-          </a>
-        </li>
-        {% if user.is_staff %}
-          <li>
-            <a href="{% url 'admin:index' %}" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-              <i class="fas fa-lock fa-fw mr-1"></i> Admin Dashboard
-            </a>
-          </li>
-        {% endif %}
-      </ul>
+
+    <!-- Accent Bar -->
+    <div class="mt-8 pt-8 border-t border-gray-700">
+        <div class="flex justify-between items-center">
+            <p class="text-gray-400 text-sm">
+                Made with <i class="fas fa-heart text-accent"></i>
+                by <a href="https://yuda.me" target="_blank" title="Yudame">Yudame</a>
+            </p>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white">
+                    <span class="sr-only">GitHub</span>
+                    <i class="fab fa-github fa-lg"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white">
+                    <span class="sr-only">Twitter</span>
+                    <i class="fab fa-twitter fa-lg"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white">
+                    <span class="sr-only">LinkedIn</span>
+                    <i class="fab fa-linkedin fa-lg"></i>
+                </a>
+            </div>
+        </div>
     </div>
-    
-    <!-- Legal/Policy Links -->
-    <div>
-      <h3 class="text-white font-semibold mb-4">Legal</h3>
-      <ul class="space-y-2">
-        <li>
-          <a href="#" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-            <i class="fas fa-shield-alt fa-fw mr-1"></i> Privacy Policy
-          </a>
-        </li>
-        <li>
-          <a href="#" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-            <i class="fas fa-file-contract fa-fw mr-1"></i> Terms of Service
-          </a>
-        </li>
-        <li>
-          <a href="#" class="text-gray-300 hover:text-white hover:underline hover:decoration-accent hover:decoration-2 transition">
-            <i class="fas fa-cookie fa-fw mr-1"></i> Cookie Policy
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-  
-  <!-- Accent Bar -->
-  <div class="mt-8 pt-8 border-t border-gray-700">
-    <div class="flex justify-between items-center">
-      <p class="text-gray-400 text-sm">Made with <i class="fas fa-heart text-accent"></i> using Django</p>
-      <div class="flex space-x-6">
-        <a href="#" class="text-gray-400 hover:text-white">
-          <span class="sr-only">GitHub</span>
-          <i class="fab fa-github fa-lg"></i>
-        </a>
-        <a href="#" class="text-gray-400 hover:text-white">
-          <span class="sr-only">Twitter</span>
-          <i class="fab fa-twitter fa-lg"></i>
-        </a>
-        <a href="#" class="text-gray-400 hover:text-white">
-          <span class="sr-only">LinkedIn</span>
-          <i class="fab fa-linkedin fa-lg"></i>
-        </a>
-      </div>
-    </div>
-  </div>
 </div>
 
 {# Extension point for adding custom content to the footer #}
