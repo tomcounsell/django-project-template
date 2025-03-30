@@ -67,10 +67,7 @@ For detailed conventions on templates and views, see:
 - **Organization**:
   - Model tests: `apps/{app_name}/tests/test_models/`
   - View tests: `apps/{app_name}/tests/test_views/`
-  - Behavior tests:
-    - Django TestCase: `apps/common/tests/test_behaviors/`
-    - Standalone: `apps/common/tests/test_behaviors_direct.py`
-    - Guide: `apps/common/tests/behaviors_test_guide.md`
+  - Behavior tests: `apps/common/tests/behaviors.py` (consolidated approach with both database and direct tests)
   - E2E tests: `apps/{app_name}/tests/test_e2e_*.py`
   - Visual tests: `apps/{app_name}/tests/test_visual_*.py`
   - Factory classes: `apps/common/tests/factories.py`
