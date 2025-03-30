@@ -46,10 +46,10 @@ This project follows a clean architecture with:
 - ✅ Standardize test fixtures and helpers
 - ✅ Create test coverage reporting tools
 - ✅ Update testing documentation with best practices
+- ✅ Add AI-powered browser testing framework
+- ✅ Implement visual regression testing
 - [ ] Add more HTMX interaction tests
 - [ ] Add responsive design tests
-- [ ] Add AI-powered browser testing framework
-- [ ] Implement visual regression testing
 
 ## API Enhancements 🔌
 - ✅ Set up OpenAPI/Swagger documentation
@@ -65,7 +65,7 @@ This project follows a clean architecture with:
   - ✅ Set up Sphinx with autodoc extensions
   - [ ] Create custom documentation theme
   - [ ] Build searchable documentation site with versioning
-  - [ ] Create GitHub Pages deployment workflow
+  - ✅ Create GitHub Pages deployment workflow
 
 ## Admin Improvements 🛠️
 - ✅ Enhance sidebar navigation with model organization
@@ -80,10 +80,12 @@ This project follows a clean architecture with:
 - ✅ UI Framework: Migrated to django-tailwind, unified CSS approach, minimalist component library
 - ✅ Navigation: Improved conditional navigation with context-aware menu items
 - ✅ Team Interface: Simplified team pages with context-dependent visibility
-- [ ] support responsive layouts for mobile using Tailwind CSS
+- ✅ Support responsive layouts for mobile using Tailwind CSS
+- [ ] HTMX OOB support for toasts, alerts, modals, nav. use the HTMXView class and has_oob property in templates
+- [ ] Show active state on navigation links, based on current page (no js allowed)
 - [ ] Build example pages (landing, pricing, blog)
 - [ ] Implement accessibility best practices
-- [x] Add frontend component tests
+- ✅ Add frontend component tests
 
 
 ## Performance ⚡
@@ -99,16 +101,16 @@ This project follows a clean architecture with:
 - ✅ Email: Loops integration with delivery tracking
 - ✅ Payments: Stripe with subscription models and webhooks
 - ✅ SMS: Twilio with verification flow
-- [ ] File Storage: AWS S3 integration with image transformations
+- ✅ File Storage: AWS S3 integration with image transformations
 
 ## DevOps & Deployment 🚀
-- [x] Implement CI/CD workflows
-  - [x] GitHub Actions: tests, lint, security, build
-  - [x] Fixed bug on deploy of github action for documentation page (updated from deprecated `actions/upload-artifact: v3`)
-- [x] Create deployment config for Render
-  - [x] Create build.sh script for Render deployments
-  - [x] Add render.yaml configuration file
-  - [x] Configure uvicorn ASGI worker with gunicorn
+- ✅ Implement CI/CD workflows
+  - ✅ GitHub Actions: tests, lint, security, build
+  - ✅ Fixed bug on deploy of github action for documentation page (updated from deprecated `actions/upload-artifact: v3`)
+- ✅ Create deployment config for Render
+  - ✅ Create build.sh script for Render deployments
+  - ✅ Add render.yaml configuration file
+  - ✅ Configure uvicorn ASGI worker with gunicorn
 - [ ] Implement blue/green deployment
 
 
