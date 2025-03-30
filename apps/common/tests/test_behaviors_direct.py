@@ -1,8 +1,15 @@
 """
-Test file for behavior mixins with direct testing (without database).
+Standalone, direct tests for behavior mixins without database dependencies.
 
-This approach allows us to test all behavior mixins without requiring a
-database connection or migrations by mocking the necessary parts.
+This module contains unittest-based tests for all behavior mixins, using
+mocks to simulate Django's models. These tests do not require a database
+connection or migrations, making them suitable for Python 3.12 compatibility
+and faster test execution.
+
+Run these tests directly with:
+    python apps/common/tests/test_behaviors_direct.py
+
+For Django TestCase-based tests that use the ORM, see the test_behaviors/ package.
 """
 import unittest
 from datetime import datetime, timedelta
