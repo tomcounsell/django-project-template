@@ -21,12 +21,16 @@ The project has a structured approach to organizing tests:
    - **E2E Tests**: Test complete user workflows
    - **Visual Tests**: Test visual appearance of components
    - **API Tests**: Test API endpoints and responses
+   - **HTMX Tests**: Test HTMX interactions and OOB swaps
+   - **Responsive Tests**: Test responsive design across device sizes
 
 2. **File Naming Conventions**:
    - E2E tests: `test_e2e_*.py` or `test_*_browser.py`
    - Visual tests: `test_visual_*.py` or `test_screenshot_*.py`
    - API tests: `test_api_*.py`
    - Integration tests: `test_integration_*.py`
+   - HTMX tests: `test_htmx_*.py` or `test_*_oob.py`
+   - Responsive tests: `test_responsive_*.py` 
    - Model tests: `test_models/test_*.py`
    - View tests: `test_views/test_*.py`
 
@@ -64,9 +68,11 @@ python tools/testing/browser_test_runner.py --no-headless apps/public/tests/test
 python tools/testing/browser_test_runner.py --browser firefox apps/public/tests/test_e2e_*.py
 ```
 
-### Unified Test Script
+### Unified Test Scripts
 
-The `test.sh` script provides a unified interface for all testing needs:
+The project provides several scripts for testing:
+
+1. The `test.sh` script provides a unified interface for general testing:
 
 ```bash
 # Run all tests
@@ -87,6 +93,24 @@ The `test.sh` script provides a unified interface for all testing needs:
 # Generate HTML coverage report
 ./test.sh --type all --html-report
 ```
+
+2. The `run_htmx_tests.sh` script specifically for HTMX and responsive design tests:
+
+```bash
+# Run all HTMX and responsive tests
+./run_htmx_tests.sh
+
+# Run only HTMX tests
+./run_htmx_tests.sh --type htmx
+
+# Run only responsive design tests
+./run_htmx_tests.sh --type responsive
+
+# Run with visible browser
+./run_htmx_tests.sh --no-headless
+```
+
+This script automatically starts a Django development server if one isn't already running, which is required for browser-based tests.
 
 ## Writing E2E Tests
 

@@ -25,6 +25,8 @@ class TestCategory:
     E2E = "e2e"
     VISUAL = "visual"
     API = "api"
+    HTMX = "htmx"        # HTMX interaction tests
+    RESPONSIVE = "responsive"  # Responsive design tests
     ALL = "all"
 
 
@@ -75,6 +77,8 @@ class TestManager:
             TestCategory.E2E: [],
             TestCategory.VISUAL: [],
             TestCategory.API: [],
+            TestCategory.HTMX: [],
+            TestCategory.RESPONSIVE: [],
         }
         self._discover_tests()
     
@@ -87,7 +91,11 @@ class TestManager:
                     rel_path = os.path.relpath(path, PROJECT_ROOT)
                     
                     # Categorize based on filename
-                    if "e2e" in file or "browser" in file:
+                    if "htmx" in file or "oob" in file:
+                        self.test_files[TestCategory.HTMX].append(rel_path)
+                    elif "responsive" in file:
+                        self.test_files[TestCategory.RESPONSIVE].append(rel_path)
+                    elif "e2e" in file or "browser" in file:
                         self.test_files[TestCategory.E2E].append(rel_path)
                     elif "visual" in file or "screenshot" in file:
                         self.test_files[TestCategory.VISUAL].append(rel_path)
@@ -98,6 +106,13 @@ class TestManager:
                     else:
                         # Default to unit test if no specific category is identified
                         self.test_files[TestCategory.UNIT].append(rel_path)
+                        
+                    # For htmx_interactions.py, add to both HTMX and E2E categories
+                    if file == "test_htmx_interactions.py":
+                        if rel_path not in self.test_files[TestCategory.HTMX]:
+                            self.test_files[TestCategory.HTMX].append(rel_path)
+                        if rel_path not in self.test_files[TestCategory.E2E]:
+                            self.test_files[TestCategory.E2E].append(rel_path)
     
     def run_tests(self, category: str, xml_report: bool = False) -> TestReport:
         """Run tests for a specific category."""
@@ -108,7 +123,9 @@ class TestManager:
         
         if category == TestCategory.ALL:
             test_files = []
-            for cat in [TestCategory.UNIT, TestCategory.INTEGRATION, TestCategory.API, TestCategory.E2E, TestCategory.VISUAL]:
+            for cat in [TestCategory.UNIT, TestCategory.INTEGRATION, TestCategory.API, 
+                        TestCategory.E2E, TestCategory.VISUAL, TestCategory.HTMX, 
+                        TestCategory.RESPONSIVE]:
                 test_files.extend(self.test_files[cat])
         else:
             test_files = self.test_files.get(category, [])
@@ -186,7 +203,9 @@ class TestManager:
         
         if category == TestCategory.ALL:
             test_files = []
-            for cat in [TestCategory.UNIT, TestCategory.INTEGRATION, TestCategory.API, TestCategory.E2E, TestCategory.VISUAL]:
+            for cat in [TestCategory.UNIT, TestCategory.INTEGRATION, TestCategory.API, 
+                       TestCategory.E2E, TestCategory.VISUAL, TestCategory.HTMX, 
+                       TestCategory.RESPONSIVE]:
                 test_files.extend(self.test_files[cat])
         else:
             test_files = self.test_files.get(category, [])
@@ -219,7 +238,9 @@ class TestManager:
     def list_tests(self, category: str):
         """List tests in a specific category."""
         if category == TestCategory.ALL:
-            for cat in [TestCategory.UNIT, TestCategory.INTEGRATION, TestCategory.API, TestCategory.E2E, TestCategory.VISUAL]:
+            for cat in [TestCategory.UNIT, TestCategory.INTEGRATION, TestCategory.API, 
+                       TestCategory.E2E, TestCategory.VISUAL, TestCategory.HTMX, 
+                       TestCategory.RESPONSIVE]:
                 print(f"\n{cat.upper()} TESTS:")
                 for test in sorted(self.test_files[cat]):
                     print(f"  {test}")
@@ -245,6 +266,8 @@ def main():
             TestCategory.E2E, 
             TestCategory.VISUAL,
             TestCategory.API,
+            TestCategory.HTMX,
+            TestCategory.RESPONSIVE,
             TestCategory.ALL
         ],
         default=TestCategory.ALL,
