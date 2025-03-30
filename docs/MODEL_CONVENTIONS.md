@@ -154,8 +154,9 @@ class MyModel(Timestampable, Publishable, models.Model):
 - Include tests for model methods and properties
 - Test database constraints and unique fields
 - Use factory classes in `apps/common/tests/factories.py` to create test instances
-- Test behavior mixins in isolation using `apps/common/tests/test_behaviors/`
+- Test behavior mixins in `apps/common/tests/behaviors.py` with both database-backed and direct approaches
 - Aim for 100% test coverage for models and behavior mixins
+- For more details on testing behavior mixins, see [BEHAVIOR_MIXINS.md](BEHAVIOR_MIXINS.md#testing-behavior-mixins)
 
 ## Migrations
 - Keep migrations focused and atomic
