@@ -2,6 +2,7 @@
 Tests for the User model's Stripe-related methods and properties.
 """
 import pytest
+import uuid
 from datetime import timedelta
 from django.test import TestCase
 from django.utils import timezone
@@ -14,9 +15,11 @@ class UserStripeTestCase(TestCase):
     
     def setUp(self):
         """Set up test data."""
+        # Generate a unique username to avoid UniqueViolation errors
+        unique_username = f"testuser_{uuid.uuid4().hex[:8]}"
         self.user = User.objects.create_user(
-            username="testuser",
-            email="test@example.com",
+            username=unique_username,
+            email=f"{unique_username}@example.com",
             password="password123",
             stripe_customer_id="cus_test123"
         )
@@ -47,10 +50,9 @@ class UserStripeTestCase(TestCase):
         
         # Add active subscription
         subscription = Subscription.objects.create(
-            stripe_id="sub_test123",
-            stripe_customer_id="cus_test123",
-            stripe_price_id="price_test123",
-            status=Subscription.STATUS_ACTIVE,
+            stripe_subscription_id="sub_test123",
+            price=1999,
+            status='active',
             current_period_start=timezone.now(),
             current_period_end=timezone.now() + timedelta(days=30),
             plan_name="Test Plan",
@@ -59,7 +61,7 @@ class UserStripeTestCase(TestCase):
         self.assertTrue(self.user.has_active_subscription)
         
         # Cancel subscription
-        subscription.status = Subscription.STATUS_CANCELED
+        subscription.status = 'canceled'
         subscription.save()
         self.assertFalse(self.user.has_active_subscription)
     
@@ -70,10 +72,9 @@ class UserStripeTestCase(TestCase):
         
         # Add active subscription
         subscription1 = Subscription.objects.create(
-            stripe_id="sub_test123",
-            stripe_customer_id="cus_test123",
-            stripe_price_id="price_test123",
-            status=Subscription.STATUS_ACTIVE,
+            stripe_subscription_id="sub_test123",
+            price=1999,
+            status='active',
             current_period_start=timezone.now(),
             current_period_end=timezone.now() + timedelta(days=30),
             plan_name="Test Plan",
@@ -82,10 +83,9 @@ class UserStripeTestCase(TestCase):
         
         # Add trial subscription
         subscription2 = Subscription.objects.create(
-            stripe_id="sub_test456",
-            stripe_customer_id="cus_test123",
-            stripe_price_id="price_test456",
-            status=Subscription.STATUS_TRIALING,
+            stripe_subscription_id="sub_test456",
+            price=2999,
+            status='trialing',
             current_period_start=timezone.now(),
             current_period_end=timezone.now() + timedelta(days=14),
             plan_name="Premium Plan",
@@ -94,10 +94,9 @@ class UserStripeTestCase(TestCase):
         
         # Add canceled subscription
         subscription3 = Subscription.objects.create(
-            stripe_id="sub_test789",
-            stripe_customer_id="cus_test123",
-            stripe_price_id="price_test789",
-            status=Subscription.STATUS_CANCELED,
+            stripe_subscription_id="sub_test789",
+            price=999,
+            status='canceled',
             current_period_start=timezone.now() - timedelta(days=30),
             current_period_end=timezone.now() - timedelta(days=1),
             plan_name="Canceled Plan",
@@ -118,10 +117,9 @@ class UserStripeTestCase(TestCase):
         
         # Add active subscription
         subscription = Subscription.objects.create(
-            stripe_id="sub_test123",
-            stripe_customer_id="cus_test123",
-            stripe_price_id="price_test123",
-            status=Subscription.STATUS_ACTIVE,
+            stripe_subscription_id="sub_test123",
+            price=1999,
+            status='active',
             current_period_start=timezone.now(),
             current_period_end=timezone.now() + timedelta(days=30),
             plan_name="Test Plan",
@@ -138,31 +136,25 @@ class UserStripeTestCase(TestCase):
         
         # Add payments
         payment1 = Payment.objects.create(
-            stripe_id="pi_test123",
-            stripe_customer_id="cus_test123",
+            stripe_payment_intent_id="pi_test123",
             amount=1999,
-            currency="USD",
-            status=Payment.STATUS_SUCCEEDED,
+            status='succeeded',
             user=self.user,
             created_at=timezone.now() - timedelta(days=3)
         )
         
         payment2 = Payment.objects.create(
-            stripe_id="pi_test456",
-            stripe_customer_id="cus_test123",
+            stripe_payment_intent_id="pi_test456",
             amount=2999,
-            currency="USD",
-            status=Payment.STATUS_SUCCEEDED,
+            status='succeeded',
             user=self.user,
             created_at=timezone.now() - timedelta(days=2)
         )
         
         payment3 = Payment.objects.create(
-            stripe_id="pi_test789",
-            stripe_customer_id="cus_test123",
+            stripe_payment_intent_id="pi_test789",
             amount=999,
-            currency="USD",
-            status=Payment.STATUS_SUCCEEDED,
+            status='succeeded',
             user=self.user,
             created_at=timezone.now() - timedelta(days=1)
         )

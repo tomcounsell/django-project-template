@@ -14,11 +14,20 @@ This guide complements the main [README.md](README.md) and provides specific ins
 - **Environment**: `cp .env.example .env.local` (then edit with your private keys)
 - **Run server**: `python manage.py runserver`
 - **Migrations**: `python manage.py makemigrations && python manage.py migrate`
-- **Tests**: `DJANGO_SETTINGS_MODULE=settings pytest` (all tests in project)
-- **Single test**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase -v`
+
+### Testing Commands
+- **Run all tests**: `DJANGO_SETTINGS_MODULE=settings pytest`
+- **Single test file**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py -v`
+- **Single test class**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase -v`
+- **Single test method**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase::test_string_representation -v`
+- **Run tests by keyword**: `DJANGO_SETTINGS_MODULE=settings pytest -k "user and not stripe" -v`
+- **Run with detailed errors**: `DJANGO_SETTINGS_MODULE=settings pytest -vxs`
+- **Run only failing tests**: `DJANGO_SETTINGS_MODULE=settings pytest --failed-first`
 - **Coverage**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
 - **HTML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report`
 - **XML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:apps/common/tests/coverage.xml` (for CI integrations)
+
+### Code Quality
 - **Format code**: `black . && isort .`
 - **Lint & type check**: `flake8 . && mypy .`
 
