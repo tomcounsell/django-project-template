@@ -337,6 +337,105 @@ class TestPublishableDirect(unittest.TestCase):
         obj.published_at = timezone.now()
         obj.unpublished_at = timezone.now() + datetime.timedelta(days=1)
         self.assertFalse(Publishable.is_published.fget(obj))
+    
+    def test_is_published_setter(self):
+        """Test is_published setter method."""
+        obj = mock.MagicMock(spec=Publishable)
+        
+        # Test publishing directly - simplify to direct testing
+        # First call - setting to True when unpublished
+        obj.published_at = None
+        obj.unpublished_at = timezone.now()
+        obj.is_published = False # Mock property return
+        
+        # Call the setter directly
+        Publishable.is_published.fset(obj, True)
+        
+        # Verify expected behavior 
+        self.assertIsNone(obj.unpublished_at)
+        self.assertIsNotNone(obj.published_at)
+        
+        # Test unpublishing - setting to False when published
+        obj.published_at = timezone.now() - datetime.timedelta(days=1)
+        obj.unpublished_at = None
+        obj.is_published = True # Mock property return
+        
+        # Call the setter directly
+        Publishable.is_published.fset(obj, False)
+        
+        # Verify expected behavior
+        self.assertIsNotNone(obj.unpublished_at)
+    
+    def test_publish_method(self):
+        """Test publish method."""
+        # Simplify by just implementing/calling the method to verify behavior
+        # No mocking, just subclass with a property tracking setter
+        class TrackingPublishable(Publishable):
+            def __init__(self):
+                self.is_published_value = None
+                
+            @property
+            def is_published(self):
+                return self.is_published_value
+                
+            @is_published.setter
+            def is_published(self, value):
+                self.is_published_value = value
+        
+        # Create instance with tracking
+        obj = TrackingPublishable()
+        obj.is_published_value = False  # Start unpublished
+        
+        # Call the method
+        obj.publish()
+        
+        # Verify result
+        self.assertTrue(obj.is_published_value)
+    
+    def test_unpublish_method(self):
+        """Test unpublish method."""
+        # Simplify by just implementing/calling the method to verify behavior
+        # No mocking, just subclass with a property tracking setter
+        class TrackingPublishable(Publishable):
+            def __init__(self):
+                self.is_published_value = None
+                
+            @property
+            def is_published(self):
+                return self.is_published_value
+                
+            @is_published.setter
+            def is_published(self, value):
+                self.is_published_value = value
+        
+        # Create instance with tracking
+        obj = TrackingPublishable()
+        obj.is_published_value = True  # Start published
+        
+        # Call the method
+        obj.unpublish()
+        
+        # Verify result
+        self.assertFalse(obj.is_published_value)
+    
+    def test_publication_status_property(self):
+        """Test publication_status property."""
+        obj = mock.MagicMock(spec=Publishable)
+        
+        # We'll call the method directly, mocking at a different level
+        # Published
+        with mock.patch.object(obj, 'is_published', True, create=True):
+            self.assertEqual(Publishable.publication_status.fget(obj), "Published")
+        
+        # Unpublished
+        with mock.patch.object(obj, 'is_published', False, create=True):
+            obj.published_at = timezone.now()
+            self.assertEqual(Publishable.publication_status.fget(obj), "Unpublished")
+        
+        # Draft
+        with mock.patch.object(obj, 'is_published', False, create=True):
+            obj.published_at = None
+            self.assertEqual(Publishable.publication_status.fget(obj), "Draft")
 
 
 class TestExpirableDirect(unittest.TestCase):
@@ -358,6 +457,31 @@ class TestExpirableDirect(unittest.TestCase):
         # Expired
         obj.expired_at = timezone.now()
         self.assertTrue(Expirable.is_expired.fget(obj))
+    
+    def test_is_expired_setter(self):
+        """Test is_expired setter method."""
+        obj = mock.MagicMock(spec=Expirable)
+        
+        # Test setting to expired (True)
+        obj.expired_at = None
+        Expirable.is_expired.fset(obj, True)
+        self.assertIsNotNone(obj.expired_at)
+        
+        # Test setting to not expired (False) when it was expired
+        obj.expired_at = timezone.now()
+        
+        # Mock at the object level, not the property level
+        with mock.patch.object(obj, 'is_expired', True, create=True):
+            Expirable.is_expired.fset(obj, False)
+            self.assertIsNone(obj.expired_at)
+        
+        # Test setting to not expired (False) when it was already not expired
+        obj.expired_at = None
+        
+        with mock.patch.object(obj, 'is_expired', False, create=True):
+            Expirable.is_expired.fset(obj, False)
+            # Should remain None
+            self.assertIsNone(obj.expired_at)
 
 
 class TestPermalinkableDirect(unittest.TestCase):
@@ -374,6 +498,41 @@ class TestPermalinkableDirect(unittest.TestCase):
         # Add additional kwargs to the get_url_kwargs method
         result = Permalinkable.get_url_kwargs(obj, slug=obj.slug)
         self.assertEqual(result, {'slug': 'test-slug'})
+    
+    def test_pre_save_slug_signal_handler(self):
+        """Test pre_save_slug signal handler."""
+        # Import slugify directly to verify our implementation
+        from django.utils.text import slugify
+        from apps.common.behaviors.permalinkable import pre_save_slug
+        
+        # Create a real class that directly inherits from Permalinkable
+        class TestPermalinkable(Permalinkable):
+            slug_source = "Test Title"
+        
+        # Create an instance of the permalinkable model
+        instance = TestPermalinkable()
+        instance.slug = None  # Ensure slug is None
+        
+        # Call the pre_save_slug handler
+        pre_save_slug(TestPermalinkable, instance)
+        
+        # Verify slug was set correctly
+        self.assertEqual(instance.slug, slugify("Test Title"))
+        
+        # Test with a non-permalinkable model
+        class TestNonPermalinkable:
+            pass
+        
+        # Create an instance
+        non_permalinkable_instance = TestNonPermalinkable()
+        if not hasattr(non_permalinkable_instance, 'slug'):
+            non_permalinkable_instance.slug = None
+        
+        # Call the signal handler
+        pre_save_slug(TestNonPermalinkable, non_permalinkable_instance)
+        
+        # Slug should remain None
+        self.assertIsNone(non_permalinkable_instance.slug)
 
 
 class TestLocatableDirect(unittest.TestCase):
@@ -384,6 +543,51 @@ class TestLocatableDirect(unittest.TestCase):
         self.assertTrue(hasattr(Locatable, 'address'))
         self.assertTrue(hasattr(Locatable, 'longitude'))
         self.assertTrue(hasattr(Locatable, 'latitude'))
+    
+    def test_has_coordinates_property(self):
+        """Test has_coordinates property."""
+        obj = mock.MagicMock(spec=Locatable)
+        
+        # No coordinates
+        obj.latitude = None
+        obj.longitude = None
+        self.assertFalse(Locatable.has_coordinates.fget(obj))
+        
+        # Only latitude
+        obj.latitude = 45.0
+        obj.longitude = None
+        self.assertFalse(Locatable.has_coordinates.fget(obj))
+        
+        # Only longitude
+        obj.latitude = None
+        obj.longitude = -120.0
+        self.assertFalse(Locatable.has_coordinates.fget(obj))
+        
+        # Both coordinates
+        obj.latitude = 45.0
+        obj.longitude = -120.0
+        self.assertTrue(Locatable.has_coordinates.fget(obj))
+    
+    def test_coordinates_property(self):
+        """Test coordinates property."""
+        obj = mock.MagicMock(spec=Locatable)
+        
+        # No coordinates
+        obj.latitude = None
+        obj.longitude = None
+        
+        # Mock at the object level
+        with mock.patch.object(obj, 'has_coordinates', False, create=True):
+            self.assertIsNone(Locatable.coordinates.fget(obj))
+        
+        # With coordinates
+        obj.latitude = 45.0
+        obj.longitude = -120.0
+        
+        # Mock at the object level
+        with mock.patch.object(obj, 'has_coordinates', True, create=True):
+            coordinates = Locatable.coordinates.fget(obj)
+            self.assertEqual(coordinates, (45.0, -120.0))
 
 
 class TestAnnotatableDirect(unittest.TestCase):
