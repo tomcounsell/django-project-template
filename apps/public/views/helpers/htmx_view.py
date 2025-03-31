@@ -12,11 +12,24 @@ class HTMXView(MainContentView):
     """
     Base view class for handling HTMX requests with additional features for
     out-of-band (OOB) responses, URL updates, custom events, and multiple component rendering.
+    
+    Attributes:
+        template_name: The main template to render
+        oob_templates: Dictionary mapping target IDs to template paths
+        push_url: URL to push to browser history
+        has_oob: Whether the response includes OOB swaps
+        active_nav: Active navigation section (e.g., 'home', 'teams', 'todos')
+        show_toast: Whether to show toast messages in OOB
+        include_modals: Whether to include modal container in OOB
     """
 
     template_name: Optional[str] = None
     oob_templates: Optional[Dict[str, str]] = None  # Maps target IDs to template paths
     push_url: Optional[str] = None  # URL to push to browser history
+    has_oob: bool = True  # Whether to use OOB swaps
+    active_nav: Optional[str] = None  # Active navigation section
+    show_toast: bool = True  # Whether to include toast messages
+    include_modals: bool = False  # Whether to include modal container
 
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         # Ensure this view only handles HTMX requests
@@ -61,10 +74,22 @@ class HTMXView(MainContentView):
             else ""
         )
 
-        # By default, include message toasts in the OOB templates
-        if messages.get_messages(request) and "toasts" not in oob_templates:
-            oob_templates["toast-container"] = "layout/messages/toast.html"
-
+        # Add standard OOB components based on view settings
+        if self.has_oob:
+            # Add toast messages if enabled and there are messages
+            if self.show_toast and messages.get_messages(request) and "toast-container" not in oob_templates:
+                oob_templates["toast-container"] = "layout/messages/toast.html"
+            
+            # Add navigation active state if specified
+            if self.active_nav:
+                combined_context["active_section"] = self.active_nav
+                oob_templates["nav-active-marker"] = "layout/nav/active_nav.html"
+            
+            # Add modal container if enabled
+            if self.include_modals:
+                oob_templates["modal-container"] = "layout/modals/modal_container.html"
+        
+        # Set context flag for OOB templates
         if len(oob_templates):
             combined_context["is_oob"] = True
 

@@ -13,6 +13,7 @@ from .views.teams.member_views import (
     remove_team_member, leave_team
 )
 from .views.todos import todo_views
+from .views.components.oob_examples import urlpatterns as oob_urlpatterns
 
 app_name = "public"
 
@@ -141,3 +142,6 @@ urlpatterns += [
 urlpatterns += [
     path("ui/examples/", ComponentExamplesView.as_view(), name="ui-examples"),
 ]
+
+# OOB Examples
+urlpatterns += oob_urlpatterns
