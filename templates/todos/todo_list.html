@@ -2,11 +2,17 @@
 
 {% block title %}Todo List{% endblock %}
 
+{% block main_header %}
+  <h1 class="text-3xl font-bold tracking-tight text-navy-600">Todo List</h1>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Todo List</h1>
-    <a href="{% url 'public:todo-create' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+    <div class="flex-1"></div>
+    <a href="{% url 'public:todo-create' %}" class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+      <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+      </svg>
       Create New Todo
     </a>
   </div>
@@ -60,12 +66,18 @@
         </select>
       </div>
 
-      <div class="md:col-span-4 flex justify-end">
-        <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded mr-2">
+      <div class="md:col-span-4 flex justify-end space-x-2">
+        <button type="submit" class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+          <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+          </svg>
           Apply Filters
         </button>
-        <a href="{% url 'public:todo-list' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded">
-          Clear Filters
+        <a href="{% url 'public:todo-list' %}" class="inline-flex items-center text-xs px-2 py-1 rounded bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300">
+          <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+          Clear
         </a>
       </div>
     </form>
@@ -102,77 +114,8 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           {% for todo in todos %}
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <a href="{% url 'public:todo-detail' todo.id %}" class="text-blue-600 hover:text-blue-900">
-                  {{ todo.title }}
-                </a>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {% if todo.priority == "HIGH" %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                    High
-                  </span>
-                {% elif todo.priority == "MEDIUM" %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                    Medium
-                  </span>
-                {% else %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Low
-                  </span>
-                {% endif %}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ todo.get_category_display }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {% if todo.status == "DONE" %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Done
-                  </span>
-                {% elif todo.status == "IN_PROGRESS" %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                    In Progress
-                  </span>
-                {% elif todo.status == "BLOCKED" %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                    Blocked
-                  </span>
-                {% else %}
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                    To Do
-                  </span>
-                {% endif %}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {% if todo.assignee %}
-                  {{ todo.assignee.get_full_name|default:todo.assignee.username }}
-                {% else %}
-                  <span class="text-gray-400">Unassigned</span>
-                {% endif %}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {% if todo.due_at %}
-                  {% if todo.is_overdue %}
-                    <span class="text-red-600">{{ todo.due_at|date:"M d, Y" }}</span>
-                  {% else %}
-                    {{ todo.due_at|date:"M d, Y" }}
-                  {% endif %}
-                {% else %}
-                  <span class="text-gray-400">No due date</span>
-                {% endif %}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <a href="{% url 'public:todo-update' todo.id %}" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
-                <a href="{% url 'public:todo-delete' todo.id %}" class="text-red-600 hover:text-red-900">Delete</a>
-                {% if todo.status != "DONE" %}
-                  <form method="post" action="{% url 'public:todo-complete' todo.id %}" class="inline">
-                    {% csrf_token %}
-                    <button type="submit" class="text-green-600 hover:text-green-900 ml-2">Complete</button>
-                  </form>
-                {% endif %}
-              </td>
+            <tr id="todo-row-{{ todo.id }}" class="hover:bg-gray-50">
+              {% include "todos/partials/todo_row.html" with todo=todo %}
             </tr>
           {% endfor %}
         </tbody>
@@ -181,10 +124,12 @@
   {% else %}
     <div class="bg-white shadow rounded-lg p-8 text-center">
       <p class="text-gray-500 mb-4">No todo items found.</p>
-      <a href="{% url 'public:todo-create' %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+      <a href="{% url 'public:todo-create' %}" class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+        <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+        </svg>
         Create Your First Todo
       </a>
     </div>
   {% endif %}
-</div>
 {% endblock %}

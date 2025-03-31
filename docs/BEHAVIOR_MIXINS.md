@@ -303,10 +303,32 @@ class NewBehavior(models.Model):
 
 ## Testing Behavior Mixins
 
-Two approaches for testing behaviors:
+All behavior mixins are tested in `apps/common/tests/behaviors.py`, which contains:
 
-1. **Django-integrated tests**: Use the Django test framework with models that incorporate the behavior
+1. **Database-backed tests**: Using Django's TestCase to test with ORM integration
+2. **Direct tests**: Using Python's unittest with mocks to test without database
 
-2. **Standalone tests**: Use the standalone test framework in `test_behaviors.py` for Python 3.12 compatibility
+Both approaches provide comprehensive test coverage for all behaviors and verify fields, properties, and methods provided by the behavior mixin.
 
-Both approaches should verify all fields, properties, and methods provided by the behavior mixin.
+When testing a new behavior mixin, add both types of tests:
+
+```python
+# In apps/common/tests/behaviors.py
+
+# Django TestCase-based test
+class MyNewBehaviorTest(BehaviorTestMixin, TestCase):
+    @property
+    def model(self):
+        return MyNewBehaviorModel  # Test model defined in the same file
+    
+    def test_some_property(self):
+        obj = self.create_instance()
+        # Test the behavior
+
+# Direct unittest-based test
+class TestMyNewBehaviorDirect(unittest.TestCase):
+    def test_some_property(self):
+        obj = mock.MagicMock(spec=MyNewBehavior)
+        # Set up mocks
+        # Test the behavior
+```

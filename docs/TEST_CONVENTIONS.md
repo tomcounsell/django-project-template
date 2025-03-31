@@ -2,6 +2,8 @@
 
 This document outlines the testing approach, conventions, and best practices for the Django Project Template. Following these guidelines will ensure consistency across the codebase and maintain high test coverage.
 
+> **New Feature**: The project now supports end-to-end browser testing using browser-use/Playwright. For detailed information about this testing capability, see [E2E_TESTING.md](E2E_TESTING.md). The current document has been updated to include guidance on when to use different testing approaches.
+
 ## Core Testing Principles
 
 1. **Test-Driven Development (TDD)**
@@ -67,6 +69,26 @@ apps/
   - `test_api_returns_404_for_nonexistent_resource`
 
 ## Test Types and Their Implementation
+
+### Choosing the Right Test Type
+
+This project supports several types of tests, each appropriate for different scenarios:
+
+1. **Model Tests**: For testing data models, properties, methods, and validations
+2. **View Tests**: For testing view logic, template rendering, and basic user interactions
+3. **API Tests**: For testing REST API endpoints, serialization, and authentication
+4. **Behavior Tests**: For testing reusable behavior mixins
+5. **End-to-End Tests**: For testing complete user workflows through the browser
+
+When to use each approach:
+
+| Test Type | When to Use | When Not to Use |
+|-----------|-------------|-----------------|
+| Model Tests | Testing properties, methods, validations, signals | Testing user interactions |
+| View Tests | Testing view logic, context data, template rendering | Testing browser behavior, HTMX interactions |
+| API Tests | Testing API endpoints, serializers, authentication | Testing user interfaces |
+| Behavior Tests | Testing reusable mixins, inheritance | Testing application-specific logic |
+| End-to-End Tests | Testing complete user flows, HTMX interactions, forms | Unit testing, performance-critical paths |
 
 ### Model Tests
 
@@ -203,6 +225,62 @@ class UserAPITestCase(TestCase):
         self.assertEqual(response.data['username'], self.user.username)
 ```
 
+### Admin Tests
+
+Admin tests verify that Django admin customizations work correctly:
+
+```python
+# Example admin test
+import warnings
+from django.test import TestCase, Client, override_settings
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+
+# Filter out timezone warnings during tests
+warnings.filterwarnings(
+    "ignore", 
+    message="DateTimeField .* received a naive datetime", 
+    category=RuntimeWarning
+)
+
+@override_settings(ALLOWED_HOSTS=['testserver'])
+class AdminTestCase(TestCase):
+    def setUp(self):
+        # Use get_or_create to avoid duplicate user errors
+        self.user, created = get_user_model().objects.get_or_create(
+            username='admin_test',
+            defaults={
+                'email': 'admin_test@example.com',
+                'is_superuser': True,
+                'is_staff': True,
+                'date_joined': timezone.now(),  # Use timezone-aware datetime
+            }
+        )
+        
+        if created:
+            self.user.set_password('password123')
+            self.user.save()
+        
+        self.client = Client()
+        self.client.login(username='admin_test', password='password123')
+    
+    def test_admin_index(self):
+        """Test the admin index page loads successfully."""
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Database')
+    
+    def test_custom_dashboard(self):
+        """Test the custom admin dashboard."""
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 200)
+        
+        # Check for expected admin interface elements
+        self.assertContains(response, 'ProjectName Database')
+        self.assertContains(response, 'output.css')
+```
+
 ## Test Factories
 
 Use [factory_boy](https://factoryboy.readthedocs.io/) to create test objects:
@@ -256,6 +334,31 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_addres
 
 # Run standalone behavior tests (Python 3.12 compatible)
 python apps/common/behaviors/tests/test_behaviors.py
+
+# Run tests with verbose output
+DJANGO_SETTINGS_MODULE=settings pytest -v
+
+# Run tests with detailed error output
+DJANGO_SETTINGS_MODULE=settings pytest -vxs
+```
+
+### Targeted Test Execution
+
+```bash
+# Run all tests for a specific app
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/
+
+# Run all model tests
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/
+
+# Run tests matching a keyword
+DJANGO_SETTINGS_MODULE=settings pytest -k "user"
+
+# Skip specific test categories
+DJANGO_SETTINGS_MODULE=settings pytest -k "not browser and not integration"
+
+# Run tests in parallel (speeds up execution)
+DJANGO_SETTINGS_MODULE=settings pytest -xvs -n auto
 ```
 
 ### Coverage Commands
@@ -269,6 +372,25 @@ DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/
 
 # Generate XML coverage report (for CI)
 DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:apps/common/tests/coverage.xml
+
+# Generate coverage report for specific module
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_user*.py --cov=apps.common.models.user --cov-report=term-missing
+```
+
+### Debugging Test Failures
+
+```bash
+# Show detailed output for failing tests
+DJANGO_SETTINGS_MODULE=settings pytest -vxs
+
+# Stop on first failing test
+DJANGO_SETTINGS_MODULE=settings pytest -xvs --exitfirst
+
+# Only run previously failed tests
+DJANGO_SETTINGS_MODULE=settings pytest --failed-first
+
+# Enable debug logging during tests
+DJANGO_SETTINGS_MODULE=settings pytest --log-cli-level=DEBUG
 ```
 
 ## Mocking
@@ -298,7 +420,48 @@ class EmailServiceTestCase(TestCase):
         self.assertEqual(kwargs['json']['to'], 'user@example.com')
 ```
 
-## Common Pitfalls
+### End-to-End Tests
+
+End-to-end tests simulate real user interactions with the application through an actual browser. They're particularly valuable for testing HTMX interactions and complex user flows.
+
+```python
+# Example browser-based test using browser-use and Playwright
+@browser_test
+@asyncio_mark
+class AccountSettingsBrowserTestCase(TestCase):
+    """Tests for account settings using browser automation."""
+    
+    async def test_update_profile_browser(self, page):
+        """Test updating profile information using a real browser."""
+        # Check if server is running
+        if not await self.is_server_running():
+            pytest.skip("Django server not running")
+        
+        # Login
+        login_success = await self.login_user(page)
+        assert login_success, "Login failed"
+        
+        # Navigate to settings page and interact with it
+        await page.goto(f"{self.server_url}/account/settings")
+        await page.fill('input[name="first_name"]', 'Updated')
+        await page.fill('input[name="last_name"]', 'FromBrowser')
+        
+        # Take screenshot for debugging
+        await self.take_screenshot(page, "settings_filled.png")
+        
+        # Submit the form
+        await page.click('button[type="submit"]')
+        
+        # Verify success
+        page_content = await page.content()
+        assert "success" in page_content.lower()
+```
+
+For detailed conventions on writing end-to-end tests, see [E2E_TESTING.md](E2E_TESTING.md).
+
+## Common Pitfalls and Solutions
+
+### General Issues
 
 1. **Database Leakage**: Ensure tests clean up after themselves to avoid test interdependence
 2. **Slow Tests**: Minimize database calls; use setUpTestData for class-level fixtures
@@ -306,6 +469,109 @@ class EmailServiceTestCase(TestCase):
 4. **Insufficient Coverage**: Ensure all edge cases are covered
 5. **Overlooking Permissions**: For views and API endpoints, test different permission scenarios
 6. **Timezone Issues**: Be explicit about datetime comparisons and aware of timezone settings
+   - Use timezone.now() instead of naive datetime objects
+   - Consider using filter_warnings in pyproject.toml for persistent warnings
+7. **Browser Dependency**: For end-to-end tests, remember they depend on a running server
+8. **URL Name Changes**: Using URL names with reverse() instead of hardcoded paths prevents tests from breaking when URLs change
+9. **Over-reliance on E2E Tests**: Use them for integration points, not for testing every bit of functionality
+
+### Common Test Failures and Solutions
+
+#### 1. Database Integrity Errors (UniqueViolation)
+
+**Problem**: Tests fail with `IntegrityError: duplicate key value violates unique constraint`
+
+**Solution**: Always use unique identifiers in test data, especially for User objects:
+
+```python
+import uuid
+
+def setUp(self):
+    """Set up test data with unique identifiers."""
+    # Generate a unique username to avoid UniqueViolation errors
+    unique_username = f"testuser_{uuid.uuid4().hex[:8]}"
+    self.user = User.objects.create_user(
+        username=unique_username,
+        email=f"{unique_username}@example.com",
+        password="password123",
+    )
+```
+
+#### 2. Missing Model Fields
+
+**Problem**: Tests fail with `AttributeError: 'X' object has no attribute 'Y'`
+
+**Solution**: Ensure models maintain database compatibility even when refactoring:
+
+```python
+# Maintain database compatibility with explicit comments
+class User(AbstractUser):
+    # Fields kept for database compatibility - use with caution
+    # To be removed with proper migration
+    legacy_field = models.CharField(max_length=255, blank=True, default="")
+```
+
+#### 3. Incorrect Mock Setup
+
+**Problem**: Mocked functionality doesn't behave as expected
+
+**Solution**: Use proper mock setup with side_effect or return_value:
+
+```python
+from unittest import mock
+
+# Use PropertyMock for properties
+with mock.patch.object(User, 'property_name', 
+                      new_callable=mock.PropertyMock) as mock_prop:
+    mock_prop.return_value = expected_value
+    
+    # For exceptions
+    mock_prop.side_effect = Exception("Test exception")
+```
+
+#### 4. Broken Test Isolation
+
+**Problem**: Tests pass when run individually but fail when run as part of a suite
+
+**Solution**: 
+- Ensure setUp/tearDown properly cleanup
+- Use TestCase.setUpTestData for immutable fixtures
+- Use UUIDs for unique identifiers
+- Reset mocks between tests
+
+```python
+@classmethod
+def setUpTestData(cls):
+    """Set up data shared across all test methods."""
+    # Create shared test data that won't be modified by tests
+    cls.shared_data = {"constants": "value"}
+
+def setUp(self):
+    """Set up fresh data for each test."""
+    self.unique_id = uuid.uuid4().hex
+    self.patcher = mock.patch('path.to.dependency')
+    self.mock_dependency = self.patcher.start()
+    
+def tearDown(self):
+    """Clean up after each test."""
+    self.patcher.stop()
+    # Clear any created test data if needed
+```
+
+#### 5. Model Property Test Failures
+
+**Problem**: Model property tests fail even though the property looks correct
+
+**Solution**: Check default values and database constraints, ensure properties handle edge cases:
+
+```python
+@property
+def full_name(self):
+    """Returns the full name, gracefully handling empty fields."""
+    if not self.first_name and not self.last_name:
+        return ""
+    return f"{self.first_name or ''} {self.last_name or ''}".strip()
+```
 
 ## Best Practices
 
@@ -316,5 +582,22 @@ class EmailServiceTestCase(TestCase):
 5. **Test Edge Cases**: Consider boundary values and special cases
 6. **Follow AAA Pattern**: Arrange, Act, Assert - keep these sections clear and separate
 7. **Parameterize Similar Tests**: Use `pytest.mark.parametrize` for testing multiple similar cases
+8. **Layer Your Tests**: Use a combination of fast unit tests and more comprehensive E2E tests
+9. **Duplicate Critical Tests**: Test critical paths with both Django TestCase and browser-use for maximum confidence
+10. **Test HTMX Interactions**: Use browser-use for testing HTMX behavior that can't be tested with standard Django tests
+
+## Choosing Between Browser and Django TestCase
+
+| Feature | Django TestCase | Browser-Use/Playwright |
+|---------|----------------|------------------------|
+| Speed | Fast | Slow |
+| Setup Complexity | Simple | Complex (requires running server) |
+| Dependencies | Minimal | Multiple (browser-use, playwright, etc.) |
+| HTMX Testing | Limited | Comprehensive |
+| Visual Verification | None | Screenshots |
+| Form Interactions | Basic | Advanced (clicks, typing, etc.) |
+| JS Dependency | Cannot test JS | Can test JS-dependent features |
+| Reliability | Highly reliable | More prone to timing/environment issues |
+| Recommended For | Unit testing, basic form submission | Complex user flows, HTMX, visual testing |
 
 By following these testing conventions, you'll ensure maintainable, reliable tests that provide confidence in the codebase.

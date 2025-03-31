@@ -25,8 +25,48 @@
 
 {% block title %}Home{% endblock %}
 
-{% block content %}
-  {# Main content area for the home page #}
-  <h1 class="text-3xl font-bold text-center">Welcome to Django Project Template</h1>
+{% block main_header %}
+  <h1 class="text-3xl font-bold tracking-tight text-navy-600">Welcome to Django Project Template</h1>
+{% endblock %}
 
+{% block content %}
+  <div class="bg-white shadow rounded-lg p-6 mt-4">
+    
+    {% if user.is_authenticated %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div class="border border-gray-200 rounded-lg p-4">
+          <h2 class="text-xl font-semibold text-navy-700 mb-3">Your Team</h2>
+          <p class="text-gray-600 mb-3">Access your team workspace</p>
+          {% if user.teams.exists %}
+          <a href="{% url 'public:team-list' %}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+            View Team
+          </a>
+          {% else %}
+          <p class="text-gray-500 text-sm">Teams are managed in the admin site</p>
+          {% endif %}
+        </div>
+        
+        <div class="border border-gray-200 rounded-lg p-4">
+          <h2 class="text-xl font-semibold text-navy-700 mb-3">Your Tasks</h2>
+          <p class="text-gray-600 mb-3">Manage your to-do items</p>
+          <a href="{% url 'public:todo-list' %}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+            View Tasks
+          </a>
+        </div>
+      </div>
+    {% else %}
+      <div class="text-center mt-6">
+        <p class="text-gray-600 mb-4">Sign in to get started with your workspace</p>
+        <a href="{% url 'public:account-login' %}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+          Login
+        </a>
+      </div>
+    {% endif %}
+  </div>
 {% endblock content %}
+
+{% block main_footer %}
+  <div class="text-center py-6 text-sm text-gray-500">
+<!--    Main Content Related Footer Things-->
+  </div>
+{% endblock %}

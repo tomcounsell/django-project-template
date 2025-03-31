@@ -22,6 +22,19 @@ button, a {
     transition-duration: 150ms;
 }
 
+/* HTMX animations */
+tr {
+    transition-property: opacity, max-height, background-color;
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
+}
+
+.htmx-removing {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
 /* Modal Size Variants */
 .max-w-sm {
     max-width: 24rem;

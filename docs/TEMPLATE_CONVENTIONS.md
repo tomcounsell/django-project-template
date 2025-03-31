@@ -2,6 +2,8 @@
 
 This document outlines the conventions and best practices for templates in this Django project.
 
+> **TIP:** Visit the UI Component Examples page at `/ui/examples/` to see a live demonstration of all available components.
+
 ## Base Templates
 
 The project uses two primary base templates:
@@ -63,6 +65,81 @@ The `templates/layout/` directory contains layout elements that make up the page
 - `messages/` - Notification/toast templates
 - `nav/` - Navigation components like navbar parts and account menu
 
+## Design System and Color Palette
+
+The project uses a minimalist design system with a focused color palette:
+
+### Color System
+- **Primary**: Deep navy blue from the theme palette:
+  - `navy-900: #0a192f` - Primary buttons, footer background
+  - `navy-800: #112240` - Button hover states
+  - `navy-700: #1d3557` - Borders, focus rings, secondary accents
+- **Accent**: Yellow (`accent: #ffd404`) used sparingly for important highlights and decorative elements
+- **Grayscale**: Consistent gray shades for UI elements and text:
+  - `gray-900` through `gray-700`: Primary and secondary text
+  - `gray-600` through `gray-400`: Tertiary text, icons, and disabled states
+  - `gray-300` through `gray-100`: Borders, dividers, and background variations
+  - `gray-50`: Very light background for secondary content areas
+- **Feedback**: Standard semantic colors for system feedback:
+  - Red: Errors and destructive actions
+  - Green: Success and completion states
+  - Yellow: Warnings and attention states
+
+### Standardized UI Elements
+
+#### Buttons
+- **Primary Buttons**:
+  ```html
+  class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm 
+  font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none 
+  focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+  ```
+
+- **Secondary/Gray Buttons**:
+  ```html
+  class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm 
+  font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none 
+  focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+  ```
+
+#### Links
+- **Standard Links**: `class="text-navy-700 hover:text-navy-900"`
+- **Subtle Links**: `class="text-gray-600 hover:text-navy-700 hover:underline"`
+
+#### Cards/Panels
+- **Standard Card**: `class="bg-white shadow rounded-lg p-6"`
+- **Bordered Card**: `class="bg-white shadow rounded-lg overflow-hidden"` with inner container `class="border-l-4 border-navy-700 p-6"`
+
+#### Form Elements
+- **Form Layout**: Use `space-y-6` for vertical spacing and `grid` for multi-column layouts
+- **Form Groups**: Apply consistent spacing with `class="mb-4"` or `class="space-y-2"`
+- **Form Labels**: `class="block text-sm font-medium text-gray-700 mb-2"`
+- **Form Inputs**: `class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm"`
+
+#### Badges/Pills
+- **Status Badges**: `class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-navy-100 text-navy-800"`
+- **Alternative Badges**: Use gray-scale for neutral states and standard semantic colors for others
+
+### Design Principles
+- **Minimalist**: Clean layouts with ample white space
+- **Focused**: Clear hierarchy and limited color usage
+- **Consistent**: Uniform spacing, typography, and interaction patterns
+- **Accessible**: High contrast text and clear interactive elements
+
+### Icons
+- Font Awesome is used for all icons throughout the application
+- Use `fas` prefix for solid icons (e.g. `<i class="fas fa-user"></i>`)
+- Use `far` prefix for regular icons (e.g. `<i class="far fa-circle"></i>`)
+- Use `fab` prefix for brand icons (e.g. `<i class="fab fa-github"></i>`)
+- Add `fa-fw` class for fixed-width icons to ensure proper alignment
+- Use `fa-lg`, `fa-2x`, etc. for larger icons when needed
+
+### Page Structure Conventions
+- Use `container mx-auto px-4 py-8` for main page containers
+- Page titles with `text-2xl font-bold text-gray-900` and `mb-6`
+- Section headers with `text-xl font-semibold text-gray-900 mb-4`
+- Component headers with `text-lg font-medium text-gray-900 mb-4`
+
 ## Component System
 
 Reusable UI components are organized in `templates/components/`:
@@ -75,13 +152,94 @@ Reusable UI components are organized in `templates/components/`:
 
 Components extend from `components/_component_base.html` which provides basic structure and utility blocks.
 
+### UI Component Examples
+
+A live, interactive showcase of all available UI components is available at `/ui/examples/` or by clicking the "UI Components" link in the footer. This page demonstrates:
+
+- Form components (text inputs, textareas, checkboxes, selects, radio buttons, buttons)
+- Card layouts
+- Modal dialogs
+- List displays
+- Common UI elements (notifications, error messages)
+
+Use this page as a reference when implementing interfaces to ensure consistent design across the application.
+
+The examples page demonstrates the following standards:
+- Proper page container and layout structure
+- Standard headings and typography hierarchy
+- Button styles for primary and secondary actions
+- Card/panel layouts with consistent styling
+- Form element styling and organization
+- Consistent use of navy and grayscale color palette
+- Modal component usage and styling
+- Status badges and indicators
+
+Access this resource at `/ui/examples/` to see live implementations of all styled components.
+
 ### Form Components
 
 Form components provide consistent styling and error handling:
 
 ```html
-{% include "components/forms/text_input.html" with field=form.username %}
-{% include "components/forms/checkbox.html" with field=form.accept_terms %}
+<!-- Basic Input -->
+<div class="sm:col-span-3">
+  <label for="id_first_name" class="block text-sm font-medium text-gray-700">
+    First Name
+  </label>
+  <div class="mt-1">
+    <input type="text" name="first_name" id="id_first_name" value="{{ value|default:'' }}" 
+      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+  </div>
+  {% if errors %}
+    <p class="mt-2 text-sm text-red-600">{{ errors.0 }}</p>
+  {% endif %}
+</div>
+
+<!-- Form Buttons -->
+{% include "components/forms/form_buttons.html" with submit_text="Save Changes" %}
+```
+
+### Button Styles
+
+The project uses consistent button styling:
+
+```html
+<!-- Primary Button -->
+<button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+  Primary Action
+</button>
+
+<!-- Secondary Button -->
+<button type="button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-500">
+  Secondary Action
+</button>
+```
+
+### Toast Notifications
+
+Toast notifications use color-coded borders and icons:
+
+```html
+<div class="rounded-lg shadow-lg overflow-hidden bg-white border-l-4 border-green-500">
+  <div class="p-4 flex items-start">
+    <!-- Icon -->
+    <div class="flex-shrink-0 mr-3">
+      <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <!-- Content -->
+    <div class="flex-1">
+      <p class="text-sm text-gray-800">Operation successful!</p>
+    </div>
+    <!-- Close Button -->
+    <button class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-none">
+      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+</div>
 ```
 
 ### Modal System

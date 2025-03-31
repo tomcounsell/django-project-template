@@ -4,7 +4,7 @@ This document outlines the conventions and best practices for Django views in th
 
 ## View Classes
 
-The project provides several specialized view classes to handle different types of requests and rendering needs. These are located in the `apps.public.helpers` package.
+The project provides several specialized view classes to handle different types of requests and rendering needs. These are located in the `apps.public.helpers` package. These reusable Django view classes and mixins are designed to simplify common view patterns, particularly for HTMX integration and team/user session management.
 
 ### 1. MainContentView
 
@@ -34,16 +34,16 @@ Specialized view for HTMX requests with support for out-of-band (OOB) updates, U
 ```python
 from apps.public.helpers import HTMXView, TeamSessionMixin
 
-class TeamDashboardComponent(TeamSessionMixin, HTMXView):
-    template_name = "components/team_dashboard.html"
+class UserProfileComponent(HTMXView):
+    template_name = "components/user_profile.html"
     oob_templates = {
         "sidebar": "components/common/sidebar.html",
         "messages": "layout/messages/toast.html"
     }
-    push_url = "/team/dashboard"
+    push_url = "/user/profile"
     
     def get(self, request, *args, **kwargs):
-        self.context["stats"] = get_team_stats(self.team)
+        self.context["user_data"] = get_user_data(request.user)
         return self.render(request)
 ```
 
@@ -104,6 +104,11 @@ Examples:
 - Use `HTMXView` for HTMX-specific components and interactions
 - Use Django's generic class-based views for simple CRUD operations
 - Add `TeamSessionMixin` when team context is needed
+
+### Import Guidelines
+
+- Import these components from `apps.public.helpers` (not from the views directory)
+- Example: `from apps.public.helpers import MainContentView, HTMXView, TeamSessionMixin`
 
 ### 2. Context Handling
 

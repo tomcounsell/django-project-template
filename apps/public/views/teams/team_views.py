@@ -18,7 +18,7 @@ from apps.public.views.helpers.main_content_view import MainContentView
 
 
 class TeamListView(LoginRequiredMixin, MainContentView, ListView):
-    """View for listing teams that the user belongs to."""
+    """View for showing the user's team or redirecting to the team detail page."""
     
     model = Team
     template_name = 'teams/team_list.html'
@@ -27,6 +27,24 @@ class TeamListView(LoginRequiredMixin, MainContentView, ListView):
     def get_queryset(self):
         """Return only teams that the user is a member of."""
         return self.request.user.teams.all().order_by('name')
+    
+    def get(self, request, *args, **kwargs):
+        """Handle GET request - redirect to team detail if user has a team."""
+        user_teams = self.get_queryset()
+        
+        # If user has no teams, show empty team list
+        if not user_teams.exists():
+            return super().get(request, *args, **kwargs)
+            
+        # If user has exactly one team, redirect to that team's detail page
+        if user_teams.count() == 1:
+            team = user_teams.first()
+            return redirect('public:team-detail', team_slug=team.slug)
+            
+        # If multiple teams (admin use case), redirect to the first team
+        # This assumes admins will use the admin interface to manage multiple teams
+        team = user_teams.first()
+        return redirect('public:team-detail', team_slug=team.slug)
     
     def get_context_data(self, **kwargs):
         """Add additional context data for team list."""
@@ -58,6 +76,14 @@ class TeamCreateView(LoginRequiredMixin, MainContentView, CreateView):
     template_name = 'teams/team_form.html'
     fields = ['name', 'description']
     success_url = reverse_lazy('public:team-list')
+    
+    def get(self, request, *args, **kwargs):
+        """Check if user already belongs to a team before showing the form."""
+        # If user already has a team, redirect them to their team
+        if request.user.teams.exists():
+            messages.info(request, "You are already a member of a team.")
+            return redirect('public:team-list')
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         """Add form title to context."""
@@ -103,6 +129,16 @@ class TeamDetailView(LoginRequiredMixin, MainContentView, DetailView):
     def get_queryset(self):
         """Return only teams that the user is a member of."""
         return self.request.user.teams.all()
+    
+    def get(self, request, *args, **kwargs):
+        """Handle GET request - check if user is on the team."""
+        try:
+            team = self.get_queryset().get(slug=self.kwargs.get('team_slug'))
+        except Team.DoesNotExist:
+            messages.error(request, "You are not a member of that team.")
+            return redirect('public:team-list')
+            
+        return super().get(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         """Add team members to context."""

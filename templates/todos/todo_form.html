@@ -2,11 +2,14 @@
 
 {% block title %}{{ form_title }}{% endblock %}
 
+{% block main_header %}
+  <h1 class="text-3xl font-bold tracking-tight text-navy-600">{{ form_title }}</h1>
+{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">{{ form_title }}</h1>
-    <a href="{% url 'public:todo-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded">
+    <div class="flex-1"></div>
+    <a href="{% url 'public:todo-list' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
       Back to List
     </a>
   </div>
@@ -15,114 +18,34 @@
     <form method="post" action="{{ form_submit_url }}" class="p-6">
       {% csrf_token %}
 
-      {% if form.errors %}
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">
-                Please correct the errors below.
-              </h3>
-              <div class="text-sm text-red-700">
-                {{ form.non_field_errors }}
-              </div>
-            </div>
-          </div>
-        </div>
+      {% if form.non_field_errors %}
+        {% include "components/forms/form_errors.html" with form=form title="Please correct the errors below." %}
       {% endif %}
 
       <div class="grid grid-cols-1 gap-6">
-        <div>
-          <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-            Title *
-          </label>
-          {{ form.title }}
-          {% if form.title.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
-          {% endif %}
-        </div>
+        {% include "components/forms/text_input.html" with field=form.title %}
+        
+        {% include "components/forms/textarea.html" with field=form.description %}
 
-        <div>
-          <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          {{ form.description }}
-          {% if form.description.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
-          {% endif %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% include "components/forms/select.html" with field=form.priority %}
+          {% include "components/forms/select.html" with field=form.category %}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="{{ form.priority.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Priority *
-            </label>
-            {{ form.priority }}
-            {% if form.priority.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ form.priority.errors.0 }}</p>
-            {% endif %}
-          </div>
-
-          <div>
-            <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Category *
-            </label>
-            {{ form.category }}
-            {% if form.category.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ form.category.errors.0 }}</p>
-            {% endif %}
-          </div>
+          {% include "components/forms/select.html" with field=form.status %}
+          {% include "components/forms/select.html" with field=form.assignee %}
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Status *
-            </label>
-            {{ form.status }}
-            {% if form.status.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
-            {% endif %}
-          </div>
-
-          <div>
-            <label for="{{ form.assignee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Assignee
-            </label>
-            {{ form.assignee }}
-            {% if form.assignee.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ form.assignee.errors.0 }}</p>
-            {% endif %}
-          </div>
-        </div>
-
-        <div>
-          <label for="{{ form.due_at.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-            Due Date
-          </label>
-          {{ form.due_at }}
-          {% if form.due_at.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ form.due_at.errors.0 }}</p>
-          {% endif %}
-          <p class="mt-1 text-xs text-gray-500">
-            Leave empty if there's no specific due date.
-          </p>
-        </div>
+        {% include "components/forms/text_input.html" with field=form.due_at input_type="date" help_text="Leave empty if there's no specific due date." %}
       </div>
 
-      <div class="mt-6 flex justify-end">
-        <a href="{% url 'public:todo-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded mr-2">
-          Cancel
-        </a>
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-          Save
-        </button>
-      </div>
+      {% url 'public:todo-list' as todo_list_url %}
+      {% if form.instance.id %}
+        {% include "components/forms/form_buttons.html" with submit_text="Save" submit_icon="edit" cancel_url=cancel_url|default:todo_list_url cancel_text="Cancel" %}
+      {% else %}
+        {% include "components/forms/form_buttons.html" with submit_text="Create" submit_icon="create" cancel_url=cancel_url|default:todo_list_url cancel_text="Cancel" %}
+      {% endif %}
     </form>
   </div>
-</div>
 {% endblock %}

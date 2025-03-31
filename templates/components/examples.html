@@ -1,0 +1,854 @@
+{% extends "base.html" %}
+
+{% comment %}
+  Component Examples Page
+  ======================
+  
+  Purpose:
+  Demonstrates all available UI components in the project with examples and usage notes.
+  This page serves as both documentation and a visual reference.
+  
+  Sections:
+  1. Form Components
+  2. Card Components
+  3. Modal Components
+  4. List Components
+  5. Common Components
+  6. Layout Elements
+{% endcomment %}
+
+{% block title %}UI Component Examples{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">UI Component Examples</h1>
+    <p class="text-gray-600 mt-2">
+      This page demonstrates all available UI components with usage examples.
+      Use these components to maintain consistent design across the application.
+    </p>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="bg-white shadow rounded-lg p-6 mb-8">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Contents</h2>
+    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <li><a href="#form-components" class="text-navy-700 hover:text-navy-900">Form Components</a></li>
+      <li><a href="#card-components" class="text-navy-700 hover:text-navy-900">Card Components</a></li>
+      <li><a href="#modal-components" class="text-navy-700 hover:text-navy-900">Modal Components</a></li>
+      <li><a href="#list-components" class="text-navy-700 hover:text-navy-900">List Components</a></li>
+      <li><a href="#common-components" class="text-navy-700 hover:text-navy-900">Common Components</a></li>
+      <li><a href="#layout-elements" class="text-navy-700 hover:text-navy-900">Layout Elements</a></li>
+    </ul>
+  </div>
+
+  <!-- Section: Form Components -->
+  <section id="form-components" class="mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Form Components</h2>
+    <p class="text-gray-600 mb-6">Reusable form elements for consistent user input experiences</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Text Input -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Text Input</h3>
+        <div class="mb-4">
+          <label for="example-text-input" class="block text-gray-700 font-semibold mb-2">
+            Username <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="example-text-input" 
+            value=""
+            placeholder="johndoe"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+          <p class="text-gray-500 text-sm mt-1">Choose a unique username</p>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/text_input.html" with field=form.username &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Textarea -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Textarea</h3>
+        <div class="mb-4">
+          <label for="example-textarea" class="block text-gray-700 font-semibold mb-2">
+            Bio
+          </label>
+          <textarea 
+            id="example-textarea" 
+            placeholder="Tell us about yourself"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 min-h-[100px]"
+          ></textarea>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/textarea.html" with field=form.bio &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Checkbox -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Checkbox</h3>
+        <div class="mb-4">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input 
+                id="example-checkbox" 
+                type="checkbox" 
+                class="focus:ring-navy-500 h-4 w-4 text-navy-600 border-gray-300 rounded"
+              >
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="example-checkbox" class="font-medium text-gray-700">
+                Subscribe to newsletter
+              </label>
+              <p class="text-gray-500">Get the latest updates directly to your inbox</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/checkbox.html" with field=form.subscribe &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Select -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Select</h3>
+        <div class="mb-4">
+          <label for="example-select" class="block text-gray-700 font-semibold mb-2">
+            Country
+          </label>
+          <select 
+            id="example-select" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="">Select a country</option>
+            <option value="us">United States</option>
+            <option value="ca">Canada</option>
+            <option value="uk">United Kingdom</option>
+            <option value="au">Australia</option>
+          </select>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/select.html" with field=form.country &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Radio Set -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Radio Set</h3>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold mb-2">
+            Notification Preference
+          </label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <input 
+                id="example-radio-1" 
+                type="radio" 
+                name="notification-pref"
+                value="email"
+                class="focus:ring-navy-500 h-4 w-4 text-navy-600 border-gray-300"
+              >
+              <label for="example-radio-1" class="ml-3 block text-sm font-medium text-gray-700">
+                Email
+              </label>
+            </div>
+            <div class="flex items-center">
+              <input 
+                id="example-radio-2" 
+                type="radio" 
+                name="notification-pref"
+                value="sms"
+                class="focus:ring-navy-500 h-4 w-4 text-navy-600 border-gray-300"
+              >
+              <label for="example-radio-2" class="ml-3 block text-sm font-medium text-gray-700">
+                SMS
+              </label>
+            </div>
+            <div class="flex items-center">
+              <input 
+                id="example-radio-3" 
+                type="radio" 
+                name="notification-pref"
+                value="none"
+                class="focus:ring-navy-500 h-4 w-4 text-navy-600 border-gray-300"
+              >
+              <label for="example-radio-3" class="ml-3 block text-sm font-medium text-gray-700">
+                None
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/radio_set.html" with field=form.notification_preference &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Standard Buttons -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Standard Buttons</h3>
+        <div class="mb-4">
+          <p class="text-gray-600 mb-4">Standard button styles with icons:</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Primary Actions</h4>
+              <div class="flex flex-wrap gap-3">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  Create
+                </button>
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                  </svg>
+                  Edit
+                </button>
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  Save
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Secondary Actions</h4>
+              <div class="flex flex-wrap gap-3">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                  Back
+                </button>
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                  </svg>
+                  Cancel
+                </button>
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                  </svg>
+                  Reset
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Danger Actions</h4>
+              <div class="flex flex-wrap gap-3">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  Delete
+                </button>
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  Delete Permanently
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">Success Actions</h4>
+              <div class="flex flex-wrap gap-3">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-green-300 shadow-sm text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  Approve
+                </button>
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                  <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  Publish
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Small Action Buttons -->
+          <div class="mt-6">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Small Action Buttons</h4>
+            <p class="text-gray-600 mb-4">Compact button styles with subtle colors for secondary actions:</p>
+            
+            <div class="flex flex-wrap gap-3 mb-4">
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                </svg>
+                Add
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 focus:outline-none focus:ring-1 focus:ring-blue-300">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                </svg>
+                Edit
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 focus:outline-none focus:ring-1 focus:ring-green-300">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Approve
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 focus:outline-none focus:ring-1 focus:ring-red-300">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Delete
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 focus:outline-none focus:ring-1 focus:ring-yellow-300">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Warn
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 focus:outline-none focus:ring-1 focus:ring-purple-300">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                  <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"></path>
+                </svg>
+                Archive
+              </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-3 mb-4">
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-gray-300">
+                View
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 focus:outline-none focus:ring-1 focus:ring-blue-300">
+                Preview
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 focus:outline-none focus:ring-1 focus:ring-green-300">
+                Publish
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 focus:outline-none focus:ring-1 focus:ring-red-300">
+                Remove
+              </button>
+              <button class="inline-flex items-center text-xs px-2 py-1 rounded bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 focus:outline-none focus:ring-1 focus:ring-yellow-300">
+                Flag
+              </button>
+            </div>
+            
+            <div class="flex flex-wrap gap-3 mb-4">
+              <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-gray-50 text-gray-700 border border-gray-200">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Info
+              </span>
+              <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path>
+                </svg>
+                Active
+              </span>
+              <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Done
+              </span>
+              <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                Error
+              </span>
+              <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-yellow-50 text-yellow-700 border border-yellow-200">
+                <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Pending
+              </span>
+            </div>
+          </div>
+        
+          <div class="mt-6">
+            <h4 class="text-sm font-medium text-gray-700 mb-2">Button Styles</h4>
+            <div class="bg-gray-100 p-4 rounded">
+              <pre class="text-xs overflow-x-auto">
+&lt;!-- Standard button with icon --&gt;
+&lt;button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm 
+text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none 
+focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"&gt;
+  &lt;svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20"&gt;
+    &lt;!-- icon path here --&gt;
+  &lt;/svg&gt;
+  Button Text
+&lt;/button&gt;
+
+&lt;!-- Small action button --&gt;
+&lt;button class="inline-flex items-center text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 
+border border-blue-200 hover:bg-blue-100 focus:outline-none focus:ring-1 focus:ring-blue-300"&gt;
+  &lt;svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20"&gt;
+    &lt;!-- icon path here --&gt;
+  &lt;/svg&gt;
+  Action
+&lt;/button&gt;
+
+&lt;!-- Small tag/badge --&gt;
+&lt;span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-50 
+text-green-700 border border-green-200"&gt;
+  &lt;svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20"&gt;
+    &lt;!-- icon path here --&gt;
+  &lt;/svg&gt;
+  Status
+&lt;/span&gt;
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Form Buttons -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Form Buttons</h3>
+        <div class="mb-4">
+          <div class="mt-6 flex justify-end items-center space-x-4">
+            <a href="#" 
+              class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+              <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+              </svg>
+              Cancel
+            </a>
+            <button type="button" 
+                    class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+              <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Save
+            </button>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/form_buttons.html" with submit_text="Save" cancel_url=back_url &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Form Errors -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Form Errors</h3>
+        <div class="mb-4">
+          <div class="rounded-md bg-red-50 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  There were errors with your submission
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>Email is already in use</li>
+                    <li>Password must be at least 8 characters</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/forms/form_errors.html" with errors=form.non_field_errors &#37;}</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Card Components -->
+  <section id="card-components" class="mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Card Components</h2>
+    <p class="text-gray-600 mb-6">Containers for related content with consistent styling</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Team Card -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Team Card</h3>
+        <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+          <div class="team-card">
+            <div class="card-header bg-gray-50 p-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold">Engineering Team</h3>
+              <span class="card-meta text-sm text-gray-500">Created Jan 15, 2025</span>
+            </div>
+            
+            <div class="card-body p-4">
+              <p class="team-description mb-4">Backend and infrastructure engineering team responsible for core services.</p>
+              
+              <div class="team-stats flex space-x-6 text-sm">
+                <div class="stat-item">
+                  <span class="stat-label text-gray-500">Members</span>
+                  <span class="stat-value block font-semibold">12</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label text-gray-500">Projects</span>
+                  <span class="stat-value block font-semibold">5</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer bg-gray-50 p-4 border-t border-gray-200 flex justify-between items-center">
+              <a 
+                href="#" 
+                class="text-navy-700 hover:text-navy-900 hover:underline"
+              >
+                View Details
+              </a>
+              
+              <button 
+                class="px-3 py-1 bg-navy-600 hover:bg-navy-700 text-white text-sm rounded-md"
+              >
+                Join Team
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/cards/card_team.html" with team=team &#37;}</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Modal Components -->
+  <section id="modal-components" class="mb-16">
+    <div class="border-l-4 border-accent pl-4 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Modal Components</h2>
+      <p class="text-gray-600">Dialog components for user interactions and confirmations</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Basic Modal Example (triggers) -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Modal Trigger Examples</h3>
+        <p class="text-gray-600 mb-4">Click the buttons below to open different modal types:</p>
+        
+        <div class="flex flex-wrap gap-4">
+          <button
+            class="px-4 py-2 rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+            hx-get="/modals/content-example/"
+            hx-target="#primary-modal-container"
+            hx-swap="innerHTML"
+          >
+            Content Modal
+          </button>
+          
+          <button
+            class="px-4 py-2 rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            hx-get="/modals/confirm-example/"
+            hx-target="#primary-modal-container"
+            hx-swap="innerHTML"
+          >
+            Confirm Modal
+          </button>
+          
+          <button
+            class="px-4 py-2 rounded-md text-white bg-navy-800 hover:bg-navy-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+            hx-get="/modals/form-example/"
+            hx-target="#primary-modal-container"
+            hx-swap="innerHTML"
+          >
+            Form Modal
+          </button>
+        </div>
+        
+        <div class="mt-4 text-sm text-gray-500">
+          <p>The following modals are available:</p>
+          <ul class="list-disc pl-5 mt-2 space-y-1">
+            <li><code>modal_content.html</code> - For displaying information</li>
+            <li><code>modal_confirm.html</code> - For asking confirmation</li>
+            <li><code>modal_form.html</code> - For forms in a modal</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Modal Template Structure -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Modal Structure</h3>
+        <div class="bg-gray-100 p-4 rounded-md">
+          <pre class="text-xs overflow-x-auto">
+&lt;!-- Content Modal Example --&gt;
+{&#37; extends "components/modals/modal_content.html" &#37;}
+{&#37; with 
+  modal_id="example-modal"
+  modal_title="Information"
+  modal_size="md"
+&#37;}
+{&#37; block content_block &#37;}
+  &lt;p&gt;Your content here...&lt;/p&gt;
+{&#37; endblock &#37;}
+{&#37; endwith &#37;}
+
+&lt;!-- Confirm Modal Example --&gt;
+{&#37; extends "components/modals/modal_confirm.html" &#37;}
+{&#37; with 
+  modal_title="Confirm Action"
+  message="Are you sure you want to proceed?"
+  confirm_url="/path/to/confirm"
+  icon="warning"
+&#37;}
+{&#37; endblock &#37;}
+{&#37; endwith &#37;}
+
+&lt;!-- Form Modal Example --&gt;
+{&#37; extends "components/modals/modal_form.html" &#37;}
+{&#37; with 
+  modal_title="Edit Profile"
+  submit_url="/api/profile"
+  submit_text="Save Changes"
+&#37;}
+{&#37; block form_extra_fields &#37;}
+  &lt;!-- Additional form content --&gt;
+{&#37; endblock &#37;}
+{&#37; endwith &#37;}
+          </pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: List Components -->
+  <section id="list-components" class="mb-16">
+    <div class="border-l-4 border-accent pl-4 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">List Components</h2>
+      <p class="text-gray-600">Components for displaying collections of items</p>
+    </div>
+    
+    <div class="grid grid-cols-1 gap-8">
+      <!-- Team Members List -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Team Members List</h3>
+        <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+          <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Team Members (3)</h3>
+          </div>
+          <ul class="divide-y divide-gray-200">
+            <li class="p-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-navy-100 rounded-full flex items-center justify-center text-navy-800 font-semibold">JS</div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900">John Smith</p>
+                  <p class="text-sm text-gray-500">john@example.com</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Admin</span>
+                <button class="text-gray-400 hover:text-red-500 focus:outline-none">
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+              </div>
+            </li>
+            <li class="p-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-navy-100 rounded-full flex items-center justify-center text-navy-800 font-semibold">SD</div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900">Sara Davis</p>
+                  <p class="text-sm text-gray-500">sara@example.com</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Member</span>
+                <button class="text-gray-400 hover:text-red-500 focus:outline-none">
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+              </div>
+            </li>
+            <li class="p-4 flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-navy-100 rounded-full flex items-center justify-center text-navy-800 font-semibold">MJ</div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900">Michael Johnson</p>
+                  <p class="text-sm text-gray-500">michael@example.com</p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Member</span>
+                <button class="text-gray-400 hover:text-red-500 focus:outline-none">
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/lists/list_team_members.html" with members=team.members.all team=team can_remove=True &#37;}</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Common Components -->
+  <section id="common-components" class="mb-16">
+    <div class="border-l-4 border-accent pl-4 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Common Components</h2>
+      <p class="text-gray-600">Utility components used throughout the application</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Notification Toast -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Notification Toast</h3>
+        <div class="mb-4">
+          <!-- Success Toast -->
+          <div class="rounded-lg shadow-lg overflow-hidden bg-white border-l-4 border-green-500 mb-4">
+            <div class="p-4 flex items-start">
+              <!-- Icon -->
+              <div class="flex-shrink-0 mr-3">
+                <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <!-- Content -->
+              <div class="flex-1">
+                <p class="text-sm text-gray-800">Operation successful!</p>
+              </div>
+              <!-- Close Button -->
+              <button class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-none">
+                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Error Toast -->
+          <div class="rounded-lg shadow-lg overflow-hidden bg-white border-l-4 border-red-500">
+            <div class="p-4 flex items-start">
+              <!-- Icon -->
+              <div class="flex-shrink-0 mr-3">
+                <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <!-- Content -->
+              <div class="flex-1">
+                <p class="text-sm text-gray-800">An error occurred. Please try again.</p>
+              </div>
+              <!-- Close Button -->
+              <button class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-none">
+                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/common/notification_toast.html" with message="Your message" type="success" &#37;}</code>
+        </div>
+      </div>
+      
+      <!-- Error Message -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Error Message</h3>
+        <div class="mb-4">
+          <div class="bg-red-50 border-l-4 border-red-500 p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">Error 404</h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <p>The page you requested could not be found.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-500">
+          Include with: <code>{&#37; include "components/common/error_message.html" with title="Error 404" message="The page you requested could not be found." &#37;}</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Layout Elements -->
+  <section id="layout-elements" class="mb-16">
+    <div class="border-l-4 border-accent pl-4 mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Layout Elements</h2>
+      <p class="text-gray-600">Components that make up the page structure</p>
+    </div>
+    
+    <div class="grid grid-cols-1 gap-8">
+      <!-- Layout Structure -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Layout Structure</h3>
+        <div class="bg-gray-100 p-4 rounded-md overflow-x-auto">
+          <pre class="text-xs">
+&lt;!-- Base Structure --&gt;
+{&#37; extends "base.html" &#37;}
+
+{&#37; block title &#37;}Page Title{&#37; endblock &#37;}
+
+{&#37; block content &#37;}
+  &lt;!-- Main content --&gt;
+{&#37; endblock &#37;}
+
+&lt;!-- With Sidebar --&gt;
+{&#37; extends "base.html" &#37;}
+
+{&#37; block title &#37;}Page with Sidebar{&#37; endblock &#37;}
+
+{&#37; block content_width &#37;}8{&#37; endblock &#37;}
+{&#37; block sidebar_enabled &#37;}True{&#37; endblock &#37;}
+
+{&#37; block content &#37;}
+  &lt;!-- Main content --&gt;
+{&#37; endblock &#37;}
+
+{&#37; block aside &#37;}
+  &lt;!-- Sidebar content --&gt;
+{&#37; endblock &#37;}
+
+&lt;!-- For HTMX Partial Updates --&gt;
+{&#37; extends "partial.html" &#37;}
+
+{&#37; block content &#37;}
+  &lt;!-- Partial content for HTMX updates --&gt;
+{&#37; endblock &#37;}
+          </pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documentation Resources -->
+  <section class="mb-16">
+    <div class="bg-gray-50 rounded-lg shadow-sm p-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Component Documentation Resources</h2>
+      <p class="text-gray-700 mb-4">For more information about using these components, refer to the following resources:</p>
+      
+      <ul class="list-disc pl-5 space-y-2 text-gray-700">
+        <li><a href="/docs/TEMPLATE_CONVENTIONS.md" class="text-navy-700 hover:text-navy-900 hover:underline hover:decoration-accent hover:decoration-2">Template Conventions</a> - Learn about template structure and best practices</li>
+        <li><a href="/docs/VIEW_CONVENTIONS.md" class="text-navy-700 hover:text-navy-900 hover:underline hover:decoration-accent hover:decoration-2">View Conventions</a> - Understand how views interact with templates</li>
+        <li><a href="/docs/MODAL_PATTERNS.md" class="text-navy-700 hover:text-navy-900 hover:underline hover:decoration-accent hover:decoration-2">Modal Patterns</a> - Advanced usage of the modal system</li>
+        <li><a href="/docs/HTMX_INTEGRATION.md" class="text-navy-700 hover:text-navy-900 hover:underline hover:decoration-accent hover:decoration-2">HTMX Integration</a> - Using components with HTMX</li>
+      </ul>
+    </div>
+  </section>
+</div>
+{% endblock content %}

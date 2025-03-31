@@ -61,6 +61,9 @@ class MainContentView(ErrorHandlingMixin, View):
 
     def post(self, request, *args, **kwargs):
         raise NotImplementedError("POST method must be implemented in subclass.")
+        
+    def delete(self, request, *args, **kwargs):
+        raise NotImplementedError("DELETE method must be implemented in subclass.")
 
     def render(
         self,

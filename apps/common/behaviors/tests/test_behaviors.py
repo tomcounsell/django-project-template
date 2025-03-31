@@ -1,296 +1,402 @@
+#!/usr/bin/env python
 """
-Standalone test file for behavior mixins that doesn't require Django setup.
+Standalone behavior tests for Python 3.12 compatibility.
 
-Run with: python test_behaviors.py
+This module provides a way to test behavior mixins without relying on Django's ORM systems.
+It focuses on testing the pure Python aspects of the behavior mixins, which makes
+it compatible with Python 3.12 and later.
 
-For coverage report: python -m coverage run test_behaviors.py && python -m coverage report
+Only the direct tests (non-database) are included here for compatibility.
+
+Usage:
+    python apps/common/behaviors/tests/test_behaviors.py
+
+This script can be run directly without the Django environment for quick behavior validation.
 """
+
+import os
+import sys
 import unittest
-from datetime import datetime, timedelta
 from unittest import mock
+import datetime
+from pathlib import Path
 
+# Add the project root to the Python path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
-# Mock Django models and utilities
-class MockModel:
-    pass
+# Set up minimal Django environment settings for imports to work
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
+# Setup Django
+import django
+django.setup()
 
-class MockField:
-    def __init__(self, **kwargs):
-        self.kwargs = kwargs
+# Create a timezone replacement for tests without requiring Django
+class MockTimezone:
+    @staticmethod
+    def now():
+        return datetime.datetime.now()
 
-
-class MockQuerySet:
-    def __init__(self, items=None):
-        self.items = items or []
+# Only import behaviors after setting up the environment
+try:
+    from apps.common.behaviors.timestampable import Timestampable
+    from apps.common.behaviors.authorable import Authorable
+    from apps.common.behaviors.publishable import Publishable
+    from apps.common.behaviors.expirable import Expirable
+    from apps.common.behaviors.permalinkable import Permalinkable, pre_save_slug
+    from apps.common.behaviors.locatable import Locatable
+    from apps.common.behaviors.annotatable import Annotatable
     
-    def count(self):
-        return len(self.items)
-    
-    def filter(self, **kwargs):
-        return self
-
-
-# Mock Django environment
-models = mock.MagicMock()
-models.Model = MockModel
-models.DateTimeField = MockField
-models.ManyToManyField = MockField
-models.SlugField = MockField
-models.ForeignKey = MockField
-models.BooleanField = MockField
-models.FloatField = MockField
-
-timezone = mock.MagicMock()
-timezone.now = mock.MagicMock(return_value=datetime(2023, 1, 1, 12, 0, 0))
-
-# Define behavior classes with mocked Django dependencies
-class Annotatable:
-    notes = MockQuerySet()
-    
-    @property
-    def has_notes(self):
-        return True if self.notes.count() else False
-
-
-class Authorable:
-    author = None
-    is_author_anonymous = False
-    authored_at = None
-    
-    @property
-    def author_display_name(self):
-        if self.is_author_anonymous:
-            return "Anonymous"
-        else:
-            return str(self.author)
-
-
-class Expirable:
-    valid_at = None
-    expired_at = None
-    
-    @property
-    def is_expired(self) -> bool:
-        return True if self.expired_at and self.expired_at < timezone.now() else False
-    
-    @is_expired.setter
-    def is_expired(self, value: bool):
-        if value is True:
-            self.expired_at = timezone.now()
-        elif value is False and self.is_expired:
-            self.expired_at = None
-
-
-class Permalinkable:
-    slug = None
-    
-    def get_url_kwargs(self, **kwargs):
-        kwargs.update(getattr(self, "url_kwargs", {}))
-        return kwargs
-
-
-class Publishable:
-    published_at = None
-    edited_at = None
-    unpublished_at = None
-    
-    @property
-    def is_published(self):
-        now = timezone.now()
-        if (
-            self.published_at
-            and self.published_at < now
-            and not (self.unpublished_at and self.unpublished_at < now)
-        ):
-            return True
-        else:
-            return False
-    
-    @is_published.setter
-    def is_published(self, value):
-        if value and not self.is_published:
-            self.unpublished_at = None
-            self.published_at = timezone.now()
-        elif not value and self.is_published:
-            self.unpublished_at = timezone.now()
-    
-    def publish(self):
-        self.is_published = True
-    
-    def unpublish(self):
-        self.is_published = False
-
-
-class Timestampable:
-    created_at = None
-    modified_at = None
-
-
-class Locatable:
-    address = None
-    longitude = None
-    latitude = None
-
-
-# Test cases
-class TestAnnotatable(unittest.TestCase):
-    def test_has_notes_property_returns_false_when_no_notes(self):
-        obj = Annotatable()
-        obj.notes = MockQuerySet()
-        self.assertFalse(obj.has_notes)
-
-    def test_has_notes_property_returns_true_when_notes_exist(self):
-        obj = Annotatable()
-        obj.notes = MockQuerySet(['note1'])
-        self.assertTrue(obj.has_notes)
-
-
-class TestAuthorable(unittest.TestCase):
-    def test_author_display_name_returns_user_string(self):
-        obj = Authorable()
-        obj.author = "Test User"
-        obj.is_author_anonymous = False
-        self.assertEqual(obj.author_display_name, "Test User")
+    # If Django is available, use its timezone
+    try:
+        from django.utils import timezone
+    except ImportError:
+        # Otherwise use our mock timezone
+        timezone = MockTimezone
         
-    def test_anonymous_author_returns_anonymous(self):
-        obj = Authorable()
-        obj.author = "Test User"
+    # Mock slugify function if Django is not available
+    try:
+        from django.utils.text import slugify
+    except ImportError:
+        def slugify(text):
+            """Simple slugify implementation for testing without Django."""
+            return text.lower().replace(' ', '-')
+except ImportError as e:
+    print(f"Error importing behavior mixins: {e}")
+    print("This test requires the Django project to be in the Python path.")
+    sys.exit(1)
+
+
+# Direct Tests (Without Database)
+class TestTimestampableDirect(unittest.TestCase):
+    """Direct tests for Timestampable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Timestampable, 'created_at'))
+        self.assertTrue(hasattr(Timestampable, 'modified_at'))
+        
+        # Get the field instances directly from the model's _meta
+        created_at_field = Timestampable._meta.get_field('created_at')
+        modified_at_field = Timestampable._meta.get_field('modified_at')
+        
+        self.assertEqual(created_at_field.auto_now_add, True)
+        self.assertEqual(modified_at_field.auto_now, True)
+
+
+class TestAuthorableDirect(unittest.TestCase):
+    """Direct tests for Authorable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Authorable, 'author'))
+        self.assertTrue(hasattr(Authorable, 'is_author_anonymous'))
+        self.assertTrue(hasattr(Authorable, 'authored_at'))
+    
+    def test_author_display_name(self):
+        """Test author_display_name property."""
+        obj = mock.MagicMock(spec=Authorable)
+        
+        # Test anonymous
         obj.is_author_anonymous = True
-        self.assertEqual(obj.author_display_name, "Anonymous")
-
-
-class TestExpirable(unittest.TestCase):
-    def setUp(self):
-        self.now = datetime(2023, 1, 1, 12, 0, 0)
-        timezone.now.return_value = self.now
-
-    def test_is_expired_false_when_expired_at_is_none(self):
-        obj = Expirable()
-        obj.expired_at = None
-        self.assertFalse(obj.is_expired)
-
-    def test_is_expired_true_when_expired_at_in_past(self):
-        obj = Expirable()
-        obj.expired_at = self.now - timedelta(days=1)
-        self.assertTrue(obj.is_expired)
-
-    def test_is_expired_false_when_expired_at_in_future(self):
-        obj = Expirable()
-        obj.expired_at = self.now + timedelta(days=1)
-        self.assertFalse(obj.is_expired)
-
-    def test_set_is_expired_to_true_updates_expired_at(self):
-        obj = Expirable()
-        obj.expired_at = None
-        obj.is_expired = True
-        self.assertEqual(obj.expired_at, self.now)
-
-    def test_set_is_expired_to_false_clears_expired_at_if_expired(self):
-        obj = Expirable()
-        obj.expired_at = self.now - timedelta(days=1)
-        self.assertTrue(obj.is_expired)
+        obj.author = None
+        self.assertEqual(Authorable.author_display_name.fget(obj), "Anonymous")
         
-        obj.is_expired = False
-        self.assertIsNone(obj.expired_at)
+        # Test with author
+        obj.is_author_anonymous = False
+        mock_author = mock.MagicMock()
+        mock_author.__str__.return_value = "Test User"
+        obj.author = mock_author
+        self.assertEqual(Authorable.author_display_name.fget(obj), "Test User")
+
+
+class TestPublishableDirect(unittest.TestCase):
+    """Direct tests for Publishable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Publishable, 'published_at'))
+        self.assertTrue(hasattr(Publishable, 'edited_at'))
+        self.assertTrue(hasattr(Publishable, 'unpublished_at'))
+    
+    def test_is_published_property(self):
+        """Test is_published property."""
+        obj = mock.MagicMock(spec=Publishable)
         
-    def test_set_is_expired_to_false_does_nothing_if_not_expired(self):
-        obj = Expirable()
-        obj.expired_at = None
-        self.assertFalse(obj.is_expired)
-        
-        obj.is_expired = False
-        self.assertIsNone(obj.expired_at)
-
-
-class TestLocatable(unittest.TestCase):
-    def test_model_attributes(self):
-        obj = Locatable()
-        self.assertIsNone(obj.address)
-        self.assertIsNone(obj.longitude)
-        self.assertIsNone(obj.latitude)
-
-
-class TestPermalinkable(unittest.TestCase):
-    def test_get_url_kwargs_with_no_kwargs(self):
-        obj = Permalinkable()
-        kwargs = obj.get_url_kwargs()
-        self.assertEqual(kwargs, {})
-        
-    def test_get_url_kwargs_with_additional_kwargs(self):
-        obj = Permalinkable()
-        kwargs = obj.get_url_kwargs(id=1)
-        self.assertEqual(kwargs, {'id': 1})
-        
-    def test_get_url_kwargs_with_url_kwargs_attribute(self):
-        obj = Permalinkable()
-        obj.url_kwargs = {'test': 'value'}
-        kwargs = obj.get_url_kwargs(id=1)
-        self.assertEqual(kwargs, {'id': 1, 'test': 'value'})
-
-
-class TestPublishable(unittest.TestCase):
-    def setUp(self):
-        self.now = datetime(2023, 1, 1, 12, 0, 0)
-        timezone.now.return_value = self.now
-
-    def test_is_published_false_by_default(self):
-        obj = Publishable()
-        self.assertFalse(obj.is_published)
-
-    def test_is_published_true_when_published_in_past(self):
-        obj = Publishable()
-        obj.published_at = self.now - timedelta(days=1)
-        self.assertTrue(obj.is_published)
-
-    def test_is_published_false_when_published_in_future(self):
-        obj = Publishable()
-        obj.published_at = self.now + timedelta(days=1)
-        self.assertFalse(obj.is_published)
-
-    def test_is_published_false_when_unpublished(self):
-        obj = Publishable()
-        obj.published_at = self.now - timedelta(days=2)
-        obj.unpublished_at = self.now - timedelta(days=1)
-        self.assertFalse(obj.is_published)
-
-    def test_set_is_published_to_true_updates_published_at(self):
-        obj = Publishable()
+        # Not published
         obj.published_at = None
-        obj.is_published = True
-        self.assertEqual(obj.published_at, self.now)
-        self.assertIsNone(obj.unpublished_at)
-
-    def test_set_is_published_to_false_updates_unpublished_at(self):
-        obj = Publishable()
-        obj.published_at = self.now - timedelta(days=1)
-        self.assertTrue(obj.is_published)
+        obj.unpublished_at = None
+        self.assertFalse(Publishable.is_published.fget(obj))
         
-        obj.is_published = False
-        self.assertEqual(obj.unpublished_at, self.now)
-
+        # Published
+        obj.published_at = timezone.now()
+        obj.unpublished_at = None
+        self.assertTrue(Publishable.is_published.fget(obj))
+        
+        # Published then unpublished
+        obj.published_at = timezone.now()
+        obj.unpublished_at = timezone.now() + datetime.timedelta(days=1)
+        self.assertFalse(Publishable.is_published.fget(obj))
+    
+    def test_is_published_setter(self):
+        """Test is_published setter method."""
+        obj = mock.MagicMock(spec=Publishable)
+        
+        # Test publishing directly - simplify to direct testing
+        # First call - setting to True when unpublished
+        obj.published_at = None
+        obj.unpublished_at = timezone.now()
+        obj.is_published = False # Mock property return
+        
+        # Call the setter directly
+        Publishable.is_published.fset(obj, True)
+        
+        # Verify expected behavior 
+        self.assertIsNone(obj.unpublished_at)
+        self.assertIsNotNone(obj.published_at)
+        
+        # Test unpublishing - setting to False when published
+        obj.published_at = timezone.now() - datetime.timedelta(days=1)
+        obj.unpublished_at = None
+        obj.is_published = True # Mock property return
+        
+        # Call the setter directly
+        Publishable.is_published.fset(obj, False)
+        
+        # Verify expected behavior
+        self.assertIsNotNone(obj.unpublished_at)
+    
     def test_publish_method(self):
-        obj = Publishable()
-        obj.published_at = None
-        obj.publish()
-        self.assertEqual(obj.published_at, self.now)
-        self.assertIsNone(obj.unpublished_at)
-
-    def test_unpublish_method(self):
-        obj = Publishable()
-        obj.published_at = self.now - timedelta(days=1)
-        self.assertTrue(obj.is_published)
+        """Test publish method."""
+        # Use mock objects instead of subclassing Django models
+        obj = mock.MagicMock(spec=Publishable)
         
-        obj.unpublish()
-        self.assertEqual(obj.unpublished_at, self.now)
+        # Track if is_published was set to True
+        was_published = [False]
+        
+        # Mock the is_published setter
+        def mock_set_is_published(value):
+            was_published[0] = value
+            
+        # Attach mock setter to the mock object
+        obj.is_published = False
+        type(obj).is_published = mock.PropertyMock(side_effect=mock_set_is_published)
+        
+        # Call the publish method directly
+        Publishable.publish(obj)
+        
+        # Verify the setter was called with True
+        self.assertTrue(was_published[0])
+    
+    def test_unpublish_method(self):
+        """Test unpublish method."""
+        # Use mock objects instead of subclassing Django models
+        obj = mock.MagicMock(spec=Publishable)
+        
+        # Track if is_published was set to False
+        was_unpublished = [True]  # Start as published
+        
+        # Mock the is_published setter
+        def mock_set_is_published(value):
+            was_unpublished[0] = value
+            
+        # Attach mock setter to the mock object
+        obj.is_published = True
+        type(obj).is_published = mock.PropertyMock(side_effect=mock_set_is_published)
+        
+        # Call the unpublish method directly
+        Publishable.unpublish(obj)
+        
+        # Verify the setter was called with False
+        self.assertFalse(was_unpublished[0])
+    
+    def test_publication_status_property(self):
+        """Test publication_status property."""
+        obj = mock.MagicMock(spec=Publishable)
+        
+        # We'll call the method directly, mocking at a different level
+        # Published
+        with mock.patch.object(obj, 'is_published', True, create=True):
+            self.assertEqual(Publishable.publication_status.fget(obj), "Published")
+        
+        # Unpublished
+        with mock.patch.object(obj, 'is_published', False, create=True):
+            obj.published_at = timezone.now()
+            self.assertEqual(Publishable.publication_status.fget(obj), "Unpublished")
+        
+        # Draft
+        with mock.patch.object(obj, 'is_published', False, create=True):
+            obj.published_at = None
+            self.assertEqual(Publishable.publication_status.fget(obj), "Draft")
 
 
-class TestTimestampable(unittest.TestCase):
-    def test_model_attributes(self):
-        obj = Timestampable()
-        self.assertIsNone(obj.created_at)
-        self.assertIsNone(obj.modified_at)
+class TestExpirableDirect(unittest.TestCase):
+    """Direct tests for Expirable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Expirable, 'valid_at'))
+        self.assertTrue(hasattr(Expirable, 'expired_at'))
+    
+    def test_is_expired_property(self):
+        """Test is_expired property."""
+        obj = mock.MagicMock(spec=Expirable)
+        
+        # Not expired
+        obj.expired_at = None
+        self.assertFalse(Expirable.is_expired.fget(obj))
+        
+        # Expired
+        obj.expired_at = timezone.now()
+        self.assertTrue(Expirable.is_expired.fget(obj))
+    
+    def test_is_expired_setter(self):
+        """Test is_expired setter method."""
+        obj = mock.MagicMock(spec=Expirable)
+        
+        # Test setting to expired (True)
+        obj.expired_at = None
+        Expirable.is_expired.fset(obj, True)
+        self.assertIsNotNone(obj.expired_at)
+        
+        # Test setting to not expired (False) when it was expired
+        obj.expired_at = timezone.now()
+        
+        # Mock at the object level, not the property level
+        with mock.patch.object(obj, 'is_expired', True, create=True):
+            Expirable.is_expired.fset(obj, False)
+            self.assertIsNone(obj.expired_at)
+        
+        # Test setting to not expired (False) when it was already not expired
+        obj.expired_at = None
+        
+        with mock.patch.object(obj, 'is_expired', False, create=True):
+            Expirable.is_expired.fset(obj, False)
+            # Should remain None
+            self.assertIsNone(obj.expired_at)
 
 
-if __name__ == '__main__':
+class TestPermalinkableDirect(unittest.TestCase):
+    """Direct tests for Permalinkable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Permalinkable, 'slug'))
+    
+    def test_get_url_kwargs(self):
+        """Test get_url_kwargs method."""
+        obj = mock.MagicMock(spec=Permalinkable)
+        obj.slug = "test-slug"
+        # Add additional kwargs to the get_url_kwargs method
+        result = Permalinkable.get_url_kwargs(obj, slug=obj.slug)
+        self.assertEqual(result, {'slug': 'test-slug'})
+    
+    def test_pre_save_slug_signal_handler(self):
+        """Test pre_save_slug signal handler."""
+        # Use mock objects to simulate models without subclassing Django models
+        
+        # Mock a class that has Permalinkable in its MRO (inherited from)
+        sender = mock.MagicMock()
+        sender.mro.return_value = [mock.MagicMock(), Permalinkable, object]
+        
+        # Mock an instance with a slug_source
+        instance = mock.MagicMock()
+        instance.slug = None
+        instance.slug_source = "Test Title"
+        
+        # Call the pre_save_slug handler
+        pre_save_slug(sender, instance)
+        
+        # Verify slug was set correctly
+        self.assertEqual(instance.slug, slugify("Test Title"))
+        
+        # Test with a non-permalinkable model
+        non_permalinkable_sender = mock.MagicMock()
+        non_permalinkable_sender.mro.return_value = [mock.MagicMock(), object]
+        
+        # Create a mock instance
+        non_permalinkable_instance = mock.MagicMock()
+        non_permalinkable_instance.slug = None
+        
+        # Call the signal handler
+        pre_save_slug(non_permalinkable_sender, non_permalinkable_instance)
+        
+        # Slug should remain unchanged (mock will maintain its configured value)
+        self.assertEqual(non_permalinkable_instance.slug, None)
+
+
+class TestLocatableDirect(unittest.TestCase):
+    """Direct tests for Locatable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Locatable, 'address'))
+        self.assertTrue(hasattr(Locatable, 'longitude'))
+        self.assertTrue(hasattr(Locatable, 'latitude'))
+    
+    def test_has_coordinates_property(self):
+        """Test has_coordinates property."""
+        obj = mock.MagicMock(spec=Locatable)
+        
+        # No coordinates
+        obj.latitude = None
+        obj.longitude = None
+        self.assertFalse(Locatable.has_coordinates.fget(obj))
+        
+        # Only latitude
+        obj.latitude = 45.0
+        obj.longitude = None
+        self.assertFalse(Locatable.has_coordinates.fget(obj))
+        
+        # Only longitude
+        obj.latitude = None
+        obj.longitude = -120.0
+        self.assertFalse(Locatable.has_coordinates.fget(obj))
+        
+        # Both coordinates
+        obj.latitude = 45.0
+        obj.longitude = -120.0
+        self.assertTrue(Locatable.has_coordinates.fget(obj))
+    
+    def test_coordinates_property(self):
+        """Test coordinates property."""
+        obj = mock.MagicMock(spec=Locatable)
+        
+        # No coordinates
+        obj.latitude = None
+        obj.longitude = None
+        
+        # Mock at the object level
+        with mock.patch.object(obj, 'has_coordinates', False, create=True):
+            self.assertIsNone(Locatable.coordinates.fget(obj))
+        
+        # With coordinates
+        obj.latitude = 45.0
+        obj.longitude = -120.0
+        
+        # Mock at the object level
+        with mock.patch.object(obj, 'has_coordinates', True, create=True):
+            coordinates = Locatable.coordinates.fget(obj)
+            self.assertEqual(coordinates, (45.0, -120.0))
+
+
+class TestAnnotatableDirect(unittest.TestCase):
+    """Direct tests for Annotatable without database."""
+    
+    def test_fields(self):
+        """Test the fields are defined correctly."""
+        self.assertTrue(hasattr(Annotatable, 'notes'))
+    
+    def test_has_notes_property(self):
+        """Test has_notes property."""
+        obj = mock.MagicMock(spec=Annotatable)
+        obj.notes.exists.return_value = False
+        self.assertFalse(Annotatable.has_notes.fget(obj))
+        
+        obj.notes.exists.return_value = True
+        self.assertTrue(Annotatable.has_notes.fget(obj))
+
+
+if __name__ == "__main__":
     unittest.main()

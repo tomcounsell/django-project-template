@@ -12,24 +12,33 @@ from django.views import View
 class MainContentView(View):
     """
     Base view class for general views in the project.
+    Implements a standardized block structure for consistent layouts.
     """
 
     url: str = ""
     template_name: Optional[str] = None
+    
+    # Default base templates - don't override these in most cases
+    base_template: str = "base.html"
+    partial_template: str = "partial.html"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # Initialize base context with URL
+        # Initialize base context
         self.context = {
             "is_oob": False,  # templates need to check this
         }
 
     def dispatch(self, request, *args, **kwargs):
-        # Update context with default URL and base template choice
+        # Update context with default URL
         if not self.context.get("url", None):
             self.context["url"] = self.url
-        if not self.context.get("base_template", None):
-            self.context["base_template"] = "_base.html"
+        
+        # Set appropriate base template based on request type
+        if getattr(request, "htmx", False):
+            self.context["base_template"] = self.partial_template
+        else:
+            self.context["base_template"] = self.base_template
 
         self.context["just_logged_in"] = request.session.get("just_logged_in", False)
         return super().dispatch(request, *args, **kwargs)
