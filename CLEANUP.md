@@ -1,14 +1,14 @@
 # Repository Cleanup Guide
 
-This document outlines the cleanup process to make the repository more maintainable and tidy.
+This document outlines how the repository has been cleaned up to make it more maintainable and tidy.
 
 ## 1. Test Runner Consolidation
 
 Three separate test runners have been consolidated into a single unified script:
 
-- `run_htmx_tests.sh`
-- `test.sh` 
-- `run_tests.py`
+- ✅ Removed: `run_htmx_tests.sh`
+- ✅ Removed: `test.sh` 
+- ✅ Removed: `run_tests.py`
 
 **Replaced with**: `test_runner.py`
 
@@ -29,42 +29,31 @@ The consolidated test runner supports all previous functionality with a cleaner 
 ./test_runner.py --coverage --html-report
 ```
 
-## 2. Files to Remove
+## 2. Gitignore Updates
 
-These files are no longer needed and can be safely removed:
+The `.gitignore` file has been updated to better exclude temporary files and directories:
 
-```
-run_htmx_tests.sh
-test.sh
-run_tests.py
-```
+- Test artifacts: `reports/`, `test_reports/`, `test_screenshots/`
+- Development environment: `.venv/`, `venv/`, `.env.*`
+- IDE files: `.idea/`, `.vscode/`, `*.code-workspace`
+- Cache directories: `__pycache__/`, `.mypy_cache/`, `.pytest_cache/`
+- Temporary files: `*.swp`, `*.swo`, `*~`
 
-## 3. Gitignore Updates
+## 3. About pyproject.toml
 
-The `.gitignore-update` file contains additional entries to be added to the main `.gitignore` file.
-This will prevent unnecessary files from being committed to the repository.
+The `pyproject.toml` file serves multiple purposes:
 
-## 4. Temporary Directories to Clean
+1. **Tool Configuration**: Consolidates settings for black, isort, mypy, and pytest
+2. **Dependency Management**: Organizes project dependencies and optional dependency groups
+3. **Project Metadata**: Provides basic project information
 
-These directories should not be in version control:
+While it can be used for packaging, here it primarily serves as a central configuration file, replacing multiple tool-specific config files.
 
-```
-__pycache__/
-.idea/
-.mypy_cache/
-.pytest_cache/
-reports/
-test_reports/
-test_screenshots/
-```
+## 4. Benefits of the Cleanup
 
-They are now properly included in the updated `.gitignore`.
+- ✅ **Simplified Testing**: One consistent interface for all test types
+- ✅ **Reduced Clutter**: Removed redundant scripts 
+- ✅ **Better Ignorables**: Improved .gitignore to prevent committing temporary files
+- ✅ **Clean History**: Future commits will be cleaner with proper ignores
 
-## Implementation Steps
-
-1. Add the new unified test runner: `test_runner.py`
-2. Update the `.gitignore` file with the entries from `.gitignore-update`
-3. Remove redundant test scripts
-4. Add CLEANUP.md to document the changes
-
-These changes will make the repository more maintainable and reduce clutter.
+The repository is now more maintainable with less duplication and better organization.

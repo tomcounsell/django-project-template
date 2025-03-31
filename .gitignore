@@ -120,22 +120,41 @@ ENV/
 
 # generated staticfiles
 staticfiles/
+static/temp/*
 
+# IDE and editor files
 .DS_Store
-
-node_modules/
-*.rdb
 .idea/
+.vscode/
+*.code-workspace
+
+# Node.js
+node_modules/
+
+# Environment files
+.env.local
+.env.*
+!.env.example
 Pipfile
 .gcloudignore
 
+# Database files
 *.dump
+*.rdb
+*.db
+
+# Local settings
 settings/local.py
+
+# Data files
 datasets/
 *.pkl
 *tar..gz
 
-static/temp/*
-.env.local
+# Documentation build
 docs/sphinx_docs/source/*
+
+# Test artifacts
 /test_screenshots
+test_reports/
+reports/
