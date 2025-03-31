@@ -317,7 +317,39 @@ class TeamFactory(factory.django.DjangoModelFactory):
 
 ## Running Tests
 
-### Basic Test Commands
+### Using the Unified Test Runner
+
+The project includes a unified test runner that can run all types of tests:
+
+```bash
+# Run all tests
+./test_runner.py
+
+# Run with coverage
+./test_runner.py --coverage
+
+# Run specific test types
+./test_runner.py --type unit
+./test_runner.py --type e2e
+./test_runner.py --type htmx
+./test_runner.py --type responsive
+
+# Run with HTML coverage report
+./test_runner.py --coverage --html-report
+
+# Run with XML coverage report (for CI)
+./test_runner.py --coverage --xml-report
+
+# Run specific tests by path
+./test_runner.py --path apps/common/tests/test_models/
+
+# Run browser tests in non-headless mode
+./test_runner.py --type e2e --no-headless
+```
+
+### Basic Pytest Commands
+
+If you prefer direct pytest commands:
 
 ```bash
 # Run all tests
@@ -368,10 +400,10 @@ DJANGO_SETTINGS_MODULE=settings pytest -xvs -n auto
 DJANGO_SETTINGS_MODULE=settings pytest --cov=apps
 
 # Generate HTML coverage report
-DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:reports/coverage_html
 
 # Generate XML coverage report (for CI)
-DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:apps/common/tests/coverage.xml
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:reports/coverage.xml
 
 # Generate coverage report for specific module
 DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_user*.py --cov=apps.common.models.user --cov-report=term-missing

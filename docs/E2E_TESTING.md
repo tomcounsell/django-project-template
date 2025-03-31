@@ -68,49 +68,34 @@ python tools/testing/browser_test_runner.py --no-headless apps/public/tests/test
 python tools/testing/browser_test_runner.py --browser firefox apps/public/tests/test_e2e_*.py
 ```
 
-### Unified Test Scripts
+### Unified Test Runner
 
-The project provides several scripts for testing:
-
-1. The `test.sh` script provides a unified interface for general testing:
+The project provides a unified test runner script (`test_runner.py`) that supports all test types:
 
 ```bash
 # Run all tests
-./test.sh
+./test_runner.py
 
 # Run only E2E tests
-./test.sh --type e2e
+./test_runner.py --type e2e
 
-# Run E2E tests with browser automation
-./test.sh --type e2e --browser
+# Run HTMX tests
+./test_runner.py --type htmx
 
-# Run with visible browser
-./test.sh --type e2e --browser --no-headless
+# Run responsive design tests
+./test_runner.py --type responsive
+
+# Run with visible browser (non-headless mode)
+./test_runner.py --type e2e --no-headless
 
 # Generate coverage report
-./test.sh --type all --coverage
+./test_runner.py --coverage
 
 # Generate HTML coverage report
-./test.sh --type all --html-report
+./test_runner.py --coverage --html-report
 ```
 
-2. The `run_htmx_tests.sh` script specifically for HTMX and responsive design tests:
-
-```bash
-# Run all HTMX and responsive tests
-./run_htmx_tests.sh
-
-# Run only HTMX tests
-./run_htmx_tests.sh --type htmx
-
-# Run only responsive design tests
-./run_htmx_tests.sh --type responsive
-
-# Run with visible browser
-./run_htmx_tests.sh --no-headless
-```
-
-This script automatically starts a Django development server if one isn't already running, which is required for browser-based tests.
+The test runner automatically ensures Django settings are properly configured and creates necessary directories for reports.
 
 ## Writing E2E Tests
 
