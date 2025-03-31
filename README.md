@@ -1,8 +1,8 @@
 
 # Django Project Template
 
-[![Test and Coverage](https://github.com/yourusername/django-project-template/actions/workflows/test.yml/badge.svg)](https://github.com/yourusername/django-project-template/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/yourusername/django-project-template/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/django-project-template)
+[![Test and Coverage](https://github.com/valorcl/django-project-template/actions/workflows/test.yml/badge.svg)](https://github.com/valorcl/django-project-template/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/valorcl/django-project-template/branch/main/graph/badge.svg)](https://codecov.io/gh/valorcl/django-project-template)
 
 Technologies: Python, Django, PostgreSQL, 
 API: Django Rest Framework
@@ -52,6 +52,32 @@ Templates are stored in a single location:
 
 For detailed template conventions, naming patterns, and best practices, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md).
 
+## Testing
+
+This project follows a comprehensive testing approach with 100% test coverage for core components:
+
+- **Testing Framework**: pytest with pytest-django
+- **Test Organization**:
+  - Model tests: `apps/{app_name}/tests/test_models/`
+  - View tests: `apps/{app_name}/tests/test_views/`
+  - Behavior tests: `apps/common/tests/test_behaviors.py` and standalone tests
+  - Integration tests: `apps/{app_name}/tests/test_*.py`
+- **Test Coverage**: 100% for behavior mixins and core models
+
+Running tests:
+```bash
+# Run all tests
+DJANGO_SETTINGS_MODULE=settings pytest
+
+# Run with coverage
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps
+
+# Run specific test modules
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_behaviors.py
+```
+
+For detailed testing conventions and practices, see [Test Conventions](docs/TEST_CONVENTIONS.md).
+
 - `apps/`: Contains all applications that make up the project.
 - `settings/`: Configuration settings for the entire Django project.
 - `static/`: All static files (CSS, JS, images) for the project. No app-specific static directories.
@@ -89,7 +115,7 @@ The `apps/common/behaviors/` directory contains reusable model mixins that add c
 - **Locatable**: Adds location data with address and coordinate fields
 - **Annotatable**: Provides notes relationship management
 
-All behavior mixins have comprehensive test coverage (see `apps/common/tests/test_behaviors/`).
+All behavior mixins have 100% test coverage (see `apps/common/tests/test_behaviors.py` and standalone tests in `apps/common/behaviors/tests/test_behaviors.py` for Python 3.12 compatibility).
 
 
 - `apps/common/`: common app
