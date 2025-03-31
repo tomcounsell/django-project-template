@@ -2,6 +2,7 @@
 # Django Project Template
 
 [![Test and Coverage](https://github.com/tomcounsell/django-project-template/actions/workflows/test.yml/badge.svg)](https://github.com/tomcounsell/django-project-template/actions/workflows/test.yml)
+[![Documentation](https://github.com/tomcounsell/django-project-template/actions/workflows/docs.yml/badge.svg)](https://tomcounsell.github.io/django-project-template/)
 [![codecov](https://codecov.io/gh/tomcounsell/django-project-template/branch/main/graph/badge.svg)](https://codecov.io/gh/tomcounsell/django-project-template)
 
 Technologies: Python, Django, PostgreSQL, 
@@ -25,6 +26,10 @@ Planned Integrations:
 - For contribution guidelines, see [Contributing Guide](docs/CONTRIBUTING.md)
 - For current tasks and priorities, see [TODO List](docs/TODO.md)
 - For development practices, see [Development Guide](CLAUDE.md)
+
+### Documentation
+- **API and Code Documentation**: [API and Code Documentation](https://tomcounsell.github.io/django-project-template/) (generated with Sphinx and hosted on GitHub Pages)
+- Documentation is automatically built and published from the main branch
 
 ### Coding Standards
 - For model conventions and best practices, see [Model Conventions](docs/MODEL_CONVENTIONS.md)
