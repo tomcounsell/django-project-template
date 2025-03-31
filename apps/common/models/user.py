@@ -16,7 +16,7 @@ class User(AbstractUser, Timestampable):
     Enhanced User model that extends Django's AbstractUser.
     
     This model adds additional fields and functionality for the application,
-    including phone number, biography, verification flags, and Stripe integration.
+    including phone number, biography, verification flags
     
     Inherits from Timestampable to automatically track created_at and modified_at timestamps.
     
@@ -26,21 +26,57 @@ class User(AbstractUser, Timestampable):
         is_email_verified (bool): Whether the user's email has been verified
         is_beta_tester (bool): Whether the user is part of the beta program
         agreed_to_terms_at (datetime): When the user agreed to the terms of service
-        stripe_customer_id (str): Stripe customer ID for payment processing
-        has_payment_method (bool): Whether the user has added a payment method
     """
     phone_number = models.CharField(max_length=15, default="", blank=True)
     biography = models.TextField(_("Biography"), blank=True, default="")
-
     # birthdate = models.DateField(null=True, blank=True)
-
     is_email_verified = models.BooleanField(default=False)
     is_beta_tester = models.BooleanField(default=False)
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
-
-    # Stripe integration
-    stripe_customer_id = models.CharField(max_length=255, blank=True, default="")
-    has_payment_method = models.BooleanField(default=False)
+    
+    @property
+    def has_active_subscription(self) -> bool:
+        """
+        Check if the user has any active subscription.
+        
+        Returns:
+            bool: True if the user has at least one active subscription, False otherwise
+        """
+        return len(self.active_subscriptions) > 0
+    
+    @property
+    def active_subscriptions(self) -> QuerySet:
+        """
+        Get all active subscriptions for the user.
+        
+        Returns:
+            QuerySet: A queryset of all active or trialing subscriptions
+        """
+        from apps.common.models import Subscription
+        active_statuses = ['active', 'trialing']
+        return self.subscriptions.filter(status__in=active_statuses)
+    
+    def get_active_subscription(self) -> Optional['Subscription']:
+        """
+        Get the first active subscription for the user.
+        
+        Returns:
+            Optional[Subscription]: The first active subscription, or None if there are none
+        """
+        subs = self.active_subscriptions
+        return subs.first() if subs.exists() else None
+    
+    def get_payment_history(self, limit: int = 10) -> QuerySet:
+        """
+        Get the payment history for the user.
+        
+        Args:
+            limit (int): Maximum number of payments to return
+            
+        Returns:
+            QuerySet: A queryset of payments, ordered by creation date (descending)
+        """
+        return self.payments.all().order_by('-created_at')[:limit]
 
     # MODEL PROPERTIES
     @property
@@ -98,39 +134,7 @@ class User(AbstractUser, Timestampable):
             self.agreed_to_terms_at = timezone.now()
         elif value is False and self.is_agreed_to_terms:
             self.agreed_to_terms_at = None
-            
-    @property
-    def has_active_subscription(self) -> bool:
-        """
-        Check if the user has an active subscription.
-        
-        Returns:
-            bool: True if the user has an active subscription, False otherwise
-        """
-        return hasattr(self, 'subscriptions') and self.subscriptions.filter(active=True).exists()
 
-    @property
-    def active_subscriptions(self):
-        """
-        Get the user's active subscriptions.
-        
-        Returns:
-            QuerySet: The user's active subscriptions
-        """
-        if not hasattr(self, 'subscriptions'):
-            return []
-            
-        return self.subscriptions.filter(status__in=['active', 'trialing'])
-    
-    @property
-    def has_stripe_customer(self) -> bool:
-        """
-        Check if the user has a Stripe customer ID.
-        
-        Returns:
-            bool: True if the user has a Stripe customer ID, False otherwise
-        """
-        return bool(self.stripe_customer_id)
 
     # MODEL FUNCTIONS
     def __str__(self) -> str:
@@ -160,30 +164,3 @@ class User(AbstractUser, Timestampable):
                 return f"{self.email} (unverified)"
         except Exception:  # Catching specific exceptions is better
             return f"User {self.id}"
-            
-    def get_active_subscription(self):
-        """
-        Get the user's active subscription.
-        
-        Returns:
-            Subscription: The user's active subscription, or None if not found
-        """
-        if not hasattr(self, 'subscriptions'):
-            return None
-            
-        return self.subscriptions.filter(status__in=['active', 'trialing']).first()
-        
-    def get_payment_history(self, limit=10):
-        """
-        Get the user's payment history.
-        
-        Args:
-            limit: Maximum number of payments to return
-            
-        Returns:
-            QuerySet: The user's payment history
-        """
-        if not hasattr(self, 'payments'):
-            return []
-            
-        return self.payments.all()[:limit]

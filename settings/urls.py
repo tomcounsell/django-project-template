@@ -17,20 +17,12 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("", include("apps.public.urls", namespace="public")),
     
-    # API URLs
-    path('api/', include('apps.api.urls')),
+    # API URLs - Removed
+    # path('api/', include('apps.api.urls')),
     
-    # API Schema and Documentation
-    path('api/schema/', get_schema_view(
-        title="Django Project Template API",
-        description="API for Django Project Template",
-        version="1.0.0",
-    ), name='openapi-schema'),
-    
-    path('api/docs/', TemplateView.as_view(
-        template_name='swagger-ui.html',
-        extra_context={'schema_url': 'openapi-schema'}
-    ), name='swagger-ui'),
+    # API Schema and Documentation - Removed
+    # path('api/schema/', get_schema_view(...), name='openapi-schema'),
+    # path('api/docs/', TemplateView.as_view(...), name='swagger-ui'),
 ]
 
 # Admin URL

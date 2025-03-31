@@ -46,6 +46,7 @@ dependencies = [
     "django-widget-tweaks",
     "django-htmx",
     "django-unfold",
+    "selenium",
 ]
 
 [project.optional-dependencies]

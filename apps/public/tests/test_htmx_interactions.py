@@ -589,4 +589,3 @@ class ResponsiveDesignTestCase(E2ETestBase):
             # Close contexts
             await desktop_context.close()
             await mobile_context.close()
-"""

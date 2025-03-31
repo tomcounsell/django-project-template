@@ -334,6 +334,31 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_addres
 
 # Run standalone behavior tests (Python 3.12 compatible)
 python apps/common/behaviors/tests/test_behaviors.py
+
+# Run tests with verbose output
+DJANGO_SETTINGS_MODULE=settings pytest -v
+
+# Run tests with detailed error output
+DJANGO_SETTINGS_MODULE=settings pytest -vxs
+```
+
+### Targeted Test Execution
+
+```bash
+# Run all tests for a specific app
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/
+
+# Run all model tests
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/
+
+# Run tests matching a keyword
+DJANGO_SETTINGS_MODULE=settings pytest -k "user"
+
+# Skip specific test categories
+DJANGO_SETTINGS_MODULE=settings pytest -k "not browser and not integration"
+
+# Run tests in parallel (speeds up execution)
+DJANGO_SETTINGS_MODULE=settings pytest -xvs -n auto
 ```
 
 ### Coverage Commands
@@ -347,6 +372,25 @@ DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/
 
 # Generate XML coverage report (for CI)
 DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:apps/common/tests/coverage.xml
+
+# Generate coverage report for specific module
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_user*.py --cov=apps.common.models.user --cov-report=term-missing
+```
+
+### Debugging Test Failures
+
+```bash
+# Show detailed output for failing tests
+DJANGO_SETTINGS_MODULE=settings pytest -vxs
+
+# Stop on first failing test
+DJANGO_SETTINGS_MODULE=settings pytest -xvs --exitfirst
+
+# Only run previously failed tests
+DJANGO_SETTINGS_MODULE=settings pytest --failed-first
+
+# Enable debug logging during tests
+DJANGO_SETTINGS_MODULE=settings pytest --log-cli-level=DEBUG
 ```
 
 ## Mocking
@@ -415,7 +459,9 @@ class AccountSettingsBrowserTestCase(TestCase):
 
 For detailed conventions on writing end-to-end tests, see [E2E_TESTING.md](E2E_TESTING.md).
 
-## Common Pitfalls
+## Common Pitfalls and Solutions
+
+### General Issues
 
 1. **Database Leakage**: Ensure tests clean up after themselves to avoid test interdependence
 2. **Slow Tests**: Minimize database calls; use setUpTestData for class-level fixtures
@@ -428,6 +474,104 @@ For detailed conventions on writing end-to-end tests, see [E2E_TESTING.md](E2E_T
 7. **Browser Dependency**: For end-to-end tests, remember they depend on a running server
 8. **URL Name Changes**: Using URL names with reverse() instead of hardcoded paths prevents tests from breaking when URLs change
 9. **Over-reliance on E2E Tests**: Use them for integration points, not for testing every bit of functionality
+
+### Common Test Failures and Solutions
+
+#### 1. Database Integrity Errors (UniqueViolation)
+
+**Problem**: Tests fail with `IntegrityError: duplicate key value violates unique constraint`
+
+**Solution**: Always use unique identifiers in test data, especially for User objects:
+
+```python
+import uuid
+
+def setUp(self):
+    """Set up test data with unique identifiers."""
+    # Generate a unique username to avoid UniqueViolation errors
+    unique_username = f"testuser_{uuid.uuid4().hex[:8]}"
+    self.user = User.objects.create_user(
+        username=unique_username,
+        email=f"{unique_username}@example.com",
+        password="password123",
+    )
+```
+
+#### 2. Missing Model Fields
+
+**Problem**: Tests fail with `AttributeError: 'X' object has no attribute 'Y'`
+
+**Solution**: Ensure models maintain database compatibility even when refactoring:
+
+```python
+# Maintain database compatibility with explicit comments
+class User(AbstractUser):
+    # Fields kept for database compatibility - use with caution
+    # To be removed with proper migration
+    legacy_field = models.CharField(max_length=255, blank=True, default="")
+```
+
+#### 3. Incorrect Mock Setup
+
+**Problem**: Mocked functionality doesn't behave as expected
+
+**Solution**: Use proper mock setup with side_effect or return_value:
+
+```python
+from unittest import mock
+
+# Use PropertyMock for properties
+with mock.patch.object(User, 'property_name', 
+                      new_callable=mock.PropertyMock) as mock_prop:
+    mock_prop.return_value = expected_value
+    
+    # For exceptions
+    mock_prop.side_effect = Exception("Test exception")
+```
+
+#### 4. Broken Test Isolation
+
+**Problem**: Tests pass when run individually but fail when run as part of a suite
+
+**Solution**: 
+- Ensure setUp/tearDown properly cleanup
+- Use TestCase.setUpTestData for immutable fixtures
+- Use UUIDs for unique identifiers
+- Reset mocks between tests
+
+```python
+@classmethod
+def setUpTestData(cls):
+    """Set up data shared across all test methods."""
+    # Create shared test data that won't be modified by tests
+    cls.shared_data = {"constants": "value"}
+
+def setUp(self):
+    """Set up fresh data for each test."""
+    self.unique_id = uuid.uuid4().hex
+    self.patcher = mock.patch('path.to.dependency')
+    self.mock_dependency = self.patcher.start()
+    
+def tearDown(self):
+    """Clean up after each test."""
+    self.patcher.stop()
+    # Clear any created test data if needed
+```
+
+#### 5. Model Property Test Failures
+
+**Problem**: Model property tests fail even though the property looks correct
+
+**Solution**: Check default values and database constraints, ensure properties handle edge cases:
+
+```python
+@property
+def full_name(self):
+    """Returns the full name, gracefully handling empty fields."""
+    if not self.first_name and not self.last_name:
+        return ""
+    return f"{self.first_name or ''} {self.last_name or ''}".strip()
+```
 
 ## Best Practices
 

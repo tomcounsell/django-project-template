@@ -3,17 +3,17 @@ Unit tests for the TwilioClient
 """
 import pytest
 from unittest.mock import patch, MagicMock
-from django.test import override_settings
+from django.test import override_settings, SimpleTestCase
 
 from apps.integration.twilio.client import TwilioClient
 
 
 @override_settings(DEBUG=True, TWILIO_ENABLED=True, TWILIO_ACCOUNT_SID="test_sid", 
                   TWILIO_AUTH_TOKEN="test_token", TWILIO_PHONE_NUMBER="+19876543210")
-class TwilioClientDebugModeTestCase:
+class TwilioClientDebugModeTestCase(SimpleTestCase):
     """Test TwilioClient in DEBUG mode"""
     
-    def setup_method(self):
+    def setUp(self):
         self.client = TwilioClient()
         
     def test_send_sms_debug_mode(self):
@@ -43,12 +43,12 @@ class TwilioClientDebugModeTestCase:
 
 @override_settings(DEBUG=False, TWILIO_ENABLED=True, TWILIO_ACCOUNT_SID="test_sid", 
                   TWILIO_AUTH_TOKEN="test_token", TWILIO_PHONE_NUMBER="+19876543210")
-class TwilioClientLiveTestCase:
+class TwilioClientLiveTestCase(SimpleTestCase):
     """Test TwilioClient in live mode with mocked API calls"""
     
-    def setup_method(self):
+    def setUp(self):
         # Create patch for TwilioRestClient
-        self.twilio_client_patcher = patch('apps.integration.twilio.client.TwilioRestClient')
+        self.twilio_client_patcher = patch('twilio.rest.Client')
         self.mock_twilio_client_cls = self.twilio_client_patcher.start()
         self.mock_twilio_client = MagicMock()
         self.mock_twilio_client_cls.return_value = self.mock_twilio_client
@@ -56,7 +56,7 @@ class TwilioClientLiveTestCase:
         # Create the client after patching
         self.client = TwilioClient()
         
-    def teardown_method(self):
+    def tearDown(self):
         self.twilio_client_patcher.stop()
     
     def test_send_sms_success(self):
