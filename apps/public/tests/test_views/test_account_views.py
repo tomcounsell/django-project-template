@@ -88,7 +88,7 @@ class AccountViewsTestCase(TestCase):
         
     def test_settings_view_unauthenticated(self):
         """Test that settings view requires login."""
-        url = reverse('settings')
+        url = reverse('public:account-settings')
         response = self.client.get(url)
         
         # Should redirect to login page
@@ -97,8 +97,8 @@ class AccountViewsTestCase(TestCase):
         
     def test_settings_view_authenticated(self):
         """Test that authenticated users can access settings."""
-        self.client.login(username='testuser', password='testpassword123')
-        url = reverse('settings')
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('public:account-settings')
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
@@ -108,8 +108,8 @@ class AccountViewsTestCase(TestCase):
         
     def test_settings_view_update_user(self):
         """Test updating user settings."""
-        self.client.login(username='testuser', password='testpassword123')
-        url = reverse('settings')
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('public:account-settings')
         
         response = self.client.post(url, {
             'first_name': 'Updated',
@@ -128,8 +128,8 @@ class AccountViewsTestCase(TestCase):
         
     def test_settings_view_password_change(self):
         """Test changing password."""
-        self.client.login(username='testuser', password='testpassword123')
-        url = reverse('settings')
+        self.client.login(username=self.username, password=self.password)
+        url = reverse('public:account-settings')
         
         # This would need the actual PasswordChangeForm fields,
         # which requires the old password and new password twice
@@ -143,7 +143,7 @@ class AccountViewsTestCase(TestCase):
         
         # Verify password was changed by logging in with new password
         self.client.logout()
-        login_success = self.client.login(username='testuser', password='newpassword456')
+        login_success = self.client.login(username=self.username, password='newpassword456')
         self.assertTrue(login_success)
         
     def test_home_view_unauthenticated(self):
