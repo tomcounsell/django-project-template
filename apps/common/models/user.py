@@ -16,7 +16,7 @@ class User(AbstractUser, Timestampable):
     Enhanced User model that extends Django's AbstractUser.
     
     This model adds additional fields and functionality for the application,
-    including phone number, biography, verification flags, and Stripe integration.
+    including phone number, biography, verification flags
     
     Inherits from Timestampable to automatically track created_at and modified_at timestamps.
     
@@ -26,8 +26,6 @@ class User(AbstractUser, Timestampable):
         is_email_verified (bool): Whether the user's email has been verified
         is_beta_tester (bool): Whether the user is part of the beta program
         agreed_to_terms_at (datetime): When the user agreed to the terms of service
-        stripe_customer_id (str): Stripe customer ID for payment processing
-        has_payment_method (bool): Whether the user has a payment method on file
     """
     phone_number = models.CharField(max_length=15, default="", blank=True)
     biography = models.TextField(_("Biography"), blank=True, default="")
@@ -35,22 +33,6 @@ class User(AbstractUser, Timestampable):
     is_email_verified = models.BooleanField(default=False)
     is_beta_tester = models.BooleanField(default=False)
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
-    
-    # Payment fields - kept to maintain database compatibility
-    # To be removed with proper migration
-    stripe_customer_id = models.CharField(max_length=255, blank=True, default="")
-    has_payment_method = models.BooleanField(default=False)
-    
-    # STRIPE-RELATED PROPERTIES
-    @property
-    def has_stripe_customer(self) -> bool:
-        """
-        Check if the user has a Stripe customer ID.
-        
-        Returns:
-            bool: True if the user has a Stripe customer ID, False otherwise
-        """
-        return bool(self.stripe_customer_id)
     
     @property
     def has_active_subscription(self) -> bool:
