@@ -24,8 +24,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install uv
-          ./requirements/install.sh dev
-          pip install black flake8 mypy django-stubs isort
+          # Install directly from requirements files
+          pip install -r requirements/base.lock.txt
+          pip install -r requirements/dev.lock.txt
+          # Install additional linting tools
+          pip install black flake8 mypy django-stubs isort python-dotenv
       
       - name: Check code formatting with Black
         run: black --check .
@@ -55,7 +58,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install uv
-          ./requirements/install.sh dev
+          # Install directly from requirements files
+          pip install -r requirements/base.lock.txt
+          pip install -r requirements/dev.lock.txt
+          # Python-dotenv is a critical dependency
+          pip install python-dotenv
+          # Install security tools
           pip install bandit safety
       
       - name: Check for security vulnerabilities with Bandit
