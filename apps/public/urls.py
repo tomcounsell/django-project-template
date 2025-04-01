@@ -1,24 +1,22 @@
 from django.contrib.auth import views as auth_views
-from django.urls import path
-from django.urls import reverse_lazy
+from django.urls import path, reverse_lazy
 
-from .views import account
-from .views import ComponentExamplesView
-from .views.teams.team_views import (
-    TeamListView,
-    TeamCreateView,
-    TeamDetailView,
-    TeamUpdateView,
-    TeamDeleteView,
-)
+from .views import ComponentExamplesView, account
+from .views.components.oob_examples import urlpatterns as oob_urlpatterns
 from .views.teams.member_views import (
     add_team_member,
     change_member_role,
-    remove_team_member,
     leave_team,
+    remove_team_member,
+)
+from .views.teams.team_views import (
+    TeamCreateView,
+    TeamDeleteView,
+    TeamDetailView,
+    TeamListView,
+    TeamUpdateView,
 )
 from .views.todos import todo_views
-from .views.components.oob_examples import urlpatterns as oob_urlpatterns
 
 app_name = "public"
 

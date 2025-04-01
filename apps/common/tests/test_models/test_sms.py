@@ -1,8 +1,9 @@
+from datetime import datetime
+from unittest.mock import MagicMock, patch
+
 import pytest
 from django.test import TestCase, override_settings
 from django.utils import timezone
-from datetime import datetime
-from unittest.mock import patch, MagicMock
 
 from apps.common.models.sms import SMS
 

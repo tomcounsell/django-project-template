@@ -1,8 +1,8 @@
 from django.test import TestCase
 
-from apps.ai.models.prompt_template import PromptTemplate
-from apps.ai.models.ai_completion import AICompletion
 from apps.ai.models.agent import Agent
+from apps.ai.models.ai_completion import AICompletion
+from apps.ai.models.prompt_template import PromptTemplate
 
 
 class PromptTemplateModelTest(TestCase):

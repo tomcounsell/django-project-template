@@ -14,6 +14,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from apps.common.models import (
+    SMS,
     Address,
     BlogPost,
     City,
@@ -23,7 +24,6 @@ from apps.common.models import (
     Email,
     Image,
     Note,
-    SMS,
     Team,
     TeamMember,
     TodoItem,

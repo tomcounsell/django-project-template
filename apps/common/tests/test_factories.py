@@ -5,30 +5,26 @@ These tests ensure that each factory properly creates model instances
 with sensible defaults and respects custom attributes.
 """
 
-from django.test import TestCase
-
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 
 User = get_user_model()
 
 from apps.common.tests.factories import (
     AddressFactory,
+    BlogPostFactory,
+    CityFactory,
     CountryFactory,
     CurrencyFactory,
     DocumentFactory,
+    EmailFactory,
     ImageFactory,
     NoteFactory,
-    UploadFactory,
-    UserFactory,
-)
-
-from apps.common.tests.factories import (
-    BlogPostFactory,
-    CityFactory,
-    EmailFactory,
     SMSFactory,
     TeamFactory,
     TeamMemberFactory,
+    UploadFactory,
+    UserFactory,
 )
 
 

@@ -5,17 +5,17 @@ This module provides helper functions and utilities for working with browser-use
 and AI-powered browser testing.
 """
 
-import os
-import json
 import asyncio
+import json
+import os
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, Union, Type, cast
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 
 try:
-    from browser_use import Agent, BrowserAgent, use
     import playwright.async_api
+    from browser_use import Agent, BrowserAgent, use
     from playwright.async_api import Browser, BrowserContext, Page
 
     BROWSER_USE_AVAILABLE = True

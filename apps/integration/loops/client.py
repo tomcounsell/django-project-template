@@ -1,10 +1,10 @@
+import logging
 from typing import Optional
 
-from icecream import ic
 import requests
-import logging
+from icecream import ic
 
-from settings import LOOPS_API_KEY, DEBUG
+from settings import DEBUG, LOOPS_API_KEY
 
 logger = logging.getLogger(__name__)
 

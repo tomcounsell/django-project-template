@@ -5,14 +5,14 @@ Custom admin dashboard for the Django project template.
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.utils.html import format_html
 from django.db.models import Count, Sum
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 
-from apps.common.models import Team, TodoItem, Email, SMS, Payment, Subscription, Upload
-from apps.common.admin import MAIN_NAV_MODELS, ADMIN_CATEGORIES
+from apps.common.admin import ADMIN_CATEGORIES, MAIN_NAV_MODELS
+from apps.common.models import SMS, Email, Payment, Subscription, Team, TodoItem, Upload
 
 User = get_user_model()
 

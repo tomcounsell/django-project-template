@@ -2,17 +2,18 @@
 Unit tests for Stripe shortcuts.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.urls import reverse
 
 from apps.common.models import User
 from apps.integration.stripe.shortcuts import (
-    create_checkout_session,
-    create_subscription_checkout,
-    create_customer_from_user,
     cancel_user_subscription,
+    create_checkout_session,
+    create_customer_from_user,
+    create_subscription_checkout,
     handle_webhook_event,
 )
 

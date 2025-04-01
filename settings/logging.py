@@ -5,7 +5,7 @@ Logging configuration settings.
 import logging
 import os
 
-from settings.env import DEBUG, PRODUCTION, STAGE, LOCAL
+from settings.env import DEBUG, LOCAL, PRODUCTION, STAGE
 
 # Default log level based on environment
 if PRODUCTION:

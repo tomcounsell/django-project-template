@@ -1,8 +1,9 @@
 import uuid
-from typing import Optional, Any
+from typing import Any, Optional
 
 from django.db import models
-from apps.common.behaviors import Timestampable, Authorable
+
+from apps.common.behaviors import Authorable, Timestampable
 
 
 class Note(Timestampable, Authorable, models.Model):

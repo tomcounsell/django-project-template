@@ -1,5 +1,5 @@
-from typing import Optional, Dict, Any
 import logging
+from typing import Any, Dict, Optional
 
 from django.conf import settings
 from django.urls import reverse

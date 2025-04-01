@@ -1,10 +1,10 @@
+import logging
 import random
 import string
-import logging
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
-from django.core.cache import cache
 from django.conf import settings
+from django.core.cache import cache
 
 from apps.integration.twilio.shortcuts import (
     send_verification_code,

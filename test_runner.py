@@ -25,10 +25,10 @@ Examples:
     ./test_runner.py --coverage --html-report
 """
 
-import os
-import sys
 import argparse
+import os
 import subprocess
+import sys
 from pathlib import Path
 
 

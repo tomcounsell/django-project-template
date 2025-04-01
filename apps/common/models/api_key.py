@@ -2,7 +2,7 @@ from django.db import models
 from rest_framework_api_key.models import AbstractAPIKey
 
 from apps.common.behaviors import Timestampable
-from apps.common.models import User, Team
+from apps.common.models import Team, User
 
 
 class UserAPIKey(AbstractAPIKey, Timestampable):

@@ -2,9 +2,9 @@
 Tests for the Team model and related functionality.
 """
 
-from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
+from django.test import TestCase
 
 from ..factories import UserFactory
 
@@ -49,7 +49,7 @@ class TeamModelTestCase(TestCase):
 
     def test_team_members(self):
         """Test adding members to a team."""
-        from apps.common.models.team import Team, TeamMember, Role
+        from apps.common.models.team import Role, Team, TeamMember
 
         team = Team.objects.create(
             name="Test Team",
@@ -84,7 +84,7 @@ class TeamModelTestCase(TestCase):
 
     def test_user_teams(self):
         """Test retrieving teams for a user."""
-        from apps.common.models.team import Team, TeamMember, Role
+        from apps.common.models.team import Role, Team, TeamMember
 
         team1 = Team.objects.create(name="Team 1", slug="team-1", is_active=True)
         team2 = Team.objects.create(name="Team 2", slug="team-2", is_active=True)
@@ -112,7 +112,7 @@ class TeamModelTestCase(TestCase):
 
     def test_team_permissions(self):
         """Test team permission checking methods."""
-        from apps.common.models.team import Team, TeamMember, Role
+        from apps.common.models.team import Role, Team, TeamMember
 
         team = Team.objects.create(name="Test Team", slug="test-team", is_active=True)
 
@@ -139,7 +139,7 @@ class TeamModelTestCase(TestCase):
 
     def test_string_representations(self):
         """Test the string representations of Team and TeamMember models."""
-        from apps.common.models.team import Team, TeamMember, Role
+        from apps.common.models.team import Role, Team, TeamMember
 
         team = Team.objects.create(name="Test Team", slug="test-team", is_active=True)
 

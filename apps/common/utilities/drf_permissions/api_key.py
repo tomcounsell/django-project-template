@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 from rest_framework_api_key.permissions import HasAPIKey
-from apps.common.models import UserAPIKey, TeamAPIKey
+
+from apps.common.models import TeamAPIKey, UserAPIKey
 
 
 class HasUserAPIKey(HasAPIKey):

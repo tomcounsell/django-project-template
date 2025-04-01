@@ -7,8 +7,8 @@ from unittest import mock
 
 from django.test import TestCase, override_settings
 
-from ..test_behaviors import TimestampableTest
 from ...models import Upload
+from ..test_behaviors import TimestampableTest
 
 
 class UploadModelTestCase(TimestampableTest, TestCase):

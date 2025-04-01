@@ -1,11 +1,12 @@
 # No need for datetime import as we use timezone.now() instead
 import urllib.request
-from django.utils import timezone
+
 from django.core.mail import EmailMessage
 from django.db import models
+from django.utils import timezone
 
-from apps.common.models.upload import Upload
 from apps.common.behaviors import timestampable
+from apps.common.models.upload import Upload
 
 
 class Email(timestampable.Timestampable, models.Model):

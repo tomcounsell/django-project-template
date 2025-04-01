@@ -1,6 +1,8 @@
-import boto3
-from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET_NAME
 import logging
+
+import boto3
+
+from settings import AWS_ACCESS_KEY_ID, AWS_S3_BUCKET_NAME, AWS_SECRET_ACCESS_KEY
 
 logger = logging.getLogger(__name__)
 

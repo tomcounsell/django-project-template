@@ -7,9 +7,10 @@ including those needed for end-to-end browser testing with browser-use.
 
 import os
 import sys
+
 import pytest
-from django.test import override_settings
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 
 User = get_user_model()
 

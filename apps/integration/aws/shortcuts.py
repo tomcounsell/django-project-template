@@ -6,10 +6,10 @@ pre-signed URLs for direct browser uploads, creating Upload model instances, and
 retrieving uploaded files.
 """
 
-import os
-import mimetypes
 import logging
-from typing import Dict, Any, Optional, List
+import mimetypes
+import os
+from typing import Any, Dict, List, Optional
 
 from django.conf import settings
 from django.urls import reverse

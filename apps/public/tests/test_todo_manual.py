@@ -11,6 +11,7 @@ capturing the screen.
 import os
 import random
 import uuid
+
 import django
 
 # Set up Django environment
@@ -18,6 +19,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
 from django.contrib.auth import get_user_model
+
 from apps.common.models import TodoItem
 
 # Define the screenshot directory

@@ -1,15 +1,16 @@
 import uuid
+
 from django.db import models
 from django.utils.text import slugify
 
 from apps.common.behaviors import (
-    Timestampable,
+    Annotatable,
     Authorable,
-    Publishable,
     Expirable,
     Locatable,
     Permalinkable,
-    Annotatable,
+    Publishable,
+    Timestampable,
 )
 
 

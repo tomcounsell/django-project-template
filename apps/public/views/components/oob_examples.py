@@ -8,11 +8,11 @@ These views showcase different ways to use OOB swaps for:
 - Navigation active state
 """
 
-from django.http import HttpRequest, HttpResponse
 from django.contrib import messages
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 from django.urls import path
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import render
 
 from apps.public.views.helpers.htmx_view import HTMXView
 from apps.public.views.helpers.main_content_view import MainContentView

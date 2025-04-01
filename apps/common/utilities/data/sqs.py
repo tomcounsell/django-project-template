@@ -1,10 +1,16 @@
-import boto
-from settings import AWS_OPTIONS, DEFAULT_FILE_STORAGE
-from boto.sqs.message import Message
 import json
-from settings import QUEUE_NAME, AWS_OPTIONS, BETA_QUEUE_NAME, TEST_QUEUE_NAME
-
 import logging
+
+import boto
+from boto.sqs.message import Message
+
+from settings import (
+    AWS_OPTIONS,
+    BETA_QUEUE_NAME,
+    DEFAULT_FILE_STORAGE,
+    QUEUE_NAME,
+    TEST_QUEUE_NAME,
+)
 
 logger = logging.getLogger(__name__)
 

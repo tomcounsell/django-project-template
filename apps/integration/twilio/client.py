@@ -1,5 +1,5 @@
-from typing import Optional, Dict, Any
 import logging
+from typing import Any, Dict, Optional
 
 from django.conf import settings
 
@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 # Import Twilio client class only if TWILIO_ENABLED
 try:
-    from twilio.rest import Client as TwilioRestClient
     from twilio.base.exceptions import TwilioRestException
+    from twilio.rest import Client as TwilioRestClient
 
     TWILIO_AVAILABLE = True
 except ImportError:

@@ -4,11 +4,11 @@ Tests for the Note model and related functionality.
 
 import uuid
 
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 
-from ..test_behaviors import AuthorableTest, TimestampableTest
 from ...models import Note
+from ..test_behaviors import AuthorableTest, TimestampableTest
 
 User = get_user_model()
 

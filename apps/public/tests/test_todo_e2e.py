@@ -12,24 +12,24 @@ This file tests the complete workflow for a user working with Todo items:
 8. Verifies the item is removed from the list
 """
 
-import os
-import pytest
 import asyncio
-from typing import Any, Dict, Optional, Tuple, TYPE_CHECKING
-import uuid
+import os
 import time
+import uuid
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.conf import settings
+import pytest
 
 # Import pytest-asyncio
 import pytest_asyncio
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 # Import browser-use components
 try:
-    from browser_use import Agent, BrowserAgent
     import playwright.async_api
+    from browser_use import Agent, BrowserAgent
 
     # Define Page type for type hints
     if TYPE_CHECKING:
@@ -40,7 +40,7 @@ try:
     HAS_PYTEST_ASYNCIO = True
 
     # Import the base test class
-    from .test_e2e_patterns import E2ETestBase, browser_test, asyncio_mark
+    from .test_e2e_patterns import E2ETestBase, asyncio_mark, browser_test
 except ImportError:
     BROWSER_USE_AVAILABLE = False
     HAS_PYTEST_ASYNCIO = False

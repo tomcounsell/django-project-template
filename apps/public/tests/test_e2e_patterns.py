@@ -11,21 +11,21 @@ These patterns demonstrate how to:
 - Test form submissions and validation
 """
 
+import asyncio
 import os
 import sys
-import asyncio
-import pytest
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.test import override_settings
+import pytest
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.test import override_settings
+from django.urls import reverse
 
 # Import browser-use components
 try:
-    from browser_use import Agent, BrowserAgent
     import playwright.async_api
+    from browser_use import Agent, BrowserAgent
     from playwright.async_api import Browser, BrowserContext
 
     # Define Page for type hints
@@ -77,12 +77,12 @@ User = get_user_model()
 
 try:
     from apps.public.tests.e2e_test_config import (
-        SERVER_URL,
         BROWSER_CONFIG,
-        VIEWPORTS,
         SCREENSHOTS_BASE_DIR,
-        is_server_running,
+        SERVER_URL,
+        VIEWPORTS,
         ensure_directories,
+        is_server_running,
     )
 except ImportError:
     # Default values if the config module is not available

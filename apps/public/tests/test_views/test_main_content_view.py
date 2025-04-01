@@ -9,13 +9,14 @@ These tests verify that the MainContentView:
 """
 
 import os
+from unittest.mock import MagicMock, patch
+
 import django
-from django.test import TestCase, RequestFactory
-from django.http import HttpResponse, HttpRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
-from unittest.mock import patch, MagicMock
+from django.http import HttpRequest, HttpResponse
+from django.test import RequestFactory, TestCase
 
 # Setup Django if not already done
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")

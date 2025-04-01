@@ -5,10 +5,10 @@ from rest_framework.schemas import get_schema_view
 
 from settings.env import DEBUG, LOCAL
 from settings.unfold import (
+    ADMIN_INDEX_TITLE,
     ADMIN_SITE_HEADER,
     ADMIN_SITE_TITLE,
     ADMIN_SITE_URL,
-    ADMIN_INDEX_TITLE,
 )
 
 # Configure Django's built-in admin

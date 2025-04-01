@@ -12,10 +12,11 @@ To run these tests:
 Note: These tests are meant to run in local development only.
 """
 
-import os
-import pytest
 import asyncio
-from typing import Any, Dict, Optional, TYPE_CHECKING
+import os
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
+import pytest
 
 # Try to import browser-use dependencies
 try:

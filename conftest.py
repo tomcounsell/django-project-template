@@ -6,17 +6,18 @@ database setup and fixtures.
 """
 
 import os
+import warnings
+
 import django
 import pytest
 from django.conf import settings
-import warnings
 
 # Optional Selenium import (skip if not installed)
 try:
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options as ChromeOptions
-    from selenium.webdriver.firefox.options import Options as FirefoxOptions
     from selenium.webdriver.edge.options import Options as EdgeOptions
+    from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
     SELENIUM_AVAILABLE = True
 except ImportError:

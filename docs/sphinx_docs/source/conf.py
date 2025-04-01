@@ -1,7 +1,8 @@
 import os
 import sys
-import django
 from datetime import datetime
+
+import django
 
 # Path setup
 sys.path.insert(0, os.path.abspath('../../..'))

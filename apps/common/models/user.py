@@ -1,12 +1,12 @@
-from django.utils.translation import gettext_lazy as _
-from datetime import datetime
 import hashlib
-from typing import Optional, Dict, Any, List, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
 from django.db.models.query import QuerySet
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.behaviors import Timestampable
 

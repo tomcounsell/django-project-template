@@ -1,9 +1,11 @@
-import os
 import logging
-from django.db import models
-from django.conf import settings
+import os
 from mimetypes import guess_type
 from urllib.parse import urlparse
+
+from django.conf import settings
+from django.db import models
+
 from ..behaviors import Timestampable
 
 logger = logging.getLogger(__name__)

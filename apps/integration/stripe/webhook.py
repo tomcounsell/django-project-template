@@ -8,12 +8,12 @@ such as payment success, subscription updates, and customer events.
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 from django.conf import settings
 from django.utils import timezone
 
-from apps.common.models import User, Subscription, Payment
+from apps.common.models import Payment, Subscription, User
 from apps.integration.stripe.shortcuts import handle_webhook_event
 
 logger = logging.getLogger(__name__)

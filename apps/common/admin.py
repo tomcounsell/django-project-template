@@ -1,54 +1,53 @@
+import datetime
 import json
-from django.contrib import admin
-from django.utils.html import format_html
-from django.urls import path, reverse
-from django.db.models import Count, Sum, Q
-from django.http import HttpResponseRedirect
-from django.contrib import messages
-from django.shortcuts import redirect, render
-from django.utils.timezone import now
-from django import forms
-from django.db import models
-from django.utils.translation import gettext_lazy as _
 
+from django import forms
+from django.contrib import admin, messages
+from django.contrib.admin import BooleanFieldListFilter, SimpleListFilter
+from django.db import models
+from django.db.models import Count, Q, Sum
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.urls import path, reverse
+from django.utils.html import format_html
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 from rest_framework_api_key.admin import APIKeyModelAdmin
-from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
-from unfold.decorators import action, display
+from unfold.admin import ModelAdmin, StackedInline, TabularInline
+from unfold.components import BaseComponent, register_component
 from unfold.contrib.filters.admin import (
-    TextFilter,
+    ChoicesDropdownFilter,
     RangeDateFilter,
     RangeDateTimeFilter,
     RangeNumericFilter,
-    ChoicesDropdownFilter,
+    TextFilter,
 )
-from django.contrib.admin import SimpleListFilter, BooleanFieldListFilter
-import datetime
-from unfold.sections import TableSection, TemplateSection
-from unfold.components import BaseComponent, register_component
-from unfold.enums import ActionVariant
 from unfold.contrib.forms.widgets import WysiwygWidget
+from unfold.decorators import action, display
+from unfold.enums import ActionVariant
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
+from unfold.sections import TableSection, TemplateSection
 
 from apps.common.models import (
-    User,
-    Team,
-    TeamMember,
-    BlogPost,
-    TodoItem,
-    UserAPIKey,
-    TeamAPIKey,
+    SMS,
     Address,
+    BlogPost,
     City,
     Country,
     Currency,
     Document,
     Email,
-    SMS,
     Image,
     Note,
     Payment,
     Subscription,
+    Team,
+    TeamAPIKey,
+    TeamMember,
+    TodoItem,
     Upload,
+    User,
+    UserAPIKey,
 )
 
 # Define which models should be shown in the main admin navigation

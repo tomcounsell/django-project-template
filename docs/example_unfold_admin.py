@@ -30,6 +30,19 @@ from django_celery_beat.models import (
     PeriodicTask,
     SolarSchedule,
 )
+from formula.models import (
+    Circuit,
+    Constructor,
+    Driver,
+    DriverStatus,
+    Race,
+    Standing,
+    Tag,
+    User,
+)
+from formula.resources import AnotherConstructorResource, ConstructorResource
+from formula.sites import formula_admin_site
+from formula.views import MyClassBasedView
 from guardian.admin import GuardedModelAdmin
 from import_export.admin import (
     ExportActionModelAdmin,
@@ -63,20 +76,6 @@ from unfold.widgets import (
     UnfoldAdminSplitDateTimeWidget,
     UnfoldAdminTextInputWidget,
 )
-
-from formula.models import (
-    Circuit,
-    Constructor,
-    Driver,
-    DriverStatus,
-    Race,
-    Standing,
-    Tag,
-    User,
-)
-from formula.resources import AnotherConstructorResource, ConstructorResource
-from formula.sites import formula_admin_site
-from formula.views import MyClassBasedView
 
 admin.site.unregister(PeriodicTask)
 admin.site.unregister(IntervalSchedule)

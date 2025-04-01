@@ -1,7 +1,8 @@
+import unittest.mock
+from datetime import timedelta
+
 from django.test import TestCase
 from django.utils import timezone
-from datetime import timedelta
-import unittest.mock
 
 from apps.common.models import TodoItem, User
 from apps.common.tests.factories import UserFactory

@@ -6,8 +6,8 @@ import uuid
 
 from django.test import TestCase
 
-from ..test_behaviors import TimestampableTest
 from ...models import Address, Country
+from ..test_behaviors import TimestampableTest
 
 
 class AddressModelTestCase(TimestampableTest, TestCase):

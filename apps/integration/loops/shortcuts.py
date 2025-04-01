@@ -2,7 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 from icecream import ic
 
-from apps.common.models import User, Team
+from apps.common.models import Team, User
 from apps.common.models.team import Role
 from apps.integration.loops.client import LoopsClient
 

@@ -2,10 +2,11 @@
 Test script to verify Loops client behavior
 """
 
-import os
 import logging
-import django
+import os
 import sys
+
+import django
 
 # Set up Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
@@ -14,11 +15,11 @@ django.setup()
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
-# Import the LoopsClient
-from apps.integration.loops.client import LoopsClient
-
 # Test with DEBUG=True (should log instead of sending)
 from django.conf import settings
+
+# Import the LoopsClient
+from apps.integration.loops.client import LoopsClient
 
 print(f"DEBUG mode is: {settings.DEBUG}")
 

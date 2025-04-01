@@ -2,6 +2,7 @@ import uuid
 from typing import Optional
 
 from django.db import models
+
 from apps.common.behaviors import Timestampable
 
 

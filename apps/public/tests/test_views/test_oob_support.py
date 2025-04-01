@@ -5,26 +5,28 @@ These tests verify that HTMX OOB swaps work correctly for various components.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock, call
-from django.test import RequestFactory
-from django.template import Template, Context
+from unittest.mock import MagicMock, call, patch
 
-# Import the base TestCase class to avoid name conflict
-from django.test import TestCase as DjangoTestCase
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib import messages
+from django.template import Context, Template
+
+# Import the base TestCase class to avoid name conflict
+from django.test import RequestFactory
+from django.test import TestCase as DjangoTestCase
+
+from apps.public.views.components.oob_examples import (
+    CombinedExample,
+    ShowAlertExample,
+    ShowModalExample,
+    ShowToastExample,
+    UpdateNavExample,
+)
 
 # Import the HTMX view class
 from apps.public.views.helpers.htmx_view import HTMXView
-from apps.public.views.components.oob_examples import (
-    ShowToastExample,
-    ShowAlertExample,
-    ShowModalExample,
-    UpdateNavExample,
-    CombinedExample,
-)
 
 User = get_user_model()
 

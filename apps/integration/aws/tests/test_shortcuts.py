@@ -8,10 +8,10 @@ from django.test import TestCase, override_settings
 
 from apps.common.models.upload import Upload
 from apps.integration.aws.shortcuts import (
-    get_direct_upload_form_data,
     complete_upload,
-    get_upload_file_url,
     delete_upload,
+    get_direct_upload_form_data,
+    get_upload_file_url,
 )
 
 

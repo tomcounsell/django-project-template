@@ -3,11 +3,12 @@ Unit tests for the StripeClient class.
 """
 
 import json
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from django.test import TestCase, override_settings
 
-from apps.integration.stripe.client import StripeClient, StripeAPIError
+from apps.integration.stripe.client import StripeAPIError, StripeClient
 
 
 @override_settings(DEBUG=True)

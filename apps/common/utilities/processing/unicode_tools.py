@@ -1,7 +1,8 @@
-import typing
-from typing import List, Callable
-import unicodedata
 import re
+import typing
+import unicodedata
+from typing import Callable, List
+
 import toolz
 from toolz import complement  # "flips" result of function, i.e. True == False
 

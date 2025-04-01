@@ -2,12 +2,13 @@
 Tests for the Subscription model.
 """
 
-import pytest
 from datetime import timedelta
+
+import pytest
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.common.models import User, Subscription
+from apps.common.models import Subscription, User
 
 
 class SubscriptionTestCase(TestCase):

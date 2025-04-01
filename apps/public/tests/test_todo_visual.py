@@ -9,17 +9,17 @@ of the Todo item workflow, which includes:
 4. Deleting the Todo
 """
 
-import os
-import pytest
 import asyncio
+import os
 import uuid
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
-from django.contrib.auth import get_user_model
-from django.urls import reverse
+import pytest
 
 # Import pytest-asyncio
 import pytest_asyncio
+from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 # Import browser-use components if available
 try:

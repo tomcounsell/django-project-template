@@ -9,20 +9,21 @@ It follows two testing approaches:
 These tests verify fields, properties, and methods provided by each behavior mixin.
 """
 
+import datetime
 import unittest
 from unittest import mock
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
-import datetime
-from django.contrib.auth import get_user_model
 
-from apps.common.behaviors.timestampable import Timestampable
-from apps.common.behaviors.authorable import Authorable
-from apps.common.behaviors.publishable import Publishable
-from apps.common.behaviors.expirable import Expirable
-from apps.common.behaviors.permalinkable import Permalinkable
-from apps.common.behaviors.locatable import Locatable
 from apps.common.behaviors.annotatable import Annotatable
+from apps.common.behaviors.authorable import Authorable
+from apps.common.behaviors.expirable import Expirable
+from apps.common.behaviors.locatable import Locatable
+from apps.common.behaviors.permalinkable import Permalinkable
+from apps.common.behaviors.publishable import Publishable
+from apps.common.behaviors.timestampable import Timestampable
 
 User = get_user_model()
 
@@ -509,6 +510,7 @@ class TestPermalinkableDirect(unittest.TestCase):
         """Test pre_save_slug signal handler."""
         # Import slugify directly to verify our implementation
         from django.utils.text import slugify
+
         from apps.common.behaviors.permalinkable import pre_save_slug
 
         # Create a real class that directly inherits from Permalinkable

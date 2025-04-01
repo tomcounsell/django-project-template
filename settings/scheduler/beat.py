@@ -1,9 +1,8 @@
 import logging
 
-from django_celery_beat.models import PeriodicTask
-from django_celery_beat.models import PeriodicTasks
-from django_celery_beat.schedulers import DatabaseScheduler
 from django.db import transaction
+from django_celery_beat.models import PeriodicTask, PeriodicTasks
+from django_celery_beat.schedulers import DatabaseScheduler
 
 
 class DatabaseSchedulerWithCleanup(DatabaseScheduler):

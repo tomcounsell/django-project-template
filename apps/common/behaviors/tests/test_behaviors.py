@@ -14,12 +14,12 @@ Usage:
 This script can be run directly without the Django environment for quick behavior validation.
 """
 
+import datetime
 import os
 import sys
 import unittest
-from unittest import mock
-import datetime
 from pathlib import Path
+from unittest import mock
 
 # Add the project root to the Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
@@ -43,13 +43,13 @@ class MockTimezone:
 
 # Only import behaviors after setting up the environment
 try:
-    from apps.common.behaviors.timestampable import Timestampable
-    from apps.common.behaviors.authorable import Authorable
-    from apps.common.behaviors.publishable import Publishable
-    from apps.common.behaviors.expirable import Expirable
-    from apps.common.behaviors.permalinkable import Permalinkable, pre_save_slug
-    from apps.common.behaviors.locatable import Locatable
     from apps.common.behaviors.annotatable import Annotatable
+    from apps.common.behaviors.authorable import Authorable
+    from apps.common.behaviors.expirable import Expirable
+    from apps.common.behaviors.locatable import Locatable
+    from apps.common.behaviors.permalinkable import Permalinkable, pre_save_slug
+    from apps.common.behaviors.publishable import Publishable
+    from apps.common.behaviors.timestampable import Timestampable
 
     # If Django is available, use its timezone
     try:

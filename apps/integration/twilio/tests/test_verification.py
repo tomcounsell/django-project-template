@@ -1,16 +1,17 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from django.test import TestCase, override_settings
 from django.core.cache import cache
+from django.test import TestCase, override_settings
 
 from apps.integration.twilio.verification import (
+    MAX_VERIFICATION_ATTEMPTS,
+    VERIFICATION_ATTEMPTS_PREFIX,
+    VERIFICATION_CODE_PREFIX,
     generate_verification_code,
+    reset_verification_attempts,
     send_phone_verification,
     verify_phone_code,
-    reset_verification_attempts,
-    VERIFICATION_CODE_PREFIX,
-    VERIFICATION_ATTEMPTS_PREFIX,
-    MAX_VERIFICATION_ATTEMPTS,
 )
 
 

@@ -6,8 +6,8 @@ import uuid
 
 from django.test import TestCase
 
-from ..test_behaviors import TimestampableTest
 from ...models import Currency
+from ..test_behaviors import TimestampableTest
 
 
 class CurrencyModelTestCase(TimestampableTest, TestCase):

@@ -11,9 +11,9 @@ This test focuses on the functional aspects of the Todo workflow:
 """
 
 import pytest
-from django.urls import reverse
-from django.test import Client
 from django.contrib.auth import get_user_model
+from django.test import Client
+from django.urls import reverse
 
 from apps.common.models import TodoItem
 

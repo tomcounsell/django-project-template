@@ -6,7 +6,7 @@ import pytest
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.common.models import User, Payment, Subscription
+from apps.common.models import Payment, Subscription, User
 
 
 class PaymentTestCase(TestCase):

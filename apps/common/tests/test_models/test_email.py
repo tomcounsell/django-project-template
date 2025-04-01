@@ -1,7 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from django.test import TestCase
-from unittest.mock import patch, MagicMock
 from django.core.mail import EmailMessage
+from django.test import TestCase
 
 from apps.common.models.email import Email
 from apps.common.tests.factories import UploadFactory

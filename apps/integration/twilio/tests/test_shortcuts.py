@@ -2,16 +2,17 @@
 Unit tests for the Twilio shortcuts module
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from django.test import TestCase, override_settings
 
 from apps.common.models.sms import SMS
 from apps.integration.twilio.shortcuts import (
-    send_sms,
-    verify_phone_number,
     get_sms_status,
+    send_sms,
     send_verification_code,
+    verify_phone_number,
 )
 
 

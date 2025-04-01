@@ -3,12 +3,13 @@ Tests for the Django admin customizations.
 """
 
 import warnings
-from django.test import TestCase, Client, override_settings
-from django.urls import reverse
+
 from django.contrib.auth import get_user_model
+from django.test import Client, TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
-from apps.common.models import Team, TeamMember, Role
+from apps.common.models import Role, Team, TeamMember
 from apps.common.tests.factories import UserFactory
 
 # Override settings for testing

@@ -4,9 +4,10 @@ Unit tests for the AWS S3 integration.
 
 import os
 import tempfile
-import pytest
-from unittest.mock import patch, MagicMock, mock_open
 from datetime import datetime
+from unittest.mock import MagicMock, mock_open, patch
+
+import pytest
 from django.test import TestCase, override_settings
 
 from apps.integration.aws.s3 import (

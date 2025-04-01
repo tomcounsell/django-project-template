@@ -5,8 +5,8 @@ Tests for form validation utilities.
 from django import forms
 from django.test import RequestFactory, TestCase
 
-from apps.common.models import BlogPost, User
 from apps.common.forms.blog_post import BlogPostForm
+from apps.common.models import BlogPost, User
 from apps.common.utilities.forms import (
     BaseModelForm,
     FormValidationMixin,

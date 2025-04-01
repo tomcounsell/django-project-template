@@ -23,7 +23,6 @@ from apps.common.behaviors.permalinkable import Permalinkable
 from apps.common.behaviors.publishable import Publishable
 from apps.common.behaviors.timestampable import Timestampable
 
-
 #
 # Test Infrastructure
 #

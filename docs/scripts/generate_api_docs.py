@@ -8,16 +8,16 @@ This script:
 3. Saves it to the Sphinx documentation directory
 """
 
-import os
-import sys
-import json
-import requests
-from pathlib import Path
-import subprocess
-import time
-import signal
 import atexit
+import json
+import os
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
 
+import requests
 
 API_SCHEMA_URL = "http://localhost:8000/api/schema/"
 API_DOCS_PATH = (

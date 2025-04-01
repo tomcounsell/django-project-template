@@ -9,12 +9,13 @@ These fixtures provide common test utilities for view testing:
 """
 
 import os
+
 import django
 import pytest
-from django.test import RequestFactory
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.test import RequestFactory
 
 # Setup Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")

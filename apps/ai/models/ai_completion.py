@@ -1,8 +1,8 @@
-from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.db import models
 
-from apps.common.behaviors import timestampable
 from apps.ai.models.prompt_template import PromptTemplate
+from apps.common.behaviors import timestampable
 
 
 class AICompletion(timestampable.Timestampable, models.Model):

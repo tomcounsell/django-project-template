@@ -6,10 +6,11 @@ and their various states (completed, pending, etc).
 """
 
 import os
+
 import pytest
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 @pytest.mark.visual
@@ -72,8 +73,9 @@ def test_todo_item_appearance(driver, live_server, db):
 @pytest.mark.visual
 def test_completed_todo_appearance(driver, live_server, db):
     """Test the visual appearance of completed todo items."""
-    from apps.common.models.todo import TodoItem
     from django.contrib.auth import get_user_model
+
+    from apps.common.models.todo import TodoItem
 
     User = get_user_model()
 

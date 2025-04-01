@@ -7,12 +7,13 @@ These tests verify that component context processors:
 """
 
 import os
+
 import django
-from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.sessions.middleware import SessionMiddleware
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.contrib.sessions.middleware import SessionMiddleware
+from django.test import RequestFactory, TestCase
 
 # Setup Django if not already done
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")

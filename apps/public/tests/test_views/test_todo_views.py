@@ -2,7 +2,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from apps.common.models import TodoItem
-from apps.common.tests.factories import UserFactory, TodoItemFactory
+from apps.common.tests.factories import TodoItemFactory, UserFactory
 
 
 @override_settings(TESTING=True)

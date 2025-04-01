@@ -5,15 +5,15 @@ This module provides a simple service for capturing screenshots
 from the browser during development, testing, and debugging.
 """
 
-import os
-import asyncio
 import argparse
+import asyncio
+import os
 import subprocess
-import uuid
 import time
+import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # Check if necessary packages are available
 try:

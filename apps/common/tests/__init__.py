@@ -21,10 +21,10 @@ from apps.common.tests.behaviors import (
     LocatableTest,
     PermalinkableTest,
     PublishableTest,
-    TimestampableTest,
     TestAnnotatableDirect,
     TestAuthorableDirect,
     TestExpirableDirect,
     TestPermalinkableDirect,
     TestPublishableDirect,
+    TimestampableTest,
 )

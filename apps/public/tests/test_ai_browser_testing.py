@@ -17,31 +17,31 @@ Usage:
     DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_ai_browser_testing.py::TestAIAutomatedTesting::test_generate_and_run_test -v
 """
 
-import os
-import pytest
 import asyncio
 import json
-import uuid
+import os
 import time
-from typing import Any, Dict, List, Optional, Tuple, Union, Type, cast
+import uuid
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.conf import settings
-from django.db import connection
+import pytest
 
 # Import pytest-asyncio
 import pytest_asyncio
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db import connection
+from django.urls import reverse
 
 # Add database mark
 pytestmark = [pytest.mark.django_db]  # Allow database access
 
 # Import browser-use components safely
 try:
-    from browser_use import Agent, BrowserAgent, use
     import playwright.async_api
+    from browser_use import Agent, BrowserAgent, use
     from playwright.async_api import Browser, BrowserContext, Page
 
     BROWSER_USE_AVAILABLE = True
@@ -49,8 +49,8 @@ try:
     # Import the base test class
     from apps.public.tests.test_e2e_patterns import (
         E2ETestBase,
-        browser_test,
         asyncio_mark,
+        browser_test,
     )
 except ImportError:
     BROWSER_USE_AVAILABLE = False

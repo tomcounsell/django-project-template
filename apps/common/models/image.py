@@ -1,5 +1,6 @@
+from typing import Any, Dict, Optional
+
 from django.db import models
-from typing import Optional, Dict, Any
 
 from apps.common.models import Upload
 

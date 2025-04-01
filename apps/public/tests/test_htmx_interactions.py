@@ -13,21 +13,21 @@ This uses browser-based testing as HTMX behavior requires:
 3. DOM manipulation
 """
 
-import pytest
 import asyncio
 import time
 from pathlib import Path
-from typing import Dict, Any, Optional, Union, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
+import pytest
 from django.contrib.auth import get_user_model
 from django.test import override_settings
 from django.urls import reverse
 
 # Try importing browser-use components
 try:
-    from browser_use import BrowserAgent, use
     import playwright.async_api
+    from browser_use import BrowserAgent, use
     from playwright.async_api import Browser, BrowserContext, Page
 
     BROWSER_USE_AVAILABLE = True
@@ -49,8 +49,8 @@ from apps.public.tests.e2e_test_config import SERVER_URL
 try:
     from apps.public.tests.test_e2e_patterns import (
         E2ETestBase,
-        browser_test,
         asyncio_mark,
+        browser_test,
     )
 except ImportError:
     # Create dummy classes if imports fail

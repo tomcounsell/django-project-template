@@ -4,7 +4,7 @@ Settings for third-party services and integrations.
 
 import os
 
-from settings.env import LOCAL, DEBUG
+from settings.env import DEBUG, LOCAL
 
 # DRF (Django Rest Framework) settings
 REST_FRAMEWORK = {

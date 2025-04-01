@@ -2,14 +2,15 @@
 Unit tests for the Loops shortcuts
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from django.test import TestCase, override_settings
 
 from apps.common.models import User
 from apps.integration.loops.shortcuts import (
-    send_password_reset_email,
     send_login_code_email,
+    send_password_reset_email,
 )
 
 

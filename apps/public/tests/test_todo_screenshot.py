@@ -7,11 +7,12 @@ and capture screenshots at each step for documentation.
 
 import os
 import uuid
+
 import pytest
-from django.test import Client
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.test import Client
 from django.test.utils import override_settings
+from django.urls import reverse
 
 from apps.common.models import TodoItem
 

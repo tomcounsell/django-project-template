@@ -5,9 +5,9 @@ This module provides a client for interacting with Stripe services,
 handling authentication, API calls, error handling, and webhooks.
 """
 
-from typing import Optional, Dict, Any, List, Union
-import logging
 import json
+import logging
+from typing import Any, Dict, List, Optional, Union
 
 from django.conf import settings
 from icecream import ic

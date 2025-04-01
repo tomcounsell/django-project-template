@@ -14,19 +14,19 @@ These tests cover:
 
 import os
 import uuid
-import pytest
-from typing import Dict, Any, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
+import pytest
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
 User = get_user_model()
 
 # Check for browser testing dependencies
 try:
-    import pytest_asyncio
     import playwright.async_api
+    import pytest_asyncio
     from playwright.async_api import Browser, BrowserContext
 
     # Define Page for type hints
