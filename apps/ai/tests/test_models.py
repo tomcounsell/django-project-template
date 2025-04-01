@@ -22,8 +22,8 @@ class PromptTemplateModelTest(TestCase):
         self.assertEqual(
             template.template_text, "Hello, {{name}}! How can I help you today?"
         )
-        self.assertTrue(hasattr(template, 'created_at'))
-        self.assertTrue(hasattr(template, 'modified_at'))
+        self.assertTrue(hasattr(template, "created_at"))
+        self.assertTrue(hasattr(template, "modified_at"))
 
 
 class AICompletionModelTest(TestCase):
@@ -55,7 +55,7 @@ class AICompletionModelTest(TestCase):
         self.assertEqual(completion.provider, "openai")
         self.assertEqual(completion.model, "gpt-4")
         self.assertEqual(completion.usage_tokens, 50)
-        self.assertTrue(hasattr(completion, 'created_at'))
+        self.assertTrue(hasattr(completion, "created_at"))
 
 
 class AgentModelTest(TestCase):
@@ -82,5 +82,5 @@ class AgentModelTest(TestCase):
             agent.system_prompt, "You are a helpful customer support agent."
         )
         self.assertTrue(agent.is_active)
-        self.assertTrue(hasattr(agent, 'created_at'))
-        self.assertTrue(hasattr(agent, 'modified_at'))
+        self.assertTrue(hasattr(agent, "created_at"))
+        self.assertTrue(hasattr(agent, "modified_at"))

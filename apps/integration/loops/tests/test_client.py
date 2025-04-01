@@ -1,6 +1,7 @@
 """
 Unit tests for the LoopsClient
 """
+
 import pytest
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
@@ -12,26 +13,26 @@ from apps.integration.loops.client import LoopsClient, LoopsAPIError
 @override_settings(DEBUG=True)
 class LoopsClientDebugModeTestCase(TestCase):
     """Test LoopsClient in DEBUG mode"""
-    
+
     def setUp(self):
         super().setUp()
         self.client = LoopsClient(api_key="test_key")
-        
+
     def test_transactional_email_debug_mode(self):
         """Test transactional_email in DEBUG mode"""
         result = self.client.transactional_email(
             to_email="test@example.com",
             transactional_id="test_id",
-            data_variables={"key": "value"}
+            data_variables={"key": "value"},
         )
         assert result == {"success": True}
-        
+
     def test_event_debug_mode(self):
         """Test event in DEBUG mode"""
         result = self.client.event(
             to_email="test@example.com",
             event_name="test_event",
-            event_properties={"prop": "value"}
+            event_properties={"prop": "value"},
         )
         assert result == {"success": True}
 
@@ -39,11 +40,11 @@ class LoopsClientDebugModeTestCase(TestCase):
 @override_settings(DEBUG=False, LOCAL=False)
 class LoopsClientLiveTestCase(TestCase):
     """Test LoopsClient in live mode with mocked requests"""
-    
+
     def setUp(self):
         super().setUp()
         self.client = LoopsClient(api_key="test_key")
-        
+
     @patch("apps.integration.loops.client.requests.request")
     def test_transactional_email_success(self, mock_request):
         """Test successful transactional_email request"""
@@ -51,14 +52,14 @@ class LoopsClientLiveTestCase(TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"success": True}
         mock_request.return_value = mock_response
-        
+
         # Call the method
         result = self.client.transactional_email(
             to_email="test@example.com",
             transactional_id="test_id",
-            data_variables={"key": "value"}
+            data_variables={"key": "value"},
         )
-        
+
         # Verify the result and request
         assert result == {"success": True}
         mock_request.assert_called_once()
@@ -67,7 +68,7 @@ class LoopsClientLiveTestCase(TestCase):
         assert call_args[0][1].endswith("/transactional")
         assert call_args[1]["json"]["email"] == "test@example.com"
         assert call_args[1]["json"]["transactionalId"] == "test_id"
-        
+
     @patch("apps.integration.loops.client.requests.request")
     def test_transactional_email_failure(self, mock_request):
         """Test failed transactional_email request"""
@@ -75,15 +76,15 @@ class LoopsClientLiveTestCase(TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"success": False, "message": "API error"}
         mock_request.return_value = mock_response
-        
+
         # Call the method and check for exception
         with pytest.raises(LoopsAPIError, match="API error"):
             self.client.transactional_email(
                 to_email="test@example.com",
                 transactional_id="test_id",
-                data_variables={"key": "value"}
+                data_variables={"key": "value"},
             )
-            
+
     @patch("apps.integration.loops.client.requests.request")
     def test_event_success(self, mock_request):
         """Test successful event request"""
@@ -91,14 +92,14 @@ class LoopsClientLiveTestCase(TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"success": True}
         mock_request.return_value = mock_response
-        
+
         # Call the method
         result = self.client.event(
             to_email="test@example.com",
             event_name="test_event",
-            event_properties={"prop": "value"}
+            event_properties={"prop": "value"},
         )
-        
+
         # Verify the result and request
         assert result == {"success": True}
         mock_request.assert_called_once()
@@ -107,20 +108,17 @@ class LoopsClientLiveTestCase(TestCase):
         assert call_args[0][1].endswith("/events/send")
         assert call_args[1]["json"]["email"] == "test@example.com"
         assert call_args[1]["json"]["eventName"] == "test_event"
-        
+
     @patch("apps.integration.loops.client.requests.request")
     def test_network_error(self, mock_request):
         """Test network error handling"""
         # Setup the mock to raise an exception
         mock_request.side_effect = Exception("Network error")
-        
+
         # Call the method and check for exception
         with pytest.raises(LoopsAPIError, match="Network error"):
-            self.client.event(
-                to_email="test@example.com",
-                event_name="test_event"
-            )
-            
+            self.client.event(to_email="test@example.com", event_name="test_event")
+
     @patch("apps.integration.loops.client.requests.request")
     def test_api_key_validation(self, mock_request):
         """Test API key validation endpoint"""
@@ -128,10 +126,10 @@ class LoopsClientLiveTestCase(TestCase):
         mock_response = MagicMock()
         mock_response.json.return_value = {"success": True}
         mock_request.return_value = mock_response
-        
+
         # Call the method
         result = self.client.test_api_key()
-        
+
         # Verify the request
         assert result == {"success": True}
         mock_request.assert_called_once()

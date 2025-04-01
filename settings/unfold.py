@@ -1,6 +1,7 @@
 """
 Django Unfold admin configuration settings
 """
+
 from django.utils.translation import gettext_lazy as _
 
 # Admin site configuration - used in urls.py
@@ -28,15 +29,31 @@ UNFOLD = {
         {
             "model": "common.User",
             "items": [
-                {"title": _("Profile"), "link": "profile", "template": "admin/user/profile.html"},
-                {"title": _("Security"), "link": "security", "template": "admin/user/security.html"},
+                {
+                    "title": _("Profile"),
+                    "link": "profile",
+                    "template": "admin/user/profile.html",
+                },
+                {
+                    "title": _("Security"),
+                    "link": "security",
+                    "template": "admin/user/security.html",
+                },
             ],
         },
         {
             "model": "common.Team",
             "items": [
-                {"title": _("Team Info"), "link": "team-info", "template": "admin/team/info.html"},
-                {"title": _("Members"), "link": "members", "template": "admin/team/members.html"},
+                {
+                    "title": _("Team Info"),
+                    "link": "team-info",
+                    "template": "admin/team/info.html",
+                },
+                {
+                    "title": _("Members"),
+                    "link": "members",
+                    "template": "admin/team/members.html",
+                },
             ],
         },
     ],

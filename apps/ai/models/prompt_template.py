@@ -11,6 +11,7 @@ class PromptTemplate(timestampable.Timestampable, models.Model):
     Example template_text:
     "Hello, {{name}}! How can I help you today with {{topic}}?"
     """
+
     name = models.CharField(max_length=255)
     template_text = models.TextField()
     description = models.TextField(blank=True)

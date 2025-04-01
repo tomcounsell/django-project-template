@@ -62,17 +62,19 @@ class UserModelTestCase(TimestampableTest, TestCase):
         example_user = User.objects.create_user(
             username=unique_username,
             email=f"{unique_username}@example.com",
-            password="password123"
+            password="password123",
         )
         self.assertEqual(example_user.four_digit_login_code, "1234")
-        
+
     def test_four_digit_login_code_for_normal_email(self):
         """Test that non-example.com emails generate a unique login code based on user data."""
         # The login code is generated from user ID, email and last login
         # Let's ensure it's a 4-digit code
-        self.user.email = f"{self.user.username}@gmail.com"  # Ensure it's not example.com
+        self.user.email = (
+            f"{self.user.username}@gmail.com"  # Ensure it's not example.com
+        )
         self.user.save()
-        
+
         login_code = self.user.four_digit_login_code
         self.assertEqual(len(login_code), 4)
         self.assertTrue(login_code.isdigit())
@@ -131,9 +133,9 @@ class UserModelTestCase(TimestampableTest, TestCase):
             username=email_username,
             email=email_username,
             password="password123",
-            is_email_verified=True
+            is_email_verified=True,
         )
-        
+
         # User with verified email should show username part
         self.assertEqual(str(email_user), email_username.split("@")[0])
 
@@ -145,17 +147,17 @@ class UserModelTestCase(TimestampableTest, TestCase):
             username=email_username,
             email=email_username,
             password="password123",
-            is_email_verified=False
+            is_email_verified=False,
         )
-        
+
         # User with unverified email should show full email with note
         self.assertEqual(str(email_user), f"{email_username} (unverified)")
-        
+
     def test_str_method_all_options_fallthrough(self):
         """Test string representation when all preferences are empty."""
         # User with empty preferences but with email
         email = "fallback@example.com"
-        
+
         # Need to create it normally to avoid database constraints
         unique_username = f"fallback_{uuid.uuid4().hex[:8]}"
         user = User.objects.create_user(
@@ -163,7 +165,7 @@ class UserModelTestCase(TimestampableTest, TestCase):
             email=email,
             password="password123",
         )
-        
+
         # Now update all the fields to test the fallback
         user.first_name = ""
         user.last_name = ""
@@ -171,10 +173,10 @@ class UserModelTestCase(TimestampableTest, TestCase):
         user.username = email
         user.is_email_verified = False
         user.save()
-        
+
         # With unverified email, it should show the email with note
         self.assertEqual(str(user), f"{email} (unverified)")
-        
+
     def test_str_method_exception_handling(self):
         """Test string representation error handling."""
         # Create a real user
@@ -183,14 +185,17 @@ class UserModelTestCase(TimestampableTest, TestCase):
             username=unique_username,
             email=f"{unique_username}@example.com",
             password="password123",
-            id=99999  # Specific ID for testing
+            id=99999,  # Specific ID for testing
         )
-        
+
         # Use a context manager with patch to simulate an exception during __str__ method
         from unittest import mock
-        with mock.patch.object(User, 'first_name', new_callable=mock.PropertyMock) as mock_first_name:
+
+        with mock.patch.object(
+            User, "first_name", new_callable=mock.PropertyMock
+        ) as mock_first_name:
             # Set up the mock to raise an exception when accessed
             mock_first_name.side_effect = Exception("Test exception")
-            
+
             # The fallback should use the user ID
             self.assertEqual(str(user), f"User {user.id}")

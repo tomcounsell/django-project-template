@@ -1,6 +1,7 @@
 """
 Core Django settings common to all environments.
 """
+
 import mimetypes
 
 from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
@@ -29,7 +30,7 @@ THIRD_PARTY_APPS = [
     "django_extensions",
     # "request", # a statistics module for django. It stores requests in a database for admins to see.
     # "django_user_agents",
-    'debug_toolbar',
+    "debug_toolbar",
     "widget_tweaks",
     "rest_framework",
     "rest_framework_api_key",
@@ -40,12 +41,12 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
-    'theme',  # django-tailwind app
-    'apps.common',
-    'apps.integration',
-    'apps.api',
-    'apps.public',  # for web front-end
-    'apps.ai',  # AI integrations and agents
+    "theme",  # django-tailwind app
+    "apps.common",
+    "apps.integration",
+    "apps.api",
+    "apps.public",  # for web front-end
+    "apps.ai",  # AI integrations and agents
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -60,7 +61,7 @@ MIDDLEWARE = [
     "apps.common.utilities.django.middleware.APIHeaderMiddleware",
     # "django_user_agents.middleware.UserAgentMiddleware",
     "django.middleware.gzip.GZipMiddleware",
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # "request_logging.middleware.LoggingMiddleware",
     # "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -94,17 +95,18 @@ TEMPLATES = [
                 # 'django.template.context_processors.media',
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.static",
-                "django.contrib.messages.context_processors.messages"
+                "django.contrib.messages.context_processors.messages",
             ],
             "loaders": [
                 (
-                    'django.template.loaders.cached.Loader', [
+                    "django.template.loaders.cached.Loader",
+                    [
                         # Default Django loader
-                        'django.template.loaders.filesystem.Loader',
-                        'django.template.loaders.app_directories.Loader',
-                    ]
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
+                    ],
                 )
-            ]
+            ],
         },
     },
 ]
@@ -141,16 +143,16 @@ LOGIN_REDIRECT_URL = "/"
 PASSWORD_RESET_TIMEOUT_DAYS = 7
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -165,9 +167,7 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Request settings
-REQUEST_IGNORE_PATHS = (
-    r'^admin/',
-)
+REQUEST_IGNORE_PATHS = (r"^admin/",)
 
 # Template Directories
 TEMPLATE_DIRS = [
@@ -175,7 +175,7 @@ TEMPLATE_DIRS = [
 ]
 
 # Tailwind CSS settings
-TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = "theme"
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
@@ -192,34 +192,26 @@ if PRODUCTION or STAGE:
 
 # Django REST Framework settings
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAdminUser',
-    ),
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 50,
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAdminUser",),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 50,
 }
 
 # DRF-YASG (Swagger/OpenAPI) settings
 SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': True,
-    'SECURITY_DEFINITIONS': {
-        'Basic': {
-            'type': 'basic'
-        },
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-        }
+    "USE_SESSION_AUTH": True,
+    "SECURITY_DEFINITIONS": {
+        "Basic": {"type": "basic"},
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"},
     },
-    'DEFAULT_MODEL_RENDERING': 'example',
+    "DEFAULT_MODEL_RENDERING": "example",
 }
 
 # Silence the warning about compat renderers

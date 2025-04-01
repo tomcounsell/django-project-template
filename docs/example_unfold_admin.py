@@ -858,6 +858,7 @@ try:
     @admin.register(StudioOption, site=formula_admin_site)
     class StudioOptionAdmin(StudioOptionAdmin, ModelAdmin):
         pass
+
 except (ImportError, RuntimeError):
     # unfold_studio is not installed
     pass

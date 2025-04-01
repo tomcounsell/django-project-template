@@ -2,6 +2,7 @@
 Environment settings and configurations.
 Handles loading environment variables and determining deployment type.
 """
+
 import os
 import socket
 from pathlib import Path
@@ -20,32 +21,32 @@ load_dotenv(env_path)
 
 # Define environment type
 PRODUCTION = STAGE = DEMO = LOCAL = False
-dt_key = os.environ.get('DEPLOYMENT_TYPE', "LOCAL")
+dt_key = os.environ.get("DEPLOYMENT_TYPE", "LOCAL")
 
-if dt_key == 'PRODUCTION':
+if dt_key == "PRODUCTION":
     PRODUCTION = True
-elif dt_key == 'DEMO':
+elif dt_key == "DEMO":
     DEMO = True
-elif dt_key == 'STAGE':
+elif dt_key == "STAGE":
     STAGE = True
 else:
     LOCAL = True
 
 # Debug mode based on environment
-DEBUG = LOCAL or STAGE or (os.environ.get('DEBUG', 'False').lower() == 'true')
+DEBUG = LOCAL or STAGE or (os.environ.get("DEBUG", "False").lower() == "true")
 
 # Important security settings
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY and (LOCAL or DEBUG):
-    SECRET_KEY = 'django-insecure-key-for-development-only'
+    SECRET_KEY = "django-insecure-key-for-development-only"
 
 # Hosts configuration
 ALLOWED_HOSTS = [
     # '.mycompany.com',
     # '.herokuapp.com',
     # '.amazonaws.com',
-    'localhost',
-    '127.0.0.1',
+    "localhost",
+    "127.0.0.1",
 ]
 
 if LOCAL:
@@ -56,8 +57,8 @@ else:
         # 'https://*.mycompany.com',
         # 'https://s3.amazonaws.com',
         # 'https://vendor_api.com',
-        'https://localhost',
-        'https://127.0.0.1',
+        "https://localhost",
+        "https://127.0.0.1",
     ]
 
 # Hostname configuration
@@ -69,7 +70,7 @@ else:
     try:
         HOSTNAME = socket.gethostname()
     except:
-        HOSTNAME = 'localhost'
+        HOSTNAME = "localhost"
 
 # Internal IPs for debug toolbar
 INTERNAL_IPS = [

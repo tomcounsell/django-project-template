@@ -7,23 +7,23 @@ from django.db import models
 class City(models.Model):
     """
     A model representing a city or urban area.
-    
-    This model stores information about cities, including their name, 
+
+    This model stores information about cities, including their name,
     code (typically airport code), and country. It provides a standard
     way to reference locations at the city level throughout the application.
-    
+
     Attributes:
         id (UUID): Unique identifier for the city
         name (str): The name of the city
         code (str): A short code for the city, typically the airport code
         country (ForeignKey): The country where this city is located
-        
+
     Properties:
         currency (Currency): The currency used in this city, inherited from the country
-        
+
     Note:
         The code field is automatically converted to lowercase before saving.
-    
+
     Example:
         ```python
         san_francisco = City.objects.create(
@@ -33,6 +33,7 @@ class City(models.Model):
         )
         ```
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, unique=True, blank=True)
     code = models.CharField(
@@ -49,10 +50,10 @@ class City(models.Model):
     def currency(self):
         """
         Get the currency used in this city.
-        
+
         This is a convenience property that returns the currency associated
         with the country of this city.
-        
+
         Returns:
             Currency: The currency used in this city
         """
@@ -62,7 +63,7 @@ class City(models.Model):
     def __str__(self) -> str:
         """
         Get a string representation of the city.
-        
+
         Returns:
             str: A formatted string with city name, country name, and code
         """
@@ -75,14 +76,15 @@ class City(models.Model):
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
+
 @receiver(pre_save, sender=City)
 def lowercase_code(sender, instance, **kwargs):
     """
     Signal handler that converts city code to lowercase before saving.
-    
+
     This ensures that all city codes are stored in a consistent format,
     making lookups and comparisons easier.
-    
+
     Args:
         sender: The model class (City)
         instance: The City instance being saved

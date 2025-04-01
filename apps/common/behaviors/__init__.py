@@ -8,11 +8,11 @@ from .publishable import Publishable
 
 
 __all__ = [
-    'Annotatable',
-    'Authorable',
-    'Expirable',
-    'Locatable',
-    'Permalinkable',
-    'Timestampable',
-    'Publishable'
+    "Annotatable",
+    "Authorable",
+    "Expirable",
+    "Locatable",
+    "Permalinkable",
+    "Timestampable",
+    "Publishable",
 ]

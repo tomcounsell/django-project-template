@@ -11,6 +11,7 @@ from typing import Dict, List, Set, Tuple
 
 class TestType(Enum):
     """Test types supported by the testing framework."""
+
     UNIT = "unit"
     INTEGRATION = "integration"
     E2E = "e2e"
@@ -21,6 +22,7 @@ class TestType(Enum):
 
 class TestScope(Enum):
     """Scopes or domains that tests can focus on."""
+
     MODEL = "model"
     VIEW = "view"
     FORM = "form"
@@ -79,7 +81,7 @@ SERVER_URL = "http://localhost:8000"
 # Browser settings
 BROWSER_SETTINGS = {
     "headless": True,  # Run in headless mode by default
-    "slow_mo": 0,      # Slow motion in milliseconds (for debugging)
+    "slow_mo": 0,  # Slow motion in milliseconds (for debugging)
     "type": "chromium",  # Browser type (chromium, firefox, webkit)
 }
 

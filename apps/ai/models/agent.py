@@ -8,6 +8,7 @@ class Agent(timestampable.Timestampable, models.Model):
     """
     Represents an AI agent with configuration for a specific task or purpose.
     """
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
 

@@ -1,7 +1,7 @@
 """
 Test cases for Django views in the public app.
 
-These tests verify that views correctly handle HTTP requests, 
+These tests verify that views correctly handle HTTP requests,
 render proper templates, provide appropriate context, and
 handle form submissions correctly.
 

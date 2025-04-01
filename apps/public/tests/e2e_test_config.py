@@ -17,7 +17,7 @@ DEFAULT_TEST_PASSWORD = "testpassword123"
 # Browser configuration
 BROWSER_CONFIG = {
     "headless": True,  # Set to False to watch tests in browser
-    "slow_mo": 100,    # Slow down browser actions (ms)
+    "slow_mo": 100,  # Slow down browser actions (ms)
     "browser_type": "chromium",  # "chromium", "firefox", or "webkit"
     "default_timeout": 5000,
     "navigation_timeout": 10000,
@@ -27,7 +27,7 @@ BROWSER_CONFIG = {
 VIEWPORTS = {
     "desktop": {"width": 1280, "height": 800},
     "tablet": {"width": 768, "height": 1024},
-    "mobile": {"width": 375, "height": 667}
+    "mobile": {"width": 375, "height": 667},
 }
 
 # Screenshot directories
@@ -43,12 +43,14 @@ SCREENSHOTS_DIRS = {
 # Test report directory
 REPORTS_DIR = "test_reports/browser"
 
+
 # Ensure all directories exist
 def ensure_directories():
     """Create all required directories if they don't exist."""
     os.makedirs(REPORTS_DIR, exist_ok=True)
     for dir_path in SCREENSHOTS_DIRS.values():
         os.makedirs(dir_path, exist_ok=True)
+
 
 # Check if server is running
 def is_server_running(host="localhost", port=8000):

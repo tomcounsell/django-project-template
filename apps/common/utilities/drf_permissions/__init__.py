@@ -3,7 +3,11 @@ Django Rest Framework permissions.
 """
 
 from rest_framework import permissions
-from apps.common.utilities.drf_permissions.api_key import HasUserAPIKey, HasTeamAPIKey, HasAnyAPIKey
+from apps.common.utilities.drf_permissions.api_key import (
+    HasUserAPIKey,
+    HasTeamAPIKey,
+    HasAnyAPIKey,
+)
 
 
 class IsCreateAction(permissions.BasePermission):
@@ -12,4 +16,4 @@ class IsCreateAction(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return view.action == 'create'
+        return view.action == "create"

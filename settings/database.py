@@ -1,6 +1,7 @@
 """
 Database and caching settings for the project.
 """
+
 import logging
 import os
 
@@ -10,7 +11,7 @@ from settings.env import DEBUG, LOCAL
 
 # Database configuration - prefer DATABASE_URL if available
 # For local development, override in .env.local
-database_url = os.environ.get('DATABASE_URL')
+database_url = os.environ.get("DATABASE_URL")
 if database_url:
     DATABASES = {
         "default": dj_database_url.config(),
@@ -18,13 +19,13 @@ if database_url:
 else:
     # Fallback to individual database settings
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'local_postgres_db_name'),
-            'USER': os.environ.get('DB_USER', 'local_postgres_username'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'local_postgres_password'),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME", "local_postgres_db_name"),
+            "USER": os.environ.get("DB_USER", "local_postgres_username"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", "local_postgres_password"),
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
         }
     }
 

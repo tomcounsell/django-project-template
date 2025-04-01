@@ -44,14 +44,14 @@ def user():
 @pytest.fixture
 def authenticated_request(request_factory, user):
     """Return a GET request with an authenticated user."""
-    request = request_factory.get('/')
+    request = request_factory.get("/")
     request.user = user
-    
+
     # Add session
     middleware = SessionMiddleware(lambda x: None)
     middleware.process_request(request)
     request.session.save()
-    
+
     return request
 
 
@@ -59,32 +59,33 @@ def authenticated_request(request_factory, user):
 def htmx_request(authenticated_request):
     """Return a request with HTMX headers."""
     authenticated_request.htmx = True
-    authenticated_request.META['HTTP_HX_REQUEST'] = 'true'
+    authenticated_request.META["HTTP_HX_REQUEST"] = "true"
     return authenticated_request
 
 
 @pytest.fixture
 def messages_request(authenticated_request):
     """Return a request with message support."""
-    setattr(authenticated_request, '_messages', FallbackStorage(authenticated_request))
+    setattr(authenticated_request, "_messages", FallbackStorage(authenticated_request))
     return authenticated_request
 
 
 @pytest.fixture
 def create_post_request(request_factory, user):
     """Return a factory function to create POST requests with data."""
-    def _create_post_request(data, url='/'):
+
+    def _create_post_request(data, url="/"):
         request = request_factory.post(url, data)
         request.user = user
-        
+
         # Add session
         middleware = SessionMiddleware(lambda x: None)
         middleware.process_request(request)
         request.session.save()
-        
+
         # Add messages
-        setattr(request, '_messages', FallbackStorage(request))
-        
+        setattr(request, "_messages", FallbackStorage(request))
+
         return request
-    
+
     return _create_post_request

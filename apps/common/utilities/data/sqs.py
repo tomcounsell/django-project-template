@@ -5,6 +5,7 @@ import json
 from settings import QUEUE_NAME, AWS_OPTIONS, BETA_QUEUE_NAME, TEST_QUEUE_NAME
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,9 +13,11 @@ def send_sqs(dictionary):
     message = Message()
     message.set_body(json.dumps(dictionary))
 
-    sqs_connection = boto.sqs.connect_to_region("us-east-1",
-                                                aws_access_key_id=AWS_OPTIONS['AWS_ACCESS_KEY_ID'],
-                                                aws_secret_access_key=AWS_OPTIONS['AWS_SECRET_ACCESS_KEY'])
+    sqs_connection = boto.sqs.connect_to_region(
+        "us-east-1",
+        aws_access_key_id=AWS_OPTIONS["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=AWS_OPTIONS["AWS_SECRET_ACCESS_KEY"],
+    )
 
     if QUEUE_NAME:
         logging.debug("emitted to QUEUE_NAME queue :" + QUEUE_NAME)

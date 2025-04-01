@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 
 from apps.public.helpers import MainContentView
 
+
 class LoginView(auth_views.LoginView):
     template_name = "account/login.html"
     redirect_authenticated_user = True

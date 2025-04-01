@@ -1,6 +1,7 @@
 """
 Tests to verify template paths work correctly during and after migration of templates.
 """
+
 import os
 import glob
 from django.test import TestCase, Client
@@ -18,7 +19,7 @@ class TemplatePathsTestCase(TestCase):
         """
         app_template_dir = os.path.join(settings.BASE_DIR, "apps/public/templates")
         root_template_dir = os.path.join(settings.BASE_DIR, "templates")
-        
+
         # After migration, these files should be in the root templates directory
         required_templates = [
             "base.html",
@@ -27,21 +28,25 @@ class TemplatePathsTestCase(TestCase):
             "layout/footer.html",
             "layout/nav/navbar.html",
             "layout/nav/account_menu.html",
-            "layout/messages/toast.html"
+            "layout/messages/toast.html",
         ]
-        
+
         for template_path in required_templates:
             # Check if file exists in the root dir only
             app_file_path = os.path.join(app_template_dir, template_path)
             root_file_path = os.path.join(root_template_dir, template_path)
-            
+
             # Template should be in the root directory
-            self.assertTrue(os.path.isfile(root_file_path), 
-                          f"Template {template_path} should be in root template directory")
-            
+            self.assertTrue(
+                os.path.isfile(root_file_path),
+                f"Template {template_path} should be in root template directory",
+            )
+
             # After full migration, template should not be in app directory
-            self.assertFalse(os.path.isfile(app_file_path),
-                          f"Template {template_path} should not be in app template directory after migration")
+            self.assertFalse(
+                os.path.isfile(app_file_path),
+                f"Template {template_path} should not be in app template directory after migration",
+            )
 
     def test_view_uses_templates(self):
         """Test that views can access the templates from the root directory."""

@@ -10,13 +10,14 @@ class AICompletion(timestampable.Timestampable, models.Model):
     Stores AI completions from various providers.
     Records both the input prompt and the generated completion, as well as metadata.
     """
+
     # Relationships
     prompt_template = models.ForeignKey(
         PromptTemplate,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="completions"
+        related_name="completions",
     )
 
     # Input details
@@ -46,5 +47,5 @@ class AICompletion(timestampable.Timestampable, models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        completion_date = self.created_at.strftime('%Y-%m-%d %H:%M')
+        completion_date = self.created_at.strftime("%Y-%m-%d %H:%M")
         return f"{self.provider}/{self.model} completion from {completion_date}"

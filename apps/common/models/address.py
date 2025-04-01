@@ -10,11 +10,11 @@ from apps.common.behaviors.timestampable import Timestampable
 class Address(Timestampable, models.Model):
     """
     A model representing a physical address.
-    
+
     This model provides a standardized way to store address information,
     including street addresses, city, region, postal code, and country.
     It's designed to be reusable across various entities that need address data.
-    
+
     Attributes:
         id (UUID): Unique identifier for the address
         line_1 (str): Primary address line (street address)
@@ -25,11 +25,11 @@ class Address(Timestampable, models.Model):
         postal_code (str): ZIP or postal code
         country (ForeignKey): Reference to the Country model
         google_map_link (URL): Custom Google Maps URL for this address
-        
+
     Properties:
         inline_string (str): Returns a single-line representation of the address
         google_map_url (str): Returns a Google Maps URL for the address
-    
+
     Example:
         ```python
         address = Address.objects.create(
@@ -41,6 +41,7 @@ class Address(Timestampable, models.Model):
         )
         ```
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     line_1 = models.CharField(max_length=100, null=True, blank=True)
     line_2 = models.CharField(max_length=100, null=True, blank=True)
@@ -59,7 +60,7 @@ class Address(Timestampable, models.Model):
     def inline_string(self) -> str:
         """
         Get a single-line string representation of the address.
-        
+
         Returns:
             str: A formatted string with address components (line 1, city, region)
         """
@@ -72,10 +73,10 @@ class Address(Timestampable, models.Model):
     def google_map_url(self) -> str:
         """
         Get a Google Maps URL for this address.
-        
+
         Uses the custom google_map_link if provided, otherwise
         generates a search URL based on the address components.
-        
+
         Returns:
             str: A URL that will open this address in Google Maps
         """
@@ -83,22 +84,22 @@ class Address(Timestampable, models.Model):
             self.google_map_link
             or "http://maps.google.com/?q=%s" % self.inline_string.replace(" ", "%20")
         )
-    
+
     @property
     def is_complete(self) -> bool:
         """
         Check if the address has all required components.
-        
+
         Returns:
             bool: True if the address has line_1, city, postal_code, and country
         """
         return all([self.line_1, self.city, self.postal_code, self.country])
-    
+
     @property
     def formatted_address(self) -> str:
         """
         Get a multi-line formatted address string.
-        
+
         Returns:
             str: A formatted address string with line breaks
         """
@@ -109,7 +110,7 @@ class Address(Timestampable, models.Model):
             lines.append(self.line_2)
         if self.line_3:
             lines.append(self.line_3)
-            
+
         city_region_postal = []
         if self.city:
             city_region_postal.append(self.city)
@@ -117,20 +118,20 @@ class Address(Timestampable, models.Model):
             city_region_postal.append(self.region)
         if self.postal_code:
             city_region_postal.append(self.postal_code)
-            
+
         if city_region_postal:
             lines.append(", ".join(city_region_postal))
-            
+
         if self.country:
             lines.append(str(self.country))
-            
+
         return "\n".join(lines)
 
     # MODEL FUNCTIONS
     def __str__(self) -> str:
         """
         Get a string representation of the address.
-        
+
         Returns:
             str: The inline string representation of the address
         """
@@ -143,13 +144,14 @@ class Address(Timestampable, models.Model):
 class AddressForm(ModelForm):
     """
     Form for creating and editing Address objects.
-    
+
     This form provides fields for all address components and designates
     which fields are required for a valid address.
-    
+
     Attributes:
         Meta: Configuration for the form, including fields and required fields
     """
+
     class Meta:
         model = Address
         fields = [

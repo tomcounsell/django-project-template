@@ -11,16 +11,17 @@ from apps.public.helpers.main_content_view import MainContentView
 class HTMXView(MainContentView):
     """
     Specialized view for handling HTMX requests with enhanced features.
-    
+
     This view extends MainContentView with additional functionality for working
     with HTMX, including out-of-band (OOB) updates, URL history management,
     and more efficient partial rendering.
-    
+
     Attributes:
         template_name (str): Primary template to render
         oob_templates (Dict[str, str]): Mapping of element IDs to templates for OOB updates
         push_url (str): URL to push into browser history
     """
+
     template_name: Optional[str] = None
     oob_templates: Optional[Dict[str, str]] = None
     push_url: Optional[str] = None
@@ -49,7 +50,7 @@ class HTMXView(MainContentView):
             context: Context data for the template(s)
             oob_templates: A dictionary of OOB templates with target IDs as keys
             push_url: URL to push to the browser history
-            
+
         Returns:
             HttpResponse with combined template output and HTMX-specific modifications
         """
@@ -87,12 +88,12 @@ class HTMXView(MainContentView):
                 # Check if the content already has an OOB attribute
                 if 'hx-swap-oob="true"' not in oob_content:
                     # Insert the OOB attribute at the first tag
-                    first_tag_end = oob_content.find('>')
+                    first_tag_end = oob_content.find(">")
                     if first_tag_end > 0:
                         oob_content = (
-                            oob_content[:first_tag_end] + 
-                            f' id="{oob_target_id}" hx-swap-oob="true"' + 
-                            oob_content[first_tag_end:]
+                            oob_content[:first_tag_end]
+                            + f' id="{oob_target_id}" hx-swap-oob="true"'
+                            + oob_content[first_tag_end:]
                         )
                 oob_html += oob_content
 

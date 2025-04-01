@@ -42,53 +42,47 @@ def ensure_django_settings():
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Run Django tests")
-    
+
     # Test selection
     parser.add_argument(
-        "--type", 
-        choices=["all", "unit", "integration", "e2e", "visual", "htmx", "responsive"], 
+        "--type",
+        choices=["all", "unit", "integration", "e2e", "visual", "htmx", "responsive"],
         default="all",
-        help="Type of tests to run"
+        help="Type of tests to run",
     )
-    
+
     # Test paths
     parser.add_argument(
-        "--path", 
+        "--path",
         default=None,
-        help="Specific test path or pattern to run (e.g., apps/common/tests/test_models)"
+        help="Specific test path or pattern to run (e.g., apps/common/tests/test_models)",
     )
-    
+
     # Browser options
     parser.add_argument(
-        "--no-headless", 
+        "--no-headless",
         action="store_true",
-        help="Run browser tests in non-headless mode"
+        help="Run browser tests in non-headless mode",
     )
-    
+
     # Coverage options
     parser.add_argument(
-        "--coverage", 
-        action="store_true",
-        help="Run tests with coverage"
+        "--coverage", action="store_true", help="Run tests with coverage"
     )
     parser.add_argument(
-        "--html-report", 
-        action="store_true",
-        help="Generate HTML coverage report"
+        "--html-report", action="store_true", help="Generate HTML coverage report"
     )
     parser.add_argument(
-        "--xml-report", 
-        action="store_true",
-        help="Generate XML coverage report"
+        "--xml-report", action="store_true", help="Generate XML coverage report"
     )
-    
+
     return parser.parse_args()
 
 
 def get_pytest_args(args):
     """Build pytest command arguments based on options."""
     pytest_args = ["python", "-m", "pytest"]
-    
+
     # Test path selection
     if args.path:
         pytest_args.append(args.path)
@@ -105,21 +99,21 @@ def get_pytest_args(args):
     elif args.type == "responsive":
         pytest_args.append("apps/**/tests/test_responsive_*.py")
     # "all" type doesn't add any path arguments
-    
+
     # Add coverage args if requested
     if args.coverage:
         pytest_args.extend(["--cov=apps"])
-        
+
         if args.html_report:
             pytest_args.append("--cov-report=html:reports/coverage_html")
-            
+
         if args.xml_report:
             pytest_args.append("--cov-report=xml:reports/coverage.xml")
-    
+
     # Add browser options for E2E tests
     if args.type in ["e2e", "visual", "htmx", "responsive"] and args.no_headless:
         os.environ["HEADLESS"] = "false"
-    
+
     return pytest_args
 
 
@@ -127,7 +121,7 @@ def run_tests(cmd_args):
     """Run the tests with the given command arguments."""
     cmd_str = " ".join(cmd_args)
     print(f"\nRunning: {cmd_str}\n")
-    
+
     try:
         result = subprocess.run(cmd_args, check=True)
         return result.returncode
@@ -140,14 +134,14 @@ def main():
     """Main entry point of the test runner."""
     # Parse command-line arguments
     args = parse_args()
-    
+
     # Ensure Django settings are set
     ensure_django_settings()
-    
+
     # Create reports directory if needed
     if args.coverage and (args.html_report or args.xml_report):
         Path("reports").mkdir(exist_ok=True)
-    
+
     # Build and run pytest command
     pytest_args = get_pytest_args(args)
     return run_tests(pytest_args)

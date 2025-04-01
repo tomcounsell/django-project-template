@@ -21,15 +21,14 @@ class MoneyField(models.IntegerField):
         except (TypeError, ValueError):
             msg = "This value must be an integer or a "
             msg += "string represents an integer."
-            raise ValidationError(
-                msg
-            )
+            raise ValidationError(msg)
 
     def from_db_value(self, value, expression, connection, context):
         return self.to_python(value)
 
     def formfield(self, **kwargs):
         from django.forms import FloatField
-        defaults = {'form_class': FloatField}
+
+        defaults = {"form_class": FloatField}
         defaults.update(kwargs)
         return super(MoneyField, self).formfield(**defaults)
