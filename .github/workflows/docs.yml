@@ -77,13 +77,36 @@ jobs:
           cp .env.example .env.local
           echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/test_db" >> .env.local
           echo "DJANGO_SETTINGS_MODULE=settings" >> .env.local
-      
-      - name: Run migrations
-        run: |
-          python manage.py migrate
+          echo "DOCS_BUILD_MODE=1" >> .env.local
       
       - name: Modify documentation build script for CI
         run: |
+          # First, create a mock settings file to avoid database connections
+          cat << EOF > ./docs/temp_sphinx_settings.py
+          # Mock settings file for documentation build
+          from settings.base import *
+          
+          # Bypass database configuration
+          DATABASES = {
+              'default': {
+                  'ENGINE': 'django.db.backends.sqlite3',
+                  'NAME': ':memory:',
+              }
+          }
+          
+          # Disable unnecessary apps
+          INSTALLED_APPS = [
+              app for app in INSTALLED_APPS 
+              if not app.startswith('django.contrib.') or app == 'django.contrib.contenttypes'
+          ]
+          
+          # Add required apps for docs
+          INSTALLED_APPS.append('django.contrib.contenttypes')
+          
+          # Disable middleware
+          MIDDLEWARE = []
+          EOF
+          
           # Create a modified version of build_all_docs.sh without API schema fetching
           cat << EOF > ./docs/scripts/build_docs_ci.sh
           #!/bin/bash
@@ -106,8 +129,13 @@ jobs:
           echo "Skipping API schema generation in CI environment"
           
           # Create placeholder API documentation
-          echo "API Documentation\n================" > "\$API_DOCS_DIR/endpoints.rst"
+          echo "API Documentation" > "\$API_DOCS_DIR/endpoints.rst"
+          echo "================" >> "\$API_DOCS_DIR/endpoints.rst"
+          echo "" >> "\$API_DOCS_DIR/endpoints.rst"
           echo "API documentation generation skipped in CI environment." >> "\$API_DOCS_DIR/endpoints.rst"
+          
+          # Set the special settings module for docs
+          export DJANGO_SETTINGS_MODULE=docs.temp_sphinx_settings
           
           # Step 2: Build HTML documentation directly
           echo "Building HTML documentation..."
