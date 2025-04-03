@@ -43,16 +43,16 @@
         <!-- Desktop navigation -->
         <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
           <!-- Current: "border-navy-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-          <a href="/" class="inline-flex items-center border-b-2 border-navy-500 px-1 pt-1 text-sm font-medium text-gray-900">
+          <a href="/" class="inline-flex items-center border-b-2 {% if active_section == 'home' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Home
           </a>
           {% if user.is_authenticated %}
             {% if user.teams.exists %}
-            <a href="{% url 'public:team-list' %}" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+            <a href="{% url 'public:team-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'teams' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
               Team
             </a>
             {% endif %}
-            <a href="{% url 'public:todo-list' %}" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+            <a href="{% url 'public:todo-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'todos' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
               Todos
             </a>
           {% endif %}
@@ -87,16 +87,16 @@
   <div class="hidden sm:hidden" id="mobile-menu">
     <div class="space-y-1 pb-3 pt-2">
       <!-- Current: "bg-navy-50 border-navy-500 text-navy-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
-      <a href="/" class="block border-l-4 border-navy-500 bg-navy-50 py-2 pl-3 pr-4 text-base font-medium text-navy-700">
+      <a href="/" class="block border-l-4 {% if active_section == 'home' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
         Home
       </a>
       {% if user.is_authenticated %}
         {% if user.teams.exists %}
-        <a href="{% url 'public:team-list' %}" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700">
+        <a href="{% url 'public:team-list' %}" class="block border-l-4 {% if active_section == 'teams' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
           Team
         </a>
         {% endif %}
-        <a href="{% url 'public:todo-list' %}" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700">
+        <a href="{% url 'public:todo-list' %}" class="block border-l-4 {% if active_section == 'todos' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
           Todos
         </a>
       {% endif %}

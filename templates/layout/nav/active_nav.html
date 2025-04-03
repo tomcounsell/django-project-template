@@ -3,59 +3,20 @@
   =========================
   
   Purpose:
-  Updates navigation links to reflect the current page without using JavaScript.
-  This component is designed to be included as an OOB swap in HTMX responses.
+  This is a server-side implementation for marking active navigation items.
+  All logic is handled through context processors and template conditionals.
   
   Context Variables:
   - active_section: The current active section (e.g., 'home', 'teams', 'todos')
   
   Usage:
-  {% include "layout/nav/active_nav.html" with active_section="todos" %}
+  The active_section is set automatically by the context processor based on the URL.
   
   HTMX OOB Support:
-  This component should be included in HTMX responses to update the navigation state.
+  This component is no longer needed for HTMX OOB updates, as the navigation state
+  is rendered server-side. This file is kept as a placeholder for backward compatibility.
 {% endcomment %}
 
 <div id="nav-active-marker" hx-swap-oob="true">
-  <script>
-    // Simple utility to mark the active navigation item
-    document.addEventListener('DOMContentLoaded', function() {
-      // Reset all active states
-      document.querySelectorAll('nav a').forEach(function(link) {
-        link.classList.remove('text-blue-600', 'bg-blue-50');
-        link.classList.add('text-gray-700', 'hover:text-blue-600', 'hover:bg-blue-50');
-      });
-      
-      // Set active state based on current section
-      const activeSection = "{{ active_section }}";
-      let selector = "";
-      
-      switch(activeSection) {
-        case "home":
-          selector = 'nav a[href="/"]';
-          break;
-        case "teams":
-          selector = 'nav a[href*="/teams"]';
-          break;
-        case "todos":
-          selector = 'nav a[href*="/todos"]';
-          break;
-        case "account":
-          selector = 'nav a[href*="/account"]';
-          break;
-        case "admin":
-          selector = 'nav a[href*="/admin"]';
-          break;
-        default:
-          // No active item
-          return;
-      }
-      
-      // Apply active state
-      document.querySelectorAll(selector).forEach(function(link) {
-        link.classList.remove('text-gray-700', 'hover:text-blue-600', 'hover:bg-blue-50');
-        link.classList.add('text-blue-600', 'bg-blue-50');
-      });
-    });
-  </script>
+  <!-- No JavaScript needed - active state is rendered server-side -->
 </div>
