@@ -1277,39 +1277,60 @@ class UploadAdmin(ModelAdmin):
 
 @admin.register(Image)
 class ImageAdmin(ModelAdmin):
-    list_display = ("name_display", "dimensions_display", "preview", "created_at")
-    search_fields = ("name", "original")
-    readonly_fields = ("created_at", "modified_at", "dimensions_display", "preview")
+    list_display = ("display_name", "dimensions_display", "preview", "created_at")
+    search_fields = ("upload__name", "upload__original", "id")
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Only use timestamp fields if they are available."""
+        readonly_fields = ["dimensions_display", "preview"]
+        if hasattr(obj, 'upload') and obj.upload:
+            if hasattr(obj.upload, 'created_at'):
+                readonly_fields.append('created_at')
+            if hasattr(obj.upload, 'modified_at'):
+                readonly_fields.append('modified_at')
+        return readonly_fields
 
     fieldsets = (
-        ("Image Information", {"fields": ("name", "original", "thumbnail_url")}),
+        ("Image Information", {"fields": ("upload", "thumbnail_url")}),
         ("File Information", {"fields": ("dimensions_display", "preview")}),
-        ("S3 Storage", {"fields": ("s3_bucket", "s3_key")}),
-        ("Metadata", {"fields": ("meta_data",)}),
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
-    def name_display(self, obj):
-        return obj.name or f"Image {obj.id}"
+    def display_name(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'name'):
+            return obj.upload.name or f"Image {obj.id}"
+        return f"Image {obj.id}"
 
     def dimensions_display(self, obj):
         """Display image dimensions if available"""
-        if obj.width and obj.height:
+        if hasattr(obj, 'width') and hasattr(obj, 'height') and obj.width and obj.height:
             return f"{obj.width} x {obj.height}"
         return "-"
 
     def preview(self, obj):
         """Display a preview of the image"""
-        if obj.original:
+        if hasattr(obj, 'original') and obj.original:
             return format_html(
                 '<img src="{}" style="max-width: 300px; max-height: 200px;" />',
                 obj.original,
             )
         return "-"
+        
+    def created_at(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'created_at'):
+            return obj.upload.created_at
+        return None
+        
+    def modified_at(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'modified_at'):
+            return obj.upload.modified_at
+        return None
 
-    name_display.short_description = "Name"
+    display_name.short_description = "Name"
     dimensions_display.short_description = "Dimensions"
     preview.short_description = "Preview"
+    created_at.short_description = "Created At"
+    modified_at.short_description = "Modified At"
 
 
 @admin.register(Payment)
@@ -1461,20 +1482,45 @@ class SubscriptionAdmin(ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(ModelAdmin):
-    list_display = ("id", "name_display", "file_type_display", "created_at")
-    search_fields = ("name", "original")
-    readonly_fields = ("created_at", "modified_at")
+    list_display = ("id", "display_name", "display_type", "created_at")
+    search_fields = ("id",)
+    
+    def get_readonly_fields(self, request, obj=None):
+        """Only use timestamp fields if they are available."""
+        readonly_fields = []
+        if hasattr(obj, 'upload') and obj.upload:
+            if hasattr(obj.upload, 'created_at'):
+                readonly_fields.append('created_at')
+            if hasattr(obj.upload, 'modified_at'):
+                readonly_fields.append('modified_at')
+        return readonly_fields
 
-    def name_display(self, obj):
-        return obj.name or f"Document {obj.id}"
+    def display_name(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'name'):
+            return obj.upload.name or f"Document {obj.id}"
+        return f"Document {obj.id}"
 
-    def file_type_display(self, obj):
-        if obj.file_type:
-            return format_html(
-                '<span class="unfold-badge bg-blue-500 text-white">{}</span>',
-                obj.file_type,
-            )
+    def display_type(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'file_type'):
+            file_type = obj.upload.file_type
+            if file_type:
+                return format_html(
+                    '<span class="unfold-badge bg-blue-500 text-white">{}</span>',
+                    file_type,
+                )
         return "-"
+        
+    def created_at(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'created_at'):
+            return obj.upload.created_at
+        return None
+        
+    def modified_at(self, obj):
+        if hasattr(obj, 'upload') and obj.upload and hasattr(obj.upload, 'modified_at'):
+            return obj.upload.modified_at
+        return None
 
-    name_display.short_description = "Name"
-    file_type_display.short_description = "Type"
+    display_name.short_description = "Name"
+    display_type.short_description = "Type"
+    created_at.short_description = "Created At"
+    modified_at.short_description = "Modified At"
