@@ -11,9 +11,11 @@ logger = logging.getLogger(__name__)
 
 class LoopsClient:
     BASE_URL = "https://app.loops.so/api/v1"
-
-    def __init__(self, api_key: Optional[str] = None):
+    
+    def __init__(self, api_key: Optional[str] = None, debug_mode: Optional[bool] = None):
         self.api_key = api_key or LOOPS_API_KEY
+        # Use provided debug_mode if specified, otherwise use Django's DEBUG setting
+        self.debug_mode = debug_mode if debug_mode is not None else DEBUG
 
     def _make_request(
         self,
@@ -32,7 +34,7 @@ class LoopsClient:
         :return: Parsed JSON response
         """
         # In debug mode, just log the request details and return success
-        if DEBUG:
+        if self.debug_mode:
             logger.info(
                 f"[DEBUG MODE] Loops API request would have been: {method} {endpoint}"
             )
@@ -90,7 +92,7 @@ class LoopsClient:
                                   transactional email template.
         """
         # In debug mode, just log the request details and return success
-        if DEBUG:
+        if self.debug_mode:
             logger.info(f"[DEBUG MODE] Would have sent transactional email:")
             logger.info(f"[DEBUG MODE] To: {to_email}")
             logger.info(f"[DEBUG MODE] Template ID: {transactional_id}")
@@ -126,7 +128,7 @@ class LoopsClient:
         :param str event_name: The name of the event
         """
         # In debug mode, just log the request details and return success
-        if DEBUG:
+        if self.debug_mode:
             logger.info(f"[DEBUG MODE] Would have sent Loops event:")
             logger.info(f"[DEBUG MODE] To: {to_email}")
             logger.info(f"[DEBUG MODE] Event: {event_name}")

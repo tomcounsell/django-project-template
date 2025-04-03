@@ -22,7 +22,8 @@ We've made significant progress in fixing the test suite:
 - [x] Fix Twilio live mode integration tests (patching TwilioRestClient correctly)
 - [x] Fix AWS S3 integration tests (proper mocking)
 - [ ] Refactor test classes with constructors to use `setUp()` instead of `__init__()`
-- [ ] Fix Loops and Stripe integration test mocks
+- [x] Fix Loops integration test mocks
+- [ ] Fix Stripe integration test mocks
 - [x] Install missing browser test dependencies (selenium and pytest-asyncio)
 
 ### Implementation Issues

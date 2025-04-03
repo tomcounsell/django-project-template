@@ -12,7 +12,6 @@ from apps.integration.loops.shortcuts import (
 )
 
 
-@override_settings(DEBUG=True)
 class LoopsShortcutsTestCase(TestCase):
     """Test Loops shortcuts"""
     

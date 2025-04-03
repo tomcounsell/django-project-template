@@ -2,6 +2,7 @@
 Unit tests for the LoopsClient
 """
 import pytest
+import requests
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from django.test import override_settings
@@ -9,13 +10,12 @@ from django.test import override_settings
 from apps.integration.loops.client import LoopsClient, LoopsAPIError
 
 
-@override_settings(DEBUG=True)
 class LoopsClientDebugModeTestCase(TestCase):
     """Test LoopsClient in DEBUG mode"""
     
     def setUp(self):
         super().setUp()
-        self.client = LoopsClient(api_key="test_key")
+        self.client = LoopsClient(api_key="test_key", debug_mode=True)
         
     def test_transactional_email_debug_mode(self):
         """Test transactional_email in DEBUG mode"""
@@ -36,13 +36,12 @@ class LoopsClientDebugModeTestCase(TestCase):
         assert result == {"success": True}
 
 
-@override_settings(DEBUG=False, LOCAL=False)
 class LoopsClientLiveTestCase(TestCase):
     """Test LoopsClient in live mode with mocked requests"""
     
     def setUp(self):
         super().setUp()
-        self.client = LoopsClient(api_key="test_key")
+        self.client = LoopsClient(api_key="test_key", debug_mode=False)
         
     @patch("apps.integration.loops.client.requests.request")
     def test_transactional_email_success(self, mock_request):
@@ -112,7 +111,7 @@ class LoopsClientLiveTestCase(TestCase):
     def test_network_error(self, mock_request):
         """Test network error handling"""
         # Setup the mock to raise an exception
-        mock_request.side_effect = Exception("Network error")
+        mock_request.side_effect = requests.RequestException("Network error")
         
         # Call the method and check for exception
         with pytest.raises(LoopsAPIError, match="Network error"):

@@ -150,6 +150,36 @@ class User(AbstractUser, Timestampable):
             self.agreed_to_terms_at = None
 
 
+    def get_login_url(self, next_url=None) -> str:
+        """
+        Generate a magic login URL for this user.
+        
+        This URL contains the login code needed for passwordless login.
+        
+        Args:
+            next_url (str, optional): URL to redirect to after login
+            
+        Returns:
+            str: Full login URL with code
+        """
+        from django.conf import settings
+        from django.urls import reverse
+        
+        # Construct the base URL (with https:// if not already present)
+        hostname = settings.HOSTNAME
+        if not hostname.startswith(('http://', 'https://')):
+            hostname = f"https://{hostname}"
+            
+        # Get the login URL with code parameter
+        login_path = reverse('public:account-login')
+        url = f"{hostname}{login_path}?code={self.four_digit_login_code}"
+        
+        # Add next parameter if provided
+        if next_url:
+            url = f"{url}&next={next_url}"
+            
+        return url
+    
     # MODEL FUNCTIONS
     def __str__(self) -> str:
         """
