@@ -88,13 +88,17 @@ This project follows a clean architecture with:
 ### Frontend 🎨
 - [x] HTMX OOB support for toasts, alerts, modals, nav - completed with HTMXView class
 - [x] Show active state on navigation links based on current page (without JavaScript)
-- [ ] Build example pages (landing, pricing, blog)
+- [x] Build example pages (landing, pricing, blog)
 - [ ] Implement accessibility best practices
 
 ## Todo -> Wish List
 - [ ] Rename the Todo model to Wish
 - [ ] refactor all views managing todo items into wish list items (wishes)
 - [ ] The todo list page is now a wish list page
+- [ ] Create a new staff app that will be backoffice admin tools
+- [ ] Move the Wish model and it's views and templates to the staff app
+- [ ] Register the staff app and it's template dir in settings/base.py
+- [ ] create and register urls.py and admin.py according to our existing patterns
 
 ### Code Quality 🧪
 - [ ] Refactor redundant template logic

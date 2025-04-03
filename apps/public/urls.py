@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
-from .views import ComponentExamplesView, account
+from .views import ComponentExamplesView, account, pages
 from .views.components.oob_examples import urlpatterns as oob_urlpatterns
 from .views.teams.member_views import (
     add_team_member,
@@ -28,6 +28,33 @@ urlpatterns += [
         "",
         account.HomeView.as_view(),
         name="home",
+    ),
+]
+
+# Example pages
+urlpatterns += [
+    # Landing page
+    path(
+        "landing/",
+        pages.LandingView.as_view(),
+        name="landing",
+    ),
+    # Pricing page
+    path(
+        "pricing/",
+        pages.PricingView.as_view(),
+        name="pricing",
+    ),
+    # Blog pages
+    path(
+        "blog/",
+        pages.BlogView.as_view(),
+        name="blog",
+    ),
+    path(
+        "blog/<slug:slug>/",
+        pages.BlogPostView.as_view(),
+        name="blog-post",
     ),
 ]
 

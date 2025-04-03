@@ -26,6 +26,8 @@ def active_navigation(request: HttpRequest) -> Dict[str, Any]:
     # Determine active section based on URL path
     if path == "/":
         active_section = "home"
+    elif path.startswith("/landing"):
+        active_section = "home"  # Treat landing as home for nav    
     elif path.startswith("/todos"):
         active_section = "todos"
     elif path.startswith("/team"):
@@ -34,5 +36,9 @@ def active_navigation(request: HttpRequest) -> Dict[str, Any]:
         active_section = "account"
     elif path.startswith("/admin"):
         active_section = "admin"
+    elif path.startswith("/pricing"):
+        active_section = "pricing"
+    elif path.startswith("/blog"):
+        active_section = "blog"
     
     return {"active_section": active_section}
