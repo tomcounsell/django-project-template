@@ -324,15 +324,27 @@ class UploadModelTestCase(TimestampableTest, TestCase):
         # Mock delete_from_s3
         with mock.patch.object(Upload, 'delete_from_s3') as mock_delete_from_s3:
             # Test with S3 bucket and key
-            self.s3_upload.delete()
+            s3_upload_copy = Upload.objects.create(
+                original="https://example.com/test.txt",
+                s3_bucket="test-bucket",
+                s3_key="uploads/test-file.txt"
+            )
+            s3_upload_copy.delete()
             mock_delete_from_s3.assert_called_once()
             
             # Test with S3 delete error
             mock_delete_from_s3.reset_mock()
             mock_delete_from_s3.side_effect = Exception("Test error")
             
+            # Create a new upload object for the error case
+            s3_upload_error = Upload.objects.create(
+                original="https://example.com/error.txt",
+                s3_bucket="test-bucket",
+                s3_key="uploads/error-file.txt"
+            )
+            
             # Should not raise exception
-            self.s3_upload.delete()
+            s3_upload_error.delete()
     
     def test_str_method(self):
         """Test the __str__ method returns the correct value."""

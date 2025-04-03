@@ -14,21 +14,52 @@ class Subscription(Timestampable, models.Model):
         'common.User',
         related_name='subscriptions',
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         help_text=_('User who owns the subscription')
     )
     
-    # Stripe subscription ID
-    stripe_subscription_id = models.CharField(
+    # Stripe fields
+    stripe_id = models.CharField(
         max_length=255,
         blank=True,
         default="",
         help_text=_('Stripe subscription ID')
     )
     
+    stripe_customer_id = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text=_('Stripe customer ID')
+    )
+    
+    stripe_price_id = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text=_('Stripe price ID')
+    )
+    
+    # For backward compatibility
+    stripe_subscription_id = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text=_('Stripe subscription ID (legacy)')
+    )
+    
     # Subscription plan name
     plan_name = models.CharField(
         max_length=100,
         help_text=_('Subscription plan name')
+    )
+    
+    # Plan description
+    plan_description = models.TextField(
+        blank=True,
+        default="",
+        help_text=_('Description of the subscription plan')
     )
     
     # Subscription price in cents
@@ -51,14 +82,22 @@ class Subscription(Timestampable, models.Model):
     )
     
     # Subscription status
+    STATUS_ACTIVE = 'active'
+    STATUS_CANCELED = 'canceled'
+    STATUS_PAST_DUE = 'past_due'
+    STATUS_TRIALING = 'trialing'
+    STATUS_UNPAID = 'unpaid'
+    STATUS_INCOMPLETE = 'incomplete'
+    STATUS_INCOMPLETE_EXPIRED = 'incomplete_expired'
+    
     STATUS_CHOICES = (
-        ('active', _('Active')),
-        ('canceled', _('Canceled')),
-        ('past_due', _('Past Due')),
-        ('trialing', _('Trialing')),
-        ('unpaid', _('Unpaid')),
-        ('incomplete', _('Incomplete')),
-        ('incomplete_expired', _('Incomplete Expired')),
+        (STATUS_ACTIVE, _('Active')),
+        (STATUS_CANCELED, _('Canceled')),
+        (STATUS_PAST_DUE, _('Past Due')),
+        (STATUS_TRIALING, _('Trialing')),
+        (STATUS_UNPAID, _('Unpaid')),
+        (STATUS_INCOMPLETE, _('Incomplete')),
+        (STATUS_INCOMPLETE_EXPIRED, _('Incomplete Expired')),
     )
     status = models.CharField(
         max_length=20,
@@ -123,18 +162,37 @@ class Subscription(Timestampable, models.Model):
         return f"{self.user} - {self.plan_name} ({self.status})"
     
     @property
-    def is_active(self):
+    def active(self):
         """
         Check if the subscription is active.
         """
-        return self.status in ['active', 'trialing']
+        if self.status not in [self.STATUS_ACTIVE, self.STATUS_TRIALING]:
+            return False
+            
+        # Also check if the current period has ended
+        if self.current_period_end and self.current_period_end < timezone.now():
+            return False
+            
+        return True
     
     @property
-    def is_trial(self):
+    def is_active(self):
+        """Alias for active property for backward compatibility."""
+        return self.active
+    
+    @property
+    def is_trialing(self):
         """
         Check if the subscription is in trial period.
         """
-        return self.status == 'trialing'
+        return self.status == self.STATUS_TRIALING
+    
+    @property
+    def is_canceled(self):
+        """
+        Check if the subscription is canceled or set to cancel.
+        """
+        return self.status == self.STATUS_CANCELED or self.cancel_at_period_end
     
     @property
     def price_display(self):
@@ -155,9 +213,29 @@ class Subscription(Timestampable, models.Model):
         return max(0, delta.days)
     
     @property
+    def days_until_renewal(self):
+        """
+        Calculate days until the subscription renews.
+        """
+        if not self.current_period_end:
+            return 0
+            
+        delta = self.current_period_end - timezone.now()
+        return max(0, delta.days)
+    
+    @property
     def is_expiring_soon(self):
         """
         Check if the subscription is expiring within 7 days.
         """
         days = self.days_until_expiration
         return days is not None and days <= 7 and self.is_active
+        
+    @property
+    def owner_display(self):
+        """
+        Get a display string for the subscription owner.
+        """
+        if self.user:
+            return f"User: {self.user.email}"
+        return "Unknown"

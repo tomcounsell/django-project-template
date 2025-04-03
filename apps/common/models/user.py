@@ -34,6 +34,20 @@ class User(AbstractUser, Timestampable):
     is_beta_tester = models.BooleanField(default=False)
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
     
+    # Add these back to fix migration issues
+    has_payment_method = models.BooleanField(default=False)
+    stripe_customer_id = models.CharField(max_length=255, default="", blank=True)
+    
+    @property
+    def has_stripe_customer(self) -> bool:
+        """
+        Check if the user has a Stripe customer ID.
+        
+        Returns:
+            bool: True if the user has a non-empty stripe_customer_id, False otherwise
+        """
+        return bool(self.stripe_customer_id and self.stripe_customer_id.strip())
+    
     @property
     def has_active_subscription(self) -> bool:
         """

@@ -20,20 +20,23 @@ We've made significant progress in fixing the test suite:
 
 ### Remaining Test Structure Issues
 - [x] Fix Twilio live mode integration tests (patching TwilioRestClient correctly)
-- [ ] Fix AWS S3 integration tests (proper mocking)
+- [x] Fix AWS S3 integration tests (proper mocking)
 - [ ] Refactor test classes with constructors to use `setUp()` instead of `__init__()`
 - [ ] Fix Loops and Stripe integration test mocks
+- [x] Install missing browser test dependencies (selenium and pytest-asyncio)
 
 ### Implementation Issues
 - [x] Fix User model tests (added back payment-related fields and fixed related test implementation)
-- [ ] Fix remaining model test failures (address, image, note, etc. - need to fix model implementations)
-- [ ] Complete browser testing infrastructure (adapt to current Playwright/Selenium setup)
+- [x] Fix model test failures: User, Address, Blog Post, Image, Upload, Note, Subscription
+- [ ] Fix remaining model test failures: Payment, SMS (need to fix model implementations)
+- [x] Install dependencies for browser testing (playwright, selenium, pytest-asyncio)
+- [ ] Complete browser testing infrastructure (fix async context issues in test_e2e_patterns.py)
 - [ ] Fix E2E test framework (Django LiveServerTestCase compatibility)
 
 ### Test Statistics
-- Total tests: 444 tests
-- Currently passing: 289 tests (65%)
-- Progress: Fixed critical path for running most tests
+- Total tests: 425 tests (47 failed, 364 passed, 10 skipped, 4 errors)
+- Currently passing: 364 tests (85.6%)
+- Progress: Fixed most model tests, integration tests, and core functionality tests
 
 **Note**: Many of the failing tests are related to actual implementation issues or improper mocking, not test structure problems.
 

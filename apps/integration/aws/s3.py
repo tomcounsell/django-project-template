@@ -506,15 +506,15 @@ class S3Client:
         """
         parsed_url = urlparse(url)
         
-        if parsed_url.netloc.endswith('s3.amazonaws.com'):
+        if parsed_url.netloc == 's3.amazonaws.com':
+            # URL format: https://s3.amazonaws.com/bucket-name/key
+            path_parts = parsed_url.path.strip('/').split('/', 1)
+            bucket_name = path_parts[0] if path_parts else ''
+            object_key = path_parts[1] if len(path_parts) > 1 else ''
+        elif parsed_url.netloc.endswith('.s3.amazonaws.com'):
             # URL format: https://bucket-name.s3.amazonaws.com/key
             bucket_name = parsed_url.netloc.replace('.s3.amazonaws.com', '')
             object_key = parsed_url.path.lstrip('/')
-        elif parsed_url.netloc == 's3.amazonaws.com':
-            # URL format: https://s3.amazonaws.com/bucket-name/key
-            path_parts = parsed_url.path.strip('/').split('/', 1)
-            bucket_name = path_parts[0]
-            object_key = path_parts[1] if len(path_parts) > 1 else ''
         else:
             # Not an S3 URL
             bucket_name = ''

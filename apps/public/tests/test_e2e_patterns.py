@@ -24,7 +24,14 @@ from django.conf import settings
 
 # Import browser-use components
 try:
-    from browser_use import Agent, BrowserAgent
+    from browser_use import Agent
+    # The BrowserAgent class might not exist in the latest version
+    # Use Agent class instead if BrowserAgent is not available
+    try:
+        from browser_use import BrowserAgent
+    except ImportError:
+        BrowserAgent = Agent  # Use Agent as a fallback
+        
     import playwright.async_api
     from playwright.async_api import Browser, BrowserContext
     # Define Page for type hints
@@ -48,6 +55,15 @@ except ImportError:
     HAS_PYTEST_ASYNCIO = False
 
 # Mark browser tests to skip if browser-use is not installed
+print(f"BROWSER_USE_AVAILABLE: {BROWSER_USE_AVAILABLE}")
+print(f"HAS_PYTEST_ASYNCIO: {HAS_PYTEST_ASYNCIO}")
+if not BROWSER_USE_AVAILABLE:
+    try:
+        from browser_use import Agent, BrowserAgent
+        print("Successfully imported browser_use after variable set")
+    except ImportError as e:
+        print(f"Still can't import browser_use: {e}")
+        
 browser_test = pytest.mark.skipif(
     not BROWSER_USE_AVAILABLE or not HAS_PYTEST_ASYNCIO,
     reason="Required packages not installed. Run `uv add --dev browser-use playwright pytest-asyncio` to install."
@@ -466,7 +482,7 @@ class TestBrowserAgentAutomation(E2ETestBase):
         ]
         
         # Create an agent to perform these tasks
-        agent = BrowserAgent(
+        agent = Agent(
             tasks=tasks,
             browser_type=self.config.browser_type,
             headless=self.config.headless

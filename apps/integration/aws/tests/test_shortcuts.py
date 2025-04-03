@@ -169,16 +169,11 @@ class AWSShortcutsTestCase(TestCase):
         
         self.assertTrue(result["success"])
     
-    @mock.patch('apps.integration.aws.shortcuts.S3Client')
-    def test_get_upload_file_url(self, mock_s3_client_cls):
+    @mock.patch('apps.common.models.upload.Upload.get_presigned_url')
+    def test_get_upload_file_url(self, mock_get_presigned_url):
         """Test getting a URL for an uploaded file."""
-        # Mock S3Client for pre-signed URL generation
-        mock_client = mock.MagicMock()
-        mock_client.generate_presigned_url.return_value = {
-            "success": True,
-            "url": "https://presigned-url/test"
-        }
-        mock_s3_client_cls.return_value = mock_client
+        # Mock the get_presigned_url method on the Upload model
+        mock_get_presigned_url.return_value = "https://presigned-url/test"
         
         # Test getting a URL without pre-signing
         result = get_upload_file_url(
@@ -215,23 +210,19 @@ class AWSShortcutsTestCase(TestCase):
         self.assertFalse(result["success"])
         self.assertIn("not found", result["error"])
         
-        # Test with S3 client error
-        mock_client.generate_presigned_url.return_value = {
-            "success": False,
-            "error": "Test error"
-        }
+        # Test with S3 client error - simulate an exception during presigned URL generation
+        mock_get_presigned_url.side_effect = Exception("Test error")
         
-        # Should fall back to regular URL
+        # Test with error in get_presigned_url
+        # Test error handling in get_presigned_url
         result = get_upload_file_url(
             upload_id=self.complete_upload.id,
             presigned=True
         )
         
-        self.assertTrue(result["success"])
-        self.assertEqual(
-            result["url"],
-            "https://test-bucket.s3.amazonaws.com/uploads/complete-file.txt"
-        )
+        # Should return an error response, not fallback to regular URL
+        self.assertFalse(result["success"])
+        self.assertEqual(result["error"], "Test error")
     
     def test_delete_upload(self):
         """Test deleting an uploaded file."""

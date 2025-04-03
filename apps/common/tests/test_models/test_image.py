@@ -114,9 +114,13 @@ class ImageTest(TimestampableTest, TestCase):
         with mock.patch(
             "apps.common.models.upload.guess_type", return_value=(None, None)
         ):
-            # Create a new instance with new meta_data
-            image = self.create_instance(meta_data={"mime_type": "image/gif"})
-            self.assertEqual(image.file_type, "image/gif")
+            # Need to mock our own guess_type in the Image model
+            with mock.patch(
+                "mimetypes.guess_type", return_value=(None, None)
+            ):
+                # Create a new instance with new meta_data
+                image = self.create_instance(meta_data={"mime_type": "image/gif"})
+                self.assertEqual(image.file_type, "image/gif")
 
     def test_file_extension_property(self):
         """Test file_extension property returns the correct extension."""
