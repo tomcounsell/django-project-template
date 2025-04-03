@@ -17,7 +17,7 @@ class MainContentView(View):
 
     url: str = ""
     template_name: Optional[str] = None
-    
+
     # Default base templates - don't override these in most cases
     base_template: str = "base.html"
     partial_template: str = "partial.html"
@@ -33,7 +33,7 @@ class MainContentView(View):
         # Update context with default URL
         if not self.context.get("url", None):
             self.context["url"] = self.url
-        
+
         # Set appropriate base template based on request type
         if getattr(request, "htmx", False):
             self.context["base_template"] = self.partial_template

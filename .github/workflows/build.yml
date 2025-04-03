@@ -1,4 +1,4 @@
-name: Build
+name: Build Frontend Assets
 
 on:
   push:
@@ -8,34 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-python:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: 'pip'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install uv
-          ./requirements/install.sh prod
-          pip install build wheel
-      
-      - name: Build Python package
-        run: python -m build
-      
-      - name: Upload Python package artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package
-          path: dist/
-  
   build-frontend:
     runs-on: ubuntu-latest
     steps:

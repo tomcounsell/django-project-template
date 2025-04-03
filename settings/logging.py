@@ -1,10 +1,11 @@
 """
 Logging configuration settings.
 """
+
 import logging
 import os
 
-from settings.env import DEBUG, PRODUCTION, STAGE, LOCAL
+from settings.env import DEBUG, LOCAL, PRODUCTION, STAGE
 
 # Default log level based on environment
 if PRODUCTION:
@@ -21,73 +22,75 @@ logger = logging.getLogger(__name__)
 # Django's logging configuration
 LOGGING_CONFIG = None  # Disable Django's logging config to use our own
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(os.path.dirname(os.path.dirname(__file__)), 'debug.log'),
-            'formatter': 'verbose',
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-        'django.utils.autoreload': {
-            'level': 'INFO',
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(
+                os.path.dirname(os.path.dirname(__file__)), "debug.log"
+            ),
+            "formatter": "verbose",
         },
     },
-    'root': {
-        'handlers': ['console', 'file'] if LOCAL else ['console'],
-        'level': 'INFO',
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django.utils.autoreload": {
+            "level": "INFO",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"] if LOCAL else ["console"],
+        "level": "INFO",
     },
 }
 
 if PRODUCTION:
     # In production, configure more streamlined logging
-    LOGGING['formatters']['json'] = {
-        '()': 'json_log_formatter.JSONFormatter',
+    LOGGING["formatters"]["json"] = {
+        "()": "json_log_formatter.JSONFormatter",
     }
-    LOGGING['handlers']['console'] = {
-        'level': 'INFO',
-        'class': 'logging.StreamHandler',
-        'formatter': 'simple',
+    LOGGING["handlers"]["console"] = {
+        "level": "INFO",
+        "class": "logging.StreamHandler",
+        "formatter": "simple",
     }
     # Don't log to file in production (use external logging service instead)
-    LOGGING['root'] = {
-        'handlers': ['console'],
-        'level': 'INFO',
+    LOGGING["root"] = {
+        "handlers": ["console"],
+        "level": "INFO",
     }

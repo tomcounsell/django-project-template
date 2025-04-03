@@ -4,7 +4,12 @@ from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 
 from settings.env import DEBUG, LOCAL
-from settings.unfold import ADMIN_SITE_HEADER, ADMIN_SITE_TITLE, ADMIN_SITE_URL, ADMIN_INDEX_TITLE
+from settings.unfold import (
+    ADMIN_INDEX_TITLE,
+    ADMIN_SITE_HEADER,
+    ADMIN_SITE_TITLE,
+    ADMIN_SITE_URL,
+)
 
 # Configure Django's built-in admin
 admin.autodiscover()
@@ -16,10 +21,8 @@ admin.site.index_title = ADMIN_INDEX_TITLE
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("", include("apps.public.urls", namespace="public")),
-    
     # API URLs - Removed
     # path('api/', include('apps.api.urls')),
-    
     # API Schema and Documentation - Removed
     # path('api/schema/', get_schema_view(...), name='openapi-schema'),
     # path('api/docs/', TemplateView.as_view(...), name='swagger-ui'),
@@ -46,6 +49,6 @@ if DEBUG:
             path("__reload__/", include("django_browser_reload.urls")),
         )
     urlpatterns = dev_url_patterns + urlpatterns
-    
+
     # Serve media files in development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

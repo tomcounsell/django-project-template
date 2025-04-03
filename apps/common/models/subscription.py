@@ -1,6 +1,6 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.behaviors import Timestampable
 
@@ -9,14 +9,15 @@ class Subscription(Timestampable, models.Model):
     """
     Model for storing subscription information.
     """
+
     # User who owns the subscription
     user = models.ForeignKey(
-        'common.User',
-        related_name='subscriptions',
+        "common.User",
+        related_name="subscriptions",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        help_text=_('User who owns the subscription')
+        help_text=_("User who owns the subscription"),
     )
     
     # Stripe fields
@@ -24,21 +25,21 @@ class Subscription(Timestampable, models.Model):
         max_length=255,
         blank=True,
         default="",
-        help_text=_('Stripe subscription ID')
+        help_text=_("Stripe subscription ID")
     )
     
     stripe_customer_id = models.CharField(
         max_length=255,
         blank=True,
         default="",
-        help_text=_('Stripe customer ID')
+        help_text=_("Stripe customer ID")
     )
     
     stripe_price_id = models.CharField(
         max_length=255,
         blank=True,
         default="",
-        help_text=_('Stripe price ID')
+        help_text=_("Stripe price ID")
     )
     
     # For backward compatibility
@@ -46,41 +47,38 @@ class Subscription(Timestampable, models.Model):
         max_length=255,
         blank=True,
         default="",
-        help_text=_('Stripe subscription ID (legacy)')
+        help_text=_("Stripe subscription ID (legacy)")
     )
     
     # Subscription plan name
     plan_name = models.CharField(
         max_length=100,
-        help_text=_('Subscription plan name')
+        help_text=_("Subscription plan name")
     )
     
     # Plan description
     plan_description = models.TextField(
         blank=True,
         default="",
-        help_text=_('Description of the subscription plan')
+        help_text=_("Description of the subscription plan")
     )
-    
     # Subscription price in cents
-    price = models.PositiveIntegerField(
-        help_text=_('Subscription price in cents')
-    )
-    
+    price = models.PositiveIntegerField(help_text=_("Subscription price in cents"))
+
     # Billing interval
     INTERVAL_CHOICES = (
-        ('monthly', _('Monthly')),
-        ('yearly', _('Yearly')),
-        ('weekly', _('Weekly')),
-        ('daily', _('Daily')),
+        ("monthly", _("Monthly")),
+        ("yearly", _("Yearly")),
+        ("weekly", _("Weekly")),
+        ("daily", _("Daily")),
     )
     interval = models.CharField(
         max_length=20,
         choices=INTERVAL_CHOICES,
-        default='monthly',
-        help_text=_('Billing interval')
+        default="monthly",
+        help_text=_("Billing interval"),
     )
-    
+
     # Subscription status
     STATUS_ACTIVE = 'active'
     STATUS_CANCELED = 'canceled'
@@ -91,76 +89,67 @@ class Subscription(Timestampable, models.Model):
     STATUS_INCOMPLETE_EXPIRED = 'incomplete_expired'
     
     STATUS_CHOICES = (
-        (STATUS_ACTIVE, _('Active')),
-        (STATUS_CANCELED, _('Canceled')),
-        (STATUS_PAST_DUE, _('Past Due')),
-        (STATUS_TRIALING, _('Trialing')),
-        (STATUS_UNPAID, _('Unpaid')),
-        (STATUS_INCOMPLETE, _('Incomplete')),
-        (STATUS_INCOMPLETE_EXPIRED, _('Incomplete Expired')),
+        (STATUS_ACTIVE, _("Active")),
+        (STATUS_CANCELED, _("Canceled")),
+        (STATUS_PAST_DUE, _("Past Due")),
+        (STATUS_TRIALING, _("Trialing")),
+        (STATUS_UNPAID, _("Unpaid")),
+        (STATUS_INCOMPLETE, _("Incomplete")),
+        (STATUS_INCOMPLETE_EXPIRED, _("Incomplete Expired")),
     )
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='active',
-        help_text=_('Subscription status')
+        default="active",
+        help_text=_("Subscription status"),
     )
-    
+
     # Start date
     start_date = models.DateTimeField(
-        default=timezone.now,
-        help_text=_('When the subscription started')
+        default=timezone.now, help_text=_("When the subscription started")
     )
-    
+
     # End date (null for active subscriptions)
     end_date = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text=_('When the subscription ended or will end')
+        null=True, blank=True, help_text=_("When the subscription ended or will end")
     )
-    
+
     # Canceled at datetime
     canceled_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text=_('When the subscription was canceled')
+        null=True, blank=True, help_text=_("When the subscription was canceled")
     )
-    
+
     # Trial end date
     trial_end = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text=_('When the trial period ends')
+        null=True, blank=True, help_text=_("When the trial period ends")
     )
-    
+
     # Current period start
     current_period_start = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text=_('Start of the current billing period')
+        null=True, blank=True, help_text=_("Start of the current billing period")
     )
-    
+
     # Current period end
     current_period_end = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text=_('End of the current billing period')
+        null=True, blank=True, help_text=_("End of the current billing period")
     )
-    
+
     # Cancel at period end
     cancel_at_period_end = models.BooleanField(
         default=False,
-        help_text=_('Whether the subscription will be canceled at the end of the current period')
+        help_text=_(
+            "Whether the subscription will be canceled at the end of the current period"
+        ),
     )
-    
+
     class Meta:
-        verbose_name = _('Subscription')
-        verbose_name_plural = _('Subscriptions')
-        ordering = ('-created_at',)
-    
+        verbose_name = _("Subscription")
+        verbose_name_plural = _("Subscriptions")
+        ordering = ("-created_at",)
+
     def __str__(self):
         return f"{self.user} - {self.plan_name} ({self.status})"
-    
+
     @property
     def active(self):
         """
@@ -200,7 +189,7 @@ class Subscription(Timestampable, models.Model):
         Display the price in dollars rather than cents.
         """
         return f"${self.price/100:.2f}/{self.interval}"
-    
+
     @property
     def days_until_expiration(self):
         """
@@ -208,10 +197,10 @@ class Subscription(Timestampable, models.Model):
         """
         if not self.end_date:
             return None
-        
+
         delta = self.end_date - timezone.now()
         return max(0, delta.days)
-    
+
     @property
     def days_until_renewal(self):
         """

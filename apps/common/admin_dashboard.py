@@ -1,17 +1,18 @@
 """
 Custom admin dashboard for the Django project template.
 """
+
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.utils.html import format_html
 from django.db.models import Count, Sum
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 
-from apps.common.models import Team, TodoItem, Email, SMS, Payment, Subscription, Upload
-from apps.common.admin import MAIN_NAV_MODELS, ADMIN_CATEGORIES
+from apps.common.admin import ADMIN_CATEGORIES, MAIN_NAV_MODELS
+from apps.common.models import SMS, Email, Payment, Subscription, Team, TodoItem, Upload
 
 User = get_user_model()
 
@@ -19,157 +20,176 @@ User = get_user_model()
 def get_admin_dashboard(request, context=None):
     """
     Generate dashboard widgets and stats for the admin index page.
-    
+
     This function is called by Django Unfold to customize the admin dashboard.
-    
+
     Args:
         request: The current request object
         context: The current context dictionary
-        
+
     Returns:
         Modified context with dashboard widgets
     """
     # Initialize context if not provided
     if context is None:
         context = {}
-    
+
     # Only show dashboard for staff users
     if not request.user.is_staff:
         return context
-    
+
     # Get model counts with more comprehensive stats
     # User statistics
     user_count = User.objects.count()
     active_users = User.objects.filter(is_active=True).count()
     staff_users = User.objects.filter(is_staff=True).count()
     superusers = User.objects.filter(is_superuser=True).count()
-    
+
     # Make sure we use a timezone-aware datetime
     today = now().date()
     recent_users = User.objects.filter(date_joined__date=today).count()
-    
+
     # Calculate percentage stats for users
-    active_percentage = round((active_users / user_count) * 100) if user_count > 0 else 0
+    active_percentage = (
+        round((active_users / user_count) * 100) if user_count > 0 else 0
+    )
     staff_percentage = round((staff_users / user_count) * 100) if user_count > 0 else 0
-    
+
     # Calculate user growth data
     last_month = today.replace(day=1) - datetime.timedelta(days=1)
     last_month_start = last_month.replace(day=1)
     users_last_month = User.objects.filter(date_joined__lt=today.replace(day=1)).count()
-    user_growth = round(((user_count - users_last_month) / users_last_month) * 100) if users_last_month > 0 else 0
-    
+    user_growth = (
+        round(((user_count - users_last_month) / users_last_month) * 100)
+        if users_last_month > 0
+        else 0
+    )
+
     # Get recent user activity data for chart
     last_week = today - datetime.timedelta(days=7)
-    logins = User.objects.filter(last_login__date__gte=last_week).values('last_login__date').annotate(count=Count('id'))
-    
+    logins = (
+        User.objects.filter(last_login__date__gte=last_week)
+        .values("last_login__date")
+        .annotate(count=Count("id"))
+    )
+
     user_activity = {}
     max_activity = 1  # Default to avoid division by zero
-    
+
     # Fill in data for the last 7 days
     for i in range(7):
         day = today - datetime.timedelta(days=i)
-        day_formatted = day.strftime('%b %d')
+        day_formatted = day.strftime("%b %d")
         user_activity[day_formatted] = 0
-        
+
     # Update with actual login data
     for login in logins:
-        if login['last_login__date']:
-            day_formatted = login['last_login__date'].strftime('%b %d')
-            user_activity[day_formatted] = login['count']
-            max_activity = max(max_activity, login['count'])
-    
+        if login["last_login__date"]:
+            day_formatted = login["last_login__date"].strftime("%b %d")
+            user_activity[day_formatted] = login["count"]
+            max_activity = max(max_activity, login["count"])
+
     # Sort by date (most recent first)
-    user_activity = dict(sorted(user_activity.items(), key=lambda x: datetime.datetime.strptime(x[0], '%b %d'), reverse=True))
-    
+    user_activity = dict(
+        sorted(
+            user_activity.items(),
+            key=lambda x: datetime.datetime.strptime(x[0], "%b %d"),
+            reverse=True,
+        )
+    )
+
     # Get recently active users
-    recent_users = User.objects.filter(last_login__isnull=False).order_by('-last_login')[:5]
-    
+    recent_users = User.objects.filter(last_login__isnull=False).order_by(
+        "-last_login"
+    )[:5]
+
     # Team statistics
     team_count = Team.objects.count()
     active_teams = Team.objects.filter(is_active=True).count()
-    teams_with_members = Team.objects.annotate(member_count=Count('members'))
-    
+    teams_with_members = Team.objects.annotate(member_count=Count("members"))
+
     # Safe calculation of average team size
     if team_count > 0:
-        avg_team_size = teams_with_members.aggregate(avg=Sum('member_count')).get('avg', 0) / team_count
+        avg_team_size = (
+            teams_with_members.aggregate(avg=Sum("member_count")).get("avg", 0)
+            / team_count
+        )
     else:
         avg_team_size = 0
-        
-    largest_team = teams_with_members.order_by('-member_count').first()
-    
+
+    largest_team = teams_with_members.order_by("-member_count").first()
+
     # Get team size distribution
     team_sizes = {}
     max_team_size = 1  # Default to avoid division by zero
-    
+
     # Group teams by size ranges
-    size_ranges = {
-        '0': 0,
-        '1-5': 0,
-        '6-10': 0,
-        '11-20': 0,
-        '21+': 0
-    }
-    
+    size_ranges = {"0": 0, "1-5": 0, "6-10": 0, "11-20": 0, "21+": 0}
+
     for team in teams_with_members:
         if team.member_count == 0:
-            size_ranges['0'] += 1
+            size_ranges["0"] += 1
         elif 1 <= team.member_count <= 5:
-            size_ranges['1-5'] += 1
+            size_ranges["1-5"] += 1
         elif 6 <= team.member_count <= 10:
-            size_ranges['6-10'] += 1
+            size_ranges["6-10"] += 1
         elif 11 <= team.member_count <= 20:
-            size_ranges['11-20'] += 1
+            size_ranges["11-20"] += 1
         else:
-            size_ranges['21+'] += 1
-    
+            size_ranges["21+"] += 1
+
     # Convert to ordered dict and find max
     team_sizes = size_ranges
     if team_sizes:
         max_team_size = max(team_sizes.values())
-    
+
     # Get top teams by size
-    top_teams = teams_with_members.order_by('-member_count')[:5]
-    
+    top_teams = teams_with_members.order_by("-member_count")[:5]
+
     # Todo statistics
     todo_count = TodoItem.objects.count()
     todo_stats = {
-        'TODO': TodoItem.objects.filter(status='TODO').count(),
-        'IN_PROGRESS': TodoItem.objects.filter(status='IN_PROGRESS').count(),
-        'BLOCKED': TodoItem.objects.filter(status='BLOCKED').count(),
-        'DONE': TodoItem.objects.filter(status='DONE').count(),
+        "TODO": TodoItem.objects.filter(status="TODO").count(),
+        "IN_PROGRESS": TodoItem.objects.filter(status="IN_PROGRESS").count(),
+        "BLOCKED": TodoItem.objects.filter(status="BLOCKED").count(),
+        "DONE": TodoItem.objects.filter(status="DONE").count(),
     }
-    overdue_todos = TodoItem.objects.filter(due_at__lt=now(), status__in=['TODO', 'IN_PROGRESS', 'BLOCKED']).count()
-    
+    overdue_todos = TodoItem.objects.filter(
+        due_at__lt=now(), status__in=["TODO", "IN_PROGRESS", "BLOCKED"]
+    ).count()
+
     # Communications
     email_count = Email.objects.count()
     unsent_emails = Email.objects.filter(sent_at__isnull=True).count()
     read_emails = Email.objects.filter(read_at__isnull=False).count()
-    
+
     sms_count = SMS.objects.count()
-    successful_sms = SMS.objects.filter(status='delivered').count()
-    failed_sms = SMS.objects.filter(status='failed').count()
-    
-    # Finance 
+    successful_sms = SMS.objects.filter(status="delivered").count()
+    failed_sms = SMS.objects.filter(status="failed").count()
+
+    # Finance
     payment_count = Payment.objects.count()
     payment_stats = {
-        'succeeded': Payment.objects.filter(status='succeeded').count(),
-        'pending': Payment.objects.filter(status='pending').count(),
-        'failed': Payment.objects.filter(status='failed').count(),
-        'refunded': Payment.objects.filter(status='refunded').count(),
+        "succeeded": Payment.objects.filter(status="succeeded").count(),
+        "pending": Payment.objects.filter(status="pending").count(),
+        "failed": Payment.objects.filter(status="failed").count(),
+        "refunded": Payment.objects.filter(status="refunded").count(),
     }
-    
+
     # Get total revenue with a fallback to 0 if None
-    total_revenue_result = Payment.objects.filter(status='succeeded').aggregate(total=Sum('amount'))
-    total_revenue = total_revenue_result.get('total') or 0
-    
+    total_revenue_result = Payment.objects.filter(status="succeeded").aggregate(
+        total=Sum("amount")
+    )
+    total_revenue = total_revenue_result.get("total") or 0
+
     subscription_count = Subscription.objects.count()
     subscription_stats = {
-        'active': Subscription.objects.filter(status='active').count(),
-        'trialing': Subscription.objects.filter(status='trialing').count(),
-        'past_due': Subscription.objects.filter(status='past_due').count(),
-        'canceled': Subscription.objects.filter(status='canceled').count(),
+        "active": Subscription.objects.filter(status="active").count(),
+        "trialing": Subscription.objects.filter(status="trialing").count(),
+        "past_due": Subscription.objects.filter(status="past_due").count(),
+        "canceled": Subscription.objects.filter(status="canceled").count(),
     }
-    
+
     # Create rich, interactive dashboard widgets using advanced formatting
     widgets = [
         {
@@ -193,7 +213,6 @@ def get_admin_dashboard(request, context=None):
                     "column": 1,
                     "order": 0,
                 },
-                
                 # Teams Widget with enhanced stats
                 {
                     "title": _("Teams"),
@@ -210,7 +229,6 @@ def get_admin_dashboard(request, context=None):
                     "column": 1,
                     "order": 1,
                 },
-                
                 # Todo Widget with status breakdown
                 {
                     "title": _("Todo Items"),
@@ -219,12 +237,13 @@ def get_admin_dashboard(request, context=None):
                         "todo_stats": todo_stats,
                         "total": todo_count,
                         "overdue_todos": overdue_todos,
-                        "active_todos": todo_stats['TODO'] + todo_stats['IN_PROGRESS'] + todo_stats['BLOCKED'],
+                        "active_todos": todo_stats["TODO"]
+                        + todo_stats["IN_PROGRESS"]
+                        + todo_stats["BLOCKED"],
                     },
                     "column": 1,
                     "order": 2,
                 },
-                
                 # Communications Widget
                 {
                     "title": _("Communications"),
@@ -298,7 +317,6 @@ def get_admin_dashboard(request, context=None):
                     "column": 1,
                     "order": 3,
                 },
-                
                 # Payments & Subscriptions Widget
                 {
                     "title": _("Finance"),
@@ -414,7 +432,6 @@ def get_admin_dashboard(request, context=None):
                     "column": 2,
                     "order": 0,
                 },
-                
                 # Activity feed and admin guide
                 {
                     "title": _("Recent Activity"),
@@ -422,7 +439,6 @@ def get_admin_dashboard(request, context=None):
                     "column": 2,
                     "order": 1,
                 },
-                
                 {
                     "title": _("Admin Navigation Guide"),
                     "content": f"""
@@ -458,36 +474,36 @@ def get_admin_dashboard(request, context=None):
             ],
         }
     ]
-    
+
     # Add widgets to context
     context["widgets"] = widgets
-    
+
     return context
 
 
 def filter_admin_app_list(app_list, request):
     """
     Organize the admin app list into categories based on ADMIN_CATEGORIES.
-    
+
     Args:
         app_list: The list of apps to filter
         request: The current request object
-        
+
     Returns:
         Organized app list
     """
     # For direct model access (e.g., change/add pages), return unmodified
-    if getattr(request, 'current_app', None) or not hasattr(request, 'path'):
+    if getattr(request, "current_app", None) or not hasattr(request, "path"):
         return app_list
-    
+
     # Only run this for the main admin index page
-    if '/admin/' != request.path and not request.path.endswith('/admin'):
+    if "/admin/" != request.path and not request.path.endswith("/admin"):
         return app_list
-    
+
     # For superusers, we still show the categories but include all models
     # so we don't filter anything out
-    
-    # We'll use the navigation defined in UNFOLD settings instead of 
+
+    # We'll use the navigation defined in UNFOLD settings instead of
     # manipulating the app_list directly
-    
+
     return app_list

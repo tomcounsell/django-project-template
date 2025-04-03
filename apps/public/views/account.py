@@ -1,10 +1,12 @@
 from django import forms
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash, views as auth_views
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import AbstractUser
 
 from apps.public.helpers import MainContentView
+
 
 class LoginView(auth_views.LoginView):
     template_name = "account/login.html"

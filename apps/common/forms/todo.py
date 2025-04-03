@@ -61,11 +61,11 @@ class TodoItemForm(forms.ModelForm):
     def save(self, commit=True, user=None):
         """Save the form and set the assignee to the current user if not specified."""
         instance = super().save(commit=False)
-        
+
         # If no assignee is specified and this is a new item, assign to current user
         if not instance.pk and not instance.assignee and user:
             instance.assignee = user
-            
+
         if commit:
             instance.save()
         return instance

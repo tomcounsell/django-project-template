@@ -2,7 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 from icecream import ic
 
-from apps.common.models import User, Team
+from apps.common.models import Team, User
 from apps.common.models.team import Role
 from apps.integration.loops.client import LoopsClient
 
@@ -97,7 +97,7 @@ def send_team_membership_email(membership):
         login_url = f"{hostname}{reverse('public:account-login')}"
 
         # Get parent team name if such a field exists
-        parent_team_name = getattr(team, 'parent_team', None)
+        parent_team_name = getattr(team, "parent_team", None)
         if parent_team_name:
             parent_team_name = parent_team_name.name
         else:
@@ -129,4 +129,3 @@ def send_team_membership_email(membership):
         # Log but don't raise
         print(f"Failed to send team membership email to {email}: {str(e)}")
         return False
-

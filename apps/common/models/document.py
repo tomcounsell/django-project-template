@@ -1,5 +1,6 @@
-from . import Upload
 from django.db import models
+
+from . import Upload
 
 accepted_file_types = ["pdf", "doc", "docx", "rtf", "pages"]
 

@@ -8,10 +8,11 @@ from apps.common.models.team import Team
 class SessionStateMixin:
     """
     Base mixin for managing user session state.
-    
+
     This mixin handles common session operations like tracking login state
     and initializing context.
     """
+
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
 
@@ -31,19 +32,20 @@ class SessionStateMixin:
 class TeamSessionMixin(SessionStateMixin):
     """
     Mixin for views that require team context.
-    
+
     This mixin loads the current team from the session or URL parameters
     and ensures users have access to the requested team.
     """
+
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
 
         self.team = None
-        
+
         if request.user.is_anonymous or not request.user.is_authenticated:
             # Exit if user is not authenticated
             return
-            
+
         # Attempt to get team from URL kwargs or session
         team_id = kwargs.get("team_id") or request.session.get("team_id")
         if team_id:
@@ -75,13 +77,13 @@ class TeamSessionMixin(SessionStateMixin):
             return self.handle_unauthenticated(request)
 
         # Check if teams are required
-        require_team = getattr(self, 'require_team', True)
-        
+        require_team = getattr(self, "require_team", True)
+
         if require_team and not request.user.teams.exists():
             # Exclude onboarding views from the redirect
             from apps.public.views import onboarding
-            
-            if hasattr(onboarding, 'TeamOnboardingView') and not isinstance(
+
+            if hasattr(onboarding, "TeamOnboardingView") and not isinstance(
                 self, (onboarding.TeamOnboardingView,)
             ):
                 return self.handle_no_team(request)
@@ -92,5 +94,3 @@ class TeamSessionMixin(SessionStateMixin):
         """Redirect users without teams to the team creation view."""
         messages.info(request, "Let's set up your team first.")
         return redirect("public:team-create")
-
-

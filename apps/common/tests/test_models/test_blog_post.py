@@ -1,8 +1,9 @@
-from django.test import TestCase
-from django.utils import timezone
 from datetime import timedelta
 
-from apps.common.models import BlogPost, User, Address
+from django.test import TestCase
+from django.utils import timezone
+
+from apps.common.models import Address, BlogPost, User
 from apps.common.tests.factories import UserFactory
 
 
@@ -17,7 +18,7 @@ class BlogPostModelTestCase(TestCase):
             content="This is the content of the test blog post.",
             author=self.user,
             reading_time_minutes=5,
-            tags="test,django,example"
+            tags="test,django,example",
         )
 
     # Testing base fields
@@ -25,7 +26,9 @@ class BlogPostModelTestCase(TestCase):
         """Test that a blog post can be created."""
         self.assertIsNotNone(self.blog_post.id)
         self.assertEqual(self.blog_post.title, "Test Blog Post")
-        self.assertEqual(self.blog_post.content, "This is the content of the test blog post.")
+        self.assertEqual(
+            self.blog_post.content, "This is the content of the test blog post."
+        )
         self.assertEqual(self.blog_post.reading_time_minutes, 5)
         self.assertEqual(self.blog_post.tags, "test,django,example")
 
@@ -36,8 +39,10 @@ class BlogPostModelTestCase(TestCase):
     # Testing model properties
     def test_summary_property(self):
         """Test the summary property."""
-        self.assertEqual(self.blog_post.summary, "This is the content of the test blog post.")
-        
+        self.assertEqual(
+            self.blog_post.summary, "This is the content of the test blog post."
+        )
+
         long_content = "A" * 250
         self.blog_post.content = long_content
         self.assertEqual(self.blog_post.summary, f"{long_content[:197]}...")
@@ -45,14 +50,14 @@ class BlogPostModelTestCase(TestCase):
     def test_is_featured_property(self):
         """Test the is_featured property."""
         self.assertFalse(self.blog_post.is_featured)
-        
+
         self.blog_post.tags = "test,featured,example"
         self.assertTrue(self.blog_post.is_featured)
 
     def test_reading_time_display_property(self):
         """Test the reading_time_display property."""
         self.assertEqual(self.blog_post.reading_time_display, "5 minutes")
-        
+
         self.blog_post.reading_time_minutes = 1
         self.assertEqual(self.blog_post.reading_time_display, "1 minute")
 
@@ -63,8 +68,10 @@ class BlogPostModelTestCase(TestCase):
 
     def test_get_meta_description(self):
         """Test the get_meta_description method."""
-        self.assertEqual(self.blog_post.get_meta_description(), "A subtitle for testing")
-        
+        self.assertEqual(
+            self.blog_post.get_meta_description(), "A subtitle for testing"
+        )
+
         self.blog_post.subtitle = ""
         self.assertEqual(self.blog_post.get_meta_description(), self.blog_post.summary)
 
@@ -72,10 +79,10 @@ class BlogPostModelTestCase(TestCase):
         """Test adding and removing tags."""
         self.blog_post.add_tag("python")
         self.assertIn("python", self.blog_post.tags)
-        
+
         self.blog_post.remove_tag("test")
         self.assertNotIn("test", self.blog_post.tags)
-        
+
         # Test adding duplicate tag
         original_tags = self.blog_post.tags
         self.blog_post.add_tag("python")
@@ -86,7 +93,7 @@ class BlogPostModelTestCase(TestCase):
         """Test the timestampable behavior."""
         self.assertIsNotNone(self.blog_post.created_at)
         self.assertIsNotNone(self.blog_post.modified_at)
-        
+
         old_modified = self.blog_post.modified_at
         self.blog_post.title = "Updated Title"
         self.blog_post.save()
@@ -99,7 +106,7 @@ class BlogPostModelTestCase(TestCase):
         self.assertIsNotNone(self.blog_post.authored_at)
         self.assertFalse(self.blog_post.is_author_anonymous)
         self.assertEqual(self.blog_post.author_display_name, str(self.user))
-        
+
         self.blog_post.is_author_anonymous = True
         self.assertEqual(self.blog_post.author_display_name, "Anonymous")
 
@@ -108,12 +115,12 @@ class BlogPostModelTestCase(TestCase):
         """Test the publishable behavior."""
         self.assertIsNone(self.blog_post.published_at)
         self.assertFalse(self.blog_post.is_published)
-        
+
         # Test publishing
         self.blog_post.publish()
         self.assertIsNotNone(self.blog_post.published_at)
         self.assertTrue(self.blog_post.is_published)
-        
+
         # Test unpublishing
         self.blog_post.unpublish()
         self.assertIsNotNone(self.blog_post.unpublished_at)
@@ -124,12 +131,12 @@ class BlogPostModelTestCase(TestCase):
         """Test the expirable behavior."""
         self.assertIsNone(self.blog_post.expired_at)
         self.assertFalse(self.blog_post.is_expired)
-        
+
         # Test expiring
         self.blog_post.is_expired = True
         self.assertIsNotNone(self.blog_post.expired_at)
         self.assertTrue(self.blog_post.is_expired)
-        
+
         # Test setting valid_at in future
         future_time = timezone.now() + timedelta(days=7)
         self.blog_post.valid_at = future_time
@@ -142,18 +149,16 @@ class BlogPostModelTestCase(TestCase):
         self.assertIsNone(self.blog_post.address)
         self.assertIsNone(self.blog_post.latitude)
         self.assertIsNone(self.blog_post.longitude)
-        
+
         # Add location info
         address = Address.objects.create(
-            line_1="123 Test Street",
-            city="Test City",
-            region="Test Region"
+            line_1="123 Test Street", city="Test City", region="Test Region"
         )
         self.blog_post.address = address
         self.blog_post.latitude = 37.7749
         self.blog_post.longitude = -122.4194
         self.blog_post.save()
-        
+
         self.assertEqual(self.blog_post.address, address)
         self.assertEqual(self.blog_post.latitude, 37.7749)
         self.assertEqual(self.blog_post.longitude, -122.4194)
@@ -163,7 +168,7 @@ class BlogPostModelTestCase(TestCase):
         """Test the permalinkable behavior."""
         # Automatic slug generation is tested
         self.assertEqual(self.blog_post.slug, "test-blog-post")
-        
+
         # Test slug updating
         self.blog_post.title = "Updated Title"
         self.blog_post.slug = None
@@ -174,13 +179,12 @@ class BlogPostModelTestCase(TestCase):
     def test_annotatable_behavior(self):
         """Test the annotatable behavior."""
         self.assertFalse(self.blog_post.has_notes)
-        
+
         # Add a note
-        note = self.blog_post.notes.create(
-            author=self.user,
-            text="This is a test note"
-        )
-        
+        note = self.blog_post.notes.create(author=self.user, text="This is a test note")
+
         self.assertEqual(self.blog_post.notes.count(), 1)
         self.assertTrue(self.blog_post.has_notes)
-        self.assertEqual(list(self.blog_post.notes.all())[0].text, "This is a test note")
+        self.assertEqual(
+            list(self.blog_post.notes.all())[0].text, "This is a test note"
+        )

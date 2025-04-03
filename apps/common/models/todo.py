@@ -134,22 +134,22 @@ class TodoItem(Timestampable, models.Model):
             return "Overdue by 1 day"
         else:
             return f"Overdue by {abs(days)} days"
-    
+
     def get_absolute_url(self):
         """Returns the URL to the detail view for this todo item."""
-        return reverse('public:todo-detail', kwargs={'pk': self.pk})
-    
+        return reverse("public:todo-detail", kwargs={"pk": self.pk})
+
     def get_complete_url(self):
         """Returns the URL to mark this todo item as complete."""
-        return reverse('public:todo-complete', kwargs={'pk': self.pk})
-    
+        return reverse("public:todo-complete", kwargs={"pk": self.pk})
+
     def get_delete_url(self):
         """Returns the URL to delete this todo item."""
-        return reverse('public:todo-delete', kwargs={'pk': self.pk})
-    
+        return reverse("public:todo-delete", kwargs={"pk": self.pk})
+
     def get_delete_modal_url(self):
         """Returns the URL to show the delete confirmation modal for this todo item."""
-        return reverse('public:todo-delete-modal', kwargs={'pk': self.pk})
+        return reverse("public:todo-delete-modal", kwargs={"pk": self.pk})
 
     # MODEL FUNCTIONS
     def __str__(self):

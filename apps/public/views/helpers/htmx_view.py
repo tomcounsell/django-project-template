@@ -12,7 +12,7 @@ class HTMXView(MainContentView):
     """
     Base view class for handling HTMX requests with additional features for
     out-of-band (OOB) responses, URL updates, custom events, and multiple component rendering.
-    
+
     Attributes:
         template_name: The main template to render
         oob_templates: Dictionary mapping target IDs to template paths
@@ -38,7 +38,7 @@ class HTMXView(MainContentView):
 
         # Ensure we're using the partial template for HTMX requests
         self.context["base_template"] = self.partial_template
-        
+
         return super().dispatch(request, *args, **kwargs)
 
     def render(
@@ -77,18 +77,22 @@ class HTMXView(MainContentView):
         # Add standard OOB components based on view settings
         if self.has_oob:
             # Add toast messages if enabled and there are messages
-            if self.show_toast and messages.get_messages(request) and "toast-container" not in oob_templates:
+            if (
+                self.show_toast
+                and messages.get_messages(request)
+                and "toast-container" not in oob_templates
+            ):
                 oob_templates["toast-container"] = "layout/messages/toast.html"
-            
+
             # Add navigation active state if specified
             if self.active_nav:
                 combined_context["active_section"] = self.active_nav
                 oob_templates["nav-active-marker"] = "layout/nav/active_nav.html"
-            
+
             # Add modal container if enabled
             if self.include_modals:
                 oob_templates["modal-container"] = "layout/modals/modal_container.html"
-        
+
         # Set context flag for OOB templates
         if len(oob_templates):
             combined_context["is_oob"] = True
@@ -100,14 +104,17 @@ class HTMXView(MainContentView):
             template_html = render_to_string(
                 oob_template, combined_context, request=request
             )
-            
+
             # Wrap with OOB attribute for HTMX
             # Format: <div id="target-id" hx-swap-oob="true">content</div>
-            if "<div" in template_html and 'id="' + oob_target_id + '"' in template_html:
+            if (
+                "<div" in template_html
+                and 'id="' + oob_target_id + '"' in template_html
+            ):
                 # If the template already has the target ID, just add hx-swap-oob
                 oob_html += template_html.replace(
                     'id="' + oob_target_id + '"',
-                    'id="' + oob_target_id + '" hx-swap-oob="true"'
+                    'id="' + oob_target_id + '" hx-swap-oob="true"',
                 )
             else:
                 # Otherwise wrap the entire template in a div with OOB attributes

@@ -1,10 +1,10 @@
+import logging
 from typing import Optional
 
-from icecream import ic
 import requests
-import logging
+from icecream import ic
 
-from settings import LOOPS_API_KEY, DEBUG
+from settings import DEBUG, LOOPS_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class LoopsClient:
             logger.info(f"[DEBUG MODE] Params: {params}")
             logger.info(f"[DEBUG MODE] JSON: {json}")
             return {"success": True}
-            
+
         url = f"{self.BASE_URL}{endpoint}"
         headers = {
             "Authorization": f"Bearer {self.api_key}",
@@ -79,7 +79,11 @@ class LoopsClient:
         return response
 
     def transactional_email(
-        self, to_email: str, transactional_id: str, data_variables: dict = None, **kwargs
+        self,
+        to_email: str,
+        transactional_id: str,
+        data_variables: dict = None,
+        **kwargs,
     ) -> dict:
         """
         Send a transactional email
@@ -97,7 +101,7 @@ class LoopsClient:
             logger.info(f"[DEBUG MODE] To: {to_email}")
             logger.info(f"[DEBUG MODE] Template ID: {transactional_id}")
             logger.info(f"[DEBUG MODE] Data variables: {data_variables}")
-            if kwargs.get('bcc'):
+            if kwargs.get("bcc"):
                 logger.info(f"[DEBUG MODE] BCC: {kwargs.get('bcc')}")
             return {"success": True}
 
@@ -106,11 +110,11 @@ class LoopsClient:
             "transactionalId": transactional_id,
             "dataVariables": data_variables or {},
         }
-        
+
         # Add BCC if provided
-        if kwargs.get('bcc'):
-            json_data["bcc"] = kwargs.get('bcc')
-            
+        if kwargs.get("bcc"):
+            json_data["bcc"] = kwargs.get("bcc")
+
         return self._make_request(
             method="POST",
             endpoint="/transactional",

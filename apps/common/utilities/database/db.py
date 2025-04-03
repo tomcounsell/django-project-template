@@ -1,6 +1,6 @@
 import typing
-from typing import List, Tuple
 from enum import Enum
+from typing import List, Tuple
 
 
 def enum_to_choices(enum: Enum) -> List[Tuple[int, str]]:

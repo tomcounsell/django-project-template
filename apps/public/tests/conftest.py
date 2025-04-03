@@ -7,30 +7,30 @@ including those needed for end-to-end browser testing with browser-use.
 
 import os
 import sys
+
 import pytest
-from django.test import override_settings
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 
 User = get_user_model()
+
 
 # Add 'testserver' to ALLOWED_HOSTS for client tests
 @pytest.fixture(autouse=True, scope="session")
 def allowed_hosts_setup():
     """Configure ALLOWED_HOSTS to include 'testserver' for tests."""
-    with override_settings(
-        ALLOWED_HOSTS=["testserver", "localhost", "127.0.0.1"]
-    ):
+    with override_settings(ALLOWED_HOSTS=["testserver", "localhost", "127.0.0.1"]):
         yield
+
 
 @pytest.fixture
 def auth_user():
     """Fixture to provide an authenticated user."""
     user = User.objects.create_user(
-        username="testuser",
-        email="testuser@example.com",
-        password="password123"
+        username="testuser", email="testuser@example.com", password="password123"
     )
     return user
+
 
 @pytest.fixture
 def admin_user():
@@ -40,16 +40,18 @@ def admin_user():
         email="admin@example.com",
         password="adminpass123",
         is_staff=True,
-        is_superuser=True
+        is_superuser=True,
     )
     return admin
+
 
 # Add browser testing fixtures if available
 try:
     import playwright.async_api
     import pytest_asyncio
+
     BROWSER_TESTING_AVAILABLE = True
-    
+
     @pytest_asyncio.fixture
     async def async_browser():
         """Fixture to provide an async browser instance."""
@@ -74,6 +76,6 @@ try:
         page = await async_context.new_page()
         yield page
         await page.close()
-        
+
 except ImportError:
     BROWSER_TESTING_AVAILABLE = False

@@ -6,14 +6,14 @@ Settings are organized into modular files for better organization.
 # Load settings in order of increasing specificity
 # This allows settings in later files to override earlier ones
 
-# 1. First, environment & base configuration
-from settings.env import *  # Required first to detect environment
-
 # 2. Core settings modules
 from settings.base import *
 from settings.database import *
-from settings.third_party import *
+
+# 1. First, environment & base configuration
+from settings.env import *  # Required first to detect environment
 from settings.logging import *
+from settings.third_party import *
 
 # 3. Scheduler settings (if needed)
 try:

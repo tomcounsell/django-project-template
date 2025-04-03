@@ -1,59 +1,63 @@
 """
 Settings for third-party services and integrations.
 """
+
 import os
 
-from settings.env import LOCAL, DEBUG
+from settings.env import DEBUG, LOCAL
 
 # DRF (Django Rest Framework) settings
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'EXCEPTION_HANDLER': 'apps.common.utilities.logger.api_exception_handler',
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "EXCEPTION_HANDLER": "apps.common.utilities.logger.api_exception_handler",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
     ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/hour',
-        'user': '1000/hour'
-    },
+    "DEFAULT_THROTTLE_RATES": {"anon": "100/hour", "user": "1000/hour"},
 }
 
 # AWS configuration
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', "")
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', "")
-AWS_STORAGE_BUCKET_NAME = AWS_S3_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', "")
-AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+AWS_STORAGE_BUCKET_NAME = AWS_S3_BUCKET_NAME = os.environ.get(
+    "AWS_STORAGE_BUCKET_NAME", ""
+)
+AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 AWS_OPTIONS = {
-    'AWS_ACCESS_KEY_ID': AWS_ACCESS_KEY_ID,
-    'AWS_SECRET_ACCESS_KEY': AWS_SECRET_ACCESS_KEY,
-    'AWS_STORAGE_BUCKET_NAME': AWS_S3_BUCKET_NAME,
-    'AWS_REGION': AWS_REGION,
+    "AWS_ACCESS_KEY_ID": AWS_ACCESS_KEY_ID,
+    "AWS_SECRET_ACCESS_KEY": AWS_SECRET_ACCESS_KEY,
+    "AWS_STORAGE_BUCKET_NAME": AWS_S3_BUCKET_NAME,
+    "AWS_REGION": AWS_REGION,
 }
-AWS_DEFAULT_ACL = 'public-read'
-AWS_SNS_NAME = os.environ.get('AWS_SNS_NAME', "")
-AWS_STATIC_URL = f'https://{AWS_S3_BUCKET_NAME}.s3.amazonaws.com/' if AWS_S3_BUCKET_NAME else ""
+AWS_DEFAULT_ACL = "public-read"
+AWS_SNS_NAME = os.environ.get("AWS_SNS_NAME", "")
+AWS_STATIC_URL = (
+    f"https://{AWS_S3_BUCKET_NAME}.s3.amazonaws.com/" if AWS_S3_BUCKET_NAME else ""
+)
 
 # File upload settings
-AWS_MAX_UPLOAD_SIZE = int(os.environ.get('AWS_MAX_UPLOAD_SIZE', 10485760))  # 10MB default
-AWS_UPLOAD_BUCKET = os.environ.get('AWS_UPLOAD_BUCKET', AWS_S3_BUCKET_NAME)
-AWS_UPLOAD_PREFIX = os.environ.get('AWS_UPLOAD_PREFIX', 'uploads')
+AWS_MAX_UPLOAD_SIZE = int(
+    os.environ.get("AWS_MAX_UPLOAD_SIZE", 10485760)
+)  # 10MB default
+AWS_UPLOAD_BUCKET = os.environ.get("AWS_UPLOAD_BUCKET", AWS_S3_BUCKET_NAME)
+AWS_UPLOAD_PREFIX = os.environ.get("AWS_UPLOAD_PREFIX", "uploads")
 
 # S3 for static files in production
 if not LOCAL and AWS_S3_BUCKET_NAME:
     STATIC_URL = AWS_STATIC_URL
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
     STATICFILES_STORAGE = DEFAULT_FILE_STORAGE
 
 # Email configuration
@@ -72,14 +76,18 @@ TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
 # Stripe integration
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
-STRIPE_ENABLED = os.environ.get("STRIPE_ENABLED", "False").lower() == "true" or (STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET)
+STRIPE_ENABLED = os.environ.get("STRIPE_ENABLED", "False").lower() == "true" or (
+    STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET
+)
 
 # Social Auth
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', '')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', '')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", "")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
+    "SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", ""
+)
 
 # AI Integration Settings
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
-OPENAI_ORG_ID = os.environ.get('OPENAI_ORG_ID', '')
-ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
-ANTHROPIC_VERSION = os.environ.get('ANTHROPIC_VERSION', '2023-06-01')
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_ORG_ID = os.environ.get("OPENAI_ORG_ID", "")
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+ANTHROPIC_VERSION = os.environ.get("ANTHROPIC_VERSION", "2023-06-01")

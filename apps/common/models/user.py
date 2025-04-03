@@ -1,12 +1,12 @@
-from django.utils.translation import gettext_lazy as _
-from datetime import datetime
 import hashlib
-from typing import Optional, Dict, Any, List, Union
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
 from django.db.models.query import QuerySet
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from apps.common.behaviors import Timestampable
 
@@ -14,12 +14,12 @@ from apps.common.behaviors import Timestampable
 class User(AbstractUser, Timestampable):
     """
     Enhanced User model that extends Django's AbstractUser.
-    
+
     This model adds additional fields and functionality for the application,
     including phone number, biography, verification flags
-    
+
     Inherits from Timestampable to automatically track created_at and modified_at timestamps.
-    
+
     Attributes:
         phone_number (str): User's phone number
         biography (str): User's biographical information
@@ -27,6 +27,7 @@ class User(AbstractUser, Timestampable):
         is_beta_tester (bool): Whether the user is part of the beta program
         agreed_to_terms_at (datetime): When the user agreed to the terms of service
     """
+
     phone_number = models.CharField(max_length=15, default="", blank=True)
     biography = models.TextField(_("Biography"), blank=True, default="")
     # birthdate = models.DateField(null=True, blank=True)
@@ -52,55 +53,56 @@ class User(AbstractUser, Timestampable):
     def has_active_subscription(self) -> bool:
         """
         Check if the user has any active subscription.
-        
+
         Returns:
             bool: True if the user has at least one active subscription, False otherwise
         """
         return len(self.active_subscriptions) > 0
-    
+
     @property
     def active_subscriptions(self) -> QuerySet:
         """
         Get all active subscriptions for the user.
-        
+
         Returns:
             QuerySet: A queryset of all active or trialing subscriptions
         """
         from apps.common.models import Subscription
-        active_statuses = ['active', 'trialing']
+
+        active_statuses = ["active", "trialing"]
         return self.subscriptions.filter(status__in=active_statuses)
-    
-    def get_active_subscription(self) -> Optional['Subscription']:
+
+    def get_active_subscription(self) -> Optional["Subscription"]:
         """
         Get the first active subscription for the user.
-        
+
         Returns:
             Optional[Subscription]: The first active subscription, or None if there are none
         """
         subs = self.active_subscriptions
         return subs.first() if subs.exists() else None
-    
+
     def get_payment_history(self, limit: int = 10) -> QuerySet:
         """
         Get the payment history for the user.
-        
+
         Args:
             limit (int): Maximum number of payments to return
-            
+
         Returns:
             QuerySet: A queryset of payments, ordered by creation date (descending)
         """
-        return self.payments.all().order_by('-created_at')[:limit]
+        return self.payments.all().order_by("-created_at")[:limit]
 
     # MODEL PROPERTIES
     @property
     def serialized(self) -> Dict[str, Any]:
         """
         Serializes basic user information into a dictionary.
-        
+
         Provides a simplified representation of user data suitable for API responses
         or session storage.
-        
+
         Returns:
             Dict[str, Any]: Dictionary containing serialized user data
         """
@@ -117,13 +119,13 @@ class User(AbstractUser, Timestampable):
     def four_digit_login_code(self) -> str:
         """
         Generates a deterministic 4-digit login code for the user.
-        
+
         This creates a unique code based on the user's ID, email, and last login time.
         For test accounts (email ending with @example.com), it returns a fixed code.
-        
+
         Returns:
             str: A 4-digit login verification code
-            
+
         Note:
             This is useful for implementing email-based login verification or two-factor authentication.
         """
@@ -148,7 +150,6 @@ class User(AbstractUser, Timestampable):
             self.agreed_to_terms_at = timezone.now()
         elif value is False and self.is_agreed_to_terms:
             self.agreed_to_terms_at = None
-
 
     def get_login_url(self, next_url=None) -> str:
         """
@@ -184,14 +185,14 @@ class User(AbstractUser, Timestampable):
     def __str__(self) -> str:
         """
         Returns a string representation of the User.
-        
+
         The string representation follows this priority:
         1. Full name (first name + last name if available)
         2. Username (if it's not an email)
         3. Email username part (if the email is verified)
         4. Full email with unverified indicator
         5. User ID as fallback for error cases
-        
+
         Returns:
             str: A human-readable representation of the user
         """

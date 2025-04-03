@@ -1,12 +1,15 @@
+import logging
 import random
 import string
-import logging
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
-from django.core.cache import cache
 from django.conf import settings
+from django.core.cache import cache
 
-from apps.integration.twilio.shortcuts import send_verification_code, verify_phone_number
+from apps.integration.twilio.shortcuts import (
+    send_verification_code,
+    verify_phone_number,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -25,23 +28,23 @@ LOCKOUT_DURATION = 30 * 60
 def generate_verification_code(length: int = 6) -> str:
     """
     Generate a random numeric verification code.
-    
+
     Args:
         length: Length of the code (default: 6)
-        
+
     Returns:
         A random numeric code
     """
-    return ''.join(random.choices(string.digits, k=length))
+    return "".join(random.choices(string.digits, k=length))
 
 
 def send_phone_verification(phone_number: str) -> Dict[str, Any]:
     """
     Send a verification code to a phone number.
-    
+
     Args:
         phone_number: Phone number to send the code to
-        
+
     Returns:
         Dict with result information
     """
@@ -52,9 +55,9 @@ def send_phone_verification(phone_number: str) -> Dict[str, Any]:
         return {
             "success": False,
             "error": "Invalid phone number",
-            "details": validation.get("error", "Phone number validation failed")
+            "details": validation.get("error", "Phone number validation failed"),
         }
-    
+
     # Check if the number is locked out due to too many attempts
     attempts_key = f"{VERIFICATION_ATTEMPTS_PREFIX}{phone_number}"
     attempts = cache.get(attempts_key, 0)
@@ -72,41 +75,43 @@ def send_phone_verification(phone_number: str) -> Dict[str, Any]:
             "error": "Account locked due to too many verification attempts",
             "locked_until": locked_until
         }
-    
+
     # Generate a verification code
     code = generate_verification_code()
-    
+
     # Store the code in cache with expiration
     cache_key = f"{VERIFICATION_CODE_PREFIX}{phone_number}"
     cache.set(cache_key, code, VERIFICATION_CODE_EXPIRY)
-    
+
     # Send the verification code
     result = send_verification_code(phone_number, code)
-    
+
     if result.get("success"):
         logger.info(f"Verification code sent to {phone_number}")
         return {
             "success": True,
             "message": "Verification code sent",
-            "expires_in": VERIFICATION_CODE_EXPIRY
+            "expires_in": VERIFICATION_CODE_EXPIRY,
         }
     else:
-        logger.error(f"Failed to send verification code to {phone_number}: {result.get('error')}")
+        logger.error(
+            f"Failed to send verification code to {phone_number}: {result.get('error')}"
+        )
         return {
             "success": False,
             "error": "Failed to send verification code",
-            "details": result.get("error", "Unknown error")
+            "details": result.get("error", "Unknown error"),
         }
 
 
 def verify_phone_code(phone_number: str, code: str) -> Dict[str, Any]:
     """
     Verify a phone verification code.
-    
+
     Args:
         phone_number: Phone number to verify
         code: Verification code to check
-        
+
     Returns:
         Dict with verification result
     """
@@ -127,57 +132,53 @@ def verify_phone_code(phone_number: str, code: str) -> Dict[str, Any]:
             "error": "Account locked due to too many verification attempts",
             "locked_until": locked_until
         }
-    
+
     # Get the stored code
     cache_key = f"{VERIFICATION_CODE_PREFIX}{phone_number}"
     stored_code = cache.get(cache_key)
-    
+
     if not stored_code:
         logger.warning(f"No verification code found for {phone_number} or code expired")
-        return {
-            "success": False,
-            "error": "Verification code expired or not found"
-        }
-    
+        return {"success": False, "error": "Verification code expired or not found"}
+
     # Check if the code matches
     if code == stored_code:
         # Code is valid, clear the verification code and attempts
         cache.delete(cache_key)
         cache.delete(attempts_key)
-        
+
         logger.info(f"Phone number verified successfully: {phone_number}")
-        return {
-            "success": True,
-            "message": "Phone number verified successfully"
-        }
+        return {"success": True, "message": "Phone number verified successfully"}
     else:
         # Code is invalid, increment attempts
         new_attempts = attempts + 1
         cache.set(attempts_key, new_attempts, LOCKOUT_DURATION)
-        
+
         remaining_attempts = MAX_VERIFICATION_ATTEMPTS - new_attempts
-        
-        logger.warning(f"Invalid verification code for {phone_number}. "
-                      f"Attempts: {new_attempts}/{MAX_VERIFICATION_ATTEMPTS}")
-        
+
+        logger.warning(
+            f"Invalid verification code for {phone_number}. "
+            f"Attempts: {new_attempts}/{MAX_VERIFICATION_ATTEMPTS}"
+        )
+
         if remaining_attempts <= 0:
             return {
                 "success": False,
                 "error": "Account locked due to too many failed attempts",
-                "locked_until": LOCKOUT_DURATION
+                "locked_until": LOCKOUT_DURATION,
             }
         else:
             return {
                 "success": False,
                 "error": "Invalid verification code",
-                "remaining_attempts": remaining_attempts
+                "remaining_attempts": remaining_attempts,
             }
 
 
 def reset_verification_attempts(phone_number: str) -> None:
     """
     Reset verification attempts for a phone number.
-    
+
     Args:
         phone_number: Phone number to reset attempts for
     """
@@ -191,10 +192,10 @@ def is_phone_verified(phone_number: str) -> bool:
     Check if a phone number has been verified recently.
     This would be used in conjunction with a user profile that stores
     verified phone numbers.
-    
+
     Args:
         phone_number: Phone number to check
-        
+
     Returns:
         True if verified, False otherwise
     """
