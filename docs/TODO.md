@@ -92,13 +92,13 @@ This project follows a clean architecture with:
 - [ ] Implement accessibility best practices
 
 ## Todo -> Wish List
-- [ ] Rename the Todo model to Wish
-- [ ] refactor all views managing todo items into wish list items (wishes)
-- [ ] The todo list page is now a wish list page
-- [ ] Create a new staff app that will be backoffice admin tools
-- [ ] Move the Wish model and it's views and templates to the staff app
-- [ ] Register the staff app and it's template dir in settings/base.py
-- [ ] create and register urls.py and admin.py according to our existing patterns
+- [x] Rename the Todo model to Wish
+- [x] refactor all views managing todo items into wish list items (wishes)
+- [x] The todo list page is now a wish list page
+- [x] Create a new staff app that will be backoffice admin tools
+- [x] Move the Wish model and it's views and templates to the staff app
+- [x] Register the staff app and it's template dir in settings/base.py
+- [x] create and register urls.py and admin.py according to our existing patterns
 
 ### Code Quality 🧪
 - [ ] Refactor redundant template logic

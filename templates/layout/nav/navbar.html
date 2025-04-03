@@ -46,6 +46,15 @@
           <a href="/" class="inline-flex items-center border-b-2 {% if active_section == 'home' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Home
           </a>
+          
+          <a href="{% url 'public:pricing' %}" class="inline-flex items-center border-b-2 {% if active_section == 'pricing' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+            Pricing
+          </a>
+          
+          <a href="{% url 'public:blog' %}" class="inline-flex items-center border-b-2 {% if active_section == 'blog' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+            Blog
+          </a>
+          
           {% if user.is_authenticated %}
             {% if user.teams.exists %}
             <a href="{% url 'public:team-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'teams' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
@@ -90,6 +99,15 @@
       <a href="/" class="block border-l-4 {% if active_section == 'home' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
         Home
       </a>
+      
+      <a href="{% url 'public:pricing' %}" class="block border-l-4 {% if active_section == 'pricing' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+        Pricing
+      </a>
+      
+      <a href="{% url 'public:blog' %}" class="block border-l-4 {% if active_section == 'blog' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+        Blog
+      </a>
+      
       {% if user.is_authenticated %}
         {% if user.teams.exists %}
         <a href="{% url 'public:team-list' %}" class="block border-l-4 {% if active_section == 'teams' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
