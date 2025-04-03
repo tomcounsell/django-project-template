@@ -11,8 +11,13 @@ We've made significant progress in fixing the test suite:
 - [x] Fixed behavior test failures in test_behaviors.py (all tests now pass)
 - [x] Created standalone behavior tests in `apps/common/behaviors/tests/test_behaviors.py` for Python 3.12 compatibility
 - [x] Achieved 100% test coverage for all behavior mixins with comprehensive property getter/setter tests
-- [x] Fixed some Twilio integration tests (debug mode tests now pass)
+- [x] Fixed Twilio integration tests (both debug mode and live mode)
+- [x] Fixed AWS S3 integration tests with proper mocking and URL parsing
+- [x] Fixed Loops integration tests with debug_mode flag and proper test environment detection
+- [x] Added get_login_url method to User model for passwordless login
 - [x] Fixed User model tests by adding back payment-related fields with proper migration plan
+- [x] Fixed model implementations (Address, Image, Upload, Note, BlogPost, Subscription)
+- [x] Made Authorable behavior's author field nullable for anonymous content
 - [x] Fixed Stripe-related tests by updating model references (all User model tests now pass)
 - [x] Enhanced User model test coverage to 100% with complete tests for all properties and methods
 - [x] Created comprehensive test troubleshooting guide (docs/TEST_TROUBLESHOOTING.md)
@@ -35,9 +40,11 @@ We've made significant progress in fixing the test suite:
 - [ ] Fix E2E test framework (Django LiveServerTestCase compatibility)
 
 ### Test Statistics
-- Total tests: 425 tests (47 failed, 364 passed, 10 skipped, 4 errors)
-- Currently passing: 364 tests (85.6%)
+- Total tests: 425 tests (39 failed, 372 passed, 10 skipped, 4 errors)
+- Currently passing: 372 tests (87.5%)
 - Progress: Fixed most model tests, integration tests, and core functionality tests
+- All common model tests now pass except Payment and SMS
+- AWS S3, Twilio, and Loops integration tests all pass; only Stripe tests remain
 
 **Note**: Many of the failing tests are related to actual implementation issues or improper mocking, not test structure problems.
 
@@ -58,9 +65,12 @@ For a future API implementation:
 
 This project follows a clean architecture with:
 - Root-level template and static directories (no app-specific templates)
-- Behavior mixins for reusable model functionality
+- Behavior mixins for reusable model functionality with nullable author support
 - HTMX-centric frontend development with minimal JavaScript
 - Tailwind CSS for styling through django-tailwind
+- Test environment detection for seamless testing configuration
+- Passwordless login implementation with login URL generation
+- Integration modules for AWS S3, Twilio, Loops, and Stripe
 - Core apps: common, api, public, ai, integration
 
 ## Completed Features Summary ✅
