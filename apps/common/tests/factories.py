@@ -26,7 +26,6 @@ from apps.common.models import (
     Note,
     Team,
     TeamMember,
-    TodoItem,
     Upload,
 )
 from apps.staff.models import Wish
@@ -380,31 +379,7 @@ class SMSFactory(ModelFactory):
         return super().create(**data)
 
 
-class TodoItemFactory(ModelFactory):
-    """Factory for TodoItem model."""
-
-    model_class = TodoItem
-    default_data = {
-        "title": "Test Todo Item",
-        "description": "This is a test todo item with sample description.",
-        "priority": "MEDIUM",
-        "category": "GENERAL",
-        "status": "TODO",
-        "assignee": None,  # Will be set in create method if needed
-        "due_at": None,
-    }
-
-    @classmethod
-    def create(cls, **kwargs) -> TodoItem:
-        """Create a todo item with valid defaults."""
-        data = cls.default_data.copy()
-        data.update(kwargs)
-
-        # Create an assignee if one isn't provided
-        if not data.get("assignee"):
-            data["assignee"] = UserFactory.create()
-
-        return super().create(**data)
+# TodoItemFactory removed - replaced with WishFactory
 
 
 class WishFactory(ModelFactory):

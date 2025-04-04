@@ -3,19 +3,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
-from django.urls import reverse, reverse_lazy
-from django.utils import timezone
-from django.views.generic import DeleteView
+from django.urls import reverse
 
 from apps.common.forms.wish import WishForm
+from apps.public.views.helpers.htmx_view import HTMXView
+from apps.public.views.helpers.main_content_view import MainContentView
 from apps.staff.models import Wish
-from apps.public.helpers import MainContentView
-from apps.public.helpers.htmx_view import HTMXView
 
 
 class StaffRequiredMixin(LoginRequiredMixin):
     """Mixin to require staff privileges for access to views."""
-    
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
             return self.handle_no_permission()

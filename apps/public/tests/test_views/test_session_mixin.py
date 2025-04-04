@@ -25,7 +25,7 @@ django.setup()
 
 from apps.common.models.team import Role, Team, TeamMember
 from apps.common.tests.factories import UserFactory
-from apps.public.helpers.main_content_view import MainContentView
+from apps.public.views.helpers.main_content_view import MainContentView
 from apps.public.views.helpers.session_mixin import SessionStateMixin
 
 User = get_user_model()
