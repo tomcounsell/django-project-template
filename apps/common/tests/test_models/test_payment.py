@@ -13,7 +13,11 @@ Each test verifies a specific aspect of the Payment model's functionality:
 - payment_type_display for distinguishing subscription vs one-time payments
 """
 
-from django.test import TestCase
+from unittest.mock import MagicMock, patch
+
+import pytest
+from django.test import TestCase, override_settings
+from django.utils import timezone
 
 from apps.common.models import Subscription, User
 

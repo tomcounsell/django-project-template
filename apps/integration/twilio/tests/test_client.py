@@ -4,8 +4,9 @@ Unit tests for the TwilioClient
 
 from unittest.mock import MagicMock, patch
 
-from django.test import override_settings, SimpleTestCase
+import pytest
 from django.conf import settings
+from django.test import SimpleTestCase, override_settings
 
 from apps.integration.twilio.client import TwilioClient
 

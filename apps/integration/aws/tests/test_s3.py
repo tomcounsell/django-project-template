@@ -7,8 +7,9 @@ import tempfile
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase, override_settings
+import pytest
 from botocore.exceptions import ClientError
+from django.test import TestCase, override_settings
 
 from apps.integration.aws.s3 import (
     S3Client,

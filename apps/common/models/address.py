@@ -150,6 +150,7 @@ class Address(Timestampable, models.Model):
 from django.db.models.base import ModelBase
 
 
+
 class LazyAddressForm(ModelBase):
     """
     Form class that will be created lazily when needed to avoid circular imports

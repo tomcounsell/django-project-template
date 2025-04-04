@@ -4,10 +4,10 @@ Core Django settings common to all environments.
 
 import mimetypes
 
-from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
-
 # Detect if we are in a test environment
 import sys
+
+from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
 
 TESTING = "test" in sys.argv or "pytest" in sys.modules
 

@@ -5,7 +5,8 @@ These processors add variables to the context of all templates rendered
 through a RequestContext.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
+
 from django.http import HttpRequest
 
 

@@ -7,7 +7,7 @@ These tests verify that:
 - Navigation works without JavaScript
 """
 
-from django.test import TestCase, RequestFactory, Client
+from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 
 from apps.public.context_processors import active_navigation

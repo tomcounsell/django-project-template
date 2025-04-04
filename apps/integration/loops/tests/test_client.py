@@ -2,11 +2,11 @@
 Unit tests for the LoopsClient
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
 import requests
-from unittest.mock import patch, MagicMock
-from django.test import TestCase
-
+from django.test import TestCase, override_settings
 
 from apps.integration.loops.client import LoopsAPIError, LoopsClient
 
