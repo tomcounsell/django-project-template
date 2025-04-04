@@ -53,7 +53,7 @@
     {% if dismissible|default:True %}
       <div class="ml-4 flex-shrink-0 flex">
         <button type="button" 
-                class="bg-transparent rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none"
+                class="bg-transparent rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-hidden"
                 aria-label="Dismiss"
                 hx-on:click="this.closest('.alert').remove()">
           <span class="sr-only">Dismiss</span>

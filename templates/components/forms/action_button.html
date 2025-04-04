@@ -30,7 +30,7 @@ Usage:
 
 {% if href %}
 <a href="{{ href }}" 
-   class="inline-flex items-center text-xs px-2 py-1 rounded
+   class="inline-flex items-center text-xs px-2 py-1 rounded-xs
    {% if btn_color == "blue" %}bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 focus:ring-blue-300
    {% elif btn_color == "green" %}bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 focus:ring-green-300
    {% elif btn_color == "red" %}bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 focus:ring-red-300
@@ -38,7 +38,7 @@ Usage:
    {% elif btn_color == "purple" %}bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 focus:ring-purple-300
    {% else %}bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 focus:ring-gray-300
    {% endif %}
-   focus:outline-none focus:ring-1 {{ class }}"
+   focus:outline-hidden focus:ring-1 {{ class }}"
    {% if hx_get %}hx-get="{{ hx_get }}"{% endif %}
    {% if hx_post %}hx-post="{{ hx_post }}"{% endif %}
    {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}
@@ -73,7 +73,7 @@ Usage:
 </a>
 {% else %}
 <button
-   class="inline-flex items-center text-xs px-2 py-1 rounded
+   class="inline-flex items-center text-xs px-2 py-1 rounded-xs
    {% if btn_color == "blue" %}bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 focus:ring-blue-300
    {% elif btn_color == "green" %}bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 focus:ring-green-300
    {% elif btn_color == "red" %}bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 focus:ring-red-300
@@ -81,7 +81,7 @@ Usage:
    {% elif btn_color == "purple" %}bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100 focus:ring-purple-300
    {% else %}bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 focus:ring-gray-300
    {% endif %}
-   focus:outline-none focus:ring-1 {{ class }}"
+   focus:outline-hidden focus:ring-1 {{ class }}"
    {% if hx_get %}hx-get="{{ hx_get }}"{% endif %}
    {% if hx_post %}hx-post="{{ hx_post }}"{% endif %}
    {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}

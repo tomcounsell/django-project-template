@@ -106,15 +106,6 @@
 .max-h-\[calc\(85vh-10rem\)\] {
   max-height: calc(85vh - 10rem);
 }
-.min-h-\[40px\] {
-  min-height: 40px;
-}
-.min-h-\[60px\] {
-  min-height: 60px;
-}
-.min-h-\[100px\] {
-  min-height: 100px;
-}
 .min-h-screen {
   min-height: 100vh;
 }
@@ -136,7 +127,13 @@
 .flex-shrink-0 {
   flex-shrink: 0;
 }
+.shrink-0 {
+  flex-shrink: 0;
+}
 .flex-grow {
+  flex-grow: 1;
+}
+.grow {
   flex-grow: 1;
 }
 .origin-top-right {
@@ -396,6 +393,15 @@
   &:focus {
     --tw-ring-offset-width: 2px;
     --tw-ring-offset-shadow: var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  }
+}
+.focus\:outline-hidden {
+  &:focus {
+    outline-style: none;
+    @media (forced-colors: active) {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+    }
   }
 }
 .focus\:outline-none {

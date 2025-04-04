@@ -116,7 +116,7 @@
 {% block modal_footer %}
   <button
     type="button"
-    class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+    class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
     onclick="this.closest('.modal-container').innerHTML = ''"
   >
     {{ cancel_text|default:"Cancel" }}
@@ -124,7 +124,7 @@
   
   <button
     type="button"
-    class="px-4 py-2 rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+    class="px-4 py-2 rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
     onclick="document.getElementById('{{ form_id|default:modal_id|add:'-form' }}').requestSubmit(); setTimeout(() => { if (!document.querySelector('.field-errors')) this.closest('.modal-container').innerHTML = '' }, 300)"
   >
     {{ submit_text|default:"Submit" }}
