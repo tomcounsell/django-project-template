@@ -8,7 +8,8 @@ from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
 
 # Detect if we are in a test environment
 import sys
-TESTING = 'test' in sys.argv or 'pytest' in sys.modules
+
+TESTING = "test" in sys.argv or "pytest" in sys.modules
 
 # Application definition
 DJANGO_APPS = [
@@ -189,7 +190,6 @@ INTERNAL_IPS = [
 NPM_BIN_PATH = "npm"
 
 # Import Unfold settings
-from settings.unfold import UNFOLD
 
 # SSL settings for production
 if PRODUCTION or STAGE:

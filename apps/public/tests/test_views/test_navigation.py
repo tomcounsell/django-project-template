@@ -84,7 +84,7 @@ class NavigationRenderingTestCase(TestCase):
         """Test that the home page has the active state in navigation."""
         response = self.client.get(reverse("public:home"))
         html = response.content.decode("utf-8")
-        
+
         # Check that home link has active class
-        self.assertIn('border-navy-500', html)
-        self.assertIn('Home', html)
+        self.assertIn("border-navy-500", html)
+        self.assertIn("Home", html)

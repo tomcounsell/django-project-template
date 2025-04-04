@@ -3,7 +3,6 @@ import os
 from mimetypes import guess_type
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.db import models
 
 from ..behaviors import Timestampable
@@ -163,11 +162,11 @@ class Upload(Timestampable, models.Model):
                     self.meta_data["meta"].get("width"),
                     self.meta_data["meta"].get("height"),
                 )
-            
+
             if not self.meta_data:
                 # Return None specifically to match test expectations
                 return None
-                
+
             return (None, None)
         return None
 

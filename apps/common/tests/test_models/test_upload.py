@@ -2,7 +2,6 @@
 Tests for the Upload model and related functionality.
 """
 
-import os
 from unittest import mock
 
 from django.test import TestCase, override_settings
@@ -338,7 +337,7 @@ class UploadModelTestCase(TimestampableTest, TestCase):
             s3_upload_copy = Upload.objects.create(
                 original="https://example.com/test.txt",
                 s3_bucket="test-bucket",
-                s3_key="uploads/test-file.txt"
+                s3_key="uploads/test-file.txt",
             )
             s3_upload_copy.delete()
             mock_delete_from_s3.assert_called_once()
@@ -346,17 +345,17 @@ class UploadModelTestCase(TimestampableTest, TestCase):
             # Test with S3 delete error
             mock_delete_from_s3.reset_mock()
             mock_delete_from_s3.side_effect = Exception("Test error")
-            
+
             # Create a new upload object for the error case
             s3_upload_error = Upload.objects.create(
                 original="https://example.com/error.txt",
                 s3_bucket="test-bucket",
-                s3_key="uploads/error-file.txt"
+                s3_key="uploads/error-file.txt",
             )
-            
+
             # Should not raise exception
             s3_upload_error.delete()
-    
+
     def test_str_method(self):
         """Test the __str__ method returns the correct value."""
         # With name

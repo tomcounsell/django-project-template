@@ -15,7 +15,6 @@ from urllib.parse import urlparse
 import boto3
 from botocore.exceptions import ClientError
 from django.conf import settings
-from django.urls import reverse
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -491,7 +490,7 @@ class S3Client:
         elif parsed_url.netloc == "s3.amazonaws.com":
             # URL format: https://s3.amazonaws.com/bucket-name/key
             path_parts = parsed_url.path.strip("/").split("/", 1)
-            bucket_name = path_parts[0] if path_parts else ''
+            bucket_name = path_parts[0] if path_parts else ""
             object_key = path_parts[1] if len(path_parts) > 1 else ""
         else:
             # Not an S3 URL

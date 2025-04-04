@@ -2,7 +2,7 @@
 Tests for the Payment model.
 
 This file uses a mocked Payment model to test its properties and methods
-without relying on the database schema. The test approach uses a MockPayment 
+without relying on the database schema. The test approach uses a MockPayment
 class to simulate the behavior of the real Payment model without requiring
 database migrations.
 
@@ -13,10 +13,7 @@ Each test verifies a specific aspect of the Payment model's functionality:
 - payment_type_display for distinguishing subscription vs one-time payments
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
-from django.test import TestCase, override_settings
-from django.utils import timezone
+from django.test import TestCase
 
 from apps.common.models import Subscription, User
 
@@ -24,39 +21,39 @@ from apps.common.models import Subscription, User
 # Create a mock Payment class that matches what we want to test
 class MockPayment:
     """Mock Payment class for testing purposes."""
-    
+
     # Status constants
     STATUS_PENDING = "pending"
     STATUS_SUCCEEDED = "succeeded"
     STATUS_FAILED = "failed"
     STATUS_REFUNDED = "refunded"
     STATUS_CANCELED = "canceled"
-    
+
     # Payment method constants
     PAYMENT_METHOD_CARD = "card"
-    
+
     def __init__(self, **kwargs):
         """Initialize with provided attributes."""
         for key, value in kwargs.items():
             setattr(self, key, value)
-    
+
     @property
     def amount_display(self):
         """Format amount as currency."""
         return f"${self.amount/100:.2f} {self.currency}"
-    
+
     @property
     def is_successful(self):
         """Check if payment was successful."""
         return self.status == self.STATUS_SUCCEEDED
-    
+
     @property
     def owner_display(self):
         """Get owner display string."""
         if self.user:
             return f"User: {self.user.email}"
         return "Unknown"
-    
+
     @property
     def payment_type_display(self):
         """Get payment type display string."""

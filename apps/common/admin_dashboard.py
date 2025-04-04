@@ -7,12 +7,11 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Sum
 from django.urls import reverse
-from django.utils.html import format_html
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.admin import ADMIN_CATEGORIES, MAIN_NAV_MODELS
-from apps.common.models import SMS, Email, Payment, Subscription, Team, Upload
+from apps.common.models import SMS, Email, Payment, Subscription, Team
 from apps.staff.models import Wish
 
 User = get_user_model()
@@ -238,7 +237,9 @@ def get_admin_dashboard(request, context=None):
                         "todo_stats": wish_stats,  # Still using todo_stats in template
                         "total": wish_count,
                         "overdue_todos": overdue_wishes,  # Still using overdue_todos in template
-                        "active_todos": wish_stats["TODO"]  # Still using active_todos in template
+                        "active_todos": wish_stats[
+                            "TODO"
+                        ]  # Still using active_todos in template
                         + wish_stats["IN_PROGRESS"]
                         + wish_stats["BLOCKED"],
                     },

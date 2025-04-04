@@ -23,7 +23,7 @@ except ImportError:
     # Fallback if the config module is not available
     class LiveServerMixin:
         """Dummy LiveServerMixin for when the real one is not available."""
-        
+
         @classmethod
         def get_server_url(cls, live_server=None) -> str:
             if live_server:
@@ -33,23 +33,23 @@ except ImportError:
 
 class TodoWorkflowTest(LiveServerMixin):
     """Test class for todo workflow using LiveServerMixin."""
-    
+
     @classmethod
     def setup_class(cls):
         """Set up the test class."""
         # Call parent setup_class if it exists to check for running server
-        if hasattr(super(), 'setup_class'):
+        if hasattr(super(), "setup_class"):
             super().setup_class()
-            
+
     def run_todo_workflow_test(self, driver, live_server=None):
         """
         Test the complete workflow of creating, completing, and deleting a todo item.
-        
+
         This method can be used by both pytest fixture-based tests and LiveServerTestCase.
         """
         # Get the server URL (works with live_server fixture or local server)
         server_url = self.get_server_url(live_server)
-        
+
         # Navigate to the todo list page
         driver.get(f"{server_url}/todos/")
 
@@ -63,7 +63,8 @@ class TodoWorkflowTest(LiveServerMixin):
 
         # Verify the new todo was created
         WebDriverWait(driver, 10).until(
-            lambda d: len(d.find_elements(By.CSS_SELECTOR, ".todo-item")) > initial_count
+            lambda d: len(d.find_elements(By.CSS_SELECTOR, ".todo-item"))
+            > initial_count
         )
 
         # Find the new todo item
@@ -74,7 +75,9 @@ class TodoWorkflowTest(LiveServerMixin):
                 new_todo = item
                 break
 
-        assert new_todo is not None, f"Could not find newly created todo: {new_todo_title}"
+        assert (
+            new_todo is not None
+        ), f"Could not find newly created todo: {new_todo_title}"
 
         # Complete the todo item
         checkbox = new_todo.find_element(By.CSS_SELECTOR, "input[type='checkbox']")
@@ -102,11 +105,16 @@ class TodoWorkflowTest(LiveServerMixin):
 
         # Verify the todo item was deleted
         todo_items = driver.find_elements(By.CSS_SELECTOR, ".todo-item")
-        assert len(todo_items) == initial_count, "Todo item was not deleted successfully"
+        assert (
+            len(todo_items) == initial_count
+        ), "Todo item was not deleted successfully"
 
         # Verify the deleted todo item is not in the list
         for item in todo_items:
-            assert new_todo_title not in item.text, "Todo item still exists after deletion"
+            assert (
+                new_todo_title not in item.text
+            ), "Todo item still exists after deletion"
+
 
 # Function-based test using LiveServerMixin for compatibility
 @pytest.mark.e2e
@@ -115,7 +123,7 @@ def test_todo_create_complete_delete_flow(driver, live_server, db):
     """Test the complete workflow of creating, completing, and deleting a todo item."""
     # Create an instance of TodoWorkflowTest
     test = TodoWorkflowTest()
-    
+
     # Run the test using the TodoWorkflowTest instance
     test.run_todo_workflow_test(driver, live_server)
 

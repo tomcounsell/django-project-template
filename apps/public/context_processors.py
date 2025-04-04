@@ -12,22 +12,22 @@ from django.http import HttpRequest
 def active_navigation(request: HttpRequest) -> Dict[str, Any]:
     """
     Determines the active navigation section based on the current URL path.
-    
+
     Args:
         request: The current request object
-        
+
     Returns:
         Dict containing the active_section key with the name of the active
         navigation section as a string
     """
     path = request.path
     active_section = None
-    
+
     # Determine active section based on URL path
     if path == "/":
         active_section = "home"
     elif path.startswith("/landing"):
-        active_section = "home"  # Treat landing as home for nav    
+        active_section = "home"  # Treat landing as home for nav
     elif path.startswith("/todos"):
         active_section = "todos"
     elif path.startswith("/team"):
@@ -40,5 +40,5 @@ def active_navigation(request: HttpRequest) -> Dict[str, Any]:
         active_section = "pricing"
     elif path.startswith("/blog"):
         active_section = "blog"
-    
+
     return {"active_section": active_section}

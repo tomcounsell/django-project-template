@@ -1,11 +1,8 @@
 import datetime
 
-from django import forms
 from django.contrib import admin, messages
-from django.db.models import Count, Q
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
-from django.urls import path, reverse
+from django.db.models import Q
+from django.shortcuts import redirect
 from django.utils.html import format_html
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -364,7 +361,9 @@ class WishAdmin(ModelAdmin):
     def mark_as_in_progress(self, request):
         selected = request.POST.getlist("_selected_action")
         updated = Wish.objects.filter(id__in=selected).update(status="IN_PROGRESS")
-        messages.success(request, f"Successfully marked {updated} wishes as in progress")
+        messages.success(
+            request, f"Successfully marked {updated} wishes as in progress"
+        )
         return redirect("admin:staff_wish_changelist")
 
     @action(description=_("Mark as Blocked"), icon="block")

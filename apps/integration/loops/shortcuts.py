@@ -2,7 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 from icecream import ic
 
-from apps.common.models import Team, User
+from apps.common.models import User
 from apps.common.models.team import Role
 from apps.integration.loops.client import LoopsClient
 
@@ -15,7 +15,7 @@ def send_password_reset_email(user: User, reset_url: str):
     :param str reset_url: The URL to redirect the user to reset their password
     """
     # For testing, use debug_mode=True when in test environment
-    is_test = settings.TESTING if hasattr(settings, 'TESTING') else False
+    is_test = settings.TESTING if hasattr(settings, "TESTING") else False
     loops_client = LoopsClient(debug_mode=is_test)
     loops_client.transactional_email(
         to_email=user.email,
@@ -37,9 +37,9 @@ def send_login_code_email(user: User, next_url=None):
     # Construct the login URL with code as parameter
     login_url = user.get_login_url(next_url)
     ic(f"Loops sending login link: {login_url} to {user.email}")
-    
+
     # For testing, use debug_mode=True when in test environment
-    is_test = settings.TESTING if hasattr(settings, 'TESTING') else False
+    is_test = settings.TESTING if hasattr(settings, "TESTING") else False
     loops_client = LoopsClient(debug_mode=is_test)
     loops_client.transactional_email(
         to_email=user.email,
@@ -80,7 +80,7 @@ def send_team_membership_email(membership):
     """
     try:
         # For testing, use debug_mode=True when in test environment
-        is_test = settings.TESTING if hasattr(settings, 'TESTING') else False
+        is_test = settings.TESTING if hasattr(settings, "TESTING") else False
         loops_client = LoopsClient(debug_mode=is_test)
 
         # Get necessary data

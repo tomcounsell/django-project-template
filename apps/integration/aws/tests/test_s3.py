@@ -5,9 +5,8 @@ Unit tests for the AWS S3 integration.
 import os
 import tempfile
 from datetime import datetime
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, patch
 
-import pytest
 from django.test import TestCase, override_settings
 from botocore.exceptions import ClientError
 
@@ -255,14 +254,11 @@ class S3ClientTestCase(TestCase):
 
         # Test metadata retrieval for non-existent object
         self.mock_s3_client.head_object.side_effect = ClientError(
-            {'Error': {'Code': '404', 'Message': 'Not Found'}},
-            'HeadObject'
+            {"Error": {"Code": "404", "Message": "Not Found"}}, "HeadObject"
         )
-        
-        result = self.client.get_object_metadata(
-            object_key="test/nonexistent.txt"
-        )
-        
+
+        result = self.client.get_object_metadata(object_key="test/nonexistent.txt")
+
         self.assertFalse(result["success"])
         self.assertEqual(result["error"], "Object not found")
 

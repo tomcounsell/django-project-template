@@ -54,25 +54,26 @@ class Payment(Timestampable, models.Model):
     stripe_id = models.CharField(
         max_length=255, blank=True, default="", help_text=_("Stripe payment intent ID")
     )
-    
+
     # Stripe customer ID
     stripe_customer_id = models.CharField(
         max_length=255, blank=True, default="", help_text=_("Stripe customer ID")
     )
-    
+
     # Alias for backward compatibility
     stripe_payment_intent_id = models.CharField(
-        max_length=255, blank=True, default="", help_text=_("Stripe payment intent ID (legacy)")
+        max_length=255,
+        blank=True,
+        default="",
+        help_text=_("Stripe payment intent ID (legacy)"),
     )
 
     # Payment amount in cents
     amount = models.PositiveIntegerField(help_text=_("Payment amount in cents"))
-    
+
     # Currency code (USD, EUR, etc.)
     currency = models.CharField(
-        max_length=3, 
-        default="USD",
-        help_text=_("Currency code (USD, EUR, etc.)")
+        max_length=3, default="USD", help_text=_("Currency code (USD, EUR, etc.)")
     )
 
     # Payment status constants
@@ -81,7 +82,7 @@ class Payment(Timestampable, models.Model):
     STATUS_FAILED = "failed"
     STATUS_REFUNDED = "refunded"
     STATUS_CANCELED = "canceled"
-    
+
     # Payment status choices
     STATUS_CHOICES = (
         (STATUS_PENDING, _("Pending")),
@@ -112,7 +113,7 @@ class Payment(Timestampable, models.Model):
         (PAYMENT_METHOD_GOOGLE_PAY, _("Google Pay")),
         (PAYMENT_METHOD_PAYPAL, _("PayPal")),
     )
-    
+
     # Payment method used
     payment_method = models.CharField(
         max_length=50,
@@ -209,24 +210,24 @@ class Payment(Timestampable, models.Model):
         if self.payment_method == self.PAYMENT_METHOD_CARD and self.last4:
             return f"Card ending in {self.last4}"
         return ""
-        
+
     @property
     def owner_display(self) -> str:
         """
         Get a display string for the payment owner.
-        
+
         Returns:
             str: User email or "Unknown" if no user is associated
         """
         if self.user:
             return f"User: {self.user.email}"
         return "Unknown"
-        
+
     @property
     def payment_type_display(self) -> str:
         """
         Get a display string for the payment type.
-        
+
         Returns:
             str: Subscription plan name or "One-time payment"
         """

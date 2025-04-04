@@ -165,8 +165,8 @@ class AWSShortcutsTestCase(TestCase):
         )
 
         self.assertTrue(result["success"])
-    
-    @mock.patch('apps.common.models.upload.Upload.get_presigned_url')
+
+    @mock.patch("apps.common.models.upload.Upload.get_presigned_url")
     def test_get_upload_file_url(self, mock_get_presigned_url):
         """Test getting a URL for an uploaded file."""
         # Mock the get_presigned_url method on the Upload model
@@ -197,21 +197,18 @@ class AWSShortcutsTestCase(TestCase):
 
         self.assertFalse(result["success"])
         self.assertIn("not found", result["error"])
-        
+
         # Test with S3 client error - simulate an exception during presigned URL generation
         mock_get_presigned_url.side_effect = Exception("Test error")
-        
+
         # Test with error in get_presigned_url
         # Test error handling in get_presigned_url
-        result = get_upload_file_url(
-            upload_id=self.complete_upload.id,
-            presigned=True
-        )
-        
+        result = get_upload_file_url(upload_id=self.complete_upload.id, presigned=True)
+
         # Should return an error response, not fallback to regular URL
         self.assertFalse(result["success"])
         self.assertEqual(result["error"], "Test error")
-    
+
     def test_delete_upload(self):
         """Test deleting an uploaded file."""
         # Mock the delete_from_s3 method

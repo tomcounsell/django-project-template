@@ -12,7 +12,7 @@ class Document(models.Model):
 
     Attributes:
         upload: ForeignKey to the Upload model that contains the file data
-        
+
     Methods:
         display: A property that must be implemented by subclasses to provide the HTML
             to display for the document.
@@ -20,11 +20,9 @@ class Document(models.Model):
     Note:
         This class is intended to be subclassed by specific document types.
     """
-    
+
     upload = models.ForeignKey(
-        'common.Upload',
-        on_delete=models.CASCADE,
-        related_name='documents'
+        "common.Upload", on_delete=models.CASCADE, related_name="documents"
     )
 
     @property

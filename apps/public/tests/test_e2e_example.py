@@ -13,9 +13,8 @@ These tests can be run either:
 This flexibility is provided by the LiveServerMixin.
 """
 
-import asyncio
 import os
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -39,6 +38,7 @@ except ImportError:
     class Page:
         pass
 
+
 # Import LiveServerMixin
 try:
     from apps.public.tests.e2e_test_config import (
@@ -49,17 +49,18 @@ try:
 except ImportError:
     # Fallback if the config module is not available
     SCREENSHOTS_BASE_DIR = "test_screenshots"
-    
+
     class LiveServerMixin:
         """Dummy LiveServerMixin for when the real one is not available."""
-        
+
         @classmethod
         def get_server_url(cls, live_server=None) -> str:
             return "http://localhost:8000"
-            
+
     def ensure_directories():
         """Create screenshot directory if it doesn't exist."""
         os.makedirs(SCREENSHOTS_BASE_DIR, exist_ok=True)
+
 
 # Define asyncio mark conditionally to avoid warnings
 if HAS_PYTEST_ASYNCIO:
@@ -81,20 +82,20 @@ if not hasattr(pytest, "mark"):
 
 class TestBasicExamples(LiveServerMixin):
     """Example test class using LiveServerMixin for flexibility."""
-    
+
     @classmethod
     def setup_class(cls):
         """Set up the test class."""
         super().setup_class()
         # Create necessary directories for screenshots
         ensure_directories()
-    
+
     @asyncio_mark
     async def test_home_page_loads(self, async_page, live_server=None):
         """Test that the home page loads correctly."""
         # Get the server URL to use (works with live_server fixture or local server)
         server_url = self.get_server_url(live_server)
-        
+
         # Navigate to the home page
         page = async_page
         await page.goto(f"{server_url}/")
@@ -116,7 +117,7 @@ class TestBasicExamples(LiveServerMixin):
         """Test that the login form works correctly."""
         # Get the server URL to use (works with live_server fixture or local server)
         server_url = self.get_server_url(live_server)
-        
+
         # Navigate to the login page
         page = async_page
         await page.goto(f"{server_url}/accounts/login/")
@@ -135,7 +136,9 @@ class TestBasicExamples(LiveServerMixin):
             await page.fill('input[name="password"]', "wrongpassword")
 
         # Take a screenshot before submitting
-        await page.screenshot(path=os.path.join(SCREENSHOTS_BASE_DIR, "login_form_filled.png"))
+        await page.screenshot(
+            path=os.path.join(SCREENSHOTS_BASE_DIR, "login_form_filled.png")
+        )
 
         # Try to submit the form if there's a submit button
         if await page.locator('button[type="submit"]').count() > 0:
@@ -143,7 +146,9 @@ class TestBasicExamples(LiveServerMixin):
             await page.wait_for_load_state("networkidle")
 
         # Take a screenshot after submitting
-        await page.screenshot(path=os.path.join(SCREENSHOTS_BASE_DIR, "login_error.png"))
+        await page.screenshot(
+            path=os.path.join(SCREENSHOTS_BASE_DIR, "login_error.png")
+        )
 
         # Test passes as long as we can navigate to the login page and capture screenshots
         # This more relaxed test is suitable for development without requiring specific UI elements
