@@ -48,12 +48,12 @@
   <!-- Main Blog Content -->
   <div class="space-y-10">
     {% for post in posts %}
-      <article class="flex flex-col bg-white shadow-sm rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-        <div class="flex-shrink-0">
+      <article class="flex flex-col bg-white shadow-xs rounded-sm overflow-hidden hover:shadow-md transition-shadow">
+        <div class="shrink-0">
           <img class="h-48 w-full object-cover" src="{{ post.image }}" alt="{{ post.title }}">
         </div>
-        <div class="flex-1 p-6 flex flex-col justify-between">
-          <div class="flex-1">
+        <div class="grow p-6 flex flex-col justify-between">
+          <div class="grow">
             <div class="flex items-center text-sm text-gray-500 mb-2">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-100 text-navy-800">
                 {{ post.category }}
@@ -75,7 +75,7 @@
             <div class="flex text-sm text-gray-500">
               <span>By {{ post.author }}</span>
             </div>
-            <div class="flex-1 text-right">
+            <div class="grow text-right">
               <a href="{% url 'public:blog-post' post.slug %}" class="text-navy-600 hover:text-navy-800 text-sm font-medium">
                 Read more <span aria-hidden="true">→</span>
               </a>
@@ -84,7 +84,7 @@
         </div>
       </article>
     {% empty %}
-      <div class="text-center p-8 bg-white rounded-lg shadow">
+      <div class="text-center p-8 bg-white rounded-sm shadow-xs">
         <p class="text-gray-500">No blog posts found.</p>
       </div>
     {% endfor %}
@@ -158,7 +158,7 @@
       <div class="mt-4 space-y-4">
         {% for post in recent_posts %}
           <div class="flex items-center">
-            <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md overflow-hidden">
+            <div class="shrink-0 h-10 w-10 bg-gray-200 rounded-md overflow-hidden">
               <img src="{{ post.image }}" alt="" class="h-full w-full object-cover">
             </div>
             <div class="ml-3">
