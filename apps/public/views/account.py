@@ -5,7 +5,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import AbstractUser
 
-from apps.public.helpers import MainContentView
+from apps.public.views.helpers.main_content_view import MainContentView
 
 
 class LoginView(auth_views.LoginView):
@@ -61,7 +61,7 @@ class SettingsView(LoginRequiredMixin, MainContentView):
             else:
                 messages.error(
                     request,
-                    f"Password not updated.",
+                    "Password not updated.",
                 )
 
         return self.get(request, *args, **kwargs)

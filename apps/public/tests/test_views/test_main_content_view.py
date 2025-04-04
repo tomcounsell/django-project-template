@@ -13,16 +13,15 @@ from unittest.mock import MagicMock, patch
 
 import django
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 
 # Setup Django if not already done
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
-from apps.public.helpers.main_content_view import MainContentView
+from apps.public.views.helpers.main_content_view import MainContentView
 
 # Use regular Django User model for simple tests
 User = get_user_model()

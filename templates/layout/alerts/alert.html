@@ -20,7 +20,7 @@
 {% endcomment %}
 
 <div id="{{ id|default:'alert-'|add:alert_type }}" 
-     class="alert mb-4 px-4 py-3 rounded-md shadow-sm border-l-4
+     class="alert mb-4 px-4 py-3 rounded-xs shadow-xs border-l-4
             {% if alert_type == 'success' %}bg-green-50 border-green-500 text-green-800
             {% elif alert_type == 'error' %}bg-red-50 border-red-500 text-red-800
             {% elif alert_type == 'warning' %}bg-yellow-50 border-yellow-500 text-yellow-800
@@ -28,7 +28,7 @@
      role="alert"
      aria-live="assertive">
   <div class="flex items-start">
-    <div class="flex-shrink-0">
+    <div class="shrink-0">
       {% if alert_type == 'success' %}
         <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -47,13 +47,13 @@
         </svg>
       {% endif %}
     </div>
-    <div class="ml-3 flex-1 pt-0.5">
+    <div class="ml-3 grow pt-0.5">
       <p class="text-sm font-medium">{{ alert_message }}</p>
     </div>
     {% if dismissible|default:True %}
-      <div class="ml-4 flex-shrink-0 flex">
+      <div class="ml-4 shrink-0 flex">
         <button type="button" 
-                class="bg-transparent rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none"
+                class="bg-transparent rounded-xs inline-flex text-gray-400 hover:text-gray-500 focus:outline-hidden"
                 aria-label="Dismiss"
                 hx-on:click="this.closest('.alert').remove()">
           <span class="sr-only">Dismiss</span>

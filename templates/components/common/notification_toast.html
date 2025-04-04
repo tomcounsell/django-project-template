@@ -36,12 +36,12 @@
   {% if messages %}
     {% for message in messages %}
     <div 
-      class="rounded-lg shadow-lg overflow-hidden bg-white border-l-4 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}border-green-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}border-red-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}border-accent{% else %}border-navy-700{% endif %}"
+      class="rounded-xs shadow-xs overflow-hidden bg-white border-l-4 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}border-green-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}border-red-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}border-accent{% else %}border-navy-700{% endif %}"
       _="on load wait 5s then add .opacity-0 then wait 500ms then remove me"
       style="transition: opacity 0.5s ease-in-out"
     >
       <div class="p-4 flex items-start">
-        <div class="flex-shrink-0 mr-3">
+        <div class="shrink-0 mr-3">
           {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
             <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -61,12 +61,12 @@
           {% endif %}
         </div>
         
-        <div class="flex-1">
+        <div class="grow">
           <p class="text-sm text-gray-800">{{ message }}</p>
         </div>
         
         <button 
-          class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-none"
+          class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-hidden"
           _="on click add .opacity-0 to closest div.rounded-lg then wait 500ms then remove closest div.rounded-lg"
         >
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

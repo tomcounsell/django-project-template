@@ -3,7 +3,6 @@ import os
 from mimetypes import guess_type
 from urllib.parse import urlparse
 
-from django.conf import settings
 from django.db import models
 
 from ..behaviors import Timestampable

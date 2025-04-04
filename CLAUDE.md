@@ -57,7 +57,7 @@ This guide complements the main [README.md](README.md) and provides specific ins
   - Add `TeamSessionMixin` when team context is needed
 - **JavaScript**: Only use inline attributes (onclick, etc.) when necessary
 - **No Scripts**: Avoid adding `<script>` tags unless explicitly required
-- **Tailwind CSS**: Use for styling instead of custom CSS where possible
+- **Tailwind CSS v4**: Use for styling with django-tailwind-cli instead of custom CSS where possible
 - **Templates**: Place in root `/templates` directory, not in app directories
 
 For detailed conventions on templates and views, see:
@@ -105,7 +105,7 @@ For detailed conventions on templates and views, see:
 ## Documentation
 - [README.md](README.md) - Project overview, features and structure
 - [docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md) - Detailed setup instructions
-- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) - Contribution guidelines
+- [docs/CONTRIBUTING.md](docs/guides/CONTRIBUTING.md) - Contribution guidelines
 - [docs/TODO.md](docs/TODO.md) - Current tasks and priorities
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Project architecture and app relationships
 - [docs/BEHAVIOR_MIXINS.md](docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
@@ -157,7 +157,7 @@ For detailed project structure and app descriptions, refer to:
 - **Django**: https://docs.djangoproject.com/en/5.0/
 - **Django REST Framework**: https://www.django-rest-framework.org/
 - **HTMX**: https://htmx.org/docs/
-- **Tailwind CSS**: https://tailwindcss.com/docs
+- **Tailwind CSS v4**: https://tailwindcss.com/docs
 - **Unfold Admin**: https://unfoldadmin.com/docs/
 - **Pytest Django**: https://pytest-django.readthedocs.io/en/latest/
 - **Browser-Use**: https://pypi.org/project/browser-use/

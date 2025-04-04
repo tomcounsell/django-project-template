@@ -5,10 +5,7 @@ This module provides test helpers for both debug mode and live mode tests,
 ensuring proper environment setup for each test type and consistent mocking.
 """
 
-import json
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 
 def setup_debug_mode():

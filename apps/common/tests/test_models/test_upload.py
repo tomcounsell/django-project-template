@@ -2,7 +2,6 @@
 Tests for the Upload model and related functionality.
 """
 
-import os
 from unittest import mock
 
 from django.test import TestCase, override_settings

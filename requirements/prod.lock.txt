@@ -18,6 +18,8 @@ charset-normalizer==3.4.1
 click==8.1.8
     # via
     #   black
+    #   django-typer
+    #   typer-slim
     #   uvicorn
 decorator==5.2.1
     # via ipython
@@ -33,8 +35,9 @@ django==5.1.7
     #   django-filter
     #   django-htmx
     #   django-storages
-    #   django-tailwind
+    #   django-tailwind-cli
     #   django-timezone-field
+    #   django-typer
     #   django-unfold
     #   djangorestframework
     #   drf-yasg
@@ -50,10 +53,12 @@ django-htmx==1.23.0
     # via -r requirements/base.txt
 django-storages==1.14.5
     # via -r requirements/base.txt
-django-tailwind==3.8.0
+django-tailwind-cli==4.1.0
     # via -r requirements/base.txt
 django-timezone-field==7.1
     # via -r requirements/base.txt
+django-typer==3.1.0
+    # via django-tailwind-cli
 django-unfold==0.53.0
     # via -r requirements/base.txt
 django-widget-tweaks==1.5.0
@@ -140,7 +145,13 @@ pyyaml==6.0.2
     #   -r requirements/base.txt
     #   drf-yasg
 requests==2.32.3
-    # via stripe
+    # via
+    #   django-tailwind-cli
+    #   stripe
+semver==3.0.4
+    # via django-tailwind-cli
+shellingham==1.5.4
+    # via django-typer
 sqlparse==0.5.3
     # via
     #   django
@@ -153,12 +164,15 @@ traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
+typer-slim==0.15.2
+    # via django-typer
 typing-extensions==4.12.2
     # via
     #   dj-database-url
     #   pydantic
     #   pydantic-core
     #   stripe
+    #   typer-slim
 uritemplate==4.1.1
     # via
     #   -r requirements/base.txt

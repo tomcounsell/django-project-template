@@ -11,16 +11,12 @@ These patterns demonstrate how to:
 - Test form submissions and validation
 """
 
-import asyncio
 import os
 import sys
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Tuple
 
 import pytest
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import override_settings
-from django.urls import reverse
 
 # Import browser-use components
 try:
@@ -589,7 +585,7 @@ class TestBrowserAgentAutomation(E2ETestBase):
             f"Go to {server_url}/accounts/login/",
             f"Fill in the username field with {username}",
             f"Fill in the password field with {password}",
-            f"Click the Submit or Login button",
+            "Click the Submit or Login button",
             "Wait for page to load",
             "Navigate to the todo list page by clicking on Todos in the navigation",
             "Look for a 'Create' or 'Add' button and click it",

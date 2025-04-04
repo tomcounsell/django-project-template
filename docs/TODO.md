@@ -67,7 +67,7 @@ This project follows a clean architecture with:
 - Root-level template and static directories (no app-specific templates)
 - Behavior mixins for reusable model functionality with nullable author support
 - HTMX-centric frontend development with minimal JavaScript
-- Tailwind CSS for styling through django-tailwind
+- Tailwind CSS v4 for styling through django-tailwind-cli (migrated from django-tailwind v3)
 - Test environment detection for seamless testing configuration
 - Passwordless login implementation with login URL generation
 - Integration modules for AWS S3, Twilio, Loops, and Stripe

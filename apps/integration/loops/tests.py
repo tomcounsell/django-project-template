@@ -1,13 +1,9 @@
 from unittest import mock
 
 from django.test import TestCase, override_settings
-from django.urls import reverse
 
-from apps.common.models import User
 from apps.integration.loops.client import LoopsClient
 from apps.integration.loops.shortcuts import send_waiver_signing_request
-from apps.team.models.team import Team
-from apps.team.models.waiver import Waiver
 
 
 class LoopsClientTestCase(TestCase):

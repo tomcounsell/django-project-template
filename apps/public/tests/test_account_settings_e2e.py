@@ -14,7 +14,7 @@ These tests cover:
 
 import os
 import uuid
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model

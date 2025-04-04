@@ -99,7 +99,7 @@ class LoopsClient:
         """
         # In debug mode, just log the request details and return success
         if self.debug_mode:
-            logger.info(f"[DEBUG MODE] Would have sent transactional email:")
+            logger.info("[DEBUG MODE] Would have sent transactional email:")
             logger.info(f"[DEBUG MODE] To: {to_email}")
             logger.info(f"[DEBUG MODE] Template ID: {transactional_id}")
             logger.info(f"[DEBUG MODE] Data variables: {data_variables}")
@@ -135,7 +135,7 @@ class LoopsClient:
         """
         # In debug mode, just log the request details and return success
         if self.debug_mode:
-            logger.info(f"[DEBUG MODE] Would have sent Loops event:")
+            logger.info("[DEBUG MODE] Would have sent Loops event:")
             logger.info(f"[DEBUG MODE] To: {to_email}")
             logger.info(f"[DEBUG MODE] Event: {event_name}")
             logger.info(f"[DEBUG MODE] Properties: {event_properties}")

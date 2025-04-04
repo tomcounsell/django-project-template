@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -150,7 +150,7 @@ class TestManager:
             os.makedirs(PROJECT_ROOT / "reports/coverage", exist_ok=True)
             cmd.extend(
                 [
-                    f"--cov=apps",
+                    "--cov=apps",
                     f"--cov-report=xml:reports/coverage/{category}.xml",
                     f"--junitxml=reports/junit_{category}.xml",
                 ]
@@ -230,7 +230,7 @@ class TestManager:
         cmd = [
             "DJANGO_SETTINGS_MODULE=settings",
             "pytest",
-            f"--cov=apps",
+            "--cov=apps",
             f"--cov-report=html:{html_dir}",
         ]
 

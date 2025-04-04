@@ -10,43 +10,61 @@
 {% block content %}
   <div class="flex justify-between items-center mb-6">
     <div class="flex-1"></div>
-    <a href="{% url 'staff:wish-list' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+    <a href="{% url 'staff:wish-list' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-xs text-sm font-medium rounded-xs text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
       Back to List
     </a>
   </div>
 
-  <div class="bg-white shadow rounded-lg overflow-hidden">
-    <form method="post" action="{{ form_submit_url }}" class="p-6">
+  <div class="bg-white shadow-xs rounded-xs overflow-hidden">
+    <form method="post" action="{{ form_submit_url }}">
       {% csrf_token %}
+      
+      <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12 p-6">
+          {% if form.non_field_errors %}
+            {% include "components/forms/form_errors.html" with form=form title="Please correct the errors below." %}
+          {% endif %}
 
-      {% if form.non_field_errors %}
-        {% include "components/forms/form_errors.html" with form=form title="Please correct the errors below." %}
-      {% endif %}
+          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-6">
+              {% include "components/forms/text_input.html" with field=form.title %}
+            </div>
+            
+            <div class="col-span-full">
+              {% include "components/forms/textarea.html" with field=form.description %}
+            </div>
 
-      <div class="grid grid-cols-1 gap-6">
-        {% include "components/forms/text_input.html" with field=form.title %}
-        
-        {% include "components/forms/textarea.html" with field=form.description %}
+            <div class="sm:col-span-3">
+              {% include "components/forms/select.html" with field=form.priority %}
+            </div>
+            
+            <div class="sm:col-span-3">
+              {% include "components/forms/select.html" with field=form.category %}
+            </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {% include "components/forms/select.html" with field=form.priority %}
-          {% include "components/forms/select.html" with field=form.category %}
+            <div class="sm:col-span-3">
+              {% include "components/forms/select.html" with field=form.status %}
+            </div>
+            
+            <div class="sm:col-span-3">
+              {% include "components/forms/select.html" with field=form.assignee %}
+            </div>
+
+            <div class="sm:col-span-4">
+              {% include "components/forms/text_input.html" with field=form.due_at input_type="date" help_text="Leave empty if there's no specific due date." %}
+            </div>
+          </div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {% include "components/forms/select.html" with field=form.status %}
-          {% include "components/forms/select.html" with field=form.assignee %}
-        </div>
-
-        {% include "components/forms/text_input.html" with field=form.due_at input_type="date" help_text="Leave empty if there's no specific due date." %}
       </div>
 
-      {% url 'staff:wish-list' as wish_list_url %}
-      {% if form.instance.id %}
-        {% include "components/forms/form_buttons.html" with submit_text="Save" submit_icon="edit" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
-      {% else %}
-        {% include "components/forms/form_buttons.html" with submit_text="Create" submit_icon="create" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
-      {% endif %}
+      <div class="mt-6 flex items-center justify-end gap-x-6 p-6 bg-gray-50">
+        {% url 'staff:wish-list' as wish_list_url %}
+        {% if form.instance.id %}
+          {% include "components/forms/form_buttons.html" with submit_text="Save" submit_icon="edit" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
+        {% else %}
+          {% include "components/forms/form_buttons.html" with submit_text="Create" submit_icon="create" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
+        {% endif %}
+      </div>
     </form>
   </div>
 {% endblock %}

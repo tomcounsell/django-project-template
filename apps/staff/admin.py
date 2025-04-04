@@ -1,11 +1,8 @@
 import datetime
 
-from django import forms
 from django.contrib import admin, messages
-from django.db.models import Count, Q
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
-from django.urls import path, reverse
+from django.db.models import Q
+from django.shortcuts import redirect
 from django.utils.html import format_html
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -177,7 +174,7 @@ class CompletedWithinFilter(admin.SimpleListFilter):
 
 
 class WishTemplateSection(TemplateSection):
-    template_name = "admin/dashboard/todo_stats.html"  # Reusing the same template
+    template_name = "admin/dashboard/wish_stats.html"
     model_name = "wish"
 
     def get_context_data(self, **kwargs):

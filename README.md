@@ -7,7 +7,7 @@
 
 Technologies: Python, Django, PostgreSQL, 
 API: Django Rest Framework
-Web: HTMX, Tailwind CSS
+Web: HTMX, Tailwind CSS v4
 Hosting: Render, AWS-S3
 Integrations: 
     Loops for transactional email
@@ -23,7 +23,7 @@ Planned Integrations:
 ### Getting Started
 - **Quick Start**: Run `source setup_local_env.sh` for automated local environment setup with activated virtual environment
 - For detailed setup instructions, see [Setup Guide](docs/SETUP_GUIDE.md)
-- For contribution guidelines, see [Contributing Guide](docs/CONTRIBUTING.md)
+- For contribution guidelines, see [Contributing Guide](docs/guides/CONTRIBUTING.md)
 - For current tasks and priorities, see [TODO List](docs/TODO.md)
 - For development practices, see [Development Guide](CLAUDE.md)
 

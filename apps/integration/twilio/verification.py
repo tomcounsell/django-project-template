@@ -1,9 +1,8 @@
 import logging
 import random
 import string
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from django.conf import settings
 from django.core.cache import cache
 
 from apps.integration.twilio.shortcuts import (

@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 
 from django.db import models
 from django.forms import ModelForm
@@ -149,7 +148,7 @@ class Address(Timestampable, models.Model):
 
 # Define form classes after the models themselves are loaded to avoid circular imports
 from django.db.models.base import ModelBase
-from django.forms import ModelForm
+
 
 
 class LazyAddressForm(ModelBase):

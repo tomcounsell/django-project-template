@@ -4,8 +4,7 @@ Unit tests for the Loops shortcuts
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from apps.common.models import User
 from apps.integration.loops.shortcuts import (

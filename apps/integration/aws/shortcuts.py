@@ -9,10 +9,8 @@ retrieving uploaded files.
 import logging
 import mimetypes
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from django.conf import settings
-from django.urls import reverse
 
 from apps.common.models.upload import Upload
 from apps.integration.aws.s3 import S3Client, generate_unique_filename

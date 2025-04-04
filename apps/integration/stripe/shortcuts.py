@@ -6,11 +6,10 @@ creating checkout sessions, managing customers, and handling subscriptions.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from django.conf import settings
 from django.urls import reverse
-from icecream import ic
 
 from apps.common.models import User
 from apps.integration.stripe.client import StripeClient

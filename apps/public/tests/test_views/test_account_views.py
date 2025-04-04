@@ -17,7 +17,6 @@ from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from apps.common.tests.factories import UserFactory
-from apps.public.views.account import HomeView, LoginView, SettingsView
 
 User = get_user_model()
 

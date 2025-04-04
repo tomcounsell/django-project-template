@@ -9,7 +9,6 @@ It supports both E2E tests and visual tests.
 
 import argparse
 import os
-import signal
 import subprocess
 import sys
 import time

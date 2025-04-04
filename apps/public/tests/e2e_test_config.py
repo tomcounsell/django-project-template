@@ -9,7 +9,6 @@ server or with Django's LiveServerTestCase.
 import os
 import socket
 import time
-from typing import Dict, Optional, Union
 from urllib.parse import urlparse
 
 # CONSTANTS

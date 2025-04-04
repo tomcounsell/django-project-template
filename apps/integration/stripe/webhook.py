@@ -5,12 +5,10 @@ This module provides functions for handling various webhook events from Stripe,
 such as payment success, subscription updates, and customer events.
 """
 
-import json
 import logging
 from datetime import datetime
 from typing import Any, Dict
 
-from django.conf import settings
 from django.utils import timezone
 
 from apps.common.models import Payment, Subscription, User

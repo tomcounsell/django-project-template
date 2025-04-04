@@ -5,14 +5,11 @@ This module provides browser-based tests for the account settings functionality,
 using the browser-use and Playwright framework.
 """
 
-import asyncio
 import os
 import uuid
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 # Import test pattern base classes if available
 try:

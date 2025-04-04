@@ -1,7 +1,5 @@
-from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
@@ -74,7 +72,7 @@ class SMSModelTestCase(TestCase):
 
     def test_string_representation(self):
         """Test the string representation of SMS."""
-        expected = f"SMS to +1234567890: This is a test SMS message."
+        expected = "SMS to +1234567890: This is a test SMS message."
         self.assertEqual(str(self.sms), expected)
 
     def test_update_status(self):

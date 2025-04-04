@@ -107,7 +107,7 @@ class StripeClient:
                 "simulated": True,
                 "session": {
                     "id": "cs_test_simulated",
-                    "url": f"https://checkout.stripe.com/pay/cs_test_simulated",
+                    "url": "https://checkout.stripe.com/pay/cs_test_simulated",
                     "payment_intent": "pi_simulated",
                     "client_secret": "cs_secret_simulated",
                 },

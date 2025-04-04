@@ -15,7 +15,6 @@ from urllib.parse import urlparse
 import boto3
 from botocore.exceptions import ClientError
 from django.conf import settings
-from django.urls import reverse
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)

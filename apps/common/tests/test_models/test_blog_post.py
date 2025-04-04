@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.common.models import Address, BlogPost, User
+from apps.common.models import Address, BlogPost
 from apps.common.tests.factories import UserFactory
 
 

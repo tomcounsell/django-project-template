@@ -1,6 +1,6 @@
 import hashlib
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -67,7 +67,6 @@ class User(AbstractUser, Timestampable):
         Returns:
             QuerySet: A queryset of all active or trialing subscriptions
         """
-        from apps.common.models import Subscription
 
         active_statuses = ["active", "trialing"]
         return self.subscriptions.filter(status__in=active_statuses)

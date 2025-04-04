@@ -1,6 +1,3 @@
-from datetime import datetime
-from typing import Any, List, Optional
-
 from django.db import models
 
 

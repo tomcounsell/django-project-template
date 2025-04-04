@@ -11,12 +11,12 @@
     </p>
   </div>
   
-  <div class="bg-white rounded-lg shadow-md p-6">
+  <div class="bg-white rounded-xs shadow-xs p-6">
     <form method="post">
       {% csrf_token %}
       
       {% if form.non_field_errors %}
-        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-xs">
           {{ form.non_field_errors }}
         </div>
       {% endif %}
@@ -31,7 +31,7 @@
         {% endif %}
       </div>
       
-      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
         Send Reset Link
       </button>
     </form>

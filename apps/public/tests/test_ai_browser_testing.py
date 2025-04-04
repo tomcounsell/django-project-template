@@ -17,23 +17,17 @@ Usage:
     DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_ai_browser_testing.py::TestAIAutomatedTesting::test_generate_and_run_test -v
 """
 
-import asyncio
 import json
 import os
-import time
 import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
+from typing import Any, Dict, List, Optional, Tuple
 
 import pytest
 
 # Import pytest-asyncio
 import pytest_asyncio
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import connection
-from django.urls import reverse
 
 # Add database mark
 pytestmark = [pytest.mark.django_db]  # Allow database access
@@ -571,9 +565,9 @@ class TestAIAutomatedTesting(AIBrowserTesting):
         ], f"Test failed with status: {report.status}"
 
         # Verify the todo doesn't exist in the database
-        from apps.common.models import TodoItem
+        from apps.common.models import Wish
 
-        todos = TodoItem.objects.filter(title=todo_title)
+        todos = Wish.objects.filter(title=todo_title)
         assert (
             not todos.exists()
         ), f"Todo with title '{todo_title}' still exists in database"

@@ -19,7 +19,7 @@ Additionally, the project uses specialized base templates for components:
 This template provides the complete HTML structure with:
 - HTML5 doctype and responsive viewport
 - Metadata for SEO and social sharing
-- CSS imports (Tailwind CSS)
+- CSS imports (Tailwind CSS v4)
 - JS dependencies (HTMX, HyperScript)
 - Common layout elements (navbar, footer)
 - Toast notification system
@@ -297,6 +297,8 @@ class ProfileView(MainContentView):
 - ✅ **Instead**: Include all potential variants: `md:col-span-8 md:col-span-9 md:col-span-10`
 - ✅ **Alternative**: Use CSS custom properties or JavaScript for dynamic values
 - This is because Tailwind performs static analysis at build time and cannot process Django template variables or blocks
+
+**Note**: We've migrated from django-tailwind to django-tailwind-cli and upgraded to Tailwind CSS v4. This version uses CSS variables for theme customization in `static/css/source.css` instead of a separate `tailwind.config.js` file.
 
 ## Best Practices
 

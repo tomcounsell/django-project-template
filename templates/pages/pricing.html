@@ -51,7 +51,7 @@
       <!-- Pricing cards -->
       <div class="mt-12 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-y-0">
         {% for plan in plans %}
-          <div class="relative flex flex-col rounded-2xl border {% if plan.highlighted %}border-2 border-navy-600 shadow-md{% else %}border-gray-200{% endif %} p-8 transform hover:scale-105 transition-all">
+          <div class="relative flex flex-col rounded-xs border {% if plan.highlighted %}border-2 border-navy-600 shadow-xs{% else %}border-gray-200{% endif %} p-8 transform hover:scale-105 transition-all">
             {% if plan.highlighted %}
               <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 inline-flex rounded-full bg-navy-600 px-4 py-1 text-sm font-semibold text-white">
                 Popular
@@ -70,7 +70,7 @@
               <ul role="list" class="mt-6 space-y-4">
                 {% for feature in plan.features %}
                   <li class="flex items-start">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                       <i class="fas fa-check h-6 w-6 text-green-500"></i>
                     </div>
                     <p class="ml-3 text-base text-gray-500">{{ feature }}</p>
@@ -79,7 +79,7 @@
               </ul>
             </div>
 
-            <a href="{% url 'public:account-login' %}" class="mt-8 block w-full rounded-md py-3 px-6 text-center text-base font-medium text-white {{ plan.cta_class }} focus:outline-none focus:ring-2 focus:ring-navy-600 focus:ring-offset-2">
+            <a href="{% url 'public:account-login' %}" class="mt-8 block w-full rounded-xs py-3 px-6 text-center text-base font-medium text-white {{ plan.cta_class }} focus:outline-hidden focus:ring-2 focus:ring-navy-600 focus:ring-offset-2">
               {{ plan.cta_text }}
             </a>
           </div>
@@ -98,7 +98,7 @@
         </p>
       </div>
 
-      <div class="mt-12 overflow-x-auto rounded-lg shadow">
+      <div class="mt-12 overflow-x-auto rounded-xs shadow-xs">
         <table class="min-w-full divide-y divide-gray-200 bg-white">
           <thead class="bg-gray-50">
             <tr>
@@ -234,7 +234,7 @@
       <div class="mt-12 max-w-4xl mx-auto">
         <dl class="space-y-8">
           {% for faq in faqs %}
-            <div class="bg-gray-50 p-6 rounded-lg">
+            <div class="bg-gray-50 p-6 rounded-xs">
               <dt class="text-lg leading-6 font-medium text-gray-900">
                 {{ faq.question }}
               </dt>
@@ -258,8 +258,8 @@
         Our team will work with you to create a custom solution tailored to your organization's unique needs.
       </p>
       <div class="mt-8 flex justify-center">
-        <div class="inline-flex rounded-md shadow">
-          <a href="{% url 'public:account-login' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-navy-700 bg-white hover:bg-gray-50">
+        <div class="inline-flex rounded-xs shadow-xs">
+          <a href="{% url 'public:account-login' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-xs text-navy-700 bg-white hover:bg-gray-50">
             Contact sales
           </a>
         </div>

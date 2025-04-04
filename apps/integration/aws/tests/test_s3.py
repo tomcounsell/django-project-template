@@ -5,7 +5,7 @@ Unit tests for the AWS S3 integration.
 import os
 import tempfile
 from datetime import datetime
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from botocore.exceptions import ClientError

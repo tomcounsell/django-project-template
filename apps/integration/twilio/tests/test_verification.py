@@ -1,6 +1,5 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 from django.core.cache import cache
 from django.test import TestCase, override_settings
 

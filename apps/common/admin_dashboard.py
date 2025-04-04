@@ -7,12 +7,12 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Sum
 from django.urls import reverse
-from django.utils.html import format_html
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.admin import ADMIN_CATEGORIES, MAIN_NAV_MODELS
-from apps.common.models import SMS, Email, Payment, Subscription, Team, TodoItem, Upload
+from apps.common.models import SMS, Email, Payment, Subscription, Team
+from apps.staff.models import Wish
 
 User = get_user_model()
 
@@ -146,15 +146,15 @@ def get_admin_dashboard(request, context=None):
     # Get top teams by size
     top_teams = teams_with_members.order_by("-member_count")[:5]
 
-    # Todo statistics
-    todo_count = TodoItem.objects.count()
-    todo_stats = {
-        "TODO": TodoItem.objects.filter(status="TODO").count(),
-        "IN_PROGRESS": TodoItem.objects.filter(status="IN_PROGRESS").count(),
-        "BLOCKED": TodoItem.objects.filter(status="BLOCKED").count(),
-        "DONE": TodoItem.objects.filter(status="DONE").count(),
+    # Wish statistics
+    wish_count = Wish.objects.count()
+    wish_stats = {
+        "TODO": Wish.objects.filter(status="TODO").count(),
+        "IN_PROGRESS": Wish.objects.filter(status="IN_PROGRESS").count(),
+        "BLOCKED": Wish.objects.filter(status="BLOCKED").count(),
+        "DONE": Wish.objects.filter(status="DONE").count(),
     }
-    overdue_todos = TodoItem.objects.filter(
+    overdue_wishes = Wish.objects.filter(
         due_at__lt=now(), status__in=["TODO", "IN_PROGRESS", "BLOCKED"]
     ).count()
 
@@ -229,17 +229,19 @@ def get_admin_dashboard(request, context=None):
                     "column": 1,
                     "order": 1,
                 },
-                # Todo Widget with status breakdown
+                # Wish Widget with status breakdown
                 {
-                    "title": _("Todo Items"),
-                    "template": "admin/dashboard/todo_stats.html",
+                    "title": _("Wish Items"),
+                    "template": "admin/dashboard/wish_stats.html",
                     "context": {
-                        "todo_stats": todo_stats,
-                        "total": todo_count,
-                        "overdue_todos": overdue_todos,
-                        "active_todos": todo_stats["TODO"]
-                        + todo_stats["IN_PROGRESS"]
-                        + todo_stats["BLOCKED"],
+                        "todo_stats": wish_stats,  # Still using todo_stats in template
+                        "total": wish_count,
+                        "overdue_todos": overdue_wishes,  # Still using overdue_todos in template
+                        "active_todos": wish_stats[
+                            "TODO"
+                        ]  # Still using active_todos in template
+                        + wish_stats["IN_PROGRESS"]
+                        + wish_stats["BLOCKED"],
                     },
                     "column": 1,
                     "order": 2,

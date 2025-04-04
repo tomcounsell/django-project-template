@@ -17,7 +17,7 @@ Each model has its own test file:
 - test_sms.py: Tests for SMS model
 - test_subscription.py: Tests for Subscription model
 - test_team.py: Tests for Team model
-- test_todo.py: Tests for TodoItem model
+- test_models_wish.py: Tests for Wish model (moved to staff app)
 - test_upload.py: Tests for Upload model
 - test_user.py: Tests for User model
 

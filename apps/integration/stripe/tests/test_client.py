@@ -3,14 +3,12 @@ Unit tests for the StripeClient class.
 """
 
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
 from django.test import TestCase
 
-from apps.integration.stripe.client import StripeAPIError, StripeClient
+from apps.integration.stripe.client import StripeClient
 from apps.integration.stripe.tests.stripe_test_utils import (
-    configure_mock_stripe,
     setup_debug_mode,
     setup_live_mode,
     teardown_patches,

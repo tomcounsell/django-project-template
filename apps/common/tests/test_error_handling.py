@@ -2,7 +2,6 @@
 Tests for error handling and logging utilities.
 """
 
-from django.http import HttpRequest
 from django.test import RequestFactory, TestCase
 
 from apps.common.models import User
