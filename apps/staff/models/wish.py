@@ -5,22 +5,21 @@ from django.utils import timezone
 from apps.common.behaviors import Timestampable
 
 
-class TodoItem(Timestampable, models.Model):
+class Wish(Timestampable, models.Model):
     """
-    A model representing an internal system improvement task.
+    A model representing a wish/desire/goal to be tracked and managed.
 
-    Allows tracking of system enhancements, bug fixes, and other internal tasks
-    with priorities, categories, and assignees.
+    Allows tracking of wishes and goals with priorities, categories, and assignees.
 
     Attributes:
-        title (str): Brief description of the task
-        description (str): Detailed explanation of what needs to be done
-        priority (str): Task priority level (LOW, MEDIUM, HIGH)
-        category (str): The area of the system this task relates to
-        status (str): Current status of the task (TODO, IN_PROGRESS, BLOCKED, DONE)
-        assignee (ForeignKey): User assigned to complete this task
-        due_at (DateTimeField): When this task should be completed by
-        completed_at (DateTimeField): When this task was marked as completed
+        title (str): Brief description of the wish
+        description (str): Detailed explanation of what is wished for
+        priority (str): Wish priority level (LOW, MEDIUM, HIGH)
+        category (str): The area this wish relates to
+        status (str): Current status of the wish (TODO, IN_PROGRESS, BLOCKED, DONE)
+        assignee (ForeignKey): User assigned to fulfill this wish
+        due_at (DateTimeField): When this wish should be fulfilled by
+        completed_at (DateTimeField): When this wish was marked as completed
     """
 
     # Priority choices
@@ -90,7 +89,7 @@ class TodoItem(Timestampable, models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="assigned_todos",
+        related_name="assigned_wishes",
     )
     due_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -98,12 +97,12 @@ class TodoItem(Timestampable, models.Model):
     # MODEL PROPERTIES
     @property
     def is_completed(self):
-        """Returns whether this todo item is completed."""
+        """Returns whether this wish is completed."""
         return self.status == self.STATUS_DONE
 
     @property
     def is_overdue(self):
-        """Returns whether this todo item is past its due date."""
+        """Returns whether this wish is past its due date."""
         if not self.due_at:
             return False
         return self.due_at < timezone.now()
@@ -136,46 +135,46 @@ class TodoItem(Timestampable, models.Model):
             return f"Overdue by {abs(days)} days"
 
     def get_absolute_url(self):
-        """Returns the URL to the detail view for this todo item."""
-        return reverse("public:todo-detail", kwargs={"pk": self.pk})
+        """Returns the URL to the detail view for this wish."""
+        return reverse("staff:wish-detail", kwargs={"pk": self.pk})
 
     def get_complete_url(self):
-        """Returns the URL to mark this todo item as complete."""
-        return reverse("public:todo-complete", kwargs={"pk": self.pk})
+        """Returns the URL to mark this wish as complete."""
+        return reverse("staff:wish-complete", kwargs={"pk": self.pk})
 
     def get_delete_url(self):
-        """Returns the URL to delete this todo item."""
-        return reverse("public:todo-delete", kwargs={"pk": self.pk})
+        """Returns the URL to delete this wish."""
+        return reverse("staff:wish-delete", kwargs={"pk": self.pk})
 
     def get_delete_modal_url(self):
-        """Returns the URL to show the delete confirmation modal for this todo item."""
-        return reverse("public:todo-delete-modal", kwargs={"pk": self.pk})
+        """Returns the URL to show the delete confirmation modal for this wish."""
+        return reverse("staff:wish-delete-modal", kwargs={"pk": self.pk})
 
     # MODEL FUNCTIONS
     def __str__(self):
         return f"{self.title} ({self.priority})"
 
     def complete(self):
-        """Mark this todo item as completed."""
+        """Mark this wish as completed."""
         self.status = self.STATUS_DONE
         self.completed_at = timezone.now()
         self.save()
 
     def reopen(self):
-        """Reopen this todo item."""
+        """Reopen this wish."""
         self.status = self.STATUS_TODO
         self.completed_at = None
         self.save()
 
     def set_priority(self, priority):
-        """Set the priority of this todo item."""
+        """Set the priority of this wish."""
         if priority not in dict(self.PRIORITY_CHOICES):
             raise ValueError(f"Invalid priority: {priority}")
         self.priority = priority
         self.save()
 
     def set_status(self, status):
-        """Set the status of this todo item."""
+        """Set the status of this wish."""
         if status not in dict(self.STATUS_CHOICES):
             raise ValueError(f"Invalid status: {status}")
 
@@ -190,6 +189,6 @@ class TodoItem(Timestampable, models.Model):
         self.save()
 
     class Meta:
-        verbose_name = "Todo Item"
-        verbose_name_plural = "Todo Items"
+        verbose_name = "Wish"
+        verbose_name_plural = "Wishes"
         ordering = ["-priority", "due_at", "-created_at"]

@@ -16,9 +16,6 @@ from .views.teams.team_views import (
     TeamListView,
     TeamUpdateView,
 )
-from .views.todos import todo_views
-from .views.wishes import wish_views
-
 app_name = "public"
 
 urlpatterns = []
@@ -153,59 +150,6 @@ urlpatterns += [
     path("team/<slug:team_slug>/leave/", leave_team, name="leave-team"),
 ]
 
-# Todo URLs
-urlpatterns += [
-    path("todos/", todo_views.TodoListView.as_view(), name="todo-list"),
-    path("todos/create/", todo_views.TodoCreateView.as_view(), name="todo-create"),
-    path("todos/<int:pk>/", todo_views.TodoDetailView.as_view(), name="todo-detail"),
-    path(
-        "todos/<int:pk>/update/",
-        todo_views.TodoUpdateView.as_view(),
-        name="todo-update",
-    ),
-    path(
-        "todos/<int:pk>/delete/",
-        todo_views.TodoDeleteView.as_view(),
-        name="todo-delete",
-    ),
-    path(
-        "todos/<int:pk>/delete-modal/",
-        todo_views.TodoDeleteModalView.as_view(),
-        name="todo-delete-modal",
-    ),
-    path(
-        "todos/<int:pk>/complete/",
-        todo_views.TodoCompleteView.as_view(),
-        name="todo-complete",
-    ),
-]
-
-# Wish URLs
-urlpatterns += [
-    path("wishes/", wish_views.WishListView.as_view(), name="wish-list"),
-    path("wishes/create/", wish_views.WishCreateView.as_view(), name="wish-create"),
-    path("wishes/<int:pk>/", wish_views.WishDetailView.as_view(), name="wish-detail"),
-    path(
-        "wishes/<int:pk>/update/",
-        wish_views.WishUpdateView.as_view(),
-        name="wish-update",
-    ),
-    path(
-        "wishes/<int:pk>/delete/",
-        wish_views.WishDeleteView.as_view(),
-        name="wish-delete",
-    ),
-    path(
-        "wishes/<int:pk>/delete-modal/",
-        wish_views.WishDeleteModalView.as_view(),
-        name="wish-delete-modal",
-    ),
-    path(
-        "wishes/<int:pk>/complete/",
-        wish_views.WishCompleteView.as_view(),
-        name="wish-complete",
-    ),
-]
 
 # Component Examples
 urlpatterns += [

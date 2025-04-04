@@ -91,7 +91,7 @@ This project follows a clean architecture with:
 - [x] Build example pages (landing, pricing, blog)
 - [ ] Implement accessibility best practices
 
-## Todo -> Wish List
+## Todo -> Wish List ✅
 - [x] Rename the Todo model to Wish
 - [x] refactor all views managing todo items into wish list items (wishes)
 - [x] The todo list page is now a wish list page
@@ -99,6 +99,9 @@ This project follows a clean architecture with:
 - [x] Move the Wish model and it's views and templates to the staff app
 - [x] Register the staff app and it's template dir in settings/base.py
 - [x] create and register urls.py and admin.py according to our existing patterns
+- [x] Use Unfold admin in staff/admin.py like in common/admin.py
+- [x] Move Wish model from common app to staff app
+- [x] Create migrations to delete model from common and recreate in staff
 
 ### Code Quality 🧪
 - [ ] Refactor redundant template logic

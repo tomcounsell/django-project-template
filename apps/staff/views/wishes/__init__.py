@@ -1,1 +1,0 @@
-# Initialize staff.views.wishes package

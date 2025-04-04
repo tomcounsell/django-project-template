@@ -14,8 +14,6 @@ from .email import Email
 from .payment import Payment
 from .sms import SMS
 from .subscription import Subscription
-from .todo import TodoItem
-from .wish import Wish
 from .api_key import TeamAPIKey, UserAPIKey
 
 __all__ = [
@@ -34,8 +32,6 @@ __all__ = [
     "BlogPost",
     "Email",
     "SMS",
-    "TodoItem",
-    "Wish",
     "UserAPIKey",
     "TeamAPIKey",
     "Subscription",

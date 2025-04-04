@@ -40,7 +40,7 @@ try:
     HAS_PYTEST_ASYNCIO = True
 
     # Import the base test class
-    from .test_e2e_patterns import E2ETestBase, asyncio_mark, browser_test
+    from apps.public.tests.test_e2e_patterns import E2ETestBase, asyncio_mark, browser_test
 except ImportError:
     BROWSER_USE_AVAILABLE = False
     HAS_PYTEST_ASYNCIO = False

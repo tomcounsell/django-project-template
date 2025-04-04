@@ -28,8 +28,8 @@ from apps.common.models import (
     TeamMember,
     TodoItem,
     Upload,
-    Wish,
 )
+from apps.staff.models import Wish
 
 User = get_user_model()
 T = TypeVar("T", bound=models.Model)

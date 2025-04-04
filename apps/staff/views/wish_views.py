@@ -8,15 +8,24 @@ from django.utils import timezone
 from django.views.generic import DeleteView
 
 from apps.common.forms.wish import WishForm
-from apps.common.models import Wish
+from apps.staff.models import Wish
 from apps.public.helpers import MainContentView
 from apps.public.helpers.htmx_view import HTMXView
 
 
-class WishListView(LoginRequiredMixin, MainContentView):
-    """View for listing all wish items."""
+class StaffRequiredMixin(LoginRequiredMixin):
+    """Mixin to require staff privileges for access to views."""
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
 
-    template_name = "wishes/wish_list.html"
+
+class WishListView(StaffRequiredMixin, MainContentView):
+    """View for listing all wish items (staff only)."""
+
+    template_name = "staff/wishes/wish_list.html"
 
     def get(self, request, *args, **kwargs):
         """Get all wishes with filtering options."""
@@ -59,10 +68,10 @@ class WishListView(LoginRequiredMixin, MainContentView):
         return self.render(request)
 
 
-class WishDetailView(LoginRequiredMixin, MainContentView):
-    """View for displaying a single wish item."""
+class WishDetailView(StaffRequiredMixin, MainContentView):
+    """View for displaying a single wish item (staff only)."""
 
-    template_name = "wishes/wish_detail.html"
+    template_name = "staff/wishes/wish_detail.html"
 
     def get(self, request, *args, **kwargs):
         """Get a single wish item."""
@@ -73,16 +82,16 @@ class WishDetailView(LoginRequiredMixin, MainContentView):
         return self.render(request)
 
 
-class WishCreateView(LoginRequiredMixin, MainContentView):
-    """View for creating a new wish item."""
+class WishCreateView(StaffRequiredMixin, MainContentView):
+    """View for creating a new wish item (staff only)."""
 
-    template_name = "wishes/wish_form.html"
+    template_name = "staff/wishes/wish_form.html"
 
     def get(self, request, *args, **kwargs):
         """Display the wish form."""
         self.context["form"] = WishForm()
         self.context["form_title"] = "Create New Wish"
-        self.context["form_submit_url"] = reverse("public:wish-create")
+        self.context["form_submit_url"] = reverse("staff:wish-create")
         return self.render(request)
 
     def post(self, request, *args, **kwargs):
@@ -93,18 +102,18 @@ class WishCreateView(LoginRequiredMixin, MainContentView):
             # Save and set the current user as assignee if not specified
             wish = form.save(user=request.user)
             messages.success(request, f"Wish '{wish.title}' was created successfully.")
-            return redirect("public:wish-list")
+            return redirect("staff:wish-list")
 
         self.context["form"] = form
         self.context["form_title"] = "Create New Wish"
-        self.context["form_submit_url"] = reverse("public:wish-create")
+        self.context["form_submit_url"] = reverse("staff:wish-create")
         return self.render(request)
 
 
-class WishUpdateView(LoginRequiredMixin, MainContentView):
-    """View for updating an existing wish item."""
+class WishUpdateView(StaffRequiredMixin, MainContentView):
+    """View for updating an existing wish item (staff only)."""
 
-    template_name = "wishes/wish_form.html"
+    template_name = "staff/wishes/wish_form.html"
 
     def get(self, request, *args, **kwargs):
         """Display the wish form with existing data."""
@@ -115,7 +124,7 @@ class WishUpdateView(LoginRequiredMixin, MainContentView):
         self.context["form"] = form
         self.context["form_title"] = f"Edit Wish: {wish.title}"
         self.context["form_submit_url"] = reverse(
-            "public:wish-update", kwargs={"pk": wish_id}
+            "staff:wish-update", kwargs={"pk": wish_id}
         )
         self.context["wish"] = wish
         return self.render(request)
@@ -130,19 +139,19 @@ class WishUpdateView(LoginRequiredMixin, MainContentView):
         if form.is_valid():
             wish = form.save()
             messages.success(request, f"Wish '{wish.title}' was updated successfully.")
-            return redirect("public:wish-detail", pk=wish.id)
+            return redirect("staff:wish-detail", pk=wish.id)
 
         self.context["form"] = form
         self.context["form_title"] = f"Edit Wish: {wish.title}"
         self.context["form_submit_url"] = reverse(
-            "public:wish-update", kwargs={"pk": wish_id}
+            "staff:wish-update", kwargs={"pk": wish_id}
         )
         self.context["wish"] = wish
         return self.render(request)
 
 
-class WishDeleteModalView(LoginRequiredMixin, HTMXView):
-    """HTMX view for showing the delete confirmation modal."""
+class WishDeleteModalView(StaffRequiredMixin, HTMXView):
+    """HTMX view for showing the delete confirmation modal (staff only)."""
 
     template_name = "components/modals/modal_confirm.html"
 
@@ -153,17 +162,17 @@ class WishDeleteModalView(LoginRequiredMixin, HTMXView):
 
         # Determine context from referrer
         referrer = request.META.get("HTTP_REFERER", "")
-        is_on_detail_page = "/wishes/" + str(wish.id) in referrer
-        is_on_list_page = "/wishes/" in referrer and not is_on_detail_page
+        is_on_detail_page = "/staff/wishes/" + str(wish.id) in referrer
+        is_on_list_page = "/staff/wishes/" in referrer and not is_on_detail_page
 
         # Determine where to redirect after deletion
         if is_on_detail_page:
             # If coming from detail page
-            redirect_after = reverse("public:wish-list")
+            redirect_after = reverse("staff:wish-list")
         else:
             # If coming from list or other page, stay there
             redirect_after = request.META.get(
-                "HTTP_REFERER", reverse("public:wish-list")
+                "HTTP_REFERER", reverse("staff:wish-list")
             )
 
         # Set up context for the confirmation modal
@@ -172,7 +181,7 @@ class WishDeleteModalView(LoginRequiredMixin, HTMXView):
                 "modal_id": f"delete-wish-{wish.id}",
                 "modal_title": "Delete Wish",
                 "message": f"Are you sure you want to delete the wish <strong>{wish.title}</strong>? This action cannot be undone.",
-                "confirm_url": reverse("public:wish-delete", kwargs={"pk": wish.id}),
+                "confirm_url": reverse("staff:wish-delete", kwargs={"pk": wish.id}),
                 "confirm_method": "post",  # Use POST instead of DELETE for better compatibility
                 "confirm_text": "Delete",
                 "cancel_text": "Cancel",
@@ -188,21 +197,21 @@ class WishDeleteModalView(LoginRequiredMixin, HTMXView):
         return self.render(request)
 
 
-class WishDeleteView(LoginRequiredMixin, HTMXView):
-    """View for deleting a wish item."""
+class WishDeleteView(StaffRequiredMixin, HTMXView):
+    """View for deleting a wish item (staff only)."""
 
     def get(self, request, *args, **kwargs):
         """For regular GET requests, forward to the confirmation page."""
         # If it's an HTMX request, it should go to the modal view
         if getattr(request, "htmx", False):
-            return redirect("public:wish-delete-modal", pk=kwargs.get("pk"))
+            return redirect("staff:wish-delete-modal", pk=kwargs.get("pk"))
 
         # For non-HTMX requests, use the classic confirmation template
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
         self.context["wish"] = wish
-        self.template_name = "wishes/wish_confirm_delete.html"
+        self.template_name = "staff/wishes/wish_confirm_delete.html"
         return self.render(request)
 
     def post(self, request, *args, **kwargs):
@@ -221,7 +230,7 @@ class WishDeleteView(LoginRequiredMixin, HTMXView):
         messages.success(request, f"Wish '{wish_title}' was deleted successfully.")
 
         # Get the redirect URL from the request data
-        redirect_url = request.POST.get("redirect_after", reverse("public:wish-list"))
+        redirect_url = request.POST.get("redirect_after", reverse("staff:wish-list"))
 
         # For HTMX requests, handle differently based on context
         if getattr(request, "htmx", False):
@@ -240,13 +249,9 @@ class WishDeleteView(LoginRequiredMixin, HTMXView):
         # For non-HTMX requests, use a standard redirect
         return redirect(redirect_url)
 
-    def delete(self, request, *args, **kwargs):
-        """Use post method for DELETE requests."""
-        return self.post(request, *args, **kwargs)
 
-
-class WishCompleteView(LoginRequiredMixin, HTMXView):
-    """View for marking a wish item as done or not done."""
+class WishCompleteView(StaffRequiredMixin, HTMXView):
+    """View for marking a wish item as done or not done (staff only)."""
 
     def post(self, request, *args, **kwargs):
         """Mark the wish item as done or not done."""
@@ -280,13 +285,13 @@ class WishCompleteView(LoginRequiredMixin, HTMXView):
 
             if "wish-row" in target:
                 # For list view updates
-                self.template_name = "wishes/partials/wish_row.html"
+                self.template_name = "staff/wishes/partials/wish_row.html"
                 row_html = f'<tr id="wish-row-{wish.id}">{render_to_string(self.template_name, self.context, request=request)}</tr>'
                 return HttpResponse(row_html)
             else:
                 # For detail view updates
-                self.template_name = "wishes/partials/wish_detail.html"
+                self.template_name = "staff/wishes/partials/wish_detail.html"
                 return self.render(request)
         else:
             # For standard requests, redirect to the detail page
-            return redirect("public:wish-detail", pk=wish.id)
+            return redirect("staff:wish-detail", pk=wish.id)

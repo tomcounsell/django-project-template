@@ -1,7 +1,8 @@
 from django import forms
 from django.utils import timezone
 
-from apps.common.models import Wish, User
+from apps.common.models import User
+from apps.staff.models import Wish
 
 
 class WishForm(forms.ModelForm):
