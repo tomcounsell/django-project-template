@@ -61,8 +61,8 @@
               Team
             </a>
             {% endif %}
-            <a href="{% url 'public:todo-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'todos' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
-              Todos
+            <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'wishes' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+              Wishes
             </a>
           {% endif %}
         </div>
@@ -114,8 +114,8 @@
           Team
         </a>
         {% endif %}
-        <a href="{% url 'public:todo-list' %}" class="block border-l-4 {% if active_section == 'todos' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
-          Todos
+        <a href="{% url 'staff:wish-list' %}" class="block border-l-4 {% if active_section == 'wishes' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+          Wishes
         </a>
       {% endif %}
     </div>

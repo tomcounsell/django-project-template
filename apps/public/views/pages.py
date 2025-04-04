@@ -8,7 +8,7 @@ including authentication-optional pages and content-driven pages.
 from django.http import Http404
 from django.utils import timezone
 
-from apps.public.helpers import MainContentView
+from apps.public.views.helpers.main_content_view import MainContentView
 
 
 class LandingView(MainContentView):

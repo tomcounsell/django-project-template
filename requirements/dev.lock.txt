@@ -82,7 +82,9 @@ click==8.1.8
     # via
     #   aider-chat
     #   black
+    #   django-typer
     #   litellm
+    #   typer-slim
 colorama==0.4.6
     # via icecream
 configargparse==1.7
@@ -118,16 +120,15 @@ django==5.1.7
     #   django-storages
     #   django-stubs
     #   django-stubs-ext
-    #   django-tailwind
+    #   django-tailwind-cli
     #   django-timezone-field
+    #   django-typer
     #   django-unfold
     #   djangorestframework
     #   drf-yasg
     #   sphinxcontrib-django
 django-browser-reload==1.18.0
-    # via
-    #   -r requirements/dev.txt
-    #   django-tailwind
+    # via -r requirements/dev.txt
 django-cors-headers==4.7.0
     # via -r requirements/base.txt
 django-debug-toolbar==5.1.0
@@ -144,12 +145,12 @@ django-stubs==5.1.3
     # via -r requirements/dev.txt
 django-stubs-ext==5.1.3
     # via django-stubs
-django-tailwind==3.8.0
-    # via
-    #   -r requirements/base.txt
-    #   -r requirements/dev.txt
+django-tailwind-cli==4.1.0
+    # via -r requirements/base.txt
 django-timezone-field==7.1
     # via -r requirements/base.txt
+django-typer==3.1.0
+    # via django-tailwind-cli
 django-unfold==0.53.0
     # via -r requirements/base.txt
 django-widget-tweaks==1.5.0
@@ -507,6 +508,7 @@ requests==2.32.3
     # via
     #   aider-chat
     #   browser-use
+    #   django-tailwind-cli
     #   huggingface-hub
     #   langsmith
     #   mixpanel
@@ -530,8 +532,12 @@ scipy==1.13.1
     # via aider-chat
 selenium==4.30.0
     # via -r requirements/dev.txt
+semver==3.0.4
+    # via django-tailwind-cli
 setuptools==78.1.0
     # via browser-use
+shellingham==1.5.4
+    # via django-typer
 six==1.17.0
     # via
     #   aider-chat
@@ -646,6 +652,8 @@ trio==0.29.0
     #   trio-websocket
 trio-websocket==0.12.2
     # via selenium
+typer-slim==0.15.2
+    # via django-typer
 types-pyyaml==6.0.12.20241230
     # via django-stubs
 typing-extensions==4.12.2
@@ -667,6 +675,7 @@ typing-extensions==4.12.2
     #   referencing
     #   selenium
     #   stripe
+    #   typer-slim
 uritemplate==4.1.1
     # via
     #   -r requirements/base.txt

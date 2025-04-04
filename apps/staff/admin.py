@@ -174,7 +174,7 @@ class CompletedWithinFilter(admin.SimpleListFilter):
 
 
 class WishTemplateSection(TemplateSection):
-    template_name = "admin/dashboard/todo_stats.html"  # Reusing the same template
+    template_name = "admin/dashboard/wish_stats.html"
     model_name = "wish"
 
     def get_context_data(self, **kwargs):

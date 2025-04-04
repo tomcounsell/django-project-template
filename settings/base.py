@@ -32,7 +32,6 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "storages",
-    "django_extensions",
     # "request", # a statistics module for django. It stores requests in a database for admins to see.
     # "django_user_agents",
     "debug_toolbar",
@@ -40,13 +39,13 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_api_key",
     "django_filters",
+    "django_tailwind_cli",
     "django_htmx",
-    "tailwind",
     "drf_yasg",
+    "django_extensions",
 ]
 
 PROJECT_APPS = [
-    "theme",  # django-tailwind app
     "apps.common",
     "apps.integration",
     "apps.api",
@@ -124,6 +123,7 @@ STATIC_URL = "/static/"
 # Additional locations of static files
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "theme" / "static",
 ]
 
 STATICFILES_FINDERS = [
@@ -181,8 +181,7 @@ TEMPLATE_DIRS = [
     BASE_DIR / "templates",
 ]
 
-# Tailwind CSS settings
-TAILWIND_APP_NAME = "theme"
+# Debug toolbar settings
 INTERNAL_IPS = [
     "127.0.0.1",
 ]

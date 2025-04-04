@@ -1,8 +1,8 @@
 -r base.txt
 django-browser-reload
+django-tailwind-cli[django-extensions]
 Werkzeug
 aider-chat
-django-tailwind[reload]
 pytest
 pytest-django
 pytest-cov

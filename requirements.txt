@@ -44,8 +44,6 @@ django-htmx==1.23.0
     # via -r requirements/base.txt
 django-storages==1.14.5
     # via -r requirements/base.txt
-django-tailwind==3.8.0
-    # via -r requirements/base.txt
 django-timezone-field==7.1
     # via -r requirements/base.txt
 django-unfold==0.53.0

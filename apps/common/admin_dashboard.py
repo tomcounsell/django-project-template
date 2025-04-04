@@ -232,7 +232,7 @@ def get_admin_dashboard(request, context=None):
                 # Wish Widget with status breakdown
                 {
                     "title": _("Wish Items"),
-                    "template": "admin/dashboard/todo_stats.html",  # Reusing template for now
+                    "template": "admin/dashboard/wish_stats.html",
                     "context": {
                         "todo_stats": wish_stats,  # Still using todo_stats in template
                         "total": wish_count,
