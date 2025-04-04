@@ -117,6 +117,7 @@ try:
         SCREENSHOTS_BASE_DIR,
         SERVER_URL,
         VIEWPORTS,
+        LiveServerMixin,
         ensure_directories,
         is_server_running,
     )
@@ -149,6 +150,30 @@ except ImportError:
         result = sock.connect_ex((host, port))
         sock.close()
         return result == 0
+        
+    class LiveServerMixin:
+        """Dummy LiveServerMixin for when the real one is not available."""
+        
+        @classmethod
+        def get_server_url(cls, live_server=None) -> str:
+            """Get the server URL to use for tests."""
+            if live_server:
+                return live_server.url
+            return SERVER_URL
+            
+        @classmethod
+        def setup_class(cls):
+            """Set up the test class."""
+            # Create necessary directories
+            ensure_directories()
+            
+            # Check if a live server is running
+            if not is_server_running():
+                import pytest
+                pytest.skip(
+                    "Test server not running. Start with 'python manage.py runserver' "
+                    "or use pytest-django live_server fixture."
+                )
 
 
 class EndToEndTestConfig:
@@ -223,25 +248,12 @@ async def browser_page(browser_context):
         print(f"Error closing browser page: {e}")
 
 
-class E2ETestBase:
+class E2ETestBase(LiveServerMixin):
     """Base class for end-to-end tests with browser-use and Playwright."""
 
     config = EndToEndTestConfig()
 
-    @classmethod
-    def setup_class(cls):
-        """Set up the test class."""
-        # Create necessary directories
-        ensure_directories()
-
-        # Check if a live server is running
-        if not is_server_running():
-            pytest.skip(
-                "Test server not running. Start with 'python manage.py runserver'"
-            )
-
-    @staticmethod
-    async def login_user(page: Page, username: str, password: str) -> bool:
+    async def login_user(self, page: Page, username: str, password: str, live_server=None) -> bool:
         """
         Log in a user through the browser.
 
@@ -249,13 +261,17 @@ class E2ETestBase:
             page: Playwright page object
             username: Username for login
             password: Password for login
+            live_server: The pytest-django live_server fixture, if available
 
         Returns:
             bool: True if login successful, False otherwise
         """
         try:
+            # Get the server URL (works with live_server fixture or local server)
+            server_url = self.get_server_url(live_server)
+            
             # Navigate to login page
-            await page.goto(f"{EndToEndTestConfig.server_url}/accounts/login/")
+            await page.goto(f"{server_url}/accounts/login/")
 
             # Fill login form
             await page.fill('input[name="username"]', username)
@@ -281,11 +297,14 @@ class E2ETestBase:
             print(f"Login failed: {e}")
             return False
 
-    @staticmethod
-    async def create_user_and_login(page: Page) -> Tuple[User, bool]:
+    async def create_user_and_login(self, page: Page, live_server=None) -> Tuple[User, bool]:
         """
         Create a test user and log them in.
 
+        Args:
+            page: Playwright page object
+            live_server: The pytest-django live_server fixture, if available
+            
         Returns:
             Tuple[User, bool]: Created user object and login success boolean
         """
@@ -297,12 +316,11 @@ class E2ETestBase:
         )
 
         # Login with this user
-        login_success = await E2ETestBase.login_user(page, username, password)
+        login_success = await self.login_user(page, username, password, live_server)
 
         return user, login_success
 
-    @staticmethod
-    async def take_screenshot(page: Page, filename: str) -> str:
+    async def take_screenshot(self, page: Page, filename: str) -> str:
         """
         Take a screenshot during test execution.
 
@@ -313,13 +331,12 @@ class E2ETestBase:
         Returns:
             str: Path to the saved screenshot
         """
-        screenshot_path = os.path.join(EndToEndTestConfig.screenshots_dir, filename)
+        screenshot_path = os.path.join(self.config.screenshots_dir, filename)
         await page.screenshot(path=screenshot_path)
         return screenshot_path
 
-    @staticmethod
     async def assert_element_visible(
-        page: Page, selector: str, timeout: int = 5000
+        self, page: Page, selector: str, timeout: int = 5000
     ) -> bool:
         """
         Assert that an element is visible on the page.
@@ -336,9 +353,8 @@ class E2ETestBase:
         await element.wait_for(state="visible", timeout=timeout)
         return True
 
-    @staticmethod
     async def assert_element_contains_text(
-        page: Page, selector: str, text: str
+        self, page: Page, selector: str, text: str
     ) -> bool:
         """
         Assert that an element contains specific text.
@@ -358,8 +374,7 @@ class E2ETestBase:
         ), f"Element {selector} does not contain text '{text}'"
         return True
 
-    @staticmethod
-    async def wait_for_htmx_request(page: Page, timeout: int = 5000) -> None:
+    async def wait_for_htmx_request(self, page: Page, timeout: int = 5000) -> None:
         """
         Wait for an HTMX request to complete.
 
@@ -385,7 +400,7 @@ class E2ETestBase:
 class TestLoginForm(E2ETestBase):
     """Test the login form functionality."""
 
-    async def test_login_form_submission(self, browser_page):
+    async def test_login_form_submission(self, browser_page, live_server=None):
         """Test that the login form can be submitted."""
         page = browser_page
         username = "testuser"
@@ -394,8 +409,11 @@ class TestLoginForm(E2ETestBase):
         # Create test user
         User.objects.create_user(username=username, password=password)
 
+        # Get the server URL to use (works with live_server fixture or local server)
+        server_url = self.get_server_url(live_server)
+
         # Navigate to login page
-        await page.goto(f"{self.config.server_url}/accounts/login/")
+        await page.goto(f"{server_url}/accounts/login/")
 
         # Check login form is visible
         assert await self.assert_element_visible(page, "form")
@@ -425,16 +443,19 @@ class TestLoginForm(E2ETestBase):
 class TestHTMXInteractions(E2ETestBase):
     """Test HTMX interactions."""
 
-    async def test_htmx_load_component(self, browser_page):
+    async def test_htmx_load_component(self, browser_page, live_server=None):
         """Test loading a component via HTMX."""
         page = browser_page
 
         # Login with test user
-        user, login_success = await self.create_user_and_login(page)
+        user, login_success = await self.create_user_and_login(page, live_server)
         assert login_success, "Login failed"
 
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Navigate to a page with HTMX components
-        await page.goto(f"{self.config.server_url}/todos/")
+        await page.goto(f"{server_url}/todos/")
 
         # Find an element with hx-get attribute that loads content
         htmx_trigger = page.locator("[hx-get]").first
@@ -489,8 +510,11 @@ class TestResponsiveLayout(E2ETestBase):
         except Exception as e:
             print(f"Error during custom browser cleanup: {e}")
 
-    async def test_responsive_navbar(self, custom_browser_context):
+    async def test_responsive_navbar(self, custom_browser_context, live_server=None):
         """Test navbar responsiveness at different screen sizes."""
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Define viewport sizes to test
         viewports = [
             {"width": 1280, "height": 800},  # Desktop
@@ -507,7 +531,7 @@ class TestResponsiveLayout(E2ETestBase):
                 page = await context.new_page()
                 
                 # Navigate to home page
-                await page.goto(f"{self.config.server_url}/")
+                await page.goto(f"{server_url}/")
 
                 # Take screenshot
                 device_type = (
@@ -534,12 +558,15 @@ class TestResponsiveLayout(E2ETestBase):
 class TestBrowserAgentAutomation(E2ETestBase):
     """Test using BrowserAgent from browser-use for more complex flows."""
 
-    async def test_complete_user_flow(self):
+    async def test_complete_user_flow(self, live_server=None):
         """Test a complete user flow using BrowserAgent."""
         # Skip if browser-use is not available
         if not BROWSER_USE_AVAILABLE:
             pytest.skip("browser-use not installed")
 
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Create a test user
         username = f"testuser_{os.urandom(4).hex()}"
         password = "testpassword123"
@@ -549,7 +576,7 @@ class TestBrowserAgentAutomation(E2ETestBase):
 
         # Set up tasks for the agent
         tasks = [
-            f"Go to {self.config.server_url}/accounts/login/",
+            f"Go to {server_url}/accounts/login/",
             f"Fill in the username field with {username}",
             f"Fill in the password field with {password}",
             f"Click the Submit or Login button",

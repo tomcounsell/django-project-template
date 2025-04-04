@@ -5,11 +5,12 @@ These tests are simplified examples of how to use browser-use
 for end-to-end testing in the Django Project Template. They
 depend on browser-use and playwright packages being installed.
 
-To run these tests:
-1. Start the Django server: python manage.py runserver
-2. Run the tests: DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_e2e_example.py -v
+These tests can be run either:
+1. With a running local development server: python manage.py runserver
+2. Using pytest-django live_server fixture: DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_e2e_example.py -v
+3. With Django's LiveServerTestCase
 
-Note: These tests are meant to run in local development only.
+This flexibility is provided by the LiveServerMixin.
 """
 
 import asyncio
@@ -38,6 +39,27 @@ except ImportError:
     class Page:
         pass
 
+# Import LiveServerMixin
+try:
+    from apps.public.tests.e2e_test_config import (
+        SCREENSHOTS_BASE_DIR,
+        LiveServerMixin,
+        ensure_directories,
+    )
+except ImportError:
+    # Fallback if the config module is not available
+    SCREENSHOTS_BASE_DIR = "test_screenshots"
+    
+    class LiveServerMixin:
+        """Dummy LiveServerMixin for when the real one is not available."""
+        
+        @classmethod
+        def get_server_url(cls, live_server=None) -> str:
+            return "http://localhost:8000"
+            
+    def ensure_directories():
+        """Create screenshot directory if it doesn't exist."""
+        os.makedirs(SCREENSHOTS_BASE_DIR, exist_ok=True)
 
 # Define asyncio mark conditionally to avoid warnings
 if HAS_PYTEST_ASYNCIO:
@@ -57,91 +79,71 @@ if not hasattr(pytest, "mark"):
     pytestmark = lambda *args, **kwargs: lambda f: f  # noqa
 
 
-@asyncio_mark
-async def test_home_page_loads(async_page):
-    """Test that the home page loads correctly."""
-    # Skip if server is not running
-    if not await is_server_running():
-        pytest.skip("Django server not running at http://localhost:8000")
+class TestBasicExamples(LiveServerMixin):
+    """Example test class using LiveServerMixin for flexibility."""
+    
+    @classmethod
+    def setup_class(cls):
+        """Set up the test class."""
+        super().setup_class()
+        # Create necessary directories for screenshots
+        ensure_directories()
+    
+    @asyncio_mark
+    async def test_home_page_loads(self, async_page, live_server=None):
+        """Test that the home page loads correctly."""
+        # Get the server URL to use (works with live_server fixture or local server)
+        server_url = self.get_server_url(live_server)
+        
+        # Navigate to the home page
+        page = async_page
+        await page.goto(f"{server_url}/")
 
-    # Navigate to the home page
-    page = async_page
-    await page.goto("http://localhost:8000/")
+        # Take a screenshot
+        await page.screenshot(path=os.path.join(SCREENSHOTS_BASE_DIR, "home_page.png"))
 
-    # Take a screenshot
-    os.makedirs("test_screenshots", exist_ok=True)
-    await page.screenshot(path="test_screenshots/home_page.png")
+        # Check that the page title is correct
+        title = await page.title()
+        # More flexible assertion to account for different title formats
+        assert "Home" in title
 
-    # Check that the page title is correct
-    title = await page.title()
-    # More flexible assertion to account for different title formats
-    assert "Home" in title
+        # Check that the page has the expected content
+        content = await page.content()
+        assert "Home" in content
 
-    # Check that the page has the expected content
-    content = await page.content()
-    assert "Home" in content
+    @asyncio_mark
+    async def test_login_form(self, async_page, live_server=None):
+        """Test that the login form works correctly."""
+        # Get the server URL to use (works with live_server fixture or local server)
+        server_url = self.get_server_url(live_server)
+        
+        # Navigate to the login page
+        page = async_page
+        await page.goto(f"{server_url}/accounts/login/")
 
+        # Check that something is present on the login page
+        assert (
+            await page.locator("#login-page").count() > 0
+            or await page.locator("body").count() > 0
+        )
 
-@asyncio_mark
-async def test_login_form(async_page):
-    """Test that the login form works correctly."""
-    # Skip if server is not running
-    if not await is_server_running():
-        pytest.skip("Django server not running at http://localhost:8000")
+        # Check for inputs that might exist
+        if await page.locator('input[name="username"]').count() > 0:
+            await page.fill('input[name="username"]', "testuser")
 
-    # Navigate to the login page
-    page = async_page
-    await page.goto("http://localhost:8000/accounts/login/")
+        if await page.locator('input[name="password"]').count() > 0:
+            await page.fill('input[name="password"]', "wrongpassword")
 
-    # Check that something is present on the login page
-    assert (
-        await page.locator("#login-page").count() > 0
-        or await page.locator("body").count() > 0
-    )
+        # Take a screenshot before submitting
+        await page.screenshot(path=os.path.join(SCREENSHOTS_BASE_DIR, "login_form_filled.png"))
 
-    # Check for inputs that might exist
-    if await page.locator('input[name="username"]').count() > 0:
-        await page.fill('input[name="username"]', "testuser")
+        # Try to submit the form if there's a submit button
+        if await page.locator('button[type="submit"]').count() > 0:
+            await page.click('button[type="submit"]')
+            await page.wait_for_load_state("networkidle")
 
-    if await page.locator('input[name="password"]').count() > 0:
-        await page.fill('input[name="password"]', "wrongpassword")
+        # Take a screenshot after submitting
+        await page.screenshot(path=os.path.join(SCREENSHOTS_BASE_DIR, "login_error.png"))
 
-    # Take a screenshot before submitting
-    await page.screenshot(path="test_screenshots/login_form_filled.png")
-
-    # Try to submit the form if there's a submit button
-    if await page.locator('button[type="submit"]').count() > 0:
-        await page.click('button[type="submit"]')
-        await page.wait_for_load_state("networkidle")
-
-    # Take a screenshot after submitting
-    await page.screenshot(path="test_screenshots/login_error.png")
-
-    # Test passes as long as we can navigate to the login page and capture screenshots
-    # This more relaxed test is suitable for development without requiring specific UI elements
-
-
-# Helper function to check if the Django server is running
-async def is_server_running() -> bool:
-    """Check if the Django server is running at localhost:8000."""
-    try:
-        browser = await playwright.async_api.async_playwright().start()
-        chromium = await browser.chromium.launch()
-        page = await chromium.new_page()
-
-        # Try to connect with a short timeout
-        page.set_default_timeout(2000)
-        try:
-            await page.goto("http://localhost:8000/")
-            result = True
-        except:
-            result = False
-
-        # Clean up
-        await page.close()
-        await chromium.close()
-        await browser.stop()
-
-        return result
-    except:
-        return False
+        # Test passes as long as we can navigate to the login page and capture screenshots
+        # This more relaxed test is suitable for development without requiring specific UI elements
