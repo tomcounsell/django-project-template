@@ -1,4 +1,3 @@
-
 from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Count

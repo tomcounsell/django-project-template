@@ -5,7 +5,6 @@ This file contains fixtures and configuration for the public app tests,
 including those needed for end-to-end browser testing with browser-use.
 """
 
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import override_settings

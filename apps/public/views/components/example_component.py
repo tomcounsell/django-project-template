@@ -1,6 +1,3 @@
-
-
-
 # Team stats component has been removed
 
 

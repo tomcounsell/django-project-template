@@ -1,5 +1,3 @@
-
-
 def email_to_string(e):
     # type: (EmailMessage) -> str
     def n(x):

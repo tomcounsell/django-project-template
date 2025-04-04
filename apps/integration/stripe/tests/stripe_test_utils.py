@@ -8,7 +8,6 @@ ensuring proper environment setup for each test type and consistent mocking.
 from unittest.mock import MagicMock, patch
 
 
-
 def setup_debug_mode():
     """
     Set up environment for Stripe tests in debug mode.

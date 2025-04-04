@@ -5,7 +5,6 @@ This command allows developers to capture screenshots of any page in the applica
 directly from the Django management interface.
 """
 
-
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.test import Client
