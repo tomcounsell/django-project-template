@@ -28,7 +28,7 @@
   
   {% for message in messages %}
     {% with message_type=message.tags|default:'info' %}
-      <div class="toast-message bg-white border-l-4 rounded-md shadow-md animate-toast 
+      <div class="toast-message bg-white border-l-4 rounded-sm shadow-xs animate-toast 
                   {% if message_type == 'success' %}border-green-500
                   {% elif message_type == 'error' %}border-red-500
                   {% elif message_type == 'warning' %}border-yellow-500
