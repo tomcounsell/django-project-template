@@ -8,13 +8,13 @@
     <div>
       <h1 class="text-2xl font-bold">{{ team.name }}</h1>
       {% if not team.is_active %}
-        <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-sm ml-2">Inactive</span>
+        <span class="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-xs ml-2">Inactive</span>
       {% endif %}
     </div>
     <div class="flex space-x-2">
       {% if can_manage %}
         <a href="{% url 'public:team-edit' team_slug=team.slug %}" 
-           class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-sm">
+           class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
           Edit Team
         </a>
       {% endif %}
@@ -22,14 +22,14 @@
       <form method="post" action="{% url 'public:leave-team' team_slug=team.slug %}"
             onsubmit="return confirm('Are you sure you want to leave this team?')">
         {% csrf_token %}
-        <button type="submit" class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-sm">
+        <button type="submit" class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-xs">
           Leave Team
         </button>
       </form>
       
       {% if can_delete %}
         <a href="{% url 'public:team-delete' team_slug=team.slug %}" 
-           class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-sm">
+           class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xs">
           Delete Team
         </a>
       {% endif %}
@@ -39,7 +39,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <!-- Team Info -->
     <div class="lg:col-span-1">
-      <div class="bg-white shadow-xs rounded-sm p-6 mb-6">
+      <div class="bg-white shadow-xs rounded-xs p-6 mb-6">
         <h2 class="text-xl font-semibold mb-4">Team Information</h2>
         
         {% if team.description %}
@@ -62,7 +62,7 @@
       
       {% if can_manage %}
       <!-- Add Member Form -->
-      <div class="bg-white shadow-xs rounded-sm p-6">
+      <div class="bg-white shadow-xs rounded-xs p-6">
         <h2 class="text-xl font-semibold mb-4">Add Member</h2>
         <form method="post" action="{% url 'public:add-team-member' team_slug=team.slug %}">
           {% csrf_token %}
@@ -72,7 +72,7 @@
               Email Address
             </label>
             <input type="email" name="email" id="email" required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-sm" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-xs" 
                   placeholder="user@example.com">
           </div>
           
@@ -80,7 +80,7 @@
             <label for="role" class="block text-gray-700 font-semibold mb-2">
               Role
             </label>
-            <select name="role" id="role" class="w-full px-3 py-2 border border-gray-300 rounded-sm">
+            <select name="role" id="role" class="w-full px-3 py-2 border border-gray-300 rounded-xs">
               <option value="member">Member</option>
               <option value="admin">Admin</option>
               {% if can_delete %}
@@ -89,7 +89,7 @@
             </select>
           </div>
           
-          <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-sm">
+          <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
             Add Member
           </button>
         </form>
@@ -99,7 +99,7 @@
     
     <!-- Team Members -->
     <div class="lg:col-span-2">
-      <div class="bg-white shadow-xs rounded-sm p-6">
+      <div class="bg-white shadow-xs rounded-xs p-6">
         <h2 class="text-xl font-semibold mb-4">Team Members</h2>
         
         {% if owners %}
@@ -123,7 +123,7 @@
                       <form method="post" action="{% url 'public:change-member-role' team_slug=team.slug member_id=member.id %}">
                         {% csrf_token %}
                         <select name="role" onchange="this.form.submit()" 
-                                class="text-sm border border-gray-300 rounded-sm px-2 py-1">
+                                class="text-sm border border-gray-300 rounded-xs px-2 py-1">
                           <option value="owner" selected>Owner</option>
                           <option value="admin">Admin</option>
                           <option value="member">Member</option>
@@ -170,7 +170,7 @@
                       <form method="post" action="{% url 'public:change-member-role' team_slug=team.slug member_id=member.id %}">
                         {% csrf_token %}
                         <select name="role" onchange="this.form.submit()" 
-                                class="text-sm border border-gray-300 rounded-sm px-2 py-1">
+                                class="text-sm border border-gray-300 rounded-xs px-2 py-1">
                           {% if can_delete %}
                             <option value="owner">Owner</option>
                           {% endif %}
@@ -217,7 +217,7 @@
                       <form method="post" action="{% url 'public:change-member-role' team_slug=team.slug member_id=member.id %}">
                         {% csrf_token %}
                         <select name="role" onchange="this.form.submit()" 
-                                class="text-sm border border-gray-300 rounded-sm px-2 py-1">
+                                class="text-sm border border-gray-300 rounded-xs px-2 py-1">
                           {% if can_delete %}
                             <option value="owner">Owner</option>
                           {% endif %}

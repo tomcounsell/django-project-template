@@ -6,7 +6,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-400">{% trans "Manage members and their roles" %}</p>
     </div>
     
-    <div class="mb-6 overflow-hidden bg-white dark:bg-gray-800 shadow-xs sm:rounded-sm">
+    <div class="mb-6 overflow-hidden bg-white dark:bg-gray-800 shadow-xs sm:rounded-xs">
         <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
             {% for member in original.teammember_set.all %}
                 <li>
@@ -25,19 +25,19 @@
                                 <div class="mt-2 flex">
                                     <div class="flex items-center">
                                         {% if member.role == 'owner' %}
-                                            <span class="inline-flex items-center rounded-sm bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-100">
+                                            <span class="inline-flex items-center rounded-xs bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-100">
                                                 {% trans "Owner" %}
                                             </span>
                                         {% elif member.role == 'admin' %}
-                                            <span class="inline-flex items-center rounded-sm bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-100">
+                                            <span class="inline-flex items-center rounded-xs bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-100">
                                                 {% trans "Admin" %}
                                             </span>
                                         {% elif member.role == 'member' %}
-                                            <span class="inline-flex items-center rounded-sm bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-100">
+                                            <span class="inline-flex items-center rounded-xs bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-100">
                                                 {% trans "Member" %}
                                             </span>
                                         {% elif member.role == 'guest' %}
-                                            <span class="inline-flex items-center rounded-sm bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-900 dark:text-gray-100">
+                                            <span class="inline-flex items-center rounded-xs bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                                 {% trans "Guest" %}
                                             </span>
                                         {% endif %}
@@ -50,7 +50,7 @@
                             </div>
                         </div>
                         <div>
-                            <a href="{% url 'admin:common_teammember_change' member.pk %}" class="inline-flex items-center rounded-sm bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
+                            <a href="{% url 'admin:common_teammember_change' member.pk %}" class="inline-flex items-center rounded-xs bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
                                 {% trans "Edit" %}
                             </a>
                         </div>
@@ -66,7 +66,7 @@
         </ul>
     </div>
     
-    <div class="mb-6 border rounded-sm p-4 bg-white dark:bg-gray-800">
+    <div class="mb-6 border rounded-xs p-4 bg-white dark:bg-gray-800">
         <h4 class="text-base font-semibold mb-3">{% trans "Add New Member" %}</h4>
         
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -74,14 +74,14 @@
         </p>
         
         <div class="text-right">
-            <a href="{% url 'admin:common_teammember_add' %}?team={{ original.pk }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-sm shadow-xs text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <a href="{% url 'admin:common_teammember_add' %}?team={{ original.pk }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-xs shadow-xs text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <span class="material-symbols-outlined mr-1 text-base">person_add</span>
                 {% trans "Add Team Member" %}
             </a>
         </div>
     </div>
     
-    <div class="mb-6 border rounded-sm p-4 bg-white dark:bg-gray-800">
+    <div class="mb-6 border rounded-xs p-4 bg-white dark:bg-gray-800">
         <h4 class="text-base font-semibold mb-3">{% trans "Role Permissions" %}</h4>
         
         <div class="overflow-x-auto">

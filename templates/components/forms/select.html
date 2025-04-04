@@ -29,8 +29,8 @@ Usage:
     name="{{ field.html_name }}" 
     id="{{ field_id }}" 
     {% if required|default:field.field.required %}required{% endif %}
-    class="w-full px-3 py-2 border rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-300 
-           {% if field.errors %}border-red-500{% else %}border-gray-300{% endif %} 
+    class="w-full px-3 py-2 border {% if field.errors %}border-red-500{% else %}border-gray-300{% endif %}
+           bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500
            {{ select_class }}"
   >
     {% if not required|default:field.field.required %}

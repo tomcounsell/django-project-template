@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/inter');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,6 +11,10 @@
     --color-navy-800: #112240;
     --color-navy-700: #1d3557;
   }
+}
+
+@theme {
+  --font-sans: InterVariable, sans-serif;
 }
 
 /* Custom theme configuration */

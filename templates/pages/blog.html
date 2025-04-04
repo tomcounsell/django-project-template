@@ -48,7 +48,7 @@
   <!-- Main Blog Content -->
   <div class="space-y-10">
     {% for post in posts %}
-      <article class="flex flex-col bg-white shadow-xs rounded-sm overflow-hidden hover:shadow-sm transition-shadow">
+      <article class="flex flex-col bg-white shadow-xs rounded-xs overflow-hidden hover:shadow-xs transition-shadow">
         <div class="shrink-0">
           <img class="h-48 w-full object-cover" src="{{ post.image }}" alt="{{ post.title }}">
         </div>
@@ -84,14 +84,14 @@
         </div>
       </article>
     {% empty %}
-      <div class="text-center p-8 bg-white rounded-sm shadow-xs">
+      <div class="text-center p-8 bg-white rounded-xs shadow-xs">
         <p class="text-gray-500">No blog posts found.</p>
       </div>
     {% endfor %}
     
     <!-- Pagination -->
     <div class="py-8 flex justify-center">
-      <nav class="inline-flex rounded-sm shadow-xs">
+      <nav class="inline-flex rounded-xs shadow-xs">
         <a href="#" class="px-4 py-2 rounded-l-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
           Previous
         </a>
@@ -116,13 +116,13 @@
 
 {% block aside %}
   <!-- Search -->
-  <div class="bg-white shadow-xs overflow-hidden rounded-sm mb-6">
+  <div class="bg-white shadow-xs overflow-hidden rounded-xs mb-6">
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg font-medium text-gray-900">Search</h3>
       <div class="mt-4">
         <form action="{% url 'public:blog' %}" method="get">
-          <div class="relative rounded-sm shadow-xs">
-            <input type="text" name="q" class="form-input py-3 px-4 block w-full rounded-sm transition ease-in-out duration-150 sm:text-sm sm:leading-5" placeholder="Search articles...">
+          <div class="relative rounded-xs shadow-xs">
+            <input type="text" name="q" class="form-input py-3 px-4 block w-full rounded-xs transition ease-in-out duration-150 sm:text-sm sm:leading-5" placeholder="Search articles...">
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <i class="fas fa-search text-gray-400"></i>
             </div>
@@ -133,7 +133,7 @@
   </div>
 
   <!-- Categories -->
-  <div class="bg-white shadow-xs overflow-hidden rounded-sm mb-6">
+  <div class="bg-white shadow-xs overflow-hidden rounded-xs mb-6">
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg font-medium text-gray-900">Categories</h3>
       <div class="mt-4 space-y-4">
@@ -152,13 +152,13 @@
   </div>
 
   <!-- Recent Posts -->
-  <div class="bg-white shadow-xs overflow-hidden rounded-sm mb-6">
+  <div class="bg-white shadow-xs overflow-hidden rounded-xs mb-6">
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg font-medium text-gray-900">Recent Posts</h3>
       <div class="mt-4 space-y-4">
         {% for post in recent_posts %}
           <div class="flex items-center">
-            <div class="shrink-0 h-10 w-10 bg-gray-200 rounded-sm overflow-hidden">
+            <div class="shrink-0 h-10 w-10 bg-gray-200 rounded-xs overflow-hidden">
               <img src="{{ post.image }}" alt="" class="h-full w-full object-cover">
             </div>
             <div class="ml-3">
@@ -176,7 +176,7 @@
   </div>
 
   <!-- Tags -->
-  <div class="bg-white shadow-xs overflow-hidden rounded-sm">
+  <div class="bg-white shadow-xs overflow-hidden rounded-xs">
     <div class="px-4 py-5 sm:p-6">
       <h3 class="text-lg font-medium text-gray-900">Popular Tags</h3>
       <div class="mt-4 flex flex-wrap gap-2">

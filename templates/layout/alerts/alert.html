@@ -20,7 +20,7 @@
 {% endcomment %}
 
 <div id="{{ id|default:'alert-'|add:alert_type }}" 
-     class="alert mb-4 px-4 py-3 rounded-sm shadow-xs border-l-4
+     class="alert mb-4 px-4 py-3 rounded-xs shadow-xs border-l-4
             {% if alert_type == 'success' %}bg-green-50 border-green-500 text-green-800
             {% elif alert_type == 'error' %}bg-red-50 border-red-500 text-red-800
             {% elif alert_type == 'warning' %}bg-yellow-50 border-yellow-500 text-yellow-800
@@ -53,7 +53,7 @@
     {% if dismissible|default:True %}
       <div class="ml-4 shrink-0 flex">
         <button type="button" 
-                class="bg-transparent rounded-sm inline-flex text-gray-400 hover:text-gray-500 focus:outline-hidden"
+                class="bg-transparent rounded-xs inline-flex text-gray-400 hover:text-gray-500 focus:outline-hidden"
                 aria-label="Dismiss"
                 hx-on:click="this.closest('.alert').remove()">
           <span class="sr-only">Dismiss</span>

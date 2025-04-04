@@ -43,8 +43,18 @@
     </button>
     
     <!-- Dropdown menu -->
+    <!--
+      Show/hide this element based on the dropdown state
+
+      Entering: "transition ease-out duration-100 transform"
+        From: "opacity-0 scale-95"
+        To: "opacity-100 scale-100"
+      Closing: "transition ease-in duration-75 transform"
+        From: "opacity-100 scale-100"
+        To: "opacity-0 scale-95"
+    -->
     <div id="nav_user_menu" role="menu"
-         class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-sm bg-white py-1 shadow-xs ring-1 ring-black ring-opacity-5 focus:outline-hidden hidden"
+         class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-xs bg-white py-1 shadow-xs ring-1 ring-black/5 focus:outline-hidden hidden"
          aria-orientation="vertical"
          aria-labelledby="nav_user_menu_button"
          tabindex="-1">

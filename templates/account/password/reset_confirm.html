@@ -11,13 +11,13 @@
     </p>
   </div>
   
-  <div class="bg-white rounded-sm shadow-xs p-6">
+  <div class="bg-white rounded-xs shadow-xs p-6">
     {% if validlink %}
       <form method="post">
         {% csrf_token %}
         
         {% if form.non_field_errors %}
-          <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-sm">
+          <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-xs">
             {{ form.non_field_errors }}
           </div>
         {% endif %}
@@ -53,12 +53,12 @@
           {% endif %}
         </div>
         
-        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-sm">
+        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
           Change My Password
         </button>
       </form>
     {% else %}
-      <div class="p-4 bg-yellow-50 text-yellow-700 rounded-sm">
+      <div class="p-4 bg-yellow-50 text-yellow-700 rounded-xs">
         <h2 class="font-semibold mb-2">Invalid Password Reset Link</h2>
         <p>
           This password reset link is invalid, possibly because it has already been used
@@ -67,7 +67,7 @@
       </div>
       
       <div class="mt-6 text-center">
-        <a href="{% url 'public:password-reset' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-sm">
+        <a href="{% url 'public:password-reset' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
           Request New Reset Link
         </a>
       </div>
