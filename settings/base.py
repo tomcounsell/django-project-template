@@ -6,6 +6,10 @@ import mimetypes
 
 from settings.env import BASE_DIR, LOCAL, PRODUCTION, STAGE
 
+# Detect if we are in a test environment
+import sys
+TESTING = 'test' in sys.argv or 'pytest' in sys.modules
+
 # Application definition
 DJANGO_APPS = [
     "unfold",  # before django.contrib.admin
@@ -47,6 +51,7 @@ PROJECT_APPS = [
     "apps.api",
     "apps.public",  # for web front-end
     "apps.ai",  # AI integrations and agents
+    "apps.staff",  # for staff-only admin tools
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -96,6 +101,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.static",
                 "django.contrib.messages.context_processors.messages",
+                "apps.public.context_processors.active_navigation",
             ],
             "loaders": [
                 (

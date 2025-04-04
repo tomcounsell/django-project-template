@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 from django.test import TestCase, override_settings
+from botocore.exceptions import ClientError
 
 from apps.integration.aws.s3 import (
     S3Client,
@@ -253,12 +254,15 @@ class S3ClientTestCase(TestCase):
         )
 
         # Test metadata retrieval for non-existent object
-        client_error = Exception()
-        client_error.response = {"Error": {"Code": "404"}}
-        self.mock_s3_client.head_object.side_effect = client_error
-
-        result = self.client.get_object_metadata(object_key="test/nonexistent.txt")
-
+        self.mock_s3_client.head_object.side_effect = ClientError(
+            {'Error': {'Code': '404', 'Message': 'Not Found'}},
+            'HeadObject'
+        )
+        
+        result = self.client.get_object_metadata(
+            object_key="test/nonexistent.txt"
+        )
+        
         self.assertFalse(result["success"])
         self.assertEqual(result["error"], "Object not found")
 

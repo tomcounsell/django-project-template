@@ -47,4 +47,10 @@ class NoteModelTestCase(AuthorableTest, TimestampableTest, TestCase):
 
     def create_instance(self, **kwargs):
         """Create a Note instance for testing."""
-        return Note.objects.create(author=self.user, **kwargs)
+        if 'author' not in kwargs and 'is_author_anonymous' not in kwargs:
+            kwargs['author'] = self.user
+            
+        if 'text' not in kwargs:
+            kwargs['text'] = "Test note"
+            
+        return Note.objects.create(**kwargs)

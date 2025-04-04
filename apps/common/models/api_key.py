@@ -1,8 +1,8 @@
 from django.db import models
+from django.conf import settings
 from rest_framework_api_key.models import AbstractAPIKey
 
 from apps.common.behaviors import Timestampable
-from apps.common.models import Team, User
 
 
 class UserAPIKey(AbstractAPIKey, Timestampable):
@@ -18,7 +18,7 @@ class UserAPIKey(AbstractAPIKey, Timestampable):
     """
 
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="api_keys",
     )
@@ -42,7 +42,7 @@ class TeamAPIKey(AbstractAPIKey, Timestampable):
     """
 
     team = models.ForeignKey(
-        Team,
+        "common.Team",
         on_delete=models.CASCADE,
         related_name="api_keys",
     )

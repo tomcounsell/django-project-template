@@ -14,7 +14,9 @@ def send_password_reset_email(user: User, reset_url: str):
     :param User user: common.User object
     :param str reset_url: The URL to redirect the user to reset their password
     """
-    loops_client = LoopsClient()
+    # For testing, use debug_mode=True when in test environment
+    is_test = settings.TESTING if hasattr(settings, 'TESTING') else False
+    loops_client = LoopsClient(debug_mode=is_test)
     loops_client.transactional_email(
         to_email=user.email,
         transactional_id="__loops_email_id__",
@@ -35,7 +37,10 @@ def send_login_code_email(user: User, next_url=None):
     # Construct the login URL with code as parameter
     login_url = user.get_login_url(next_url)
     ic(f"Loops sending login link: {login_url} to {user.email}")
-    loops_client = LoopsClient()
+    
+    # For testing, use debug_mode=True when in test environment
+    is_test = settings.TESTING if hasattr(settings, 'TESTING') else False
+    loops_client = LoopsClient(debug_mode=is_test)
     loops_client.transactional_email(
         to_email=user.email,
         transactional_id="__loops_login_code_id__",
@@ -74,7 +79,9 @@ def send_team_membership_email(membership):
         membership: The Membership instance with user and team information
     """
     try:
-        loops_client = LoopsClient()
+        # For testing, use debug_mode=True when in test environment
+        is_test = settings.TESTING if hasattr(settings, 'TESTING') else False
+        loops_client = LoopsClient(debug_mode=is_test)
 
         # Get necessary data
         team = membership.team

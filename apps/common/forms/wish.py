@@ -1,11 +1,12 @@
 from django import forms
 from django.utils import timezone
 
-from apps.common.models import TodoItem, User
+from apps.common.models import User
+from apps.staff.models import Wish
 
 
-class TodoItemForm(forms.ModelForm):
-    """Form for creating and updating TodoItem."""
+class WishForm(forms.ModelForm):
+    """Form for creating and updating Wish."""
 
     assignee = forms.ModelChoiceField(
         queryset=User.objects.filter(is_active=True),
@@ -21,7 +22,7 @@ class TodoItemForm(forms.ModelForm):
     )
 
     class Meta:
-        model = TodoItem
+        model = Wish
         fields = [
             "title",
             "description",
@@ -43,16 +44,16 @@ class TodoItemForm(forms.ModelForm):
         """Update completed_at when status is changed to DONE."""
         status = self.cleaned_data.get("status")
         if (
-            status == TodoItem.STATUS_DONE
+            status == Wish.STATUS_DONE
             and self.instance.pk
-            and self.instance.status != TodoItem.STATUS_DONE
+            and self.instance.status != Wish.STATUS_DONE
         ):
             # Mark as completed now
             self.instance.completed_at = timezone.now()
         elif (
-            status != TodoItem.STATUS_DONE
+            status != Wish.STATUS_DONE
             and self.instance.pk
-            and self.instance.status == TodoItem.STATUS_DONE
+            and self.instance.status == Wish.STATUS_DONE
         ):
             # Clear completed timestamp if reopening
             self.instance.completed_at = None

@@ -84,10 +84,10 @@ class HTMXView(MainContentView):
             ):
                 oob_templates["toast-container"] = "layout/messages/toast.html"
 
-            # Add navigation active state if specified
+            # Add navigation active state if explicitly specified in the view
+            # This will override the context processor's value
             if self.active_nav:
                 combined_context["active_section"] = self.active_nav
-                oob_templates["nav-active-marker"] = "layout/nav/active_nav.html"
 
             # Add modal container if enabled
             if self.include_modals:

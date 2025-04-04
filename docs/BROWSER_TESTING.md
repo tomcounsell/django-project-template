@@ -58,7 +58,7 @@ Browser tests require a running Django server and will be skipped if the server 
 DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_account_browser.py -v
 
 # Run todo item browser tests
-DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_todo_e2e.py -v
+DJANGO_SETTINGS_MODULE=settings pytest apps/staff/tests/test_todo_e2e.py -v
 
 # Run admin interface browser tests
 DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_admin_e2e.py -v

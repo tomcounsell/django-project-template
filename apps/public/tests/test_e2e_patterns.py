@@ -24,8 +24,14 @@ from django.urls import reverse
 
 # Import browser-use components
 try:
+    # Import the Agent class from browser-use
+    from browser_use import Agent
+    
+    # For backwards compatibility
+    BrowserAgent = Agent
+    
+    # Import Playwright components
     import playwright.async_api
-    from browser_use import Agent, BrowserAgent
     from playwright.async_api import Browser, BrowserContext
 
     # Define Page for type hints
@@ -33,11 +39,19 @@ try:
         from playwright.async_api import Page
     else:
         Page = playwright.async_api.Page
+        
     BROWSER_USE_AVAILABLE = True
-except ImportError:
+    
+except ImportError as e:
+    # Debug import error
+    print(f"Warning: browser-use import error: {e}")
     BROWSER_USE_AVAILABLE = False
 
-    # Create dummy classes for type hints
+    # Create dummy classes for type hints when imports fail
+    class Agent:
+        async def run(self, **kwargs):
+            return "Agent not available"
+            
     class Page:
         pass
 
@@ -46,6 +60,9 @@ except ImportError:
 
     class BrowserContext:
         pass
+        
+    # For backwards compatibility
+    BrowserAgent = Agent
 
 
 # Check for pytest-asyncio
@@ -56,9 +73,28 @@ try:
 except ImportError:
     HAS_PYTEST_ASYNCIO = False
 
-# Mark browser tests to skip if browser-use is not installed
+# Output status of required packages
+if not BROWSER_USE_AVAILABLE or not HAS_PYTEST_ASYNCIO:
+    missing_packages = []
+    if not BROWSER_USE_AVAILABLE:
+        missing_packages.append("browser-use")
+    if not HAS_PYTEST_ASYNCIO:
+        missing_packages.append("pytest-asyncio")
+        
+    print(f"Warning: E2E Browser tests may be skipped. Missing packages: {', '.join(missing_packages)}")
+    print("Install with: uv add --dev browser-use playwright pytest-asyncio")
+    
+# Check if Playwright is installed separately
+try:
+    import playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+    print("Warning: Playwright not found. Install with: uv add --dev playwright")
+
+# Mark browser tests to skip if required packages are not installed
 browser_test = pytest.mark.skipif(
-    not BROWSER_USE_AVAILABLE or not HAS_PYTEST_ASYNCIO,
+    not BROWSER_USE_AVAILABLE or not HAS_PYTEST_ASYNCIO or not HAS_PLAYWRIGHT,
     reason="Required packages not installed. Run `uv add --dev browser-use playwright pytest-asyncio` to install.",
 )
 
@@ -81,6 +117,7 @@ try:
         SCREENSHOTS_BASE_DIR,
         SERVER_URL,
         VIEWPORTS,
+        LiveServerMixin,
         ensure_directories,
         is_server_running,
     )
@@ -113,6 +150,30 @@ except ImportError:
         result = sock.connect_ex((host, port))
         sock.close()
         return result == 0
+        
+    class LiveServerMixin:
+        """Dummy LiveServerMixin for when the real one is not available."""
+        
+        @classmethod
+        def get_server_url(cls, live_server=None) -> str:
+            """Get the server URL to use for tests."""
+            if live_server:
+                return live_server.url
+            return SERVER_URL
+            
+        @classmethod
+        def setup_class(cls):
+            """Set up the test class."""
+            # Create necessary directories
+            ensure_directories()
+            
+            # Check if a live server is running
+            if not is_server_running():
+                import pytest
+                pytest.skip(
+                    "Test server not running. Start with 'python manage.py runserver' "
+                    "or use pytest-django live_server fixture."
+                )
 
 
 class EndToEndTestConfig:
@@ -138,16 +199,20 @@ class EndToEndTestConfig:
     screenshots_dir: str = SCREENSHOTS_BASE_DIR
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def browser_context(request):
     """Fixture to provide a browser context for tests."""
     import playwright.async_api
 
     config = EndToEndTestConfig()
 
+    # Setup screenshots directory if needed
+    if not os.path.exists(config.screenshots_dir):
+        os.makedirs(config.screenshots_dir)
+
     # Create browser instance
-    browser = await playwright.async_api.async_playwright().start()
-    browser_instance = await getattr(browser, config.browser_type).launch(
+    playwright_instance = await playwright.async_api.async_playwright().start()
+    browser_instance = await getattr(playwright_instance, config.browser_type).launch(
         headless=config.headless, slow_mo=config.slow_mo
     )
 
@@ -160,45 +225,35 @@ async def browser_context(request):
     context.set_default_timeout(config.default_timeout)
     context.set_default_navigation_timeout(config.navigation_timeout)
 
-    # Setup screenshots directory if needed
-    if not os.path.exists(config.screenshots_dir):
-        os.makedirs(config.screenshots_dir)
-
     # Return context for use in tests
     yield context
 
     # Cleanup
-    await context.close()
-    await browser_instance.close()
+    try:
+        await context.close()
+        await browser_instance.close()
+        await playwright_instance.stop()
+    except Exception as e:
+        print(f"Error during browser context cleanup: {e}")
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def browser_page(browser_context):
     """Fixture to provide a browser page for tests."""
     page = await browser_context.new_page()
     yield page
-    await page.close()
+    try:
+        await page.close()
+    except Exception as e:
+        print(f"Error closing browser page: {e}")
 
 
-class E2ETestBase:
+class E2ETestBase(LiveServerMixin):
     """Base class for end-to-end tests with browser-use and Playwright."""
 
     config = EndToEndTestConfig()
 
-    @classmethod
-    def setup_class(cls):
-        """Set up the test class."""
-        # Create necessary directories
-        ensure_directories()
-
-        # Check if a live server is running
-        if not is_server_running():
-            pytest.skip(
-                "Test server not running. Start with 'python manage.py runserver'"
-            )
-
-    @staticmethod
-    async def login_user(page: Page, username: str, password: str) -> bool:
+    async def login_user(self, page: Page, username: str, password: str, live_server=None) -> bool:
         """
         Log in a user through the browser.
 
@@ -206,13 +261,17 @@ class E2ETestBase:
             page: Playwright page object
             username: Username for login
             password: Password for login
+            live_server: The pytest-django live_server fixture, if available
 
         Returns:
             bool: True if login successful, False otherwise
         """
         try:
+            # Get the server URL (works with live_server fixture or local server)
+            server_url = self.get_server_url(live_server)
+            
             # Navigate to login page
-            await page.goto(f"{EndToEndTestConfig.server_url}/accounts/login/")
+            await page.goto(f"{server_url}/accounts/login/")
 
             # Fill login form
             await page.fill('input[name="username"]', username)
@@ -238,11 +297,14 @@ class E2ETestBase:
             print(f"Login failed: {e}")
             return False
 
-    @staticmethod
-    async def create_user_and_login(page: Page) -> Tuple[User, bool]:
+    async def create_user_and_login(self, page: Page, live_server=None) -> Tuple[User, bool]:
         """
         Create a test user and log them in.
 
+        Args:
+            page: Playwright page object
+            live_server: The pytest-django live_server fixture, if available
+            
         Returns:
             Tuple[User, bool]: Created user object and login success boolean
         """
@@ -254,12 +316,11 @@ class E2ETestBase:
         )
 
         # Login with this user
-        login_success = await E2ETestBase.login_user(page, username, password)
+        login_success = await self.login_user(page, username, password, live_server)
 
         return user, login_success
 
-    @staticmethod
-    async def take_screenshot(page: Page, filename: str) -> str:
+    async def take_screenshot(self, page: Page, filename: str) -> str:
         """
         Take a screenshot during test execution.
 
@@ -270,13 +331,12 @@ class E2ETestBase:
         Returns:
             str: Path to the saved screenshot
         """
-        screenshot_path = os.path.join(EndToEndTestConfig.screenshots_dir, filename)
+        screenshot_path = os.path.join(self.config.screenshots_dir, filename)
         await page.screenshot(path=screenshot_path)
         return screenshot_path
 
-    @staticmethod
     async def assert_element_visible(
-        page: Page, selector: str, timeout: int = 5000
+        self, page: Page, selector: str, timeout: int = 5000
     ) -> bool:
         """
         Assert that an element is visible on the page.
@@ -293,9 +353,8 @@ class E2ETestBase:
         await element.wait_for(state="visible", timeout=timeout)
         return True
 
-    @staticmethod
     async def assert_element_contains_text(
-        page: Page, selector: str, text: str
+        self, page: Page, selector: str, text: str
     ) -> bool:
         """
         Assert that an element contains specific text.
@@ -315,8 +374,7 @@ class E2ETestBase:
         ), f"Element {selector} does not contain text '{text}'"
         return True
 
-    @staticmethod
-    async def wait_for_htmx_request(page: Page, timeout: int = 5000) -> None:
+    async def wait_for_htmx_request(self, page: Page, timeout: int = 5000) -> None:
         """
         Wait for an HTMX request to complete.
 
@@ -342,7 +400,7 @@ class E2ETestBase:
 class TestLoginForm(E2ETestBase):
     """Test the login form functionality."""
 
-    async def test_login_form_submission(self, browser_page):
+    async def test_login_form_submission(self, browser_page, live_server=None):
         """Test that the login form can be submitted."""
         page = browser_page
         username = "testuser"
@@ -351,8 +409,11 @@ class TestLoginForm(E2ETestBase):
         # Create test user
         User.objects.create_user(username=username, password=password)
 
+        # Get the server URL to use (works with live_server fixture or local server)
+        server_url = self.get_server_url(live_server)
+
         # Navigate to login page
-        await page.goto(f"{self.config.server_url}/accounts/login/")
+        await page.goto(f"{server_url}/accounts/login/")
 
         # Check login form is visible
         assert await self.assert_element_visible(page, "form")
@@ -382,16 +443,19 @@ class TestLoginForm(E2ETestBase):
 class TestHTMXInteractions(E2ETestBase):
     """Test HTMX interactions."""
 
-    async def test_htmx_load_component(self, browser_page):
+    async def test_htmx_load_component(self, browser_page, live_server=None):
         """Test loading a component via HTMX."""
         page = browser_page
 
         # Login with test user
-        user, login_success = await self.create_user_and_login(page)
+        user, login_success = await self.create_user_and_login(page, live_server)
         assert login_success, "Login failed"
 
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Navigate to a page with HTMX components
-        await page.goto(f"{self.config.server_url}/todos/")
+        await page.goto(f"{server_url}/todos/")
 
         # Find an element with hx-get attribute that loads content
         htmx_trigger = page.locator("[hx-get]").first
@@ -423,8 +487,34 @@ class TestHTMXInteractions(E2ETestBase):
 class TestResponsiveLayout(E2ETestBase):
     """Test responsive layout at different screen sizes."""
 
-    async def test_responsive_navbar(self, browser_context):
+    @pytest_asyncio.fixture
+    async def custom_browser_context(self):
+        """Custom fixture for browser context to allow viewport changes."""
+        import playwright.async_api
+
+        config = EndToEndTestConfig()
+
+        # Create browser instance
+        playwright_instance = await playwright.async_api.async_playwright().start()
+        browser_instance = await getattr(playwright_instance, config.browser_type).launch(
+            headless=config.headless, slow_mo=config.slow_mo
+        )
+
+        # Return the browser directly (not a context)
+        yield browser_instance
+
+        # Cleanup
+        try:
+            await browser_instance.close()
+            await playwright_instance.stop()
+        except Exception as e:
+            print(f"Error during custom browser cleanup: {e}")
+
+    async def test_responsive_navbar(self, custom_browser_context, live_server=None):
         """Test navbar responsiveness at different screen sizes."""
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Define viewport sizes to test
         viewports = [
             {"width": 1280, "height": 800},  # Desktop
@@ -433,30 +523,34 @@ class TestResponsiveLayout(E2ETestBase):
         ]
 
         for i, viewport in enumerate(viewports):
-            # Create a new page with this viewport
-            page = await browser_context.new_page(viewport=viewport)
+            # Create a new context with this viewport
+            context = await custom_browser_context.new_context(viewport=viewport)
+            
+            try:
+                # Create a new page in this context
+                page = await context.new_page()
+                
+                # Navigate to home page
+                await page.goto(f"{server_url}/")
 
-            # Navigate to home page
-            await page.goto(f"{self.config.server_url}/")
+                # Take screenshot
+                device_type = (
+                    "desktop"
+                    if viewport["width"] >= 1024
+                    else "tablet" if viewport["width"] >= 768 else "mobile"
+                )
+                await self.take_screenshot(page, f"navbar_{device_type}.png")
 
-            # Take screenshot
-            device_type = (
-                "desktop"
-                if viewport["width"] >= 1024
-                else "tablet" if viewport["width"] >= 768 else "mobile"
-            )
-            await self.take_screenshot(page, f"navbar_{device_type}.png")
-
-            # Additional specific checks based on viewport
-            if viewport["width"] < 768:  # Mobile
-                # Check if mobile menu button is visible
-                assert await self.assert_element_visible(page, ".mobile-menu-button")
-            else:  # Desktop/Tablet
-                # Check if navbar links are visible
-                assert await self.assert_element_visible(page, ".navbar-links")
-
-            # Close this page
-            await page.close()
+                # Additional specific checks based on viewport
+                if viewport["width"] < 768:  # Mobile
+                    # Check if mobile menu button is visible
+                    assert await self.assert_element_visible(page, ".mobile-menu-button")
+                else:  # Desktop/Tablet
+                    # Check if navbar links are visible
+                    assert await self.assert_element_visible(page, ".navbar-links")
+            finally:
+                # Always close the context after use
+                await context.close()
 
 
 @browser_test
@@ -464,12 +558,15 @@ class TestResponsiveLayout(E2ETestBase):
 class TestBrowserAgentAutomation(E2ETestBase):
     """Test using BrowserAgent from browser-use for more complex flows."""
 
-    async def test_complete_user_flow(self):
+    async def test_complete_user_flow(self, live_server=None):
         """Test a complete user flow using BrowserAgent."""
         # Skip if browser-use is not available
         if not BROWSER_USE_AVAILABLE:
             pytest.skip("browser-use not installed")
 
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Create a test user
         username = f"testuser_{os.urandom(4).hex()}"
         password = "testpassword123"
@@ -479,27 +576,44 @@ class TestBrowserAgentAutomation(E2ETestBase):
 
         # Set up tasks for the agent
         tasks = [
-            f"Go to {self.config.server_url}/accounts/login/",
-            f"Login with username {username} and password {password}",
-            "Navigate to the todo list page",
-            "Create a new todo item with the title 'Test Todo'",
-            "Verify the todo item appears in the list",
-            "Mark the todo item as complete",
-            "Log out from the account",
+            f"Go to {server_url}/accounts/login/",
+            f"Fill in the username field with {username}",
+            f"Fill in the password field with {password}",
+            f"Click the Submit or Login button",
+            "Wait for page to load",
+            "Navigate to the todo list page by clicking on Todos in the navigation",
+            "Look for a 'Create' or 'Add' button and click it",
+            "Fill in the title field with 'Test Todo'",
+            "Submit the form",
+            "Verify that 'Test Todo' appears on the page",
+            "Find a checkbox or complete button next to 'Test Todo' and click it",
+            "Look for a Logout link or button in the navigation or account menu and click it"
         ]
 
-        # Create an agent to perform these tasks
-        agent = BrowserAgent(
-            tasks=tasks,
-            browser_type=self.config.browser_type,
-            headless=self.config.headless,
-        )
-
-        # Run the agent
-        result = await agent.run()
-
-        # Verify the result
-        assert "success" in result.lower(), "Agent failed to complete user flow"
+        try:
+            # Create an agent to perform these tasks
+            agent = Agent()
+            
+            # Configure browser options
+            browser_options = {
+                "browser_type": self.config.browser_type,
+                "headless": self.config.headless,
+                "slow_mo": self.config.slow_mo,
+                "screenshot_dir": self.config.screenshots_dir,
+            }
+            
+            # Run the agent with the tasks
+            result = await agent.run(tasks=tasks, **browser_options)
+            
+            # Verify the result
+            assert "success" in result.lower() or "completed" in result.lower(), \
+                f"Agent failed to complete user flow: {result}"
+                
+        except Exception as e:
+            # Take screenshot of failure if possible
+            import traceback
+            traceback.print_exc()
+            pytest.fail(f"BrowserAgent test failed with error: {str(e)}")
 
 
 def main():

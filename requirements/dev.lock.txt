@@ -20,9 +20,12 @@ annotated-types==0.7.0
     # via
     #   aider-chat
     #   pydantic
+anthropic==0.49.0
+    # via langchain-anthropic
 anyio==4.9.0
     # via
     #   aider-chat
+    #   anthropic
     #   httpx
     #   openai
     #   watchfiles
@@ -42,7 +45,9 @@ attrs==25.3.0
     #   aider-chat
     #   aiohttp
     #   jsonschema
+    #   outcome
     #   referencing
+    #   trio
 babel==2.17.0
     # via sphinx
 backoff==2.2.1
@@ -50,15 +55,20 @@ backoff==2.2.1
     #   aider-chat
     #   posthog
 beautifulsoup4==4.13.3
-    # via aider-chat
+    # via
+    #   aider-chat
+    #   markdownify
 black==25.1.0
     # via -r requirements/base.txt
+browser-use==0.1.40
+    # via -r requirements/dev.txt
 certifi==2025.1.31
     # via
     #   aider-chat
     #   httpcore
     #   httpx
     #   requests
+    #   selenium
 cffi==1.17.1
     # via
     #   aider-chat
@@ -81,6 +91,8 @@ coverage==7.7.1
     # via pytest-cov
 decorator==5.2.1
     # via ipython
+defusedxml==0.7.1
+    # via langchain-anthropic
 diff-match-patch==20241021
     # via aider-chat
 diskcache==5.6.3
@@ -88,6 +100,7 @@ diskcache==5.6.3
 distro==1.9.0
     # via
     #   aider-chat
+    #   anthropic
     #   openai
     #   posthog
 dj-database-url==2.3.0
@@ -181,6 +194,8 @@ gitdb==4.0.12
     #   gitpython
 gitpython==3.1.44
     # via aider-chat
+greenlet==3.1.1
+    # via playwright
 grep-ast==0.8.1
     # via aider-chat
 gunicorn==23.0.0
@@ -189,6 +204,7 @@ h11==0.14.0
     # via
     #   aider-chat
     #   httpcore
+    #   wsproto
 httpcore==1.0.7
     # via
     #   aider-chat
@@ -196,7 +212,11 @@ httpcore==1.0.7
 httpx==0.28.1
     # via
     #   aider-chat
+    #   anthropic
+    #   browser-use
+    #   langsmith
     #   litellm
+    #   ollama
     #   openai
 huggingface-hub==0.29.3
     # via
@@ -210,6 +230,7 @@ idna==3.10
     #   anyio
     #   httpx
     #   requests
+    #   trio
     #   yarl
 imagesize==1.4.1
     # via sphinx
@@ -238,9 +259,14 @@ jinja2==3.1.6
 jiter==0.9.0
     # via
     #   aider-chat
+    #   anthropic
     #   openai
 json5==0.10.0
     # via aider-chat
+jsonpatch==1.33
+    # via langchain-core
+jsonpointer==3.0.0
+    # via jsonpatch
 jsonschema==4.23.0
     # via
     #   aider-chat
@@ -249,6 +275,20 @@ jsonschema-specifications==2024.10.1
     # via
     #   aider-chat
     #   jsonschema
+langchain-anthropic==0.3.3
+    # via browser-use
+langchain-core==0.3.50
+    # via
+    #   browser-use
+    #   langchain-anthropic
+    #   langchain-ollama
+    #   langchain-openai
+langchain-ollama==0.2.2
+    # via browser-use
+langchain-openai==0.3.1
+    # via browser-use
+langsmith==0.3.23
+    # via langchain-core
 litellm==1.63.11
     # via aider-chat
 markdown-it-py==3.0.0
@@ -257,6 +297,8 @@ markdown-it-py==3.0.0
     #   mdit-py-plugins
     #   myst-parser
     #   rich
+markdownify==0.14.1
+    # via browser-use
 markupsafe==3.0.2
     # via
     #   aider-chat
@@ -300,10 +342,19 @@ numpy==1.26.4
     #   aider-chat
     #   scipy
     #   soundfile
+ollama==0.4.7
+    # via langchain-ollama
 openai==1.66.3
     # via
     #   aider-chat
+    #   langchain-openai
     #   litellm
+orjson==3.10.16
+    # via langsmith
+outcome==1.3.0.post0
+    # via
+    #   trio
+    #   trio-websocket
 packaging==24.2
     # via
     #   aider-chat
@@ -312,6 +363,8 @@ packaging==24.2
     #   drf-yasg
     #   gunicorn
     #   huggingface-hub
+    #   langchain-core
+    #   langsmith
     #   pytest
     #   sphinx
 parso==0.8.4
@@ -331,10 +384,16 @@ pip==25.0.1
     # via aider-chat
 platformdirs==4.3.7
     # via black
+playwright==1.51.0
+    # via
+    #   -r requirements/dev.txt
+    #   browser-use
 pluggy==1.5.0
     # via pytest
 posthog==3.21.0
-    # via aider-chat
+    # via
+    #   aider-chat
+    #   browser-use
 pprintpp==0.4.0
     # via sphinxcontrib-django
 prompt-toolkit==3.0.50
@@ -368,7 +427,13 @@ pydantic==2.10.6
     # via
     #   -r requirements/base.txt
     #   aider-chat
+    #   anthropic
+    #   browser-use
+    #   langchain-anthropic
+    #   langchain-core
+    #   langsmith
     #   litellm
+    #   ollama
     #   openai
 pydantic-core==2.27.2
     # via
@@ -376,6 +441,8 @@ pydantic-core==2.27.2
     #   pydantic
 pydub==0.25.1
     # via aider-chat
+pyee==12.1.1
+    # via playwright
 pyflakes==3.2.0
     # via
     #   aider-chat
@@ -392,12 +459,17 @@ pypandoc==1.15
     # via aider-chat
 pyperclip==1.9.0
     # via aider-chat
+pysocks==1.7.1
+    # via urllib3
 pytest==8.3.5
     # via
     #   -r requirements/base.txt
     #   -r requirements/dev.txt
+    #   pytest-asyncio
     #   pytest-cov
     #   pytest-django
+pytest-asyncio==0.26.0
+    # via -r requirements/dev.txt
 pytest-cov==6.0.0
     # via -r requirements/dev.txt
 pytest-django==4.10.0
@@ -410,6 +482,7 @@ python-dotenv==1.0.1
     # via
     #   -r requirements/base.txt
     #   aider-chat
+    #   browser-use
     #   litellm
 pytz==2025.2
     # via drf-yasg
@@ -419,6 +492,7 @@ pyyaml==6.0.2
     #   aider-chat
     #   drf-yasg
     #   huggingface-hub
+    #   langchain-core
     #   myst-parser
 referencing==0.36.2
     # via
@@ -432,12 +506,17 @@ regex==2024.11.6
 requests==2.32.3
     # via
     #   aider-chat
+    #   browser-use
     #   huggingface-hub
+    #   langsmith
     #   mixpanel
     #   posthog
+    #   requests-toolbelt
     #   sphinx
     #   stripe
     #   tiktoken
+requests-toolbelt==1.0.0
+    # via langsmith
 rich==13.9.4
     # via aider-chat
 roman-numerals-py==3.1.0
@@ -449,9 +528,14 @@ rpds-py==0.23.1
     #   referencing
 scipy==1.13.1
     # via aider-chat
+selenium==4.30.0
+    # via -r requirements/dev.txt
+setuptools==78.1.0
+    # via browser-use
 six==1.17.0
     # via
     #   aider-chat
+    #   markdownify
     #   mixpanel
     #   posthog
     #   python-dateutil
@@ -462,12 +546,16 @@ smmap==5.0.2
 sniffio==1.3.1
     # via
     #   aider-chat
+    #   anthropic
     #   anyio
     #   openai
+    #   trio
 snowballstemmer==2.2.0
     # via sphinx
 socksio==1.0.0
     # via aider-chat
+sortedcontainers==2.4.0
+    # via trio
 sounddevice==0.5.1
     # via aider-chat
 soundfile==0.13.1
@@ -512,9 +600,12 @@ stack-data==0.6.3
     # via ipython
 stripe==11.6.0
     # via -r requirements/base.txt
+tenacity==9.1.2
+    # via langchain-core
 tiktoken==0.9.0
     # via
     #   aider-chat
+    #   langchain-openai
     #   litellm
 tokenizers==0.21.1
     # via
@@ -549,22 +640,32 @@ tree-sitter-yaml==0.7.0
     # via
     #   aider-chat
     #   tree-sitter-language-pack
+trio==0.29.0
+    # via
+    #   selenium
+    #   trio-websocket
+trio-websocket==0.12.2
+    # via selenium
 types-pyyaml==6.0.12.20241230
     # via django-stubs
 typing-extensions==4.12.2
     # via
     #   aider-chat
+    #   anthropic
     #   anyio
     #   beautifulsoup4
     #   dj-database-url
     #   django-stubs
     #   django-stubs-ext
     #   huggingface-hub
+    #   langchain-core
     #   mypy
     #   openai
     #   pydantic
     #   pydantic-core
+    #   pyee
     #   referencing
+    #   selenium
     #   stripe
 uritemplate==4.1.1
     # via
@@ -575,16 +676,21 @@ urllib3==2.3.0
     #   aider-chat
     #   mixpanel
     #   requests
+    #   selenium
 watchfiles==1.0.4
     # via aider-chat
 wcwidth==0.2.13
     # via
     #   aider-chat
     #   prompt-toolkit
+websocket-client==1.8.0
+    # via selenium
 werkzeug==3.1.3
     # via -r requirements/dev.txt
 whitenoise==6.9.0
     # via -r requirements/base.txt
+wsproto==1.2.0
+    # via trio-websocket
 yarl==1.18.3
     # via
     #   aider-chat
@@ -593,3 +699,5 @@ zipp==3.21.0
     # via
     #   aider-chat
     #   importlib-metadata
+zstandard==0.23.0
+    # via langsmith

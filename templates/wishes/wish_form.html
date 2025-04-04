@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block main_header %}
+  <h1 class="text-3xl font-bold tracking-tight text-navy-600">{{ form_title }}</h1>
+{% endblock %}
+
+{% block content %}
+  <div class="flex justify-between items-center mb-6">
+    <div class="flex-1"></div>
+    <a href="{% url 'public:wish-list' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+      Back to List
+    </a>
+  </div>
+
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <form method="post" action="{{ form_submit_url }}" class="p-6">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        {% include "components/forms/form_errors.html" with form=form title="Please correct the errors below." %}
+      {% endif %}
+
+      <div class="grid grid-cols-1 gap-6">
+        {% include "components/forms/text_input.html" with field=form.title %}
+        
+        {% include "components/forms/textarea.html" with field=form.description %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% include "components/forms/select.html" with field=form.priority %}
+          {% include "components/forms/select.html" with field=form.category %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {% include "components/forms/select.html" with field=form.status %}
+          {% include "components/forms/select.html" with field=form.assignee %}
+        </div>
+
+        {% include "components/forms/text_input.html" with field=form.due_at input_type="date" help_text="Leave empty if there's no specific due date." %}
+      </div>
+
+      {% url 'public:wish-list' as wish_list_url %}
+      {% if form.instance.id %}
+        {% include "components/forms/form_buttons.html" with submit_text="Save" submit_icon="edit" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
+      {% else %}
+        {% include "components/forms/form_buttons.html" with submit_text="Create" submit_icon="create" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
+      {% endif %}
+    </form>
+  </div>
+{% endblock %}

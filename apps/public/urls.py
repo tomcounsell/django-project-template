@@ -1,7 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
-from .views import ComponentExamplesView, account
+from .views import ComponentExamplesView, account, pages
 from .views.components.oob_examples import urlpatterns as oob_urlpatterns
 from .views.teams.member_views import (
     add_team_member,
@@ -16,8 +16,6 @@ from .views.teams.team_views import (
     TeamListView,
     TeamUpdateView,
 )
-from .views.todos import todo_views
-
 app_name = "public"
 
 urlpatterns = []
@@ -28,6 +26,33 @@ urlpatterns += [
         "",
         account.HomeView.as_view(),
         name="home",
+    ),
+]
+
+# Example pages
+urlpatterns += [
+    # Landing page
+    path(
+        "landing/",
+        pages.LandingView.as_view(),
+        name="landing",
+    ),
+    # Pricing page
+    path(
+        "pricing/",
+        pages.PricingView.as_view(),
+        name="pricing",
+    ),
+    # Blog pages
+    path(
+        "blog/",
+        pages.BlogView.as_view(),
+        name="blog",
+    ),
+    path(
+        "blog/<slug:slug>/",
+        pages.BlogPostView.as_view(),
+        name="blog-post",
     ),
 ]
 
@@ -125,32 +150,6 @@ urlpatterns += [
     path("team/<slug:team_slug>/leave/", leave_team, name="leave-team"),
 ]
 
-# Todo URLs
-urlpatterns += [
-    path("todos/", todo_views.TodoListView.as_view(), name="todo-list"),
-    path("todos/create/", todo_views.TodoCreateView.as_view(), name="todo-create"),
-    path("todos/<int:pk>/", todo_views.TodoDetailView.as_view(), name="todo-detail"),
-    path(
-        "todos/<int:pk>/update/",
-        todo_views.TodoUpdateView.as_view(),
-        name="todo-update",
-    ),
-    path(
-        "todos/<int:pk>/delete/",
-        todo_views.TodoDeleteView.as_view(),
-        name="todo-delete",
-    ),
-    path(
-        "todos/<int:pk>/delete-modal/",
-        todo_views.TodoDeleteModalView.as_view(),
-        name="todo-delete-modal",
-    ),
-    path(
-        "todos/<int:pk>/complete/",
-        todo_views.TodoCompleteView.as_view(),
-        name="todo-complete",
-    ),
-]
 
 # Component Examples
 urlpatterns += [

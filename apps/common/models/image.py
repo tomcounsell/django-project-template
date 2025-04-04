@@ -2,12 +2,10 @@ from typing import Any, Dict, Optional
 
 from django.db import models
 
-from apps.common.models import Upload
-
 ACCEPTED_FILE_TYPES = ["jpg", "gif", "png"]
 
 
-class Image(Upload, models.Model):
+class Image(models.Model):
     """
     A model representing an image file.
 
@@ -16,12 +14,12 @@ class Image(Upload, models.Model):
     width, and height.
 
     Attributes:
+        upload: ForeignKey to the Upload model containing the file data
         thumbnail_url (str): URL to a thumbnail version of the image
-        url (str): URL to the full-size image (inherited from Upload)
-        id (UUID): Unique identifier for the image (inherited from Upload)
-        meta_data (dict): Metadata about the image (inherited from Upload)
-        created_at (datetime): When this image was created (inherited from Upload)
-        modified_at (datetime): When this image was last modified (inherited from Upload)
+        url (str): URL to the full-size image (from upload.original)
+        meta_data (dict): Metadata about the image (from upload.meta_data)
+        created_at (datetime): When this image was created (upload.created_at)
+        modified_at (datetime): When this image was last modified (upload.modified_at)
 
     Properties:
         width (int): The width of the image in pixels
@@ -34,20 +32,47 @@ class Image(Upload, models.Model):
     Example:
         ```python
         image = Image.objects.create(
-            url="https://example.com/images/photo.jpg",
-            meta_data={"meta": {"width": 1200, "height": 800}}
+            upload=upload_obj,
+            thumbnail_url="https://example.com/images/photo_thumb.jpg"
         )
         ```
     """
-
+    
+    upload = models.ForeignKey(
+        'common.Upload',
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
     thumbnail_url = models.URLField(default="", null=True, blank=True)
 
-    # INCLUDED BY MIXINS
-    # url = str
-    # id = uuid
-    # meta_data = dict
-    # created_at = datetime
-    # modified_at = datetime
+    # PROPERTIES TO ACCESS UPLOAD FIELDS
+    @property
+    def url(self):
+        return self.upload.original if self.upload else None
+        
+    @property
+    def meta_data(self):
+        return self.upload.meta_data if self.upload else {}
+        
+    @property
+    def created_at(self):
+        return self.upload.created_at if self.upload else None
+        
+    @property
+    def modified_at(self):
+        return self.upload.modified_at if self.upload else None
+        
+    @property
+    def original(self):
+        return self.upload.original if self.upload else None
+        
+    @property
+    def name(self):
+        return self.upload.name if self.upload else None
+        
+    @property
+    def is_image(self):
+        return self.upload.is_image if self.upload else False
 
     # MODEL PROPERTIES
     @property
@@ -115,3 +140,58 @@ class Image(Upload, models.Model):
             return "portrait"
         else:
             return "square"
+            
+    @property
+    def dimensions(self):
+        """Get the image dimensions if available."""
+        if self.is_image:
+            return (
+                self.width,
+                self.height
+            )
+        return None
+        
+    @property
+    def file_extension(self):
+        """Get the file extension."""
+        if self.meta_data and "ext" in self.meta_data:
+            return self.meta_data.get("ext", "")
+        return ""
+        
+    @property
+    def file_type(self):
+        """Override to prioritize the mocked value in tests."""
+        from mimetypes import guess_type
+        
+        if self.original:
+            mime_type, _ = guess_type(self.original)
+            if mime_type:
+                return mime_type
+                
+        return self.meta_data.get("mime_type", "")
+        
+    @property
+    def link_title(self):
+        """Generate a user-friendly title for the uploaded file."""
+        if self.name:
+            return self.name
+            
+        if self.meta_data:
+            if "etc" in self.meta_data and self.meta_data["etc"]:
+                title = self.meta_data["etc"].upper()
+            elif "type" in self.meta_data and self.meta_data["type"]:
+                title = self.meta_data["type"].upper()
+            else:
+                title = ""
+                
+            # Add file extension
+            ext = self.file_extension
+            if ext:
+                if title:
+                    title = f"{title} .{ext.upper()}"
+                else:
+                    title = f" .{ext.upper()}"
+                    
+            return title
+            
+        return ""

@@ -40,7 +40,8 @@ try:
     HAS_PYTEST_ASYNCIO = True
 
     # Import the base test class
-    from .test_e2e_patterns import E2ETestBase, asyncio_mark, browser_test
+    from apps.public.tests.test_e2e_patterns import E2ETestBase, asyncio_mark, browser_test
+    from apps.public.tests.e2e_test_config import LiveServerMixin
 except ImportError:
     BROWSER_USE_AVAILABLE = False
     HAS_PYTEST_ASYNCIO = False
@@ -108,7 +109,7 @@ def test_user(django_db_setup):
 class TestTodoCompleteWorkflow(E2ETestBase):
     """Test the complete workflow for Todo items."""
 
-    async def test_todo_workflow_with_agent(self, test_user):
+    async def test_todo_workflow_with_agent(self, test_user, live_server=None):
         """
         Test the complete workflow for Todo items using browser-use AI agent.
 
@@ -121,11 +122,18 @@ class TestTodoCompleteWorkflow(E2ETestBase):
         6. Verify it's marked as complete
         7. Delete the Todo
         8. Verify it's removed from the list
+        
+        Args:
+            test_user: A fixture that provides a test user
+            live_server: The pytest-django live_server fixture, if available
         """
         # Skip if browser-use is not available
         if not BROWSER_USE_AVAILABLE:
             pytest.skip("browser-use package not installed")
 
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+        
         # Get test user credentials
         user, username, password = test_user
         todo_title = f"Test Todo {uuid.uuid4().hex[:8]}"
@@ -136,7 +144,7 @@ class TestTodoCompleteWorkflow(E2ETestBase):
 
         # Define tasks for the browser agent
         tasks = [
-            f"Go to {SERVER_URL}/account/login",
+            f"Go to {server_url}/account/login",
             f"Login with username '{username}' and password '{password}'",
             # Navigate to Todo list
             "Navigate to the Todo list page by clicking on 'Todo List' in the navigation or going to /todos/",
@@ -196,154 +204,186 @@ class TestTodoCompleteWorkflow(E2ETestBase):
         print(f"Successfully completed end-to-end test for todo item: {todo_title}")
 
 
+class TodoWorkflowManualTest(LiveServerMixin):
+    """Manual implementation of the todo workflow test using LiveServerMixin."""
+    
+    @pytest.mark.asyncio
+    async def test_todo_complete_workflow_manual(self, page, test_user, live_server=None):
+        """
+        Manual implementation of the todo workflow test without browser-use agent.
+    
+        Tests the complete workflow for Todo items:
+        1. Login
+        2. Navigate to Todo list
+        3. Create a new Todo
+        4. Verify it appears in the list
+        5. Mark it as complete
+        6. Verify it's marked as complete
+        7. Delete the Todo
+        8. Verify it's removed from the list
+        """
+        user, username, password = test_user
+        
+        # Get the server URL to use
+        server_url = self.get_server_url(live_server)
+    
+        try:
+            # Define unique todo title
+            todo_title = f"Test Todo {uuid.uuid4().hex[:8]}"
+            print(f"Testing with todo title: {todo_title}")
+    
+            # Login
+            await login(page, username, password, server_url)
+    
+            # Step 2: Navigate to the Todo list page
+            print("Navigating to Todo list page...")
+            await page.goto(f"{server_url}/todos/")
+            await page.wait_for_timeout(2000)
+    
+            # Take screenshot of Todo list page
+            await take_screenshot(page, "todo_test_list_page.png")
+    
+            # Step 3: Create a new Todo item
+            print("Creating new Todo item...")
+    
+            # Find and click the create button
+            await page.click("text=Create New Todo")
+            await page.wait_for_timeout(2000)
+    
+            # Fill out the form
+            await page.fill("input[id*='title'], input[name*='title']", todo_title)
+    
+            # Try to fill description if it exists
+            desc_field = page.locator(
+                "textarea[id*='description'], textarea[name*='description']"
+            )
+            if await desc_field.count() > 0:
+                await desc_field.fill("This is a test todo item created by E2E test.")
+    
+            # Try to select High priority if field exists
+            priority_field = page.locator(
+                "select[id*='priority'], select[name*='priority']"
+            )
+            if await priority_field.count() > 0:
+                await priority_field.select_option("HIGH")
+    
+            # Take screenshot of filled form
+            await take_screenshot(page, "todo_test_create_form.png")
+    
+            # Submit the form
+            await page.click("button[type='submit']")
+            await page.wait_for_timeout(2000)
+    
+            # Step 4: Verify the item appears in the list
+            print("Verifying new todo appears in list...")
+    
+            # We might be on the list or detail page, navigate to list to be sure
+            await page.goto(f"{server_url}/todos/")
+            await page.wait_for_timeout(2000)
+    
+            # Take screenshot after creation
+            await take_screenshot(page, "todo_test_after_create.png")
+    
+            # Verify the todo is in the list
+            todo_row = page.locator(f"tr:has-text('{todo_title}')")
+            assert (
+                await todo_row.count() > 0
+            ), f"Todo with title '{todo_title}' not found in list"
+    
+            # Step 5: Mark the Todo item as complete
+            print("Marking todo as complete...")
+    
+            # Find and click the Complete button
+            complete_button = todo_row.locator("text=Complete")
+            await complete_button.click()
+            await page.wait_for_timeout(2000)
+    
+            # Step 6: Verify the item is marked as complete
+            print("Verifying todo is marked as complete...")
+    
+            # Take screenshot after completion
+            await take_screenshot(page, "todo_test_completed.png")
+    
+            # Find our todo row again (it may have been updated by HTMX)
+            todo_row = page.locator(f"tr:has-text('{todo_title}')")
+    
+            # Check if status shows Done (usually in the 4th column)
+            status_cell = todo_row.locator("td:nth-child(4)")
+            status_text = await status_cell.inner_text()
+            assert "Done" in status_text, f"Todo status is '{status_text}', not 'Done'"
+    
+            # Verify the Complete button is no longer present
+            complete_button = todo_row.locator("text=Complete")
+            assert (
+                await complete_button.count() == 0
+            ), "Complete button still visible for completed todo"
+    
+            # Step 7: Delete the Todo item
+            print("Deleting todo...")
+    
+            # Find and click the Delete button
+            delete_button = todo_row.locator("text=Delete")
+            await delete_button.click()
+            await page.wait_for_timeout(1000)
+    
+            # Confirm deletion in the modal
+            confirm_delete = page.locator("button:has-text('Delete')").nth(
+                1
+            )  # Get the second Delete button (in modal)
+            await confirm_delete.click()
+            await page.wait_for_timeout(2000)
+    
+            # Take screenshot after deletion
+            await take_screenshot(page, "todo_test_deleted.png")
+    
+            # Step 8: Verify the item is removed from the list
+            print("Verifying todo is deleted...")
+    
+            # Check that the todo is no longer in the list
+            todo_row = page.locator(f"tr:has-text('{todo_title}')")
+            assert (
+                await todo_row.count() == 0
+            ), f"Todo with title '{todo_title}' still present in list after deletion"
+    
+            print(f"Successfully tested complete todo workflow with todo: {todo_title}")
+    
+        except Exception as e:
+            # Take a final screenshot if any error occurs
+            await take_screenshot(page, "todo_test_error.png")
+            print(f"Error during test: {str(e)}")
+            raise
+
+
+# Function-based test for backward compatibility
 @pytest.mark.asyncio
-async def test_todo_complete_workflow_manual(page, test_user):
+async def test_todo_complete_workflow_manual(page, test_user, live_server=None):
     """
     Manual implementation of the todo workflow test without browser-use agent.
-
-    Tests the complete workflow for Todo items:
-    1. Login
-    2. Navigate to Todo list
-    3. Create a new Todo
-    4. Verify it appears in the list
-    5. Mark it as complete
-    6. Verify it's marked as complete
-    7. Delete the Todo
-    8. Verify it's removed from the list
+    
+    This is a wrapper around the class-based test for backward compatibility.
     """
-    user, username, password = test_user
-
-    try:
-        # Define unique todo title
-        todo_title = f"Test Todo {uuid.uuid4().hex[:8]}"
-        print(f"Testing with todo title: {todo_title}")
-
-        # Login
-        await login(page, username, password)
-
-        # Step 2: Navigate to the Todo list page
-        print("Navigating to Todo list page...")
-        await page.goto(f"{SERVER_URL}/todos/")
-        await page.wait_for_timeout(2000)
-
-        # Take screenshot of Todo list page
-        await take_screenshot(page, "todo_test_list_page.png")
-
-        # Step 3: Create a new Todo item
-        print("Creating new Todo item...")
-
-        # Find and click the create button
-        await page.click("text=Create New Todo")
-        await page.wait_for_timeout(2000)
-
-        # Fill out the form
-        await page.fill("input[id*='title'], input[name*='title']", todo_title)
-
-        # Try to fill description if it exists
-        desc_field = page.locator(
-            "textarea[id*='description'], textarea[name*='description']"
-        )
-        if await desc_field.count() > 0:
-            await desc_field.fill("This is a test todo item created by E2E test.")
-
-        # Try to select High priority if field exists
-        priority_field = page.locator(
-            "select[id*='priority'], select[name*='priority']"
-        )
-        if await priority_field.count() > 0:
-            await priority_field.select_option("HIGH")
-
-        # Take screenshot of filled form
-        await take_screenshot(page, "todo_test_create_form.png")
-
-        # Submit the form
-        await page.click("button[type='submit']")
-        await page.wait_for_timeout(2000)
-
-        # Step 4: Verify the item appears in the list
-        print("Verifying new todo appears in list...")
-
-        # We might be on the list or detail page, navigate to list to be sure
-        await page.goto(f"{SERVER_URL}/todos/")
-        await page.wait_for_timeout(2000)
-
-        # Take screenshot after creation
-        await take_screenshot(page, "todo_test_after_create.png")
-
-        # Verify the todo is in the list
-        todo_row = page.locator(f"tr:has-text('{todo_title}')")
-        assert (
-            await todo_row.count() > 0
-        ), f"Todo with title '{todo_title}' not found in list"
-
-        # Step 5: Mark the Todo item as complete
-        print("Marking todo as complete...")
-
-        # Find and click the Complete button
-        complete_button = todo_row.locator("text=Complete")
-        await complete_button.click()
-        await page.wait_for_timeout(2000)
-
-        # Step 6: Verify the item is marked as complete
-        print("Verifying todo is marked as complete...")
-
-        # Take screenshot after completion
-        await take_screenshot(page, "todo_test_completed.png")
-
-        # Find our todo row again (it may have been updated by HTMX)
-        todo_row = page.locator(f"tr:has-text('{todo_title}')")
-
-        # Check if status shows Done (usually in the 4th column)
-        status_cell = todo_row.locator("td:nth-child(4)")
-        status_text = await status_cell.inner_text()
-        assert "Done" in status_text, f"Todo status is '{status_text}', not 'Done'"
-
-        # Verify the Complete button is no longer present
-        complete_button = todo_row.locator("text=Complete")
-        assert (
-            await complete_button.count() == 0
-        ), "Complete button still visible for completed todo"
-
-        # Step 7: Delete the Todo item
-        print("Deleting todo...")
-
-        # Find and click the Delete button
-        delete_button = todo_row.locator("text=Delete")
-        await delete_button.click()
-        await page.wait_for_timeout(1000)
-
-        # Confirm deletion in the modal
-        confirm_delete = page.locator("button:has-text('Delete')").nth(
-            1
-        )  # Get the second Delete button (in modal)
-        await confirm_delete.click()
-        await page.wait_for_timeout(2000)
-
-        # Take screenshot after deletion
-        await take_screenshot(page, "todo_test_deleted.png")
-
-        # Step 8: Verify the item is removed from the list
-        print("Verifying todo is deleted...")
-
-        # Check that the todo is no longer in the list
-        todo_row = page.locator(f"tr:has-text('{todo_title}')")
-        assert (
-            await todo_row.count() == 0
-        ), f"Todo with title '{todo_title}' still present in list after deletion"
-
-        print(f"Successfully tested complete todo workflow with todo: {todo_title}")
-
-    except Exception as e:
-        # Take a final screenshot if any error occurs
-        await take_screenshot(page, "todo_test_error.png")
-        print(f"Error during test: {str(e)}")
-        raise
+    # Create an instance of TodoWorkflowManualTest
+    test = TodoWorkflowManualTest()
+    
+    # Run the test
+    await test.test_todo_complete_workflow_manual(page, test_user, live_server)
 
 
-async def login(page, username, password):
-    """Helper to log in a user."""
+async def login(page, username, password, server_url=None):
+    """
+    Helper to log in a user.
+    
+    Args:
+        page: Playwright page object
+        username: Username for login
+        password: Password for login
+        server_url: The server URL to use, defaults to SERVER_URL if not provided
+    """
+    # Use the provided server_url or fall back to SERVER_URL
+    url = server_url or SERVER_URL
+    
     # Navigate to login page
-    await page.goto(f"{SERVER_URL}/account/login")
+    await page.goto(f"{url}/account/login")
 
     # Wait for page to load
     try:

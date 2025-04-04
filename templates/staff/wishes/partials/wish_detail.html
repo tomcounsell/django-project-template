@@ -1,0 +1,151 @@
+{% extends "partial.html" %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <div class="p-6">
+    <div class="flex justify-between items-start mb-4">
+      <h2 class="text-xl font-semibold text-gray-900">{{ wish.title }}</h2>
+      <div>
+        {% if wish.status == "DONE" %}
+          {% include "components/common/status_badge.html" with text="Done" color="green" icon="check" class="px-3 py-1.5 text-sm" %}
+        {% elif wish.status == "IN_PROGRESS" %}
+          {% include "components/common/status_badge.html" with text="In Progress" color="blue" icon="progress" class="px-3 py-1.5 text-sm" %}
+        {% elif wish.status == "BLOCKED" %}
+          {% include "components/common/status_badge.html" with text="Blocked" color="red" icon="warning" class="px-3 py-1.5 text-sm" %}
+        {% else %}
+          {% include "components/common/status_badge.html" with text="To Do" color="gray" icon="bell" class="px-3 py-1.5 text-sm" %}
+        {% endif %}
+      </div>
+    </div>
+
+    {% if wish.description %}
+      <div class="mt-6 border-t border-gray-100 pt-6">
+        <h3 class="text-sm font-medium text-gray-700 mb-2">Description</h3>
+        <div class="prose prose-sm max-w-none text-gray-800">
+          {{ wish.description|linebreaks }}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="mt-6 border-t border-gray-100 pt-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Priority</h3>
+          <p class="text-gray-900">
+            {% if wish.priority == "HIGH" %}
+              {% include "components/common/status_badge.html" with text="High" color="red" %}
+            {% elif wish.priority == "MEDIUM" %}
+              {% include "components/common/status_badge.html" with text="Medium" color="yellow" %}
+            {% else %}
+              {% include "components/common/status_badge.html" with text="Low" color="green" %}
+            {% endif %}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Category</h3>
+          <p class="text-gray-900">{{ wish.get_category_display }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Assignee</h3>
+          <p class="text-gray-900">
+            {% if wish.assignee %}
+              {{ wish.assignee.get_full_name|default:wish.assignee.username }}
+            {% else %}
+              <span class="text-gray-400">Unassigned</span>
+            {% endif %}
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Due Date</h3>
+          <p class="text-gray-900">
+            {% if wish.due_at %}
+              {% if wish.is_overdue %}
+                <span class="text-red-600 font-medium">{{ wish.due_at|date:"M d, Y" }} ({{ wish.time_remaining_display }})</span>
+              {% else %}
+                {{ wish.due_at|date:"M d, Y" }} ({{ wish.time_remaining_display }})
+              {% endif %}
+            {% else %}
+              <span class="text-gray-400">No due date</span>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 border-t border-gray-100 pt-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Created</h3>
+          <p class="text-gray-900">{{ wish.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Last Updated</h3>
+          <p class="text-gray-900">{{ wish.modified_at|date:"M d, Y H:i" }}</p>
+        </div>
+
+        {% if wish.completed_at %}
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Completed</h3>
+            <p class="text-gray-900">{{ wish.completed_at|date:"M d, Y H:i" }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+    <div>
+      {% include "components/forms/action_button.html" with 
+        text="Delete" 
+        color="red" 
+        icon="delete" 
+        hx_get=wish.get_delete_modal_url|default:"/staff/wishes/"|add:wish.id|stringformat:"s"|add:"/delete-modal/"
+        hx_target="#primary-modal-container"
+        hx_swap="innerHTML"
+      %}
+      
+      <a href="{% url 'public:wish-detail' wish.id %}" class="inline-flex items-center justify-center ml-2 py-2 px-3 border border-purple-300 shadow-sm text-sm font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+        <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+        </svg>
+        View Public
+      </a>
+    </div>
+    <div>
+      {% if wish.status != "DONE" %}
+        <button 
+          hx-post="{% url 'staff:wish-complete' wish.id %}"
+          hx-target="#wish-detail-container"
+          hx-swap="innerHTML"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' 
+          class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+          <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          Mark as Done
+        </button>
+      {% else %}
+        <div class="flex items-center space-x-3">
+          {% with done_text="Done on "|add:wish.completed_at|date:"M d, Y" %}
+            {% include "components/common/status_badge.html" with text=done_text color="green" icon="check" %}
+          {% endwith %}
+          {% include "components/forms/action_button.html" with 
+            text="Mark as Not Done" 
+            color="gray" 
+            icon="x" 
+            hx_post=wish.get_complete_url|default:"/staff/wishes/"|add:wish.id|stringformat:"s"|add:"/complete/?mark_incomplete=1"
+            hx_target="#wish-detail-container"
+            hx_swap="innerHTML"
+            hx_headers='{"X-CSRFToken": "'|add:csrf_token|add:'"}' 
+          %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

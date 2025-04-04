@@ -21,6 +21,7 @@ admin.site.index_title = ADMIN_INDEX_TITLE
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("", include("apps.public.urls", namespace="public")),
+    path("staff/", include("apps.staff.urls", namespace="staff")),
     # API URLs - Removed
     # path('api/', include('apps.api.urls')),
     # API Schema and Documentation - Removed
