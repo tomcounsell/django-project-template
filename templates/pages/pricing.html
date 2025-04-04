@@ -51,7 +51,7 @@
       <!-- Pricing cards -->
       <div class="mt-12 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-y-0">
         {% for plan in plans %}
-          <div class="relative flex flex-col rounded-xl border {% if plan.highlighted %}border-2 border-navy-600 shadow-sm{% else %}border-gray-200{% endif %} p-8 transform hover:scale-105 transition-all">
+          <div class="relative flex flex-col rounded-sm border {% if plan.highlighted %}border-2 border-navy-600 shadow-xs{% else %}border-gray-200{% endif %} p-8 transform hover:scale-105 transition-all">
             {% if plan.highlighted %}
               <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 inline-flex rounded-full bg-navy-600 px-4 py-1 text-sm font-semibold text-white">
                 Popular
@@ -98,7 +98,7 @@
         </p>
       </div>
 
-      <div class="mt-12 overflow-x-auto rounded-lg shadow">
+      <div class="mt-12 overflow-x-auto rounded-sm shadow-xs">
         <table class="min-w-full divide-y divide-gray-200 bg-white">
           <thead class="bg-gray-50">
             <tr>
@@ -234,7 +234,7 @@
       <div class="mt-12 max-w-4xl mx-auto">
         <dl class="space-y-8">
           {% for faq in faqs %}
-            <div class="bg-gray-50 p-6 rounded-lg">
+            <div class="bg-gray-50 p-6 rounded-sm">
               <dt class="text-lg leading-6 font-medium text-gray-900">
                 {{ faq.question }}
               </dt>
@@ -258,7 +258,7 @@
         Our team will work with you to create a custom solution tailored to your organization's unique needs.
       </p>
       <div class="mt-8 flex justify-center">
-        <div class="inline-flex rounded-sm shadow">
+        <div class="inline-flex rounded-sm shadow-xs">
           <a href="{% url 'public:account-login' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-sm text-navy-700 bg-white hover:bg-gray-50">
             Contact sales
           </a>
