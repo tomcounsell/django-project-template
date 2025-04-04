@@ -163,11 +163,11 @@ class Upload(Timestampable, models.Model):
                     self.meta_data["meta"].get("width"),
                     self.meta_data["meta"].get("height"),
                 )
-            
+
             if not self.meta_data:
                 # Return None specifically to match test expectations
                 return None
-                
+
             return (None, None)
         return None
 

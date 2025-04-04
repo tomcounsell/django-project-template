@@ -101,7 +101,7 @@ class StripeClient:
             Dict containing checkout session data or error information
         """
         # In debug mode or disabled, just log and return simulated response
-        if getattr(settings, 'DEBUG', False) or not self.enabled:
+        if getattr(settings, "DEBUG", False) or not self.enabled:
             debug_response = {
                 "success": True,
                 "simulated": True,
@@ -195,7 +195,7 @@ class StripeClient:
             Dict containing subscription data or error information
         """
         # In debug mode or disabled, just log and return simulated response
-        if getattr(settings, 'DEBUG', False) or not self.enabled:
+        if getattr(settings, "DEBUG", False) or not self.enabled:
             debug_response = {
                 "success": True,
                 "simulated": True,
@@ -271,7 +271,7 @@ class StripeClient:
             Dict containing cancellation result or error information
         """
         # In debug mode or disabled, just log and return simulated response
-        if getattr(settings, 'DEBUG', False) or not self.enabled:
+        if getattr(settings, "DEBUG", False) or not self.enabled:
             debug_response = {
                 "success": True,
                 "simulated": True,
@@ -338,7 +338,7 @@ class StripeClient:
             Dict containing customer data or error information
         """
         # In debug mode or disabled, just log and return simulated response
-        if getattr(settings, 'DEBUG', False) or not self.enabled:
+        if getattr(settings, "DEBUG", False) or not self.enabled:
             debug_response = {
                 "success": True,
                 "simulated": True,
@@ -407,7 +407,7 @@ class StripeClient:
             Dict with verification result and event data if successful
         """
         # In debug mode or disabled, just log and return simulated response
-        if getattr(settings, 'DEBUG', False) or not self.enabled:
+        if getattr(settings, "DEBUG", False) or not self.enabled:
             # Parse the payload to get event data for debug info
             try:
                 if isinstance(payload, bytes):

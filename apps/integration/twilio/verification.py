@@ -62,18 +62,20 @@ def send_phone_verification(phone_number: str) -> Dict[str, Any]:
     attempts_key = f"{VERIFICATION_ATTEMPTS_PREFIX}{phone_number}"
     attempts = cache.get(attempts_key, 0)
     if attempts >= MAX_VERIFICATION_ATTEMPTS:
-        logger.warning(f"Phone number locked out due to too many attempts: {phone_number}")
+        logger.warning(
+            f"Phone number locked out due to too many attempts: {phone_number}"
+        )
         # For testing with LocMemCache, we can't use ttl method
         try:
             locked_until = cache.ttl(attempts_key)
         except AttributeError:
             # For LocMemCache, just return an estimated timeout value
             locked_until = 300  # Default timeout value
-            
+
         return {
             "success": False,
             "error": "Account locked due to too many verification attempts",
-            "locked_until": locked_until
+            "locked_until": locked_until,
         }
 
     # Generate a verification code
@@ -119,18 +121,20 @@ def verify_phone_code(phone_number: str, code: str) -> Dict[str, Any]:
     attempts_key = f"{VERIFICATION_ATTEMPTS_PREFIX}{phone_number}"
     attempts = cache.get(attempts_key, 0)
     if attempts >= MAX_VERIFICATION_ATTEMPTS:
-        logger.warning(f"Phone number locked out due to too many attempts: {phone_number}")
+        logger.warning(
+            f"Phone number locked out due to too many attempts: {phone_number}"
+        )
         # For testing with LocMemCache, we can't use ttl method
         try:
             locked_until = cache.ttl(attempts_key)
         except AttributeError:
             # For LocMemCache, just return an estimated timeout value
             locked_until = 300  # Default timeout value
-            
+
         return {
             "success": False,
             "error": "Account locked due to too many verification attempts",
-            "locked_until": locked_until
+            "locked_until": locked_until,
         }
 
     # Get the stored code

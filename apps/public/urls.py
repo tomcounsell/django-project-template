@@ -16,6 +16,7 @@ from .views.teams.team_views import (
     TeamListView,
     TeamUpdateView,
 )
+
 app_name = "public"
 
 urlpatterns = []

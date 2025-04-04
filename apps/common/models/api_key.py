@@ -1,5 +1,5 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
 from rest_framework_api_key.models import AbstractAPIKey
 
 from apps.common.behaviors import Timestampable

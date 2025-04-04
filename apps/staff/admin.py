@@ -364,7 +364,9 @@ class WishAdmin(ModelAdmin):
     def mark_as_in_progress(self, request):
         selected = request.POST.getlist("_selected_action")
         updated = Wish.objects.filter(id__in=selected).update(status="IN_PROGRESS")
-        messages.success(request, f"Successfully marked {updated} wishes as in progress")
+        messages.success(
+            request, f"Successfully marked {updated} wishes as in progress"
+        )
         return redirect("admin:staff_wish_changelist")
 
     @action(description=_("Mark as Blocked"), icon="block")

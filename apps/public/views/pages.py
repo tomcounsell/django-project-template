@@ -13,65 +13,65 @@ from apps.public.helpers import MainContentView
 
 class LandingView(MainContentView):
     """Landing page for the site."""
-    
+
     template_name = "pages/landing.html"
     active_nav = "home"  # Use home as the active nav
 
     def get_context_data(self, **kwargs):
         """Add additional context for the landing page."""
         context = super().get_context_data(**kwargs)
-        
+
         # Features list for landing page
         context["features"] = [
             {
                 "title": "Powerful Tools",
                 "description": "Access a suite of powerful tools to boost your productivity.",
-                "icon": "tools"
+                "icon": "tools",
             },
             {
                 "title": "Secure Platform",
                 "description": "Your data is safe with our enterprise-grade security.",
-                "icon": "shield-alt"
+                "icon": "shield-alt",
             },
             {
                 "title": "Seamless Integration",
                 "description": "Integrate with your favorite tools and services.",
-                "icon": "plug"
-            }
+                "icon": "plug",
+            },
         ]
-        
+
         # Steps for "How it works" section
         context["steps"] = [
             {
                 "number": 1,
                 "title": "Create an Account",
-                "description": "Sign up for free and get started in minutes."
+                "description": "Sign up for free and get started in minutes.",
             },
             {
                 "number": 2,
                 "title": "Configure Your Settings",
-                "description": "Customize the platform to match your needs."
+                "description": "Customize the platform to match your needs.",
             },
             {
                 "number": 3,
                 "title": "Start Building",
-                "description": "Use our tools to create amazing things."
-            }
+                "description": "Use our tools to create amazing things.",
+            },
         ]
-        
+
         return context
 
 
 class PricingView(MainContentView):
     """Pricing page for the site."""
-    
+
     template_name = "pages/pricing.html"
     active_nav = "pricing"  # Add this to active_navigation context processor
 
     def get_context_data(self, **kwargs):
         """Add pricing plans to the context."""
         context = super().get_context_data(**kwargs)
-        
+
         # Pricing plans
         context["plans"] = [
             {
@@ -83,11 +83,11 @@ class PricingView(MainContentView):
                     "Basic features",
                     "Up to 3 projects",
                     "Community support",
-                    "1 GB storage"
+                    "1 GB storage",
                 ],
                 "highlighted": False,
                 "cta_text": "Get Started",
-                "cta_class": "bg-navy-600 hover:bg-navy-700"
+                "cta_class": "bg-navy-600 hover:bg-navy-700",
             },
             {
                 "name": "Premium",
@@ -100,11 +100,11 @@ class PricingView(MainContentView):
                     "Priority support",
                     "10 GB storage",
                     "Advanced analytics",
-                    "Team collaboration"
+                    "Team collaboration",
                 ],
                 "highlighted": True,
                 "cta_text": "Start Free Trial",
-                "cta_class": "bg-navy-900 hover:bg-navy-800"
+                "cta_class": "bg-navy-900 hover:bg-navy-800",
             },
             {
                 "name": "Enterprise",
@@ -117,47 +117,47 @@ class PricingView(MainContentView):
                     "100 GB storage",
                     "Custom integrations",
                     "Advanced security",
-                    "SLA guarantees"
+                    "SLA guarantees",
                 ],
                 "highlighted": False,
                 "cta_text": "Contact Sales",
-                "cta_class": "bg-navy-600 hover:bg-navy-700"
-            }
+                "cta_class": "bg-navy-600 hover:bg-navy-700",
+            },
         ]
-        
+
         # FAQs about pricing
         context["faqs"] = [
             {
                 "question": "Can I upgrade or downgrade my plan at any time?",
-                "answer": "Yes, you can change your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the new rate will apply at the start of your next billing cycle."
+                "answer": "Yes, you can change your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the new rate will apply at the start of your next billing cycle.",
             },
             {
                 "question": "Do you offer discounts for nonprofits or educational institutions?",
-                "answer": "Yes! We offer special pricing for qualified nonprofits, educational institutions, and open source projects. Please contact our sales team for details."
+                "answer": "Yes! We offer special pricing for qualified nonprofits, educational institutions, and open source projects. Please contact our sales team for details.",
             },
             {
                 "question": "What payment methods do you accept?",
-                "answer": "We accept all major credit cards (Visa, Mastercard, American Express, Discover) as well as PayPal. For Enterprise plans, we can also accommodate purchase orders and bank transfers."
+                "answer": "We accept all major credit cards (Visa, Mastercard, American Express, Discover) as well as PayPal. For Enterprise plans, we can also accommodate purchase orders and bank transfers.",
             },
             {
                 "question": "Is there a long-term contract?",
-                "answer": "No. All our plans are month-to-month, and you can cancel at any time. For Enterprise customers, we do offer discounted annual plans if you prefer."
-            }
+                "answer": "No. All our plans are month-to-month, and you can cancel at any time. For Enterprise customers, we do offer discounted annual plans if you prefer.",
+            },
         ]
-        
+
         return context
 
 
 class BlogView(MainContentView):
     """Blog index page."""
-    
+
     template_name = "pages/blog.html"
     active_nav = "blog"  # Add this to active_navigation context processor
 
     def get_context_data(self, **kwargs):
         """Add blog posts to the context."""
         context = super().get_context_data(**kwargs)
-        
+
         # Example blog posts - in a real app, these would come from a database
         context["posts"] = [
             {
@@ -168,7 +168,7 @@ class BlogView(MainContentView):
                 "author": "Jane Smith",
                 "image": "https://via.placeholder.com/800x450",
                 "tags": ["tutorial", "beginners"],
-                "category": "Tutorials"
+                "category": "Tutorials",
             },
             {
                 "title": "Advanced Features You Might Have Missed",
@@ -178,7 +178,7 @@ class BlogView(MainContentView):
                 "author": "John Davis",
                 "image": "https://via.placeholder.com/800x450",
                 "tags": ["advanced", "tips"],
-                "category": "Tips & Tricks"
+                "category": "Tips & Tricks",
             },
             {
                 "title": "Customer Success Story: How Company X Increased Productivity by 200%",
@@ -188,7 +188,7 @@ class BlogView(MainContentView):
                 "author": "Sarah Johnson",
                 "image": "https://via.placeholder.com/800x450",
                 "tags": ["case study", "success story"],
-                "category": "Case Studies"
+                "category": "Case Studies",
             },
             {
                 "title": "Upcoming Features: What's New in Q2 2025",
@@ -198,7 +198,7 @@ class BlogView(MainContentView):
                 "author": "Michael Brown",
                 "image": "https://via.placeholder.com/800x450",
                 "tags": ["roadmap", "features"],
-                "category": "Announcements"
+                "category": "Announcements",
             },
             {
                 "title": "5 Tips to Optimize Your Workflow",
@@ -208,10 +208,10 @@ class BlogView(MainContentView):
                 "author": "Lisa Chen",
                 "image": "https://via.placeholder.com/800x450",
                 "tags": ["productivity", "tips"],
-                "category": "Tips & Tricks"
-            }
+                "category": "Tips & Tricks",
+            },
         ]
-        
+
         # Categories for sidebar filtering
         context["categories"] = [
             {"name": "Tutorials", "count": 12},
@@ -220,10 +220,10 @@ class BlogView(MainContentView):
             {"name": "Announcements", "count": 3},
             {"name": "Industry News", "count": 7},
         ]
-        
+
         # Recent posts for sidebar
         context["recent_posts"] = context["posts"][:3]
-        
+
         # Popular tags for sidebar
         context["tags"] = [
             {"name": "tutorial", "count": 15},
@@ -234,42 +234,42 @@ class BlogView(MainContentView):
             {"name": "beginners", "count": 8},
             {"name": "advanced", "count": 7},
         ]
-        
+
         return context
 
 
 class BlogPostView(MainContentView):
     """Individual blog post page."""
-    
+
     template_name = "pages/blog_post.html"
     active_nav = "blog"  # Add this to active_navigation context processor
 
     def get(self, request, *args, **kwargs):
         """
         Handle GET request for blog post detail.
-        
+
         Args:
             request: HTTP request
             *args: Variable-length argument list
             **kwargs: Arbitrary keyword arguments including 'slug' from URL
-            
+
         Returns:
             HttpResponse: Rendered response
         """
         slug = kwargs.get("slug")
         self.context["post"] = self._get_post_by_slug(slug)
         return self.render()
-    
+
     def _get_post_by_slug(self, slug):
         """
         Get blog post data based on slug.
-        
+
         Args:
             slug: Post slug from URL
-            
+
         Returns:
             dict: Post data
-            
+
         Raises:
             Http404: If post not found
         """
@@ -318,7 +318,7 @@ class BlogPostView(MainContentView):
                 "author": {
                     "name": "Jane Smith",
                     "avatar": "https://via.placeholder.com/48x48",
-                    "bio": "Jane is a senior developer and technical writer with over 10 years of experience."
+                    "bio": "Jane is a senior developer and technical writer with over 10 years of experience.",
                 },
                 "image": "https://via.placeholder.com/1200x600",
                 "tags": ["tutorial", "beginners"],
@@ -338,8 +338,8 @@ class BlogPostView(MainContentView):
                         "title": "Advanced Features You Might Have Missed",
                         "slug": "advanced-features",
                         "image": "https://via.placeholder.com/400x225",
-                    }
-                ]
+                    },
+                ],
             }
         else:
             # If we don't have a post for this slug, return 404

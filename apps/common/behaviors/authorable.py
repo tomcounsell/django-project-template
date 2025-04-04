@@ -34,11 +34,11 @@ class Authorable(models.Model):
     """
 
     author = models.ForeignKey(
-        AUTH_USER_MODEL, 
-        related_name="%(class)ss", 
+        AUTH_USER_MODEL,
+        related_name="%(class)ss",
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
     )
     is_author_anonymous = models.BooleanField(default=False)
     authored_at = models.DateTimeField(auto_now_add=True)

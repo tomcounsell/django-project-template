@@ -2,7 +2,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from apps.common.models import Wish
-from apps.common.tests.factories import WishFactory, UserFactory
+from apps.common.tests.factories import UserFactory, WishFactory
 
 
 @override_settings(TESTING=True)
@@ -184,18 +184,12 @@ class WishViewsTestCase(TestCase):
     def test_unauthenticated_access(self):
         """Test that unauthenticated users are redirected to login."""
         self.client.logout()
-        
+
         response = self.client.get(self.wish_list_url)
-        self.assertRedirects(
-            response, f"/account/login?next={self.wish_list_url}"
-        )
-        
+        self.assertRedirects(response, f"/account/login?next={self.wish_list_url}")
+
         response = self.client.get(self.wish_detail_url)
-        self.assertRedirects(
-            response, f"/account/login?next={self.wish_detail_url}"
-        )
-        
+        self.assertRedirects(response, f"/account/login?next={self.wish_detail_url}")
+
         response = self.client.get(self.wish_create_url)
-        self.assertRedirects(
-            response, f"/account/login?next={self.wish_create_url}"
-        )
+        self.assertRedirects(response, f"/account/login?next={self.wish_create_url}")

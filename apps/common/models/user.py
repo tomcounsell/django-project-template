@@ -34,21 +34,21 @@ class User(AbstractUser, Timestampable):
     is_email_verified = models.BooleanField(default=False)
     is_beta_tester = models.BooleanField(default=False)
     agreed_to_terms_at = models.DateTimeField(null=True, blank=True)
-    
+
     # Add these back to fix migration issues
     has_payment_method = models.BooleanField(default=False)
     stripe_customer_id = models.CharField(max_length=255, default="", blank=True)
-    
+
     @property
     def has_stripe_customer(self) -> bool:
         """
         Check if the user has a Stripe customer ID.
-        
+
         Returns:
             bool: True if the user has a non-empty stripe_customer_id, False otherwise
         """
         return bool(self.stripe_customer_id and self.stripe_customer_id.strip())
-    
+
     @property
     def has_active_subscription(self) -> bool:
         """
@@ -154,33 +154,33 @@ class User(AbstractUser, Timestampable):
     def get_login_url(self, next_url=None) -> str:
         """
         Generate a magic login URL for this user.
-        
+
         This URL contains the login code needed for passwordless login.
-        
+
         Args:
             next_url (str, optional): URL to redirect to after login
-            
+
         Returns:
             str: Full login URL with code
         """
         from django.conf import settings
         from django.urls import reverse
-        
+
         # Construct the base URL (with https:// if not already present)
         hostname = settings.HOSTNAME
-        if not hostname.startswith(('http://', 'https://')):
+        if not hostname.startswith(("http://", "https://")):
             hostname = f"https://{hostname}"
-            
+
         # Get the login URL with code parameter
-        login_path = reverse('public:account-login')
+        login_path = reverse("public:account-login")
         url = f"{hostname}{login_path}?code={self.four_digit_login_code}"
-        
+
         # Add next parameter if provided
         if next_url:
             url = f"{url}&next={next_url}"
-            
+
         return url
-    
+
     # MODEL FUNCTIONS
     def __str__(self) -> str:
         """

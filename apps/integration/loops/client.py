@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 
 class LoopsClient:
     BASE_URL = "https://app.loops.so/api/v1"
-    
-    def __init__(self, api_key: Optional[str] = None, debug_mode: Optional[bool] = None):
+
+    def __init__(
+        self, api_key: Optional[str] = None, debug_mode: Optional[bool] = None
+    ):
         self.api_key = api_key or LOOPS_API_KEY
         # Use provided debug_mode if specified, otherwise use Django's DEBUG setting
         self.debug_mode = debug_mode if debug_mode is not None else DEBUG

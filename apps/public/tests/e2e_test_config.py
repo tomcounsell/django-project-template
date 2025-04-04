@@ -68,7 +68,7 @@ def get_server_url(live_server=None) -> str:
     # If live_server fixture is provided, use its URL
     if live_server:
         return live_server.url
-    
+
     # Otherwise, use environment variable or default
     return SERVER_URL
 
@@ -88,56 +88,57 @@ def wait_for_server(url: str, timeout: int = 30, interval: float = 0.5) -> bool:
     parsed_url = urlparse(url)
     host = parsed_url.hostname or "localhost"
     port = parsed_url.port or (443 if parsed_url.scheme == "https" else 80)
-    
+
     start_time = time.time()
     while time.time() - start_time < timeout:
         if is_server_running(host, port):
             return True
         time.sleep(interval)
-    
+
     return False
 
 
 class LiveServerMixin:
     """
     Mixin to provide LiveServerTestCase functionality for E2E tests.
-    
+
     This mixin adapts the E2E test classes to work with either:
     1. A running local development server
     2. The pytest-django live_server fixture
     3. Django's LiveServerTestCase
-    
+
     Usage:
         class MyE2ETest(LiveServerMixin, E2ETestBase):
             async def test_something(self, live_server=None):
                 server_url = self.get_server_url(live_server)
                 # Use server_url for browser testing
     """
-    
+
     @classmethod
     def get_server_url(cls, live_server=None) -> str:
         """
         Get the server URL to use for tests.
-        
+
         Args:
             live_server: The pytest-django live_server fixture, if available
-            
+
         Returns:
             str: The server URL to use for tests
         """
         return get_server_url(live_server)
-    
+
     @classmethod
     def setup_class(cls):
         """Set up the test class."""
         # Create necessary directories
         ensure_directories()
-        
+
         # Check if a live server is running (for local development testing)
         if not is_server_running():
             # This check is only relevant when not using live_server fixture
             # When using live_server, the server will be started by pytest-django
             import pytest
+
             pytest.skip(
                 "Test server not running. Start with 'python manage.py runserver' "
                 "or use pytest-django live_server fixture."

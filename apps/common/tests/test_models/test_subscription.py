@@ -1,9 +1,9 @@
 """
 Tests for the Subscription model.
 """
-import pytest
-from unittest import mock
+
 from datetime import timedelta
+from unittest import mock
 
 import pytest
 from django.test import TestCase
@@ -32,7 +32,7 @@ class SubscriptionTestCase(TestCase):
             plan_name="Test Plan",
             plan_description="A test subscription plan",
             price=1995,  # $19.95
-            user=self.user
+            user=self.user,
         )
 
     def test_subscription_creation(self):
@@ -90,29 +90,30 @@ class SubscriptionTestCase(TestCase):
 
     def test_days_until_renewal_property(self):
         """Test the days_until_renewal property."""
-        import pytz
         from datetime import datetime
-        
+
+        import pytz
+
         # Future renewal with fixed datetime (to avoid timing issues)
         now = datetime(2025, 1, 1, 12, 0, 0, tzinfo=pytz.UTC)
         future = now + timedelta(days=15)
-        
-        with mock.patch('django.utils.timezone.now', return_value=now):
+
+        with mock.patch("django.utils.timezone.now", return_value=now):
             self.subscription.current_period_end = future
             self.subscription.save()
             self.assertEqual(self.subscription.days_until_renewal, 15)
-            
+
             # Past renewal
             past = now - timedelta(days=5)
             self.subscription.current_period_end = past
             self.subscription.save()
             self.assertEqual(self.subscription.days_until_renewal, 0)
-            
+
             # No renewal date
             self.subscription.current_period_end = None
             self.subscription.save()
             self.assertEqual(self.subscription.days_until_renewal, 0)
-    
+
     def test_owner_display_property(self):
         """Test the owner_display property."""
         # User subscription

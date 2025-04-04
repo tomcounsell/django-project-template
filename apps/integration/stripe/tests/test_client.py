@@ -109,7 +109,7 @@ class StripeClientLiveTestCase(TestCase):
             self.mock_settings,
             self.mock_stripe,
         ) = setup_live_mode()
-        
+
         # Create client in this controlled environment
         self.client = StripeClient(api_key="test_key", webhook_secret="test_secret")
 

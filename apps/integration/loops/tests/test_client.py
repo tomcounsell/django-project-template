@@ -1,15 +1,11 @@
 """
 Unit tests for the LoopsClient
 """
-import pytest
-import requests
-from unittest.mock import patch, MagicMock
-from django.test import TestCase
-from django.test import override_settings
 
 from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 from django.test import TestCase, override_settings
 
 from apps.integration.loops.client import LoopsAPIError, LoopsClient
@@ -21,7 +17,7 @@ class LoopsClientDebugModeTestCase(TestCase):
     def setUp(self):
         super().setUp()
         self.client = LoopsClient(api_key="test_key", debug_mode=True)
-        
+
     def test_transactional_email_debug_mode(self):
         """Test transactional_email in DEBUG mode"""
         result = self.client.transactional_email(
@@ -47,7 +43,7 @@ class LoopsClientLiveTestCase(TestCase):
     def setUp(self):
         super().setUp()
         self.client = LoopsClient(api_key="test_key", debug_mode=False)
-        
+
     @patch("apps.integration.loops.client.requests.request")
     def test_transactional_email_success(self, mock_request):
         """Test successful transactional_email request"""
@@ -117,7 +113,7 @@ class LoopsClientLiveTestCase(TestCase):
         """Test network error handling"""
         # Setup the mock to raise an exception
         mock_request.side_effect = requests.RequestException("Network error")
-        
+
         # Call the method and check for exception
         with pytest.raises(LoopsAPIError, match="Network error"):
             self.client.event(to_email="test@example.com", event_name="test_event")

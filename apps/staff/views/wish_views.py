@@ -8,14 +8,14 @@ from django.utils import timezone
 from django.views.generic import DeleteView
 
 from apps.common.forms.wish import WishForm
-from apps.staff.models import Wish
 from apps.public.helpers import MainContentView
 from apps.public.helpers.htmx_view import HTMXView
+from apps.staff.models import Wish
 
 
 class StaffRequiredMixin(LoginRequiredMixin):
     """Mixin to require staff privileges for access to views."""
-    
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
             return self.handle_no_permission()
