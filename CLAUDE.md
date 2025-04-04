@@ -105,7 +105,7 @@ For detailed conventions on templates and views, see:
 ## Documentation
 - [README.md](README.md) - Project overview, features and structure
 - [docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md) - Detailed setup instructions
-- [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) - Contribution guidelines
+- [docs/CONTRIBUTING.md](docs/guides/CONTRIBUTING.md) - Contribution guidelines
 - [docs/TODO.md](docs/TODO.md) - Current tasks and priorities
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Project architecture and app relationships
 - [docs/BEHAVIOR_MIXINS.md](docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
