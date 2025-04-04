@@ -31,8 +31,8 @@
 <nav class="bg-white shadow-xs">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 justify-between">
-      <!-- Left section: Logo and desktop nav -->
-      <div class="flex">
+      <!-- Left section with logo and nav links -->
+      <div class="flex items-center">
         <!-- Logo -->
         <div class="flex shrink-0 items-center">
           <a href="/">
@@ -40,8 +40,8 @@
           </a>
         </div>
         
-        <!-- Desktop navigation -->
-        <div class="hidden sm:ml-6 sm:flex sm:gap-8">
+        <!-- Desktop navigation - visible on sm and up -->
+        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
           <!-- Current: "border-navy-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
           <a href="/" class="inline-flex items-center border-b-2 {% if active_section == 'home' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Home
@@ -68,57 +68,64 @@
         </div>
       </div>
       
-      <!-- Right section: Mobile menu button and user menu -->
+      <!-- Right section with mobile menu button and account menu -->
       <div class="flex items-center">
-        <!-- Mobile menu button -->
-        <div class="flex items-center sm:hidden">
+        <!-- Mobile menu button - only visible on xs screens -->
+        <div class="sm:hidden">
           <button type="button" 
                   id="mobile-menu-button"
-                  class="inline-flex items-center justify-center rounded-xs p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-navy-500"
+                  class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-navy-500"
                   aria-controls="mobile-menu"
                   aria-expanded="false"
                   onclick="toggleMobileMenu()">
             <span class="sr-only">Open main menu</span>
             <!-- Icon when menu is closed -->
-            <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <svg class="block size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <!-- Icon when menu is open - will be toggled with JavaScript -->
+            <svg class="hidden size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         
         <!-- Account menu -->
-        {% include "layout/nav/account_menu.html" %}
+        <div class="ml-2 sm:ml-6">
+          {% include "layout/nav/account_menu.html" %}
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Mobile menu, show/hide based on menu state -->
   <div class="hidden sm:hidden" id="mobile-menu">
-    <div class="space-y-1 pb-3 pt-2">
-      <!-- Current: "bg-navy-50 border-navy-500 text-navy-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
-      <a href="/" class="block border-l-4 {% if active_section == 'home' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+    <div class="space-y-1 px-2 pt-2 pb-3">
+      <!-- Current: "bg-navy-50 text-navy-700", Default: "text-gray-500 hover:bg-gray-50 hover:text-gray-700" -->
+      <a href="/" class="block rounded-md {% if active_section == 'home' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Home
       </a>
       
-      <a href="{% url 'public:pricing' %}" class="block border-l-4 {% if active_section == 'pricing' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+      <a href="{% url 'public:pricing' %}" class="block rounded-md {% if active_section == 'pricing' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Pricing
       </a>
       
-      <a href="{% url 'public:blog' %}" class="block border-l-4 {% if active_section == 'blog' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+      <a href="{% url 'public:blog' %}" class="block rounded-md {% if active_section == 'blog' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Blog
       </a>
       
       {% if user.is_authenticated %}
         {% if user.teams.exists %}
-        <a href="{% url 'public:team-list' %}" class="block border-l-4 {% if active_section == 'teams' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+        <a href="{% url 'public:team-list' %}" class="block rounded-md {% if active_section == 'teams' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
           Team
         </a>
         {% endif %}
-        <a href="{% url 'staff:wish-list' %}" class="block border-l-4 {% if active_section == 'wishes' %}border-navy-500 bg-navy-50 text-navy-700{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700{% endif %} py-2 pl-3 pr-4 text-base font-medium">
+        <a href="{% url 'staff:wish-list' %}" class="block rounded-md {% if active_section == 'wishes' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
           Wishes
         </a>
       {% endif %}
     </div>
+    
     {% if user.is_authenticated %}
       <div class="border-t border-gray-200 pb-3 pt-4">
         <div class="flex items-center px-4">
@@ -132,18 +139,18 @@
             <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
           </div>
         </div>
-        <div class="mt-3 space-y-1">
-          <a href="{% url 'public:account-settings' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800">
+        <div class="mt-3 space-y-1 px-2">
+          <a href="{% url 'public:account-settings' %}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800">
             Account Settings
           </a>
           {% if user.is_staff %}
-            <a href="/admin/" class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800">
+            <a href="/admin/" class="block rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800">
               Admin Dashboard
             </a>
           {% endif %}
           <form method="post" action="{% url 'public:account-logout' %}" class="block px-0 py-0 logout-form">
             {% csrf_token %}
-            <button type="submit" class="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-red-600">
+            <button type="submit" class="block w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-red-600">
               Logout
             </button>
           </form>
