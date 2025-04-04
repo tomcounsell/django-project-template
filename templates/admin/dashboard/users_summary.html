@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<div class="p-4 bg-white rounded-lg shadow dark:bg-gray-800">
+<div class="p-4 bg-white rounded-sm shadow-xs dark:bg-gray-800">
   <div class="flex items-center justify-between">
     <h3 class="text-xl font-bold text-gray-900 dark:text-white">{% trans "Users" %}</h3>
     <a href="{% url 'admin:common_user_changelist' %}" class="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600">
@@ -10,7 +10,7 @@
   
   <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-3">
     <!-- Total Users -->
-    <div class="flex flex-col p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+    <div class="flex flex-col p-3 bg-gray-50 rounded-sm dark:bg-gray-700">
       <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{% trans "Total Users" %}</span>
       <span class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ total_users }}</span>
       <div class="mt-1 flex items-center">
@@ -27,7 +27,7 @@
     </div>
     
     <!-- Active Users -->
-    <div class="flex flex-col p-3 bg-green-50 rounded-lg dark:bg-green-900">
+    <div class="flex flex-col p-3 bg-green-50 rounded-sm dark:bg-green-900">
       <span class="text-sm font-medium text-green-600 dark:text-green-300">{% trans "Active Users" %}</span>
       <span class="mt-1 text-2xl font-bold text-green-600 dark:text-green-300">{{ active_users }}</span>
       <div class="mt-1 flex items-center">
@@ -37,7 +37,7 @@
     </div>
     
     <!-- Staff Users -->
-    <div class="flex flex-col p-3 bg-blue-50 rounded-lg dark:bg-blue-900">
+    <div class="flex flex-col p-3 bg-blue-50 rounded-sm dark:bg-blue-900">
       <span class="text-sm font-medium text-blue-600 dark:text-blue-300">{% trans "Staff Users" %}</span>
       <span class="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-300">{{ staff_users }}</span>
       <div class="mt-1 flex items-center">
@@ -50,7 +50,7 @@
   <!-- User Activity Chart -->
   <div class="mt-6">
     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% trans "Recent User Activity" %}</h4>
-    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-sm p-3">
       <div class="flex items-end space-x-1 h-24">
         {% for date, count in user_activity.items %}
           <div class="flex flex-col items-center flex-grow">
@@ -75,7 +75,7 @@
     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% trans "Recently Active Users" %}</h4>
     <div class="space-y-2">
       {% for user in recent_users %}
-        <div class="bg-gray-50 dark:bg-gray-700 p-2 rounded-lg flex items-center justify-between">
+        <div class="bg-gray-50 dark:bg-gray-700 p-2 rounded-sm flex items-center justify-between">
           <div class="flex items-center">
             <div class="w-8 h-8 flex items-center justify-center bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full mr-2 text-xs font-semibold">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</div>
             <div>
@@ -88,7 +88,7 @@
           </div>
         </div>
       {% empty %}
-        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg text-center text-gray-500 dark:text-gray-400">
+        <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-sm text-center text-gray-500 dark:text-gray-400">
           {% trans "No recent user activity" %}
         </div>
       {% endfor %}
