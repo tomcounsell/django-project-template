@@ -30,7 +30,7 @@
   </div>
 
   <!-- Table of Contents -->
-  <div class="bg-white shadow rounded-lg p-6 mb-8">
+  <div class="bg-white shadow-xs rounded-sm p-6 mb-8">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Contents</h2>
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <li><a href="#form-components" class="text-navy-700 hover:text-navy-900">Form Components</a></li>
@@ -49,7 +49,7 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Text Input -->
-      <div class="bg-white shadow rounded-lg p-6">
+      <div class="bg-white shadow-xs rounded-sm p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Text Input</h3>
         <div class="mb-4">
           <label for="example-text-input" class="block text-gray-700 font-semibold mb-2">
@@ -61,7 +61,7 @@
             value=""
             placeholder="johndoe"
             required
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+            class="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-300"
           >
           <p class="text-gray-500 text-sm mt-1">Choose a unique username</p>
         </div>
@@ -71,7 +71,7 @@
       </div>
       
       <!-- Textarea -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Textarea</h3>
         <div class="mb-4">
           <label for="example-textarea" class="block text-gray-700 font-semibold mb-2">
@@ -80,7 +80,7 @@
           <textarea 
             id="example-textarea" 
             placeholder="Tell us about yourself"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 min-h-(100px)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-300 min-h-(100px)"
           ></textarea>
         </div>
         <div class="mt-2 text-sm text-gray-500">
@@ -89,7 +89,7 @@
       </div>
       
       <!-- Checkbox -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Checkbox</h3>
         <div class="mb-4">
           <div class="flex items-start">
@@ -97,7 +97,7 @@
               <input 
                 id="example-checkbox" 
                 type="checkbox" 
-                class="focus:ring-navy-500 h-4 w-4 text-navy-600 border-gray-300 rounded"
+                class="focus:ring-navy-500 h-4 w-4 text-navy-600 border-gray-300 rounded-sm"
               >
             </div>
             <div class="ml-3 text-sm">
@@ -114,7 +114,7 @@
       </div>
       
       <!-- Select -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Select</h3>
         <div class="mb-4">
           <label for="example-select" class="block text-gray-700 font-semibold mb-2">
@@ -122,7 +122,7 @@
           </label>
           <select 
             id="example-select" 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+            class="w-full px-3 py-2 border border-gray-300 rounded-sm focus:outline-hidden focus:ring-2 focus:ring-blue-300"
           >
             <option value="">Select a country</option>
             <option value="us">United States</option>
@@ -137,7 +137,7 @@
       </div>
       
       <!-- Radio Set -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Radio Set</h3>
         <div class="mb-4">
           <label class="block text-gray-700 font-semibold mb-2">
@@ -188,7 +188,7 @@
       </div>
       
       <!-- Standard Buttons -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Standard Buttons</h3>
         <div class="mb-4">
           <p class="text-gray-600 mb-4">Standard button styles with icons:</p>
@@ -197,19 +197,19 @@
             <div>
               <h4 class="text-sm font-medium text-gray-700 mb-2">Primary Actions</h4>
               <div class="flex flex-wrap gap-3">
-                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-xs text-sm font-medium rounded-sm text-white bg-navy-900 hover:bg-navy-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
                   <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
                   </svg>
                   Create
                 </button>
-                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-xs text-sm font-medium rounded-sm text-white bg-navy-900 hover:bg-navy-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
                   <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
                   </svg>
                   Edit
                 </button>
-                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-xs text-sm font-medium rounded-sm text-white bg-navy-900 hover:bg-navy-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
                   <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                   </svg>
@@ -221,19 +221,19 @@
             <div>
               <h4 class="text-sm font-medium text-gray-700 mb-2">Secondary Actions</h4>
               <div class="flex flex-wrap gap-3">
-                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-xs text-sm font-medium rounded-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                   <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
                   </svg>
                   Back
                 </button>
-                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-xs text-sm font-medium rounded-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                   <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                   </svg>
                   Cancel
                 </button>
-                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <button class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-xs text-sm font-medium rounded-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                   <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
                   </svg>
@@ -414,7 +414,7 @@ text-green-700 border border-green-200"&gt;
       </div>
       
       <!-- Form Buttons -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Form Buttons</h3>
         <div class="mb-4">
           <div class="mt-6 flex justify-end items-center space-x-4">
@@ -426,7 +426,7 @@ text-green-700 border border-green-200"&gt;
               Cancel
             </a>
             <button type="button" 
-                    class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+                    class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-xs text-sm font-medium rounded-sm text-white bg-navy-900 hover:bg-navy-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
               <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
               </svg>
@@ -440,12 +440,12 @@ text-green-700 border border-green-200"&gt;
       </div>
       
       <!-- Form Errors -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Form Errors</h3>
         <div class="mb-4">
-          <div class="rounded-md bg-red-50 p-4">
+          <div class="rounded-sm bg-red-50 p-4">
             <div class="flex">
-              <div class="flex-shrink-0">
+              <div class="shrink-0">
                 <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                 </svg>
@@ -478,7 +478,7 @@ text-green-700 border border-green-200"&gt;
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Team Card -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Team Card</h3>
         <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
           <div class="team-card">
@@ -534,13 +534,13 @@ text-green-700 border border-green-200"&gt;
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Basic Modal Example (triggers) -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Modal Trigger Examples</h3>
         <p class="text-gray-600 mb-4">Click the buttons below to open different modal types:</p>
         
         <div class="flex flex-wrap gap-4">
           <button
-            class="px-4 py-2 rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+            class="px-4 py-2 rounded-sm text-white bg-navy-900 hover:bg-navy-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
             hx-get="/modals/content-example/"
             hx-target="#primary-modal-container"
             hx-swap="innerHTML"
@@ -549,7 +549,7 @@ text-green-700 border border-green-200"&gt;
           </button>
           
           <button
-            class="px-4 py-2 rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            class="px-4 py-2 rounded-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             hx-get="/modals/confirm-example/"
             hx-target="#primary-modal-container"
             hx-swap="innerHTML"
@@ -558,7 +558,7 @@ text-green-700 border border-green-200"&gt;
           </button>
           
           <button
-            class="px-4 py-2 rounded-md text-white bg-navy-800 hover:bg-navy-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+            class="px-4 py-2 rounded-sm text-white bg-navy-800 hover:bg-navy-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
             hx-get="/modals/form-example/"
             hx-target="#primary-modal-container"
             hx-swap="innerHTML"
@@ -578,7 +578,7 @@ text-green-700 border border-green-200"&gt;
       </div>
       
       <!-- Modal Template Structure -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Modal Structure</h3>
         <div class="bg-gray-100 p-4 rounded-md">
           <pre class="text-xs overflow-x-auto">
@@ -631,7 +631,7 @@ text-green-700 border border-green-200"&gt;
     
     <div class="grid grid-cols-1 gap-8">
       <!-- Team Members List -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Team Members List</h3>
         <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
           <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -707,7 +707,7 @@ text-green-700 border border-green-200"&gt;
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Notification Toast -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Notification Toast</h3>
         <div class="mb-4">
           <!-- Success Toast -->
@@ -760,12 +760,12 @@ text-green-700 border border-green-200"&gt;
       </div>
       
       <!-- Error Message -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Error Message</h3>
         <div class="mb-4">
           <div class="bg-red-50 border-l-4 border-red-500 p-4">
             <div class="flex">
-              <div class="flex-shrink-0">
+              <div class="shrink-0">
                 <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                 </svg>
@@ -795,7 +795,7 @@ text-green-700 border border-green-200"&gt;
     
     <div class="grid grid-cols-1 gap-8">
       <!-- Layout Structure -->
-      <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="bg-white rounded-sm shadow-xs p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">Layout Structure</h3>
         <div class="bg-gray-100 p-4 rounded-md overflow-x-auto">
           <pre class="text-xs">

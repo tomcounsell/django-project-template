@@ -50,9 +50,9 @@
       {% if use_form_components|default:True %}
         {% include "components/forms/form_errors.html" with errors=form.non_field_errors %}
       {% else %}
-        <div class="rounded-md bg-red-50 p-4 mb-4">
+        <div class="rounded-sm bg-red-50 p-4 mb-4">
           <div class="flex">
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
               <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
               </svg>
@@ -116,7 +116,7 @@
 {% block modal_footer %}
   <button
     type="button"
-    class="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+    class="px-4 py-2 rounded-sm text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
     onclick="this.closest('.modal-container').innerHTML = ''"
   >
     {{ cancel_text|default:"Cancel" }}
@@ -124,7 +124,7 @@
   
   <button
     type="button"
-    class="px-4 py-2 rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+    class="px-4 py-2 rounded-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
     onclick="document.getElementById('{{ form_id|default:modal_id|add:'-form' }}').requestSubmit(); setTimeout(() => { if (!document.querySelector('.field-errors')) this.closest('.modal-container').innerHTML = '' }, 300)"
   >
     {{ submit_text|default:"Submit" }}

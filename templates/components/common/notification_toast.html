@@ -36,7 +36,7 @@
   {% if messages %}
     {% for message in messages %}
     <div 
-      class="rounded-lg shadow-lg overflow-hidden bg-white border-l-4 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}border-green-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}border-red-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}border-accent{% else %}border-navy-700{% endif %}"
+      class="rounded-sm shadow-xs overflow-hidden bg-white border-l-4 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}border-green-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}border-red-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}border-accent{% else %}border-navy-700{% endif %}"
       _="on load wait 5s then add .opacity-0 then wait 500ms then remove me"
       style="transition: opacity 0.5s ease-in-out"
     >
