@@ -6,18 +6,29 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from apps.integration.stripe.client import StripeAPIError, StripeClient
+from apps.integration.stripe.tests.stripe_test_utils import (
+    configure_mock_stripe,
+    setup_debug_mode,
+    setup_live_mode,
+    teardown_patches,
+)
 
 
-@override_settings(DEBUG=True)
 class StripeClientDebugModeTestCase(TestCase):
     """Test StripeClient in DEBUG mode."""
 
     def setUp(self):
         super().setUp()
+        # Set up debug mode environment
+        self.settings_patch, self.mock_settings = setup_debug_mode()
         self.client = StripeClient(api_key="test_key", webhook_secret="test_secret")
+
+    def tearDown(self):
+        teardown_patches(self.settings_patch)
+        super().tearDown()
 
     def test_create_checkout_session_debug_mode(self):
         """Test create_checkout_session in DEBUG mode."""
@@ -86,20 +97,24 @@ class StripeClientDebugModeTestCase(TestCase):
         self.assertEqual(result["event"]["type"], "checkout.session.completed")
 
 
-@override_settings(DEBUG=False, STRIPE_ENABLED=True)
 class StripeClientLiveTestCase(TestCase):
     """Test StripeClient in live mode with mocked responses."""
 
     def setUp(self):
         super().setUp()
+        # Set up live mode environment with mocked modules
+        (
+            self.settings_patch,
+            self.stripe_patch,
+            self.mock_settings,
+            self.mock_stripe,
+        ) = setup_live_mode()
+        
+        # Create client in this controlled environment
         self.client = StripeClient(api_key="test_key", webhook_secret="test_secret")
 
-        # Setup patches
-        self.stripe_module_patcher = patch("apps.integration.stripe.client.stripe")
-        self.mock_stripe = self.stripe_module_patcher.start()
-
     def tearDown(self):
-        self.stripe_module_patcher.stop()
+        teardown_patches(self.settings_patch, self.stripe_patch)
         super().tearDown()
 
     def test_validate_client(self):
@@ -296,6 +311,7 @@ class StripeClientLiveTestCase(TestCase):
         # Restore client state
         self.client.api_key = "test_key"
         self.client.enabled = True
+        self.client.webhook_secret = "test_secret"
 
         # Call the method
         payload = b'{"type":"checkout.session.completed"}'
@@ -327,6 +343,7 @@ class StripeClientLiveTestCase(TestCase):
         # Restore client state
         self.client.api_key = "test_key"
         self.client.enabled = True
+        self.client.webhook_secret = "test_secret"
 
         # Call the method
         payload = b'{"type":"checkout.session.completed"}'
