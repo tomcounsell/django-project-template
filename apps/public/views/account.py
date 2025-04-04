@@ -61,7 +61,7 @@ class SettingsView(LoginRequiredMixin, MainContentView):
             else:
                 messages.error(
                     request,
-                    f"Password not updated.",
+                    "Password not updated.",
                 )
 
         return self.get(request, *args, **kwargs)

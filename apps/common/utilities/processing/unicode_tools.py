@@ -1,5 +1,4 @@
 import re
-import typing
 import unicodedata
 from typing import Callable, List
 

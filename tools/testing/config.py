@@ -6,7 +6,7 @@ for the Django Project Template testing framework.
 """
 
 from enum import Enum
-from typing import Dict, List, Set, Tuple
+from typing import Dict, Set
 
 
 class TestType(Enum):

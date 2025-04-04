@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
 from django.core.mail import EmailMessage
 from django.test import TestCase
 

@@ -4,14 +4,12 @@ Tests for HTMX OOB (Out-of-Band) support in the Django Project Template.
 These tests verify that HTMX OOB swaps work correctly for various components.
 """
 
-import unittest
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import patch
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.template import Context, Template
 
 # Import the base TestCase class to avoid name conflict
 from django.test import RequestFactory

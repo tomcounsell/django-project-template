@@ -4,7 +4,6 @@ Unit tests for the Twilio shortcuts module
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from django.test import TestCase, override_settings
 
 from apps.common.models.sms import SMS

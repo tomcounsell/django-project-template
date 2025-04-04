@@ -6,10 +6,9 @@ It ensures consistent error reporting, formatting, and handling across all appli
 """
 
 import logging
-import sys
 import traceback
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
 
 from django.conf import settings
 from django.contrib import messages

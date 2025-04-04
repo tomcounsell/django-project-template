@@ -4,9 +4,7 @@ Unit tests for Stripe shortcuts.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from django.test import TestCase
-from django.urls import reverse
 
 from apps.common.models import User
 from apps.integration.stripe.shortcuts import (

@@ -17,23 +17,17 @@ Usage:
     DJANGO_SETTINGS_MODULE=settings pytest apps/public/tests/test_ai_browser_testing.py::TestAIAutomatedTesting::test_generate_and_run_test -v
 """
 
-import asyncio
 import json
 import os
-import time
 import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
+from typing import Any, Dict, List, Optional, Tuple
 
 import pytest
 
 # Import pytest-asyncio
 import pytest_asyncio
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import connection
-from django.urls import reverse
 
 # Add database mark
 pytestmark = [pytest.mark.django_db]  # Allow database access

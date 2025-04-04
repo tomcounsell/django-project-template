@@ -5,7 +5,6 @@ Tests for the User model's Stripe-related methods and properties.
 import uuid
 from datetime import timedelta
 
-import pytest
 from django.test import TestCase
 from django.utils import timezone
 

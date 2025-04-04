@@ -1,4 +1,3 @@
-from django import forms
 
 from apps.common.models import BlogPost
 from apps.common.utilities.forms import BaseModelForm

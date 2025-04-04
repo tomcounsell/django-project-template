@@ -11,7 +11,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -81,7 +81,7 @@ class CoverageReporter:
                 error_msg = process.stderr or "Unknown error"
                 return False, f"Error generating coverage report: {error_msg}"
 
-            success_msg = f"Coverage report generated successfully"
+            success_msg = "Coverage report generated successfully"
             if report_path:
                 success_msg += f" at {report_path}"
 

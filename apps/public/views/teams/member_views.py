@@ -2,20 +2,13 @@
 Views for team membership management (invitations, joining, role changes).
 """
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.http import require_POST
-from django.views.generic import FormView
 
 from apps.common.models.team import Role, Team, TeamMember
-from apps.public.views.helpers.main_content_view import MainContentView
 
 User = get_user_model()
 

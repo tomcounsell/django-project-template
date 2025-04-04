@@ -8,7 +8,7 @@ the standard Django test client and browser-use when available.
 
 import os
 import uuid
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import pytest
 from django.contrib.auth import get_user_model

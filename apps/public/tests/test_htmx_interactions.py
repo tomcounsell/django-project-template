@@ -13,16 +13,10 @@ This uses browser-based testing as HTMX behavior requires:
 3. DOM manipulation
 """
 
-import asyncio
-import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
-from urllib.parse import urlparse
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.test import override_settings
-from django.urls import reverse
 
 # Try importing browser-use components
 try:

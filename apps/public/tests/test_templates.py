@@ -1,9 +1,7 @@
 import os
 import re
 
-from bs4 import BeautifulSoup
-from django.template import Context, Template
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 
 class TemplateBlocksTestCase(TestCase):

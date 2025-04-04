@@ -2,12 +2,10 @@
 Tests to verify template paths work correctly during and after migration of templates.
 """
 
-import glob
 import os
 
 from django.conf import settings
-from django.test import Client, TestCase
-from django.urls import reverse
+from django.test import TestCase
 
 
 class TemplatePathsTestCase(TestCase):

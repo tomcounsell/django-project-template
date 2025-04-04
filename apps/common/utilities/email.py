@@ -1,4 +1,3 @@
-from django.core.mail import EmailMessage
 
 
 def email_to_string(e):

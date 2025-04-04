@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.utils import timezone
 
 from apps.staff.models import Wish
-from apps.common.models import User
 from apps.common.tests.factories import UserFactory
 
 

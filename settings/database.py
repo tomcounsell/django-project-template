@@ -7,7 +7,7 @@ import os
 
 import dj_database_url
 
-from settings.env import DEBUG, LOCAL
+from settings.env import LOCAL
 
 # Database configuration - prefer DATABASE_URL if available
 # For local development, override in .env.local

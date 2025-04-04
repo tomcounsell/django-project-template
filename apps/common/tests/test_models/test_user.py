@@ -2,7 +2,6 @@
 Tests for the User model and related functionality.
 """
 
-import hashlib
 import uuid
 from datetime import datetime
 

@@ -9,9 +9,7 @@ import asyncio
 import json
 import os
 import uuid
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
+from typing import Any, Dict, List, Optional
 
 try:
     import playwright.async_api
