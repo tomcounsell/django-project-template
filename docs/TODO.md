@@ -34,7 +34,7 @@ We've made significant progress in fixing the test suite:
 ### Implementation Issues
 - [x] Fix User model tests (added back payment-related fields and fixed related test implementation)
 - [x] Fix model test failures: User, Address, Blog Post, Image, Upload, Note, Subscription
-- [ ] Fix remaining model test failures: Payment, SMS (need to fix model implementations)
+- [x] Fix remaining model test failures: Payment, SMS (need to fix model implementations)
 - [x] Install dependencies for browser testing (playwright, selenium, pytest-asyncio)
 - [ ] Complete browser testing infrastructure (fix async context issues in test_e2e_patterns.py)
 - [ ] Fix E2E test framework (Django LiveServerTestCase compatibility)

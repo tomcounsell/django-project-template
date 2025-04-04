@@ -162,7 +162,7 @@ class SMSModelTestCase(TestCase):
         # Send should fail
         result = sms.send()
         self.assertFalse(result["success"])
-        self.assertIn("No recipient", result["error"].lower())
+        self.assertIn("no recipient", result["error"].lower())
 
         # Create SMS without body
         sms = SMS.objects.create(
@@ -172,4 +172,4 @@ class SMSModelTestCase(TestCase):
         # Send should fail
         result = sms.send()
         self.assertFalse(result["success"])
-        self.assertIn("No message body", result["error"].lower())
+        self.assertIn("no message body", result["error"].lower())
