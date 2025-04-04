@@ -7,7 +7,7 @@
 
 Technologies: Python, Django, PostgreSQL, 
 API: Django Rest Framework
-Web: HTMX, Tailwind CSS
+Web: HTMX, Tailwind CSS v4
 Hosting: Render, AWS-S3
 Integrations: 
     Loops for transactional email

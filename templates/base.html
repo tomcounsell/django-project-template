@@ -85,7 +85,8 @@
   <script src="{% static 'js/base.js' %}?v=3" defer></script>
 
   <!-- Page-specific CSS -->
-  {% block extra_css %}{% endblock %}
+  {% block extra_css %}{% endblock extra_css %}
+  {% block extra_head %}{% endblock extra_head %}
 </head>
 
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-900 font-sans antialiased"
@@ -166,10 +167,10 @@
 <!-- Modals System -->
 {% include "layout/modals.html" %}
 
+{% block extra_body %}{% endblock extra_body %}
+
 <!-- HyperScript (for declarative JavaScript) -->
 <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-
-<!-- Base JavaScript (loaded in head) -->
 
 <!-- Page-specific JavaScript -->
 {% block scripts %}{% endblock %}

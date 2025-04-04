@@ -129,12 +129,12 @@ class Settings,URLs,Templates,Static core;
 4. **Frontend Rendering**:
    - Templates and static files provide frontend structure
    - HTMX handles dynamic frontend interactions
-   - Tailwind CSS provides styling
+   - Tailwind CSS v4 with django-tailwind-cli provides styling
 
 ## Technology Stack
 
 - **Backend**: Django, DRF, PostgreSQL
-- **Frontend**: HTMX, Tailwind CSS
+- **Frontend**: HTMX, Tailwind CSS v4 with django-tailwind-cli
 - **External Services**: AWS, Twilio, Loops
 - **AI Integration**: OpenAI, Anthropic (planned)
 - **Deployment**: Docker, Render
