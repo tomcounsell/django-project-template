@@ -11,7 +11,6 @@ import mimetypes
 import os
 from typing import Any, Dict, Optional
 
-
 from apps.common.models.upload import Upload
 from apps.integration.aws.s3 import S3Client, generate_unique_filename
 

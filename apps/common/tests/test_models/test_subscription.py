@@ -90,6 +90,7 @@ class SubscriptionTestCase(TestCase):
     def test_days_until_renewal_property(self):
         """Test the days_until_renewal property."""
         from datetime import datetime
+
         import pytz
 
         # Future renewal with fixed datetime (to avoid timing issues)

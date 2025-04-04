@@ -4,8 +4,8 @@ from datetime import timedelta
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.staff.models import Wish
 from apps.common.tests.factories import UserFactory
+from apps.staff.models import Wish
 
 
 class WishModelTestCase(TestCase):
