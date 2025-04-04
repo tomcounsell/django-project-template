@@ -11,12 +11,12 @@
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
     <div class="flex-1"></div>
-    <a href="{% url 'staff:wish-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded">
+    <a href="{% url 'staff:wish-list' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-sm">
       Back to List
     </a>
   </div>
 
-  <div class="bg-white shadow rounded-lg overflow-hidden">
+  <div class="bg-white shadow-xs rounded-sm overflow-hidden">
     <div class="p-6">
       <div class="text-red-600 mb-4">
         <svg class="h-12 w-12 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
@@ -32,10 +32,10 @@
       <form method="post" class="mt-6">
         {% csrf_token %}
         <div class="flex justify-center">
-          <a href="{% url 'staff:wish-detail' wish.id %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded mr-2">
+          <a href="{% url 'staff:wish-detail' wish.id %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-sm mr-2">
             Cancel
           </a>
-          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">
+          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-sm">
             Delete
           </button>
         </div>
