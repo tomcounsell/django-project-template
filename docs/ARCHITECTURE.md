@@ -69,18 +69,18 @@ graph TD
     %% User interactions
     User((User)) --> Frontend
     User --> API
-end
 
-%% Data flow notes
-classDef external fill:#f9f,stroke:#333,stroke-width:2px;
-classDef database fill:#69b,stroke:#333,stroke-width:2px;
-classDef app fill:#bfb,stroke:#333,stroke-width:2px;
-classDef core fill:#ddd,stroke:#333,stroke-width:2px;
+    %% Style definitions
+    classDef external fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef database fill:#69b,stroke:#333,stroke-width:2px;
+    classDef app fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef core fill:#ddd,stroke:#333,stroke-width:2px;
 
-class External external;
-class DB database;
-class Common,Public,API,Integration,AI app;
-class Settings,URLs,Templates,Static core;
+    %% Apply styles to nodes
+    class External external
+    class DB database
+    class Common,Public,API,Integration,AI app
+    class Settings,URLs,Templates,Static core
 ```
 
 ## App Relationships and Dependencies
