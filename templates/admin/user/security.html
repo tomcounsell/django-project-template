@@ -7,7 +7,7 @@
     </div>
     
     <div class="mb-6 grid grid-cols-1 gap-6">
-        <div class="border rounded-lg p-4 bg-white dark:bg-gray-800">
+        <div class="border rounded-sm p-4 bg-white dark:bg-gray-800">
             <h4 class="text-base font-semibold mb-3">{% trans "Password Management" %}</h4>
             
             <div class="mb-4">
@@ -20,7 +20,7 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">{% trans "Not tracked" %}</p>
                 </div>
                 <div class="mt-2 sm:mt-0">
-                    <a href="{% url 'admin:auth_user_password_change' original.pk %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="{% url 'admin:auth_user_password_change' original.pk %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-xs text-xs font-medium rounded-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span class="material-symbols-outlined mr-1 text-base">lock_reset</span>
                         {% trans "Change Password" %}
                     </a>
@@ -28,10 +28,10 @@
             </div>
         </div>
         
-        <div class="border rounded-lg p-4 bg-white dark:bg-gray-800">
+        <div class="border rounded-sm p-4 bg-white dark:bg-gray-800">
             <h4 class="text-base font-semibold mb-3">{% trans "User API Keys" %}</h4>
             
-            <div class="overflow-hidden bg-white shadow dark:bg-gray-800 sm:rounded-md mb-4">
+            <div class="overflow-hidden bg-white shadow-xs dark:bg-gray-800 sm:rounded-sm mb-4">
                 <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
                     {% for key in original.userapikey_set.all %}
                         <li>
@@ -60,7 +60,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <a href="{% url 'admin:common_userapikey_change' key.pk %}" class="inline-flex items-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
+                                    <a href="{% url 'admin:common_userapikey_change' key.pk %}" class="inline-flex items-center rounded-sm bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:hover:bg-gray-600">
                                         {% trans "View" %}
                                     </a>
                                 </div>
@@ -77,19 +77,19 @@
             </div>
             
             <div class="text-right">
-                <a href="{% url 'admin:common_userapikey_add' %}?user={{ original.pk }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <a href="{% url 'admin:common_userapikey_add' %}?user={{ original.pk }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-sm shadow-xs text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <span class="material-symbols-outlined mr-1 text-base">add</span>
                     {% trans "Create API Key" %}
                 </a>
             </div>
         </div>
         
-        <div class="border rounded-lg p-4 bg-white dark:bg-gray-800">
+        <div class="border rounded-sm p-4 bg-white dark:bg-gray-800">
             <h4 class="text-base font-semibold mb-3">{% trans "Account Actions" %}</h4>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <button type="button" class="inline-flex w-full justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <button type="button" class="inline-flex w-full justify-center items-center px-3 py-2 border border-gray-300 shadow-xs text-sm font-medium rounded-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span class="material-symbols-outlined mr-1 text-base">send</span>
                         {% trans "Send Password Reset Email" %}
                     </button>
@@ -99,7 +99,7 @@
                     <form method="post" action="{% url 'admin:common_user_change' original.pk %}">
                         {% csrf_token %}
                         <input type="hidden" name="is_active" value="{% if original.is_active %}false{% else %}true{% endif %}">
-                        <button type="submit" class="inline-flex w-full justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button type="submit" class="inline-flex w-full justify-center items-center px-3 py-2 border border-gray-300 shadow-xs text-sm font-medium rounded-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             {% if original.is_active %}
                                 <span class="material-symbols-outlined mr-1 text-base">block</span>
                                 {% trans "Deactivate Account" %}
