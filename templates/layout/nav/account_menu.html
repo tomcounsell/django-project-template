@@ -30,7 +30,7 @@
   <div class="relative ml-3">
     <!-- Avatar/Button that toggles the dropdown -->
     <button type="button"
-            class="relative flex rounded-full bg-white text-sm focus:outline-hidden focus:ring-2 focus:ring-navy-500 focus:ring-offset-2 focus:ring-offset-white"
+            class="relative flex rounded-full bg-white text-sm focus:outline-hidden focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-white"
             id="nav_user_menu_button"
             aria-controls="nav_user_menu"
             onclick="toggleDropdown(this); event.stopPropagation();"
@@ -55,7 +55,7 @@
         To: "opacity-0 scale-95"
     -->
     <div id="nav_user_menu" role="menu"
-         class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden hidden"
+         class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-xs bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden hidden"
          aria-orientation="vertical"
          aria-labelledby="nav_user_menu_button"
          tabindex="-1">
@@ -78,7 +78,7 @@
   </div>
 {% else %}
   <!-- Login link for non-authenticated users -->
-  <a href="{% url 'public:account-login' %}" class="rounded-md px-3 py-2 text-sm font-medium text-navy-700 hover:text-navy-900">
+  <a href="{% url 'public:account-login' %}" class="rounded-xs px-3 py-2 text-sm font-medium text-slate-700 hover:text-slate-900">
     Login
   </a>
 {% endif %}

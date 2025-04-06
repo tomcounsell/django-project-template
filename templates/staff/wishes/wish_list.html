@@ -3,14 +3,14 @@
 {% block title %}Staff: Wish List Management{% endblock %}
 
 {% block main_header %}
-  <h1 class="text-3xl font-bold tracking-tight text-navy-600">Wish List Management</h1>
+  <h1 class="text-3xl font-bold tracking-tight text-slate-600">Wish List Management</h1>
   <p class="text-gray-500 mt-1">Staff tools for managing wish items</p>
 {% endblock %}
 
 {% block content %}
   <div class="flex justify-between items-center mb-6">
     <div class="flex-1"></div>
-    <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-md bg-navy-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600">
+    <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
       <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
       </svg>
@@ -79,7 +79,7 @@
         <a href="{% url 'staff:wish-list' %}" class="text-sm/6 font-semibold text-gray-900">
           Clear Filters
         </a>
-        <button type="submit" class="rounded-md bg-navy-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600">
+        <button type="submit" class="rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
           Apply Filters
         </button>
       </div>
@@ -94,13 +94,13 @@
     </div>
     
     <div class="px-6 py-4 flex flex-wrap gap-4">
-      <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+      <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
         <svg class="mr-2 size-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
         </svg>
         View Public Wish List
       </a>
-      <a href="{% url 'admin:staff_wish_changelist' %}" class="inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+      <a href="{% url 'admin:staff_wish_changelist' %}" class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
         <svg class="mr-2 size-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
         </svg>
@@ -156,7 +156,7 @@
         <h3 class="mt-2 text-base font-semibold text-gray-900">No wishes found</h3>
         <p class="mt-1 text-sm text-gray-500">Get started by creating your first wish item.</p>
         <div class="mt-6">
-          <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-md bg-navy-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600">
+          <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
             <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
             </svg>

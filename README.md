@@ -36,7 +36,7 @@ Planned Integrations:
 - For template guidelines and patterns, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
 - For view classes and HTMX integration, see [View Conventions](docs/VIEW_CONVENTIONS.md)
 - For project architecture overview, see [Architecture](docs/ARCHITECTURE.md)
-- For end-to-end testing, see [E2E Testing](docs/E2E_TESTING.md)
+- For end-to-end testing, see [E2E Testing](docs/advanced/E2E_TESTING.md)
 
 
 # Project Structure
@@ -81,7 +81,7 @@ DJANGO_SETTINGS_MODULE=settings pytest --cov=apps
 DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_behaviors.py
 ```
 
-For detailed testing conventions and practices, see [Test Conventions](docs/TEST_CONVENTIONS.md).
+For detailed testing conventions and practices, see [Test Conventions](docs/advanced/TEST_CONVENTIONS.md).
 
 - `apps/`: Contains all applications that make up the project.
 - `settings/`: Configuration settings for the entire Django project.

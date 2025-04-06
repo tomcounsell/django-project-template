@@ -91,8 +91,8 @@ The project uses a minimalist design system with a focused color palette:
 - **Primary Buttons**:
   ```html
   class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm 
-  font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none 
-  focus:ring-2 focus:ring-offset-2 focus:ring-navy-700"
+  font-medium rounded-md text-white bg-slate-900 hover:bg-slate-800 focus:outline-none 
+  focus:ring-2 focus:ring-offset-2 focus:ring-slate-700"
   ```
 
 - **Secondary/Gray Buttons**:
@@ -103,21 +103,21 @@ The project uses a minimalist design system with a focused color palette:
   ```
 
 #### Links
-- **Standard Links**: `class="text-navy-700 hover:text-navy-900"`
-- **Subtle Links**: `class="text-gray-600 hover:text-navy-700 hover:underline"`
+- **Standard Links**: `class="text-slate-700 hover:text-slate-900"`
+- **Subtle Links**: `class="text-gray-600 hover:text-slate-700 hover:underline"`
 
 #### Cards/Panels
 - **Standard Card**: `class="bg-white shadow rounded-lg p-6"`
-- **Bordered Card**: `class="bg-white shadow rounded-lg overflow-hidden"` with inner container `class="border-l-4 border-navy-700 p-6"`
+- **Bordered Card**: `class="bg-white shadow rounded-lg overflow-hidden"` with inner container `class="border-l-4 border-slate-700 p-6"`
 
 #### Form Elements
 - **Form Layout**: Use `space-y-6` for vertical spacing and `grid` for multi-column layouts
 - **Form Groups**: Apply consistent spacing with `class="mb-4"` or `class="space-y-2"`
 - **Form Labels**: `class="block text-sm font-medium text-gray-700 mb-2"`
-- **Form Inputs**: `class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm"`
+- **Form Inputs**: `class="block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-700 focus:ring-slate-700 sm:text-sm"`
 
 #### Badges/Pills
-- **Status Badges**: `class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-navy-100 text-navy-800"`
+- **Status Badges**: `class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-800"`
 - **Alternative Badges**: Use gray-scale for neutral states and standard semantic colors for others
 
 ### Design Principles
@@ -188,7 +188,7 @@ Form components provide consistent styling and error handling:
   </label>
   <div class="mt-1">
     <input type="text" name="first_name" id="id_first_name" value="{{ value|default:'' }}" 
-      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-navy-700 focus:ring-navy-700 sm:text-sm" />
+      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-slate-700 focus:ring-slate-700 sm:text-sm" />
   </div>
   {% if errors %}
     <p class="mt-2 text-sm text-red-600">{{ errors.0 }}</p>
@@ -205,12 +205,12 @@ The project uses consistent button styling:
 
 ```html
 <!-- Primary Button -->
-<button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-navy-900 hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-700">
+<button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-700">
   Primary Action
 </button>
 
 <!-- Secondary Button -->
-<button type="button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-500">
+<button type="button" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
   Secondary Action
 </button>
 ```
@@ -299,6 +299,19 @@ class ProfileView(MainContentView):
 - This is because Tailwind performs static analysis at build time and cannot process Django template variables or blocks
 
 **Note**: We've migrated from django-tailwind to django-tailwind-cli and upgraded to Tailwind CSS v4. This version uses CSS variables for theme customization in `static/css/source.css` instead of a separate `tailwind.config.js` file.
+
+### Tailwind CSS Documentation
+
+#### Core concepts
+- [Styling with utility classes](https://tailwindcss.com/docs/styling-with-utility-classes)
+- [Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)
+- [Responsive design](https://tailwindcss.com/docs/responsive-design)
+- [Dark mode](https://tailwindcss.com/docs/dark-mode)
+- [Theme variables](https://tailwindcss.com/docs/theme)
+- [Colors](https://tailwindcss.com/docs/colors)
+- [Adding custom styles](https://tailwindcss.com/docs/adding-custom-styles)
+- [Detecting classes in source files](https://tailwindcss.com/docs/detecting-classes-in-source-files)
+- [Functions and directives](https://tailwindcss.com/docs/functions-and-directives)
 
 ## Best Practices
 

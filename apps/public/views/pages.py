@@ -87,7 +87,7 @@ class PricingView(MainContentView):
                 ],
                 "highlighted": False,
                 "cta_text": "Get Started",
-                "cta_class": "bg-navy-600 hover:bg-navy-700",
+                "cta_class": "bg-slate-600 hover:bg-slate-700",
             },
             {
                 "name": "Premium",
@@ -104,7 +104,7 @@ class PricingView(MainContentView):
                 ],
                 "highlighted": True,
                 "cta_text": "Start Free Trial",
-                "cta_class": "bg-navy-900 hover:bg-navy-800",
+                "cta_class": "bg-slate-900 hover:bg-slate-800",
             },
             {
                 "name": "Enterprise",
@@ -121,7 +121,7 @@ class PricingView(MainContentView):
                 ],
                 "highlighted": False,
                 "cta_text": "Contact Sales",
-                "cta_class": "bg-navy-600 hover:bg-navy-700",
+                "cta_class": "bg-slate-600 hover:bg-slate-700",
             },
         ]
 
