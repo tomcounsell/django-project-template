@@ -104,15 +104,37 @@ For detailed conventions on templates and views, see:
 
 ## Documentation
 - [README.md](README.md) - Project overview, features and structure
-- [docs/SETUP_GUIDE.md](docs/SETUP_GUIDE.md) - Detailed setup instructions
-- [docs/CONTRIBUTING.md](docs/guides/CONTRIBUTING.md) - Contribution guidelines
-- [docs/TODO.md](docs/TODO.md) - Current tasks and priorities
+
+### Project Structure
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Project architecture and app relationships
+- [docs/TODO.md](docs/TODO.md) - Current tasks and priorities
+
+### Development Guides
+- [docs/guides/SETUP_GUIDE.md](docs/guides/SETUP_GUIDE.md) - Detailed setup instructions
+- [docs/guides/CONTRIBUTING.md](docs/guides/CONTRIBUTING.md) - Contribution guidelines
+- [docs/guides/PYCHARM_CONFIG.md](docs/guides/PYCHARM_CONFIG.md) - PyCharm IDE configuration
+- [docs/guides/TAILWIND_V4_MIGRATION_CHECKLIST.md](docs/guides/TAILWIND_V4_MIGRATION_CHECKLIST.md) - Tailwind v4 migration guide
+- [docs/guides/TAILWIND_V4_UPGRADE.md](docs/guides/TAILWIND_V4_UPGRADE.md) - Tailwind v4 upgrade process
+
+### Code Conventions
 - [docs/BEHAVIOR_MIXINS.md](docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
+- [docs/ERROR_HANDLING.md](docs/ERROR_HANDLING.md) - Error handling guidelines
+- [docs/HTMX_INTEGRATION.md](docs/HTMX_INTEGRATION.md) - HTMX integration patterns
+- [docs/MODAL_PATTERNS.md](docs/MODAL_PATTERNS.md) - Modal dialog implementation patterns
 - [docs/MODEL_CONVENTIONS.md](docs/MODEL_CONVENTIONS.md) - Model conventions
+- [docs/TAILWIND_V4.md](docs/TAILWIND_V4.md) - Tailwind CSS v4 usage guidelines
 - [docs/TEMPLATE_CONVENTIONS.md](docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
 - [docs/VIEW_CONVENTIONS.md](docs/VIEW_CONVENTIONS.md) - View classes and HTMX integration
-- [docs/TEST_CONVENTIONS.md](docs/TEST_CONVENTIONS.md) - Testing practices and organization
+
+### Advanced Topics
+- [docs/advanced/AI_BROWSER_TESTING.md](docs/advanced/AI_BROWSER_TESTING.md) - AI-assisted browser testing
+- [docs/advanced/BROWSER_TESTING.md](docs/advanced/BROWSER_TESTING.md) - Browser testing with Playwright/Selenium
+- [docs/advanced/CICD.md](docs/advanced/CICD.md) - CI/CD pipeline configuration
+- [docs/advanced/E2E_TESTING.md](docs/advanced/E2E_TESTING.md) - End-to-end testing guidelines
+- [docs/advanced/HTMX_AND_RESPONSIVE_TESTING.md](docs/advanced/HTMX_AND_RESPONSIVE_TESTING.md) - Testing HTMX and responsive design
+- [docs/advanced/SCREENSHOT_SERVICE.md](docs/advanced/SCREENSHOT_SERVICE.md) - Screenshot service implementation
+- [docs/advanced/TEST_CONVENTIONS.md](docs/advanced/TEST_CONVENTIONS.md) - Testing practices and organization
+- [docs/advanced/TEST_TROUBLESHOOTING.md](docs/advanced/TEST_TROUBLESHOOTING.md) - Troubleshooting test failures
 
 ## Development Process
 1. Check [docs/TODO.md](docs/TODO.md) to identify next priority item

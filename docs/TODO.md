@@ -20,7 +20,7 @@ We've made significant progress in fixing the test suite:
 - [x] Made Authorable behavior's author field nullable for anonymous content
 - [x] Fixed Stripe-related tests by updating model references (all User model tests now pass)
 - [x] Enhanced User model test coverage to 100% with complete tests for all properties and methods
-- [x] Created comprehensive test troubleshooting guide (docs/TEST_TROUBLESHOOTING.md)
+- [x] Created comprehensive test troubleshooting guide (docs/advanced/TEST_TROUBLESHOOTING.md)
 - [x] Improved test documentation with best practices for running tests and fixing common issues
 
 ### Remaining Test Structure Issues
