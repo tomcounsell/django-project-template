@@ -9,4 +9,4 @@ class ComponentExamplesView(TemplateView):
     It serves as both documentation and a visual reference for developers.
     """
 
-    template_name = "components/examples.html"
+    template_name = "examples.html"

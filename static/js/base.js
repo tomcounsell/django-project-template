@@ -46,12 +46,23 @@ function toggleDropdown(button) {
   button.setAttribute('aria-expanded', !isExpanded);
   menu.classList.toggle('hidden', isExpanded);
   
+  // Toggle chevron icon rotation if present
+  const chevron = button.querySelector('.fa-chevron-down');
+  if (chevron) {
+    chevron.classList.toggle('transform', !isExpanded);
+    chevron.classList.toggle('rotate-180', !isExpanded);
+  }
+  
   // Close dropdown when clicking outside
   if (!isExpanded) {
     document.addEventListener('click', function closeDropdown(e) {
       if (!menu.contains(e.target) && !button.contains(e.target)) {
         button.setAttribute('aria-expanded', 'false');
         menu.classList.add('hidden');
+        // Reset chevron icon
+        if (chevron) {
+          chevron.classList.remove('transform', 'rotate-180');
+        }
         document.removeEventListener('click', closeDropdown);
       }
     });
