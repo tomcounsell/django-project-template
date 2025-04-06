@@ -13,7 +13,13 @@
   {% endif %}
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
-  {{ wish.get_category_display }}
+  <div class="flex flex-wrap gap-1">
+    {% for tag in wish.tags %}
+      <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">{{ tag }}</span>
+    {% empty %}
+      <span class="text-gray-400">No tags</span>
+    {% endfor %}
+  </div>
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
   {% if wish.status == "DONE" %}
@@ -27,10 +33,26 @@
   {% endif %}
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
-  {% if wish.assignee %}
-    {{ wish.assignee.get_full_name|default:wish.assignee.username }}
+  {% if wish.effort %}
+    <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-slate-50 text-slate-700 border border-slate-200">
+      {{ wish.get_effort_display }}
+    </span>
   {% else %}
-    <span class="text-gray-400">Unassigned</span>
+    <span class="text-gray-400">Not set</span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if wish.value %}
+    <span>{{ wish.value }}</span>
+  {% else %}
+    <span class="text-gray-400">Not set</span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if wish.cost_estimate is not None %}
+    <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">{{ wish.formatted_cost }}</span>
+  {% else %}
+    <span class="text-gray-400">Not set</span>
   {% endif %}
 </td>
 <td class="px-6 py-4 whitespace-nowrap">

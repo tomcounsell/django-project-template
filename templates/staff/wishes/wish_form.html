@@ -8,63 +8,204 @@
 {% endblock %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-6">
-    <div class="flex-1"></div>
-    <a href="{% url 'staff:wish-list' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-xs text-sm font-medium rounded-xs text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-      Back to List
-    </a>
-  </div>
+  <div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex-1"></div>
+      <a href="{% url 'staff:wish-list' %}" class="inline-flex justify-center py-1.5 px-3 border border-gray-300 shadow-xs text-sm font-medium rounded-xs text-gray-700 bg-white hover:bg-gray-50">
+        <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+        </svg>
+        Back to List
+      </a>
+    </div>
 
-  <div class="bg-white shadow-xs rounded-xs overflow-hidden">
-    <form method="post" action="{{ form_submit_url }}">
-      {% csrf_token %}
-      
-      <div class="space-y-12">
-        <div class="border-b border-gray-900/10 pb-12 p-6">
+    <div class="bg-white shadow-xs rounded-xs overflow-hidden">
+      <form method="post" action="{{ form_submit_url }}">
+        {% csrf_token %}
+        
+        <div class="p-5">
           {% if form.non_field_errors %}
-            {% include "components/forms/form_errors.html" with form=form title="Please correct the errors below." %}
+            <div class="rounded-xs bg-red-50 p-3 border border-red-200 mb-4">
+              <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
+              <ul class="mt-1 ml-4 text-xs text-red-700 list-disc">
+                {% for error in form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
           {% endif %}
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div class="sm:col-span-6">
-              {% include "components/forms/text_input.html" with field=form.title %}
+          <!-- Title (full width) -->
+          <div class="mb-4">
+            <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">
+              Title <span class="text-red-500">*</span>
+            </label>
+            <div class="mt-1">
+              <input type="text" name="title" id="{{ form.title.id_for_label }}" 
+                     value="{{ form.title.value|default:'' }}" required
+                     class="w-full px-3 py-2 border {% if form.title.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+            </div>
+            {% if form.title.errors %}
+              <p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Status and Priority in a row -->
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <!-- Status -->
+            <div>
+              <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">Status</label>
+              <div class="mt-1">
+                <select name="status" id="{{ form.status.id_for_label }}"
+                        class="w-full px-3 py-2 border {% if form.status.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                  {% for option in form.fields.status.choices %}
+                    <option value="{{ option.0 }}" {% if form.status.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
+                      {{ option.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if form.status.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.status.errors.0 }}</p>
+              {% endif %}
             </div>
             
-            <div class="col-span-full">
-              {% include "components/forms/textarea.html" with field=form.description %}
+            <!-- Priority -->
+            <div>
+              <label for="{{ form.priority.id_for_label }}" class="block text-sm font-medium text-gray-700">Priority</label>
+              <div class="mt-1">
+                <select name="priority" id="{{ form.priority.id_for_label }}"
+                        class="w-full px-3 py-2 border {% if form.priority.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                  {% for option in form.fields.priority.choices %}
+                    <option value="{{ option.0 }}" {% if form.priority.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
+                      {{ option.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if form.priority.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.priority.errors.0 }}</p>
+              {% endif %}
             </div>
-
-            <div class="sm:col-span-3">
-              {% include "components/forms/select.html" with field=form.priority %}
+          </div>
+          
+          <!-- Description (full width) -->
+          <div class="mb-4">
+            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description</label>
+            <div class="mt-1">
+              <textarea name="description" id="{{ form.description.id_for_label }}" rows="2"
+                      class="w-full px-3 py-2 border {% if form.description.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">{{ form.description.value|default:'' }}</textarea>
+            </div>
+            {% if form.description.errors %}
+              <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Effort, Value, Cost in a row -->
+          <div class="grid grid-cols-3 gap-4 mb-4">
+            <!-- Effort -->
+            <div>
+              <label for="{{ form.effort.id_for_label }}" class="block text-sm font-medium text-gray-700">Effort</label>
+              <div class="mt-1">
+                <select name="effort" id="{{ form.effort.id_for_label }}"
+                        class="w-full px-3 py-2 border {% if form.effort.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                  <option value="">Select</option>
+                  {% for option in form.fields.effort.choices %}
+                    <option value="{{ option.0 }}" {% if form.effort.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
+                      {{ option.1 }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if form.effort.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.effort.errors.0 }}</p>
+              {% endif %}
             </div>
             
-            <div class="sm:col-span-3">
-              {% include "components/forms/select.html" with field=form.category %}
-            </div>
-
-            <div class="sm:col-span-3">
-              {% include "components/forms/select.html" with field=form.status %}
+            <!-- Value -->
+            <div>
+              <label for="{{ form.value.id_for_label }}" class="block text-sm font-medium text-gray-700">Value</label>
+              <div class="mt-1">
+                <select name="value" id="{{ form.value.id_for_label }}"
+                        class="w-full px-3 py-2 border {% if form.value.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                  <option value="">Select</option>
+                  {% for option in form.fields.value.choices %}
+                    <option value="{{ option.0 }}" {% if form.value.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
+                      {{ option.0 }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% if form.value.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.value.errors.0 }}</p>
+              {% endif %}
             </div>
             
-            <div class="sm:col-span-3">
-              {% include "components/forms/select.html" with field=form.assignee %}
+            <!-- Cost Estimate -->
+            <div>
+              <label for="{{ form.cost_estimate.id_for_label }}" class="block text-sm font-medium text-gray-700">Cost ($)</label>
+              <div class="mt-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span class="text-gray-500 text-sm">$</span>
+                </div>
+                <input type="number" name="cost_estimate" id="{{ form.cost_estimate.id_for_label }}" 
+                       value="{{ form.cost_estimate.value|default:'' }}" min="0"
+                       class="w-full px-3 py-2 pl-7 border {% if form.cost_estimate.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+              </div>
+              {% if form.cost_estimate.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.cost_estimate.errors.0 }}</p>
+              {% endif %}
+              {% if form.cost_estimate.help_text %}
+                <p class="text-gray-500 text-xs mt-1">{{ form.cost_estimate.help_text }}</p>
+              {% endif %}
             </div>
-
-            <div class="sm:col-span-4">
-              {% include "components/forms/text_input.html" with field=form.due_at input_type="date" help_text="Leave empty if there's no specific due date." %}
+          </div>
+          
+          <!-- Tags and Due Date in a row -->
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Tags -->
+            <div>
+              <label for="{{ form.tags.id_for_label }}" class="block text-sm font-medium text-gray-700">Tags</label>
+              <div class="mt-1">
+                <input type="text" name="tags" id="{{ form.tags.id_for_label }}" 
+                       value="{{ form.tags.value|default:'' }}"
+                       class="w-full px-3 py-2 border {% if form.tags.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm"
+                       placeholder="api, frontend, bug">
+              </div>
+              {% if form.tags.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.tags.errors.0 }}</p>
+              {% endif %}
+              {% if form.tags.help_text %}
+                <p class="text-gray-500 text-xs mt-1">{{ form.tags.help_text }}</p>
+              {% endif %}
+            </div>
+            
+            <!-- Due Date -->
+            <div>
+              <label for="{{ form.due_at.id_for_label }}" class="block text-sm font-medium text-gray-700">Due Date</label>
+              <div class="mt-1">
+                <input type="datetime-local" name="due_at" id="{{ form.due_at.id_for_label }}" 
+                       value="{{ form.due_at.value|date:'Y-m-d\TH:i' }}"
+                       class="w-full px-3 py-2 border {% if form.due_at.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+              </div>
+              {% if form.due_at.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.due_at.errors.0 }}</p>
+              {% endif %}
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="mt-6 flex items-center justify-end gap-x-6 p-6 bg-gray-50">
-        {% url 'staff:wish-list' as wish_list_url %}
-        {% if form.instance.id %}
-          {% include "components/forms/form_buttons.html" with submit_text="Save" submit_icon="edit" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
-        {% else %}
-          {% include "components/forms/form_buttons.html" with submit_text="Create" submit_icon="create" cancel_url=cancel_url|default:wish_list_url cancel_text="Cancel" %}
-        {% endif %}
-      </div>
-    </form>
+        <div class="px-5 py-3 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+          <a href="{% url 'staff:wish-list' %}" 
+             class="inline-flex justify-center rounded-xs border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50">
+            Cancel
+          </a>
+          <button type="submit" 
+                  class="inline-flex justify-center rounded-xs border border-transparent bg-slate-700 px-3 py-1.5 text-sm font-medium text-white shadow-xs hover:bg-slate-600">
+            {% if form.instance.id %}Save{% else %}Create{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 {% endblock %}

@@ -234,12 +234,12 @@ def get_admin_dashboard(request, context=None):
                     "title": _("Wish Items"),
                     "template": "admin/dashboard/wish_stats.html",
                     "context": {
-                        "todo_stats": wish_stats,  # Still using todo_stats in template
+                        "wish_stats": wish_stats,  # Updated to use wish_stats
                         "total": wish_count,
-                        "overdue_todos": overdue_wishes,  # Still using overdue_todos in template
-                        "active_todos": wish_stats[
+                        "overdue_wishes": overdue_wishes,  # Updated to use overdue_wishes
+                        "active_wishes": wish_stats[
                             "TODO"
-                        ]  # Still using active_todos in template
+                        ]  # Updated to use active_wishes
                         + wish_stats["IN_PROGRESS"]
                         + wish_stats["BLOCKED"],
                     },

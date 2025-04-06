@@ -117,29 +117,7 @@ class DueInFilter(admin.SimpleListFilter):
         return queryset
 
 
-class UserAssignedFilter(admin.SimpleListFilter):
-    """Filter that shows wishes assigned to the current user."""
-
-    title = _("Assignment")
-    parameter_name = "assigned"
-
-    def lookups(self, request, model_admin):
-        return (
-            ("me", _("Assigned to me")),
-            ("unassigned", _("Unassigned")),
-            ("others", _("Assigned to others")),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == "me":
-            return queryset.filter(assignee=request.user)
-        elif self.value() == "unassigned":
-            return queryset.filter(assignee__isnull=True)
-        elif self.value() == "others":
-            return queryset.exclude(assignee=request.user).exclude(
-                assignee__isnull=True
-            )
-        return queryset
+# User assigned filter removed as assignee field was removed
 
 
 class CompletedWithinFilter(admin.SimpleListFilter):
@@ -195,44 +173,44 @@ class WishAdmin(ModelAdmin):
     list_display = [
         "display_header",
         "priority_badge",
-        "category_badge",
+        "tags_display",
         "status_badge",
-        "assignee_display",
+        "effort_display",
+        "value_display",
+        "cost_display",
         "due_date_display",
     ]
     list_filter = [
         # Custom filters
         DueInFilter,
-        UserAssignedFilter,
         CompletedWithinFilter,
         HasDescriptionFilter,
         IsOverdueFilter,
         # Default filters
         ("priority", ChoicesDropdownFilter),
-        ("category", ChoicesDropdownFilter),
         ("status", ChoicesDropdownFilter),
-        ("assignee", ChoicesDropdownFilter),
+        ("effort", ChoicesDropdownFilter),
+        ("value", ChoicesDropdownFilter),
         ("due_at", RangeDateFilter),
         ("created_at", RangeDateTimeFilter),
     ]
     list_filter_submit = True
     list_sections = [WishTemplateSection]
-    search_fields = ("title", "description")
+    search_fields = ("title", "description", "tags")
     date_hierarchy = "created_at"
     readonly_fields = ("created_at", "modified_at", "completed_at")
-    autocomplete_fields = ["assignee"]
     warn_unsaved_form = True
     compressed_fields = True
 
     fieldsets = (
         (
             "Wish Information",
-            {"fields": ("title", "description", "priority", "category", "status")},
+            {"fields": ("title", "description", "priority", "status", "tags")},
         ),
         (
-            "Assignment",
+            "Estimation",
             {
-                "fields": ("assignee", "due_at"),
+                "fields": ("effort", "value", "cost_estimate", "due_at"),
                 "classes": ["tab"],
             },
         ),
@@ -290,23 +268,23 @@ class WishAdmin(ModelAdmin):
             obj.get_priority_display(),
         )
 
-    def category_badge(self, obj):
-        colors = {
-            "FRONTEND": "bg-purple-500",
-            "BACKEND": "bg-blue-500",
-            "API": "bg-green-500",
-            "DATABASE": "bg-yellow-500",
-            "PERFORMANCE": "bg-orange-500",
-            "SECURITY": "bg-red-500",
-            "DOCUMENTATION": "bg-gray-500",
-            "TESTING": "bg-teal-500",
-            "GENERAL": "bg-gray-500",
-        }
-        return format_html(
-            '<span class="unfold-badge {} text-white">{}</span>',
-            colors.get(obj.category, "bg-gray-500"),
-            obj.get_category_display(),
-        )
+    def tags_display(self, obj):
+        if not obj.tags or not isinstance(obj.tags, list) or len(obj.tags) == 0:
+            return "-"
+            
+        tags_html = []
+        for tag in obj.tags[:3]:  # Show first 3 tags
+            tags_html.append(
+                format_html(
+                    '<span class="unfold-badge bg-blue-500 text-white mr-1">{}</span>',
+                    tag
+                )
+            )
+            
+        if len(obj.tags) > 3:
+            tags_html.append(format_html('<span class="text-gray-500">+{} more</span>', len(obj.tags) - 3))
+            
+        return format_html(''.join([str(tag) for tag in tags_html]))
 
     def status_badge(self, obj):
         colors = {
@@ -320,11 +298,30 @@ class WishAdmin(ModelAdmin):
             colors.get(obj.status, "bg-gray-500"),
             obj.get_status_display(),
         )
-
-    def assignee_display(self, obj):
-        if obj.assignee:
-            return f"{obj.assignee.first_name} {obj.assignee.last_name}"
-        return "-"
+        
+    def effort_display(self, obj):
+        if not obj.effort:
+            return "-"
+            
+        return format_html(
+            '<span class="unfold-badge bg-slate-500 text-white">{}</span>',
+            obj.get_effort_display()
+        )
+        
+    def value_display(self, obj):
+        if not obj.value:
+            return "-"
+            
+        return obj.value
+        
+    def cost_display(self, obj):
+        if obj.cost_estimate is None:
+            return "-"
+            
+        return format_html(
+            '<span class="unfold-badge bg-green-500 text-white">{}</span>',
+            obj.formatted_cost
+        )
 
     def due_date_display(self, obj):
         if not obj.due_at:
@@ -341,9 +338,11 @@ class WishAdmin(ModelAdmin):
         )
 
     priority_badge.short_description = "Priority"
-    category_badge.short_description = "Category"
+    tags_display.short_description = "Tags"
     status_badge.short_description = "Status"
-    assignee_display.short_description = "Assignee"
+    effort_display.short_description = "Effort"
+    value_display.short_description = "Value"
+    cost_display.short_description = "Cost"
     due_date_display.short_description = "Due Date"
 
     # Custom actions
@@ -437,9 +436,11 @@ class WishAdmin(ModelAdmin):
             title=f"Copy of {wish.title}",
             description=wish.description,
             priority=wish.priority,
-            category=wish.category,
+            tags=wish.tags.copy() if isinstance(wish.tags, list) else [],
             status="TODO",
-            assignee=wish.assignee,
+            effort=wish.effort,
+            value=wish.value,
+            cost_estimate=wish.cost_estimate,
             due_at=wish.due_at,
         )
         messages.success(request, f'Created copy of "{wish.title}"')

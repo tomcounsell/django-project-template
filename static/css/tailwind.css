@@ -229,6 +229,9 @@
 .grow {
   flex-grow: 1;
 }
+.origin-top-left {
+  transform-origin: top left;
+}
 .origin-top-right {
   transform-origin: top right;
 }
@@ -251,6 +254,9 @@
   --tw-scale-y: 100%;
   --tw-scale-z: 100%;
   scale: var(--tw-scale-x) var(--tw-scale-y);
+}
+.rotate-180 {
+  rotate: 180deg;
 }
 .rotate-\[30deg\] {
   rotate: 30deg;
@@ -289,6 +295,9 @@
 }
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .grid-cols-4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -465,6 +474,9 @@
   -webkit-box-decoration-break: slice;
   box-decoration-break: slice;
 }
+.fill-current {
+  fill: currentColor;
+}
 .object-contain {
   object-fit: contain;
 }
@@ -541,6 +553,12 @@
 }
 .opacity-30 {
   opacity: 30%;
+}
+.opacity-70 {
+  opacity: 70%;
+}
+.opacity-75 {
+  opacity: 75%;
 }
 .opacity-80 {
   opacity: 80%;
@@ -813,6 +831,18 @@
     --tw-ring-inset: inset;
   }
 }
+.focus-visible\:ring-2 {
+  &:focus-visible {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentColor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+}
+.focus-visible\:ring-offset-2 {
+  &:focus-visible {
+    --tw-ring-offset-width: 2px;
+    --tw-ring-offset-shadow: var(--tw-ring-inset,) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  }
+}
 .focus-visible\:outline {
   &:focus-visible {
     outline-style: var(--tw-outline-style);
@@ -846,9 +876,6 @@
 @layer base {
   :root {
     --color-accent: #ffd404;
-    --color-slate-900: #0f172a;
-    --color-slate-800: #1e293b;
-    --color-slate-700: #334155;
   }
 }
 :root, :host {
@@ -856,15 +883,6 @@
 }
 .text-accent {
   color: var(--color-accent);
-}
-.bg-slate-900 {
-  background-color: var(--color-slate-900);
-}
-.bg-slate-800 {
-  background-color: var(--color-slate-800);
-}
-.bg-slate-700 {
-  background-color: var(--color-slate-700);
 }
 .bg-footer {
   background-color: var(--color-slate-900);

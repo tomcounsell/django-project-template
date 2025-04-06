@@ -8,6 +8,8 @@ urlpatterns = [
     # Wish management URLs
     path("wishes/", wish_views.WishListView.as_view(), name="wish-list"),
     path("wishes/create/", wish_views.WishCreateView.as_view(), name="wish-create"),
+    path("wishes/create-modal/", wish_views.WishCreateModalView.as_view(), name="wish-create-modal"),
+    path("wishes/create-submit/", wish_views.WishCreateSubmitView.as_view(), name="wish-create-submit"),
     path("wishes/<int:pk>/", wish_views.WishDetailView.as_view(), name="wish-detail"),
     path(
         "wishes/<int:pk>/update/",

@@ -4,7 +4,6 @@ from datetime import timedelta
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.common.tests.factories import UserFactory
 from apps.staff.models import Wish
 
 
@@ -12,13 +11,14 @@ class WishModelTestCase(TestCase):
     """Test case for Wish model."""
 
     def setUp(self):
-        self.user = UserFactory.create()
         self.wish = Wish.objects.create(
             title="Implement error handling",
             description="Add proper error handling to the API endpoints",
             priority="HIGH",
-            category="API",
-            assignee=self.user,
+            tags=["api", "backend", "error-handling"],
+            effort="2",
+            value="⭐️⭐️⭐️⭐️",
+            cost_estimate=500,
             status="TODO",
         )
 
@@ -31,8 +31,10 @@ class WishModelTestCase(TestCase):
             self.wish.description, "Add proper error handling to the API endpoints"
         )
         self.assertEqual(self.wish.priority, "HIGH")
-        self.assertEqual(self.wish.category, "API")
-        self.assertEqual(self.wish.assignee, self.user)
+        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling"])
+        self.assertEqual(self.wish.effort, "2")
+        self.assertEqual(self.wish.value, "⭐️⭐️⭐️⭐️")
+        self.assertEqual(self.wish.cost_estimate, 500)
         self.assertEqual(self.wish.status, "TODO")
 
     def test_wish_str_method(self):
@@ -181,6 +183,87 @@ class WishModelTestCase(TestCase):
         # Test with invalid status
         with self.assertRaises(ValueError):
             self.wish.set_status("INVALID")
+            
+    def test_tag_methods(self):
+        """Test the add_tag and remove_tag methods."""
+        # Start with existing tags from setUp
+        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling"])
+        
+        # Add a new tag
+        self.wish.add_tag("documentation")
+        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling", "documentation"])
+        
+        # Add a duplicate tag (should not add)
+        self.wish.add_tag("api")
+        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling", "documentation"])
+        
+        # Add a tag with uppercase (should be converted to lowercase)
+        self.wish.add_tag("HIGH-PRIORITY")
+        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling", "documentation", "high-priority"])
+        
+        # Remove a tag
+        self.wish.remove_tag("backend")
+        self.assertEqual(self.wish.tags, ["api", "error-handling", "documentation", "high-priority"])
+        
+        # Remove a non-existent tag (should not error)
+        self.wish.remove_tag("nonexistent")
+        self.assertEqual(self.wish.tags, ["api", "error-handling", "documentation", "high-priority"])
+        
+    def test_effort_and_value_methods(self):
+        """Test the set_effort and set_value methods."""
+        # Test set_effort
+        self.assertEqual(self.wish.effort, "2")
+        
+        self.wish.set_effort("4")
+        self.assertEqual(self.wish.effort, "4")
+        
+        self.wish.set_effort("breakdown")
+        self.assertEqual(self.wish.effort, "breakdown")
+        
+        # Test with invalid effort
+        with self.assertRaises(ValueError):
+            self.wish.set_effort("invalid")
+            
+        # Test set_value
+        self.assertEqual(self.wish.value, "⭐️⭐️⭐️⭐️")
+        
+        self.wish.set_value("⭐️⭐️⭐️")
+        self.assertEqual(self.wish.value, "⭐️⭐️⭐️")
+        
+        self.wish.set_value("⭐️")
+        self.assertEqual(self.wish.value, "⭐️")
+        
+        # Test with invalid value
+        with self.assertRaises(ValueError):
+            self.wish.set_value("invalid")
+            
+    def test_cost_estimate_methods(self):
+        """Test the cost_estimate property and methods."""
+        # Test formatted_cost property
+        self.assertEqual(self.wish.cost_estimate, 500)
+        self.assertEqual(self.wish.formatted_cost, "$500")
+        
+        # Test set_cost_estimate method
+        self.wish.set_cost_estimate(1000)
+        self.assertEqual(self.wish.cost_estimate, 1000)
+        self.assertEqual(self.wish.formatted_cost, "$1,000")
+        
+        # Test with string value (should convert to int)
+        self.wish.set_cost_estimate("2500")
+        self.assertEqual(self.wish.cost_estimate, 2500)
+        
+        # Test with None (clear cost)
+        self.wish.set_cost_estimate(None)
+        self.assertIsNone(self.wish.cost_estimate)
+        self.assertIsNone(self.wish.formatted_cost)
+        
+        # Test with negative value (should raise error)
+        with self.assertRaises(ValueError):
+            self.wish.set_cost_estimate(-100)
+            
+        # Test with invalid value
+        with self.assertRaises(ValueError):
+            self.wish.set_cost_estimate("not a number")
 
     # Testing Timestampable behavior
     def test_timestampable_behavior(self):
