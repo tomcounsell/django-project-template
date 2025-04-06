@@ -6,8 +6,8 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from apps.common.forms.wish import WishForm
-from apps.public.helpers import MainContentView
-from apps.public.helpers.htmx_view import HTMXView
+from apps.public.views.helpers.main_content_view import MainContentView
+from apps.public.views.helpers.htmx_view import HTMXView
 from apps.staff.models import Wish
 
 

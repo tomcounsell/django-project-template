@@ -3,14 +3,14 @@
 {% block title %}Staff: Wish List Management{% endblock %}
 
 {% block main_header %}
-  <h1 class="text-3xl font-bold tracking-tight text-navy-600">Wish List Management</h1>
+  <h1 class="text-3xl font-bold tracking-tight text-slate-600">Wish List Management</h1>
   <p class="text-gray-500 mt-1">Staff tools for managing wish items</p>
 {% endblock %}
 
 {% block content %}
   <div class="flex justify-between items-center mb-6">
     <div class="flex-1"></div>
-    <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-md bg-navy-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600">
+    <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
       <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
       </svg>
@@ -79,7 +79,7 @@
         <a href="{% url 'staff:wish-list' %}" class="text-sm/6 font-semibold text-gray-900">
           Clear Filters
         </a>
-        <button type="submit" class="rounded-md bg-navy-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600">
+        <button type="submit" class="rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
           Apply Filters
         </button>
       </div>
@@ -156,7 +156,7 @@
         <h3 class="mt-2 text-base font-semibold text-gray-900">No wishes found</h3>
         <p class="mt-1 text-sm text-gray-500">Get started by creating your first wish item.</p>
         <div class="mt-6">
-          <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-md bg-navy-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-navy-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-600">
+          <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
             <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
             </svg>

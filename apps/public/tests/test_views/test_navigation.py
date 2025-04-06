@@ -86,5 +86,5 @@ class NavigationRenderingTestCase(TestCase):
         html = response.content.decode("utf-8")
 
         # Check that home link has active class
-        self.assertIn("border-navy-500", html)
+        self.assertIn("border-slate-500", html)
         self.assertIn("Home", html)

@@ -37,7 +37,7 @@ python manage.py tailwind watch # For development
 @layer base {
   :root {
     --color-accent: #ffd404;
-    --color-navy-900: #0a192f;
+    --color-slate-900: #0a192f;
     /* other CSS variables */
   }
 }
@@ -48,8 +48,8 @@ python manage.py tailwind watch # For development
     color: var(--color-accent);
   }
   
-  .bg-navy-900 {
-    background-color: var(--color-navy-900);
+  .bg-slate-900 {
+    background-color: var(--color-slate-900);
   }
 }
 ```
@@ -117,15 +117,15 @@ Our project uses this custom color palette defined as CSS variables:
 
 ```
 --color-accent: #ffd404      /* Yellow accent color */
---color-navy-900: #0a192f    /* Deep navy blue */
---color-navy-800: #112240    /* Navy blue */
---color-navy-700: #1d3557    /* Lighter navy blue */
+--color-slate-900: #0a192f    /* Deep navy blue */
+--color-slate-800: #112240    /* Navy blue */
+--color-slate-700: #1d3557    /* Lighter navy blue */
 ```
 
 ### Usage
 
 ```html
-<div class="text-accent bg-navy-900">
+<div class="text-accent bg-slate-900">
   <!-- Content with yellow text on navy background -->
 </div>
 ```
@@ -136,7 +136,7 @@ Our project uses this custom color palette defined as CSS variables:
 ```css
 @layer components {
   .btn-primary {
-    @apply py-2 px-4 bg-navy-900 text-white rounded-md hover:bg-navy-800;
+    @apply py-2 px-4 bg-slate-900 text-white rounded-md hover:bg-navy-800;
   }
 }
 ```

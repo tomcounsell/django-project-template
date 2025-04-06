@@ -42,26 +42,26 @@
         
         <!-- Desktop navigation - visible on sm and up -->
         <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-          <!-- Current: "border-navy-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-          <a href="/" class="inline-flex items-center border-b-2 {% if active_section == 'home' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+          <!-- Current: "border-slate-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+          <a href="/" class="inline-flex items-center border-b-2 {% if active_section == 'home' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Home
           </a>
           
-          <a href="{% url 'public:pricing' %}" class="inline-flex items-center border-b-2 {% if active_section == 'pricing' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+          <a href="{% url 'public:pricing' %}" class="inline-flex items-center border-b-2 {% if active_section == 'pricing' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Pricing
           </a>
           
-          <a href="{% url 'public:blog' %}" class="inline-flex items-center border-b-2 {% if active_section == 'blog' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+          <a href="{% url 'public:blog' %}" class="inline-flex items-center border-b-2 {% if active_section == 'blog' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Blog
           </a>
           
           {% if user.is_authenticated %}
             {% if user.teams.exists %}
-            <a href="{% url 'public:team-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'teams' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+            <a href="{% url 'public:team-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'teams' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
               Team
             </a>
             {% endif %}
-            <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'wishes' %}border-navy-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
+            <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'wishes' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
               Wishes
             </a>
           {% endif %}
@@ -74,7 +74,7 @@
         <div class="sm:hidden">
           <button type="button" 
                   id="mobile-menu-button"
-                  class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-navy-500"
+                  class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-slate-500"
                   aria-controls="mobile-menu"
                   aria-expanded="false"
                   onclick="toggleMobileMenu()">
@@ -101,26 +101,26 @@
   <!-- Mobile menu, show/hide based on menu state -->
   <div class="hidden sm:hidden" id="mobile-menu">
     <div class="space-y-1 px-2 pt-2 pb-3">
-      <!-- Current: "bg-navy-50 text-navy-700", Default: "text-gray-500 hover:bg-gray-50 hover:text-gray-700" -->
-      <a href="/" class="block rounded-md {% if active_section == 'home' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
+      <!-- Current: "bg-slate-50 text-slate-700", Default: "text-gray-500 hover:bg-gray-50 hover:text-gray-700" -->
+      <a href="/" class="block rounded-md {% if active_section == 'home' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Home
       </a>
       
-      <a href="{% url 'public:pricing' %}" class="block rounded-md {% if active_section == 'pricing' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
+      <a href="{% url 'public:pricing' %}" class="block rounded-md {% if active_section == 'pricing' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Pricing
       </a>
       
-      <a href="{% url 'public:blog' %}" class="block rounded-md {% if active_section == 'blog' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
+      <a href="{% url 'public:blog' %}" class="block rounded-md {% if active_section == 'blog' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Blog
       </a>
       
       {% if user.is_authenticated %}
         {% if user.teams.exists %}
-        <a href="{% url 'public:team-list' %}" class="block rounded-md {% if active_section == 'teams' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
+        <a href="{% url 'public:team-list' %}" class="block rounded-md {% if active_section == 'teams' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
           Team
         </a>
         {% endif %}
-        <a href="{% url 'staff:wish-list' %}" class="block rounded-md {% if active_section == 'wishes' %}bg-navy-50 text-navy-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
+        <a href="{% url 'staff:wish-list' %}" class="block rounded-md {% if active_section == 'wishes' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
           Wishes
         </a>
       {% endif %}

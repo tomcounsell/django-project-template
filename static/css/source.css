@@ -7,9 +7,6 @@
 @layer base {
   :root {
     --color-accent: #ffd404;
-    --color-navy-900: #0a192f;
-    --color-navy-800: #112240;
-    --color-navy-700: #1d3557;
   }
 }
 
@@ -22,20 +19,9 @@
   color: var(--color-accent);
 }
 
-.bg-navy-900 {
-  background-color: var(--color-navy-900);
-}
-
-.bg-navy-800 {
-  background-color: var(--color-navy-800);
-}
-
-.bg-navy-700 {
-  background-color: var(--color-navy-700);
-}
-
+/* Footer bg color alias for backward compatibility */
 .bg-footer {
-  background-color: var(--color-navy-900);
+  background-color: theme(colors.slate.900);
 }
 
 .font-sans {
