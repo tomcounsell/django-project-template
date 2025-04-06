@@ -57,7 +57,7 @@
               </label>
               <div class="mt-2">
                 <input type="text" name="first_name" id="id_first_name" value="{{ user_form.first_name.value|default:'' }}" 
-                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
+                  class="block w-full rounded-xs bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
               </div>
             </div>
 
@@ -68,7 +68,7 @@
               </label>
               <div class="mt-2">
                 <input type="text" name="last_name" id="id_last_name" value="{{ user_form.last_name.value|default:'' }}" 
-                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
+                  class="block w-full rounded-xs bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
               </div>
             </div>
 
@@ -79,7 +79,7 @@
               </label>
               <div class="mt-2">
                 <input type="email" name="email" id="id_email" value="{{ user_form.email.value|default:'' }}" 
-                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
+                  class="block w-full rounded-xs bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@
       </div>
       
       <div class="mt-6 flex items-center justify-end gap-x-6 p-6 bg-white border-t border-gray-100">
-        <button type="submit" name="update_info" class="rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+        <button type="submit" name="update_info" class="rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
           Save Changes
         </button>
       </div>
@@ -136,7 +136,7 @@
               </label>
               <div class="mt-2">
                 <input type="password" name="old_password" id="id_old_password" 
-                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
+                  class="block w-full rounded-xs bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
                 {% if password_form.old_password.errors %}
                   <p class="mt-2 text-sm text-red-600">{{ password_form.old_password.errors.0 }}</p>
                 {% endif %}
@@ -150,7 +150,7 @@
               </label>
               <div class="mt-2">
                 <input type="password" name="new_password1" id="id_new_password1" 
-                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
+                  class="block w-full rounded-xs bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
                 {% if password_form.new_password1.errors %}
                   <p class="mt-2 text-sm text-red-600">{{ password_form.new_password1.errors.0 }}</p>
                 {% endif %}
@@ -164,7 +164,7 @@
               </label>
               <div class="mt-2">
                 <input type="password" name="new_password2" id="id_new_password2" 
-                  class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
+                  class="block w-full rounded-xs bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-slate-600 sm:text-sm/6" />
                 {% if password_form.new_password2.errors %}
                   <p class="mt-2 text-sm text-red-600">{{ password_form.new_password2.errors.0 }}</p>
                 {% endif %}
@@ -175,7 +175,7 @@
       </div>
       
       <div class="mt-6 flex items-center justify-end gap-x-6 p-6 bg-white border-t border-gray-100">
-        <button type="submit" name="update_password" class="rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+        <button type="submit" name="update_password" class="rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
           Update Password
         </button>
       </div>

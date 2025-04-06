@@ -43,13 +43,13 @@
       The all-in-one solution for teams to collaborate, manage projects, and get work done faster.
     </p>
     <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-      <div class="rounded-md shadow">
-        <a href="{% url 'public:account-login' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 md:py-4 md:text-lg md:px-10">
+      <div class="rounded-xs shadow">
+        <a href="{% url 'public:account-login' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xs text-white bg-slate-600 hover:bg-slate-700 md:py-4 md:text-lg md:px-10">
           Get Started
         </a>
       </div>
-      <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-        <a href="{% url 'public:pricing' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-slate-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
+      <div class="mt-3 rounded-xs shadow sm:mt-0 sm:ml-3">
+        <a href="{% url 'public:pricing' %}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xs text-slate-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
           View Pricing
         </a>
       </div>
@@ -75,7 +75,7 @@
         <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {% for feature in features %}
           <div class="relative">
-            <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-slate-500 text-white">
+            <div class="absolute flex items-center justify-center h-12 w-12 rounded-xs bg-slate-500 text-white">
               <i class="fas fa-{{ feature.icon }}"></i>
             </div>
             <div class="ml-16">
@@ -200,13 +200,13 @@
         <span class="block">Sign up today and transform your workflow.</span>
       </h2>
       <div class="mt-8 flex justify-center">
-        <div class="inline-flex rounded-md shadow">
-          <a href="{% url 'public:account-login' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-slate-700 bg-white hover:bg-gray-100">
+        <div class="inline-flex rounded-xs shadow">
+          <a href="{% url 'public:account-login' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-xs text-slate-700 bg-white hover:bg-gray-100">
             Sign up for free
           </a>
         </div>
         <div class="ml-3 inline-flex">
-          <a href="{% url 'public:pricing' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-slate-600 hover:bg-slate-500">
+          <a href="{% url 'public:pricing' %}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-xs text-white bg-slate-600 hover:bg-slate-500">
             Learn more
           </a>
         </div>

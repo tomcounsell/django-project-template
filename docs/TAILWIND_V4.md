@@ -136,7 +136,7 @@ Our project uses this custom color palette defined as CSS variables:
 ```css
 @layer components {
   .btn-primary {
-    @apply py-2 px-4 bg-slate-900 text-white rounded-md hover:bg-navy-800;
+    @apply py-2 px-4 bg-slate-900 text-white rounded-md hover:bg-slate-800;
   }
 }
 ```

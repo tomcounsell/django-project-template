@@ -47,7 +47,7 @@
 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
   <div class="flex flex-wrap justify-end gap-2">
     <a href="{% url 'staff:wish-update' wish.id %}" 
-       class="inline-flex items-center justify-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+       class="inline-flex items-center justify-center rounded-xs bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
       <svg class="mr-1.5 size-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
       </svg>
@@ -60,7 +60,7 @@
          hx-target="#wish-row-{{ wish.id }}"
          hx-swap="outerHTML"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'  
-         class="inline-flex items-center justify-center rounded-md bg-green-50 px-2.5 py-1.5 text-sm font-semibold text-green-700 ring-1 shadow-xs ring-green-300 ring-inset hover:bg-green-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
+         class="inline-flex items-center justify-center rounded-xs bg-green-50 px-2.5 py-1.5 text-sm font-semibold text-green-700 ring-1 shadow-xs ring-green-300 ring-inset hover:bg-green-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
         <svg class="mr-1.5 size-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
         </svg>
@@ -72,7 +72,7 @@
          hx-target="#wish-row-{{ wish.id }}"
          hx-swap="outerHTML"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'  
-         class="inline-flex items-center justify-center rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-700 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+         class="inline-flex items-center justify-center rounded-xs bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-700 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
         <svg class="mr-1.5 size-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
         </svg>
@@ -84,7 +84,7 @@
        hx-get="{% url 'staff:wish-delete-modal' wish.id %}"
        hx-target="#primary-modal-container"
        hx-swap="innerHTML"
-       class="inline-flex items-center justify-center rounded-md bg-red-50 px-2.5 py-1.5 text-sm font-semibold text-red-700 ring-1 shadow-xs ring-red-300 ring-inset hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+       class="inline-flex items-center justify-center rounded-xs bg-red-50 px-2.5 py-1.5 text-sm font-semibold text-red-700 ring-1 shadow-xs ring-red-300 ring-inset hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
       <svg class="mr-1.5 size-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
       </svg>
@@ -92,7 +92,7 @@
     </button>
     
     <a href="{% url 'public:wish-detail' wish.id %}" 
-       class="inline-flex items-center justify-center rounded-md bg-slate-50 px-2.5 py-1.5 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+       class="inline-flex items-center justify-center rounded-xs bg-slate-50 px-2.5 py-1.5 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
       <svg class="mr-1.5 size-4 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
         <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
