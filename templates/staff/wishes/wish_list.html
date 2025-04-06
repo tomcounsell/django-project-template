@@ -4,338 +4,190 @@
 
 {% block extra_css %}
 <style>
-  .htmx-indicator {
-    display: none;
-  }
-  .htmx-request .htmx-indicator {
-    display: inline-block;
-  }
-  .htmx-request.htmx-indicator {
-    display: inline-block;
-  }
+    .htmx-indicator {
+        display: none;
+    }
+
+    .htmx-request .htmx-indicator {
+        display: inline-block;
+    }
+
+    .htmx-request.htmx-indicator {
+        display: inline-block;
+    }
 </style>
 {% endblock %}
 
 {% block main_header %}
-  <h1 class="text-3xl font-bold tracking-tight text-slate-600">Wish List Management</h1>
-  <p class="text-gray-500 mt-1">Staff tools for managing wish items</p>
+<!-- Admin Actions and Buttons -->
+<div class="bg-white shadow-xs rounded-xs overflow-hidden mb-6">
+    <div class="px-6 py-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-600">Wish Management</h1>
+                <p class="text-gray-500 mt-1">Manage requests for new features and track progress</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <!-- Create New Wish Button -->
+                <button
+                        hx-get="{% url 'staff:wish-create-modal' %}"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        hx-indicator="#create-wish-indicator"
+                        class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                    <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    Create New Wish
+                </button>
+                <div id="create-wish-indicator" class="htmx-indicator">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+
+                <!-- Filter Button -->
+                <button
+                        hx-get="{% url 'staff:wish-list' %}?show_filter=true"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        hx-indicator="#filter-indicator"
+                        class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                    <svg class="h-5 w-5 mr-2 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Filter
+                    {% if current_filters.has_active_filters %}
+                    <span class="ml-1.5 inline-flex items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">Active</span>
+                    {% endif %}
+                </button>
+                <div id="filter-indicator" class="htmx-indicator">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-slate-700" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+
+                <!-- Django Admin Button -->
+                <a href="{% url 'admin:staff_wish_changelist' %}"
+                   class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                    <svg class="h-5 w-5 mr-2 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    Django Admin
+                </a>
+
+                <!-- If filters are active, show clear filters button -->
+                {% if current_filters.has_active_filters %}
+                <a href="{% url 'staff:wish-list' %}"
+                   class="inline-flex items-center justify-center rounded-xs bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 ring-1 shadow-xs ring-red-200 ring-inset hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                    <svg class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Clear Filters
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
-  <!-- Primary Modal Container -->
-  <div id="modal-container" class="modal-container"></div>
+<!-- Primary Modal Container -->
+<div id="modal-container" class="modal-container"></div>
 
-  <!-- Admin Actions and Buttons -->
-  <div class="bg-white shadow-xs rounded-xs overflow-hidden mb-6">
-    <div class="px-6 py-4">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 class="text-base/7 font-semibold text-slate-700">Wish Management</h2>
-          <p class="text-sm/6 text-slate-500">Manage and filter wish items</p>
-        </div>
-        
-        <div class="flex flex-wrap gap-3">
-          <!-- Create New Wish Button -->
-          <button
-            hx-get="{% url 'staff:wish-create-modal' %}"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            hx-indicator="#create-wish-indicator"
-            class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-            </svg>
-            Create New Wish
-          </button>
-          <div id="create-wish-indicator" class="htmx-indicator">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </div>
-          
-          <!-- Filter Button -->
-          <button
-            hx-get="{% url 'staff:wish-list' %}?show_filter=true"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            hx-indicator="#filter-indicator"
-            class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-            <svg class="h-5 w-5 mr-2 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            Filter
-            {% if current_filters.has_active_filters %}
-              <span class="ml-1.5 inline-flex items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-700">Active</span>
-            {% endif %}
-          </button>
-          <div id="filter-indicator" class="htmx-indicator">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-slate-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </div>
-          
-          <!-- Django Admin Button -->
-          <a href="{% url 'admin:staff_wish_changelist' %}" class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-            <svg class="h-5 w-5 mr-2 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
-            </svg>
-            Django Admin
-          </a>
-          
-          <!-- If filters are active, show clear filters button -->
-          {% if current_filters.has_active_filters %}
-            <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center justify-center rounded-xs bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 ring-1 shadow-xs ring-red-200 ring-inset hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-              <svg class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Clear Filters
-            </a>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Create the filter modal template -->
-  <template id="filter-modal-template">
-    <div class="modal-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-40" onclick="if(event.target === this) this.closest('.modal-container').innerHTML = ''">
-      <div id="filter-modal" class="modal-content w-full relative max-w-xl bg-white rounded-xs shadow-xs overflow-hidden mx-2" role="dialog" aria-labelledby="filter-modal-title" aria-modal="true">
-        <!-- Modal Header -->
-        <div class="modal-header flex justify-between items-center border-b border-slate-200 p-4">
-          <h3 id="filter-modal-title" class="text-lg font-medium text-slate-900">
-            Filter Wishes
-          </h3>
-          <button type="button" 
-                  class="text-slate-400 hover:text-slate-500 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
-                  aria-label="Close"
-                  onclick="this.closest('.modal-container').innerHTML = ''">
-            <span class="sr-only">Close</span>
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        
-        <!-- Modal Body -->
-        <div class="modal-body p-4 overflow-y-auto max-h-[calc(85vh-10rem)]">
-          <form method="get" id="filter-form">
-            <p class="text-sm/6 text-slate-500 mb-6">Apply filters to narrow down the wish list results.</p>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-              <div>
-                <label for="status" class="block text-sm font-semibold text-slate-700 mb-1">Status</label>
-                <select id="status" name="status" multiple class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm h-24">
-                  {% for status_value, status_label in status_choices %}
-                    <option value="{{ status_value }}" {% if status_value in current_filters.status_list %}selected{% endif %}>
-                      {{ status_label }}
-                    </option>
-                  {% endfor %}
-                </select>
-                <p class="text-xs text-slate-500 mt-1 flex items-center">
-                  <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path>
-                  </svg>
-                  Ctrl+click to select multiple
-                </p>
-              </div>
-              
-              <div>
-                <label for="priority" class="block text-sm font-semibold text-slate-700 mb-1">Priority</label>
-                <select id="priority" name="priority" multiple class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm h-24">
-                  {% for priority_value, priority_label in priority_choices %}
-                    <option value="{{ priority_value }}" {% if priority_value in current_filters.priority_list %}selected{% endif %}>
-                      {{ priority_label }}
-                    </option>
-                  {% endfor %}
-                </select>
-                <p class="text-xs text-slate-500 mt-1 flex items-center">
-                  <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path>
-                  </svg>
-                  Ctrl+click to select multiple
-                </p>
-              </div>
-              
-              <div>
-                <label for="effort" class="block text-sm font-semibold text-slate-700 mb-1">Effort</label>
-                <select id="effort" name="effort" multiple class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm h-24">
-                  {% for effort_value, effort_label in effort_choices %}
-                    <option value="{{ effort_value }}" {% if effort_value in current_filters.effort_list %}selected{% endif %}>
-                      {{ effort_label }}
-                    </option>
-                  {% endfor %}
-                </select>
-                <p class="text-xs text-slate-500 mt-1 flex items-center">
-                  <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path>
-                  </svg>
-                  Ctrl+click to select multiple
-                </p>
-              </div>
-              
-              <div>
-                <label for="value" class="block text-sm font-semibold text-slate-700 mb-1">Value</label>
-                <select id="value" name="value" multiple class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm h-24">
-                  {% for value_code, value_label in value_choices %}
-                    <option value="{{ value_code }}" {% if value_code in current_filters.value_list %}selected{% endif %}>
-                      {{ value_label }}
-                    </option>
-                  {% endfor %}
-                </select>
-                <p class="text-xs text-slate-500 mt-1 flex items-center">
-                  <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"></path>
-                  </svg>
-                  Ctrl+click to select multiple
-                </p>
-              </div>
-              
-              <div>
-                <label for="tag" class="block text-sm font-semibold text-slate-700 mb-1">Tag</label>
-                <div class="relative">
-                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg class="h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                  </div>
-                  <input type="text" id="tag" name="tag" value="{{ current_filters.tag|default:'' }}" 
-                         class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pl-10"
-                         placeholder="Filter by tag">
-                </div>
-              </div>
-              
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Cost Range ($)</label>
-                <div class="flex items-center gap-2">
-                  <div class="relative rounded-xs flex-1">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <span class="text-slate-500 sm:text-sm">$</span>
-                    </div>
-                    <input type="number" id="cost_min" name="cost_min" value="{{ current_filters.cost_min|default:'' }}" 
-                           class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pl-8"
-                           placeholder="Min" min="0">
-                  </div>
-                  <span class="text-slate-500">-</span>
-                  <div class="relative rounded-xs flex-1">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <span class="text-slate-500 sm:text-sm">$</span>
-                    </div>
-                    <input type="number" id="cost_max" name="cost_max" value="{{ current_filters.cost_max|default:'' }}" 
-                           class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pl-8"
-                           placeholder="Max" min="0">
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Hidden input for show_filter parameter to prevent it from affecting actual filtering -->
-              <input type="hidden" name="show_filter" value="false">
-            </div>
-          </form>
-        </div>
-        
-        <!-- Modal Footer -->
-        <div class="modal-footer flex items-center justify-end gap-3 border-t border-slate-200 p-4">
-          <div class="flex flex-col-reverse sm:flex-row-reverse sm:gap-x-3 gap-y-3">
-            <button
-              type="submit"
-              form="filter-form"
-              class="inline-flex w-full items-center justify-center rounded-xs bg-slate-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-500 transition-colors sm:w-auto"
-            >
-              <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              Apply Filters
-            </button>
-            
-            <a
-              href="{% url 'staff:wish-list' %}"
-              class="inline-flex w-full items-center justify-center rounded-xs bg-white px-4 py-2.5 text-sm font-medium text-slate-700 ring-1 shadow-sm ring-slate-300 ring-inset hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-500 transition-colors sm:w-auto"
-            >
-              <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-              Clear Filters
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
-
-  <!-- Wish List -->
-  {% if wishes %}
-    <div class="bg-white shadow-xs overflow-hidden rounded-xs">
-      <table class="min-w-full divide-y divide-gray-200">
+<!-- Wish List -->
+{% if wishes %}
+<div class="bg-white shadow-xs overflow-hidden rounded-xs">
+    <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
-          <tr>
+        <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Title
+                Title
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Priority
+                Priority
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Tags
+                Tags
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
+                Status
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Effort
+                Effort
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Value
+                Value
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Cost
+                Cost
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Due Date
+                Due Date
             </th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
+                Actions
             </th>
-          </tr>
+        </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          {% for wish in wishes %}
-            <tr id="wish-row-{{ wish.id }}" class="hover:bg-gray-50">
-              {% include "staff/wishes/partials/wish_row.html" with wish=wish %}
-            </tr>
-          {% endfor %}
+        {% for wish in wishes %}
+        <tr id="wish-row-{{ wish.id }}" class="hover:bg-gray-50">
+            {% include "staff/wishes/partials/wish_row.html" with wish=wish %}
+        </tr>
+        {% endfor %}
         </tbody>
-      </table>
-    </div>
-  {% else %}
-    <div class="bg-white shadow-xs rounded-xs overflow-hidden text-center">
-      <div class="py-12 px-6">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </table>
+</div>
+{% else %}
+<div class="bg-white shadow-xs rounded-xs overflow-hidden text-center">
+    <div class="py-12 px-6">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+             aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
         <h3 class="mt-2 text-base font-semibold text-gray-900">No wishes found</h3>
         <p class="mt-1 text-sm text-gray-500">Get started by creating your first wish item.</p>
         <div class="mt-6">
-          <button
-            hx-get="{% url 'staff:wish-create-modal' %}"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            hx-indicator="#empty-create-wish-indicator"
-            class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-            </svg>
-            Create First Wish
-          </button>
-          <div id="empty-create-wish-indicator" class="htmx-indicator mt-2">
-            <svg class="animate-spin mx-auto h-5 w-5 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          </div>
+            <button
+                    hx-get="{% url 'staff:wish-create-modal' %}"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    hx-indicator="#empty-create-wish-indicator"
+                    class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                          clip-rule="evenodd"></path>
+                </svg>
+                Create First Wish
+            </button>
+            <div id="empty-create-wish-indicator" class="htmx-indicator mt-2">
+                <svg class="animate-spin mx-auto h-5 w-5 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                     viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
         </div>
-      </div>
     </div>
-  {% endif %}
+</div>
+{% endif %}
 {% endblock %}
