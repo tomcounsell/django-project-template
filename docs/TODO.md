@@ -79,6 +79,7 @@ This project follows a clean architecture with:
 - **Team Management:** Single-team interface with admin-only creation, conditional UI based on team membership
 - **API & Documentation:** OpenAPI/Swagger, API key authentication, comprehensive endpoint tests, response pagination
 - **Testing:** Unit, integration, E2E, and visual tests; test management system; HTMX interaction tests; responsive design tests
+  - Created comprehensive E2E test for wishes feature with browser integration (`apps/public/tests/test_e2e_wish_workflow.py`)
 - **Integrations:** Loops email, Stripe payments, Twilio SMS, AWS S3 storage
 - **DevOps:** CI/CD workflows, Render deployment configuration, uvicorn ASGI worker
 - **UI/UX:** Tailwind CSS, improved navigation, responsive layouts, frontend component tests
