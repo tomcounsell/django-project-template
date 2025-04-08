@@ -95,8 +95,13 @@ class WishListView(StaffRequiredMixin, MainContentView):
         self.context["priority_choices"] = Wish.PRIORITY_CHOICES
         self.context["effort_choices"] = Wish.EFFORT_CHOICES
         self.context["value_choices"] = Wish.VALUE_CHOICES
+        
+        # Convert status_list to a single string value if it has only one item
+        # This helps with making tab selection logic simpler in the template
+        status_filter = status_list[0] if len(status_list) == 1 else status_list
+        
         self.context["current_filters"] = {
-            "status_list": status_list,
+            "status_list": status_filter,
             "priority_list": priority_list,
             "tag": tag,
             "effort_list": effort_list,
