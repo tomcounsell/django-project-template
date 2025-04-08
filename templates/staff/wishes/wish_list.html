@@ -110,6 +110,36 @@
 <!-- Primary Modal Container -->
 <div id="modal-container" class="modal-container"></div>
 
+<!-- Status Tabs Navigation -->
+<div class="border-b border-gray-200 mb-6">
+  <nav class="-mb-px flex space-x-6 px-2">
+    <a href="{% url 'staff:wish-list' %}{% if current_filters.has_active_filters %}?{{ request.GET.urlencode }}{% endif %}" 
+       class="{% if not current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+      All
+    </a>
+    <a href="{% url 'staff:wish-list' %}?status=DRAFT{% if current_filters.has_active_filters and current_filters.status_list != 'DRAFT' %}&{{ request.GET.urlencode }}{% endif %}" 
+       class="{% if 'DRAFT' in current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+      Draft
+    </a>
+    <a href="{% url 'staff:wish-list' %}?status=TODO{% if current_filters.has_active_filters and current_filters.status_list != 'TODO' %}&{{ request.GET.urlencode }}{% endif %}" 
+       class="{% if 'TODO' in current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+      To Do
+    </a>
+    <a href="{% url 'staff:wish-list' %}?status=IN_PROGRESS{% if current_filters.has_active_filters and current_filters.status_list != 'IN_PROGRESS' %}&{{ request.GET.urlencode }}{% endif %}" 
+       class="{% if 'IN_PROGRESS' in current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+      In Progress
+    </a>
+    <a href="{% url 'staff:wish-list' %}?status=BLOCKED{% if current_filters.has_active_filters and current_filters.status_list != 'BLOCKED' %}&{{ request.GET.urlencode }}{% endif %}" 
+       class="{% if 'BLOCKED' in current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+      Blocked
+    </a>
+    <a href="{% url 'staff:wish-list' %}?status=DONE{% if current_filters.has_active_filters and current_filters.status_list != 'DONE' %}&{{ request.GET.urlencode }}{% endif %}" 
+       class="{% if 'DONE' in current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+      Done
+    </a>
+  </nav>
+</div>
+
 <!-- Wish List -->
 {% if wishes %}
 <div class="bg-white shadow-xs overflow-hidden rounded-xs">

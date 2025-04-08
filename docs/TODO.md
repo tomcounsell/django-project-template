@@ -90,10 +90,14 @@ This project follows a clean architecture with:
 - [x] HTMX OOB support for toasts, alerts, modals, nav - completed with HTMXView class
 - [x] Show active state on navigation links based on current page (without JavaScript)
 - [x] Build example pages (landing, pricing, blog)
-- [ ] Implement accessibility best practices
+- [ ] update account settings form to put first and last name fields inline
+- [ ] review tailwind styling on the new wish form and modal.
+  - [ ] the inputs need proper padding and active state borders that match our design. see example form component
+  - [ ] 
 
-## Todo -> Wish List ✅
-- [x] Rename the Todo model to Wish
+
+## Wish List ✅
+- [x] Delete the Todo model and create Wish model
 - [x] refactor all views managing todo items into wish list items (wishes)
 - [x] The todo list page is now a wish list page
 - [x] Create a new staff app that will be backoffice admin tools
@@ -103,6 +107,10 @@ This project follows a clean architecture with:
 - [x] Use Unfold admin in staff/admin.py like in common/admin.py
 - [x] Move Wish model from common app to staff app
 - [x] Create migrations to delete model from common and recreate in staff
+- [x] Add a DRAFT status to Wish model status. All new wishes should be in DRAFT status
+- [x] remove status from the create wish form. All new wishes must go to draft status first.
+- [x] Add tabs to the /staff/wishes page for draft, todo, ...
+- [x] On wishes in draft status, add a [Ready] button to go to todo status
 
 ### Code Quality 🧪
 - [ ] Refactor redundant template logic
@@ -139,6 +147,7 @@ This project follows a clean architecture with:
 - [ ] Define API versioning strategy
 
 ### Other
+- [ ] Implement accessibility best practices in templates and create a md file in /docs/guides
 - [ ] Add internationalization (i18n) support
 - [ ] Configure static asset compression
 - [ ] Configure advanced secrets management

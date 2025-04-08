@@ -33,7 +33,6 @@ class WishForm(forms.ModelForm):
             "title",
             "description",
             "priority",
-            "status",
             "effort",
             "value",
             "cost_estimate",

@@ -78,6 +78,17 @@ class WishListView(StaffRequiredMixin, MainContentView):
             except (ValueError, TypeError):
                 pass
 
+        # Check if any filters are active
+        has_active_filters = (
+            status_list 
+            or priority_list 
+            or tag 
+            or effort_list 
+            or value_list 
+            or cost_min 
+            or cost_max
+        )
+        
         # Set the context
         self.context["wishes"] = queryset
         self.context["status_choices"] = Wish.STATUS_CHOICES
@@ -92,6 +103,7 @@ class WishListView(StaffRequiredMixin, MainContentView):
             "value_list": value_list,
             "cost_min": cost_min,
             "cost_max": cost_max,
+            "has_active_filters": has_active_filters,
         }
 
         return self.render(request)
@@ -128,8 +140,12 @@ class WishCreateView(StaffRequiredMixin, MainContentView):
         form = WishForm(request.POST)
 
         if form.is_valid():
-            # Save the form
-            wish = form.save()
+            # Save the form but don't commit
+            wish = form.save(commit=False)
+            # Set status to DRAFT explicitly for new wishes
+            wish.status = Wish.STATUS_DRAFT
+            wish.save()
+            
             messages.success(request, f"Wish '{wish.title}' was created successfully.")
             return redirect("staff:wish-list")
 
@@ -149,7 +165,12 @@ class WishUpdateView(StaffRequiredMixin, MainContentView):
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
-        form = WishForm(instance=wish)
+        # For updates, we need to use a form class that includes the status field
+        class WishUpdateForm(WishForm):
+            class Meta(WishForm.Meta):
+                fields = WishForm.Meta.fields + ["status"]
+
+        form = WishUpdateForm(instance=wish)
         self.context["form"] = form
         self.context["form_title"] = f"Edit Wish: {wish.title}"
         self.context["form_submit_url"] = reverse(
@@ -163,7 +184,12 @@ class WishUpdateView(StaffRequiredMixin, MainContentView):
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
-        form = WishForm(request.POST, instance=wish)
+        # For updates, we need to use a form class that includes the status field
+        class WishUpdateForm(WishForm):
+            class Meta(WishForm.Meta):
+                fields = WishForm.Meta.fields + ["status"]
+
+        form = WishUpdateForm(request.POST, instance=wish)
 
         if form.is_valid():
             wish = form.save()
@@ -312,8 +338,12 @@ class WishCreateSubmitView(StaffRequiredMixin, HTMXView):
         form = WishForm(request.POST)
         
         if form.is_valid():
-            # Save the form
-            wish = form.save()
+            # Save the form but don't commit
+            wish = form.save(commit=False)
+            # Set status to DRAFT explicitly for new wishes
+            wish.status = Wish.STATUS_DRAFT
+            wish.save()
+            
             messages.success(request, f"Wish '{wish.title}' was created successfully.")
             
             # Return a response that will close the modal and refresh the page
@@ -355,12 +385,15 @@ class WishCompleteView(StaffRequiredMixin, HTMXView):
     """View for marking a wish item as done or not done (staff only)."""
 
     def post(self, request, *args, **kwargs):
-        """Mark the wish item as done or not done."""
+        """Mark the wish item as done or not done, or set a specific status."""
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
         # Check if we're marking as incomplete
         mark_incomplete = request.GET.get("mark_incomplete", False)
+        
+        # Check if we're setting a specific status
+        set_status = request.GET.get("set_status")
 
         if mark_incomplete:
             # Mark as incomplete (reopen)
@@ -370,6 +403,15 @@ class WishCompleteView(StaffRequiredMixin, HTMXView):
                 wish.save()
                 messages.success(
                     request, f"Wish '{wish.title}' was marked as not done."
+                )
+        elif set_status:
+            # Set a specific status (e.g., move from DRAFT to TODO)
+            if set_status in dict(Wish.STATUS_CHOICES):
+                old_status = wish.get_status_display()
+                wish.status = set_status
+                wish.save()
+                messages.success(
+                    request, f"Wish '{wish.title}' was moved from '{old_status}' to '{wish.get_status_display()}'."
                 )
         else:
             # Use the model's complete method to mark as done

@@ -35,11 +35,13 @@ class Wish(Timestampable, models.Model):
     ]
 
     # Status choices
+    STATUS_DRAFT = "DRAFT"
     STATUS_TODO = "TODO"
     STATUS_IN_PROGRESS = "IN_PROGRESS"
     STATUS_BLOCKED = "BLOCKED"
     STATUS_DONE = "DONE"
     STATUS_CHOICES = [
+        (STATUS_DRAFT, "Draft"),
         (STATUS_TODO, "To Do"),
         (STATUS_IN_PROGRESS, "In Progress"),
         (STATUS_BLOCKED, "Blocked"),
@@ -88,7 +90,7 @@ class Wish(Timestampable, models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default=STATUS_TODO,
+        default=STATUS_DRAFT,
     )
     effort = models.CharField(
         max_length=10,
