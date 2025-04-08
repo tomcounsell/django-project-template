@@ -91,9 +91,8 @@ This project follows a clean architecture with:
 - [x] Show active state on navigation links based on current page (without JavaScript)
 - [x] Build example pages (landing, pricing, blog)
 - [x] update account settings form to put first and last name fields inline
-- [ ] review tailwind styling on the new wish form and modal.
-  - [ ] the inputs need proper padding and active state borders that match our design. see example form component
-  - [ ] 
+- [x] review tailwind styling on the new wish form and modal.
+  - [x] the inputs need proper padding and active state borders that match our design. see example form component
 
 
 ## Wish List ✅

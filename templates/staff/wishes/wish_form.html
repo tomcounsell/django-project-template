@@ -43,7 +43,7 @@
             <div class="mt-1">
               <input type="text" name="title" id="{{ form.title.id_for_label }}" 
                      value="{{ form.title.value|default:'' }}" required
-                     class="w-full px-3 py-2 border {% if form.title.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                     class="w-full px-3 py-2 border {% if form.title.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
             </div>
             {% if form.title.errors %}
               <p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>
@@ -57,7 +57,7 @@
               <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">Status</label>
               <div class="mt-1">
                 <select name="status" id="{{ form.status.id_for_label }}"
-                        class="w-full px-3 py-2 border {% if form.status.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                        class="w-full px-3 py-2 border {% if form.status.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                   {% for option in form.fields.status.choices %}
                     <option value="{{ option.0 }}" {% if form.status.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
                       {{ option.1 }}
@@ -75,7 +75,7 @@
               <label for="{{ form.priority.id_for_label }}" class="block text-sm font-medium text-gray-700">Priority</label>
               <div class="mt-1">
                 <select name="priority" id="{{ form.priority.id_for_label }}"
-                        class="w-full px-3 py-2 border {% if form.priority.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                        class="w-full px-3 py-2 border {% if form.priority.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                   {% for option in form.fields.priority.choices %}
                     <option value="{{ option.0 }}" {% if form.priority.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
                       {{ option.1 }}
@@ -94,7 +94,7 @@
             <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description</label>
             <div class="mt-1">
               <textarea name="description" id="{{ form.description.id_for_label }}" rows="2"
-                      class="w-full px-3 py-2 border {% if form.description.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">{{ form.description.value|default:'' }}</textarea>
+                      class="w-full px-3 py-2 border {% if form.description.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">{{ form.description.value|default:'' }}</textarea>
             </div>
             {% if form.description.errors %}
               <p class="text-red-500 text-xs mt-1">{{ form.description.errors.0 }}</p>
@@ -108,7 +108,7 @@
               <label for="{{ form.effort.id_for_label }}" class="block text-sm font-medium text-gray-700">Effort</label>
               <div class="mt-1">
                 <select name="effort" id="{{ form.effort.id_for_label }}"
-                        class="w-full px-3 py-2 border {% if form.effort.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                        class="w-full px-3 py-2 border {% if form.effort.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                   <option value="">Select</option>
                   {% for option in form.fields.effort.choices %}
                     <option value="{{ option.0 }}" {% if form.effort.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
@@ -127,7 +127,7 @@
               <label for="{{ form.value.id_for_label }}" class="block text-sm font-medium text-gray-700">Value</label>
               <div class="mt-1">
                 <select name="value" id="{{ form.value.id_for_label }}"
-                        class="w-full px-3 py-2 border {% if form.value.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                        class="w-full px-3 py-2 border {% if form.value.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
                   <option value="">Select</option>
                   {% for option in form.fields.value.choices %}
                     <option value="{{ option.0 }}" {% if form.value.value|stringformat:"s" == option.0|stringformat:"s" %}selected{% endif %}>
@@ -150,7 +150,7 @@
                 </div>
                 <input type="number" name="cost_estimate" id="{{ form.cost_estimate.id_for_label }}" 
                        value="{{ form.cost_estimate.value|default:'' }}" min="0"
-                       class="w-full px-3 py-2 pl-7 border {% if form.cost_estimate.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                       class="w-full px-3 py-2 pl-7 border {% if form.cost_estimate.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
               </div>
               {% if form.cost_estimate.errors %}
                 <p class="text-red-500 text-xs mt-1">{{ form.cost_estimate.errors.0 }}</p>
@@ -169,7 +169,7 @@
               <div class="mt-1">
                 <input type="text" name="tags" id="{{ form.tags.id_for_label }}" 
                        value="{{ form.tags.value|default:'' }}"
-                       class="w-full px-3 py-2 border {% if form.tags.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm"
+                       class="w-full px-3 py-2 border {% if form.tags.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                        placeholder="api, frontend, bug">
               </div>
               {% if form.tags.errors %}
@@ -186,7 +186,7 @@
               <div class="mt-1">
                 <input type="datetime-local" name="due_at" id="{{ form.due_at.id_for_label }}" 
                        value="{{ form.due_at.value|date:'Y-m-d\TH:i' }}"
-                       class="w-full px-3 py-2 border {% if form.due_at.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-xs shadow-xs text-sm">
+                       class="w-full px-3 py-2 border {% if form.due_at.errors %}border-red-500{% else %}border-gray-300{% endif %} bg-white rounded-xs focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
               </div>
               {% if form.due_at.errors %}
                 <p class="text-red-500 text-xs mt-1">{{ form.due_at.errors.0 }}</p>
