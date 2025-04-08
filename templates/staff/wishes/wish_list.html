@@ -18,6 +18,18 @@
 </style>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    document.addEventListener('updateTabs', function(evt) {
+        // Update the tabs content when triggered by HTMX
+        const tabsContainer = document.getElementById('wish-tabs');
+        if (tabsContainer && evt.detail) {
+            tabsContainer.innerHTML = evt.detail;
+        }
+    });
+</script>
+{% endblock %}
+
 {% block main_header %}
 <!-- Admin Actions and Buttons -->
 <div class="bg-white shadow-xs rounded-xs overflow-hidden mb-6">
@@ -110,76 +122,8 @@
 <!-- Primary Modal Container -->
 <div id="modal-container" class="modal-container"></div>
 
-<!-- Status Tabs Navigation -->
-<div id="wish-tabs" class="border-b border-gray-200 mb-6">
-  <nav class="-mb-px flex space-x-6 px-2">
-    {% with non_status_params=request.GET.urlencode|cut:"status=DRAFT&"|cut:"status=TODO&"|cut:"status=IN_PROGRESS&"|cut:"status=BLOCKED&"|cut:"status=DONE&"|cut:"&status=DRAFT"|cut:"&status=TODO"|cut:"&status=IN_PROGRESS"|cut:"&status=BLOCKED"|cut:"&status=DONE" %}
-    <!-- Define tab-active class for consistent styling -->
-    <style>
-      .tab-active {
-        @apply border-slate-500 text-slate-700 font-medium;
-      }
-      .tab-inactive {
-        @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
-      }
-    </style>
-    
-    <!-- All Tab -->
-    <a hx-get="{% url 'staff:wish-list' %}{% if non_status_params %}?{{ non_status_params }}{% endif %}"
-       hx-target="#wish-content-container"
-       hx-swap="innerHTML"
-       hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if not current_filters.status_list %}tab-active{% else %}tab-inactive{% endif %}">
-      All
-    </a>
-    
-    <!-- Draft Tab -->
-    <a hx-get="{% url 'staff:wish-list' %}?status=DRAFT{% if non_status_params %}&{{ non_status_params }}{% endif %}"
-       hx-target="#wish-content-container"
-       hx-swap="innerHTML"
-       hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'DRAFT' %}tab-active{% else %}tab-inactive{% endif %}">
-      Draft
-    </a>
-    
-    <!-- To Do Tab -->
-    <a hx-get="{% url 'staff:wish-list' %}?status=TODO{% if non_status_params %}&{{ non_status_params }}{% endif %}"
-       hx-target="#wish-content-container"
-       hx-swap="innerHTML"
-       hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'TODO' %}tab-active{% else %}tab-inactive{% endif %}">
-      To Do
-    </a>
-    
-    <!-- In Progress Tab -->
-    <a hx-get="{% url 'staff:wish-list' %}?status=IN_PROGRESS{% if non_status_params %}&{{ non_status_params }}{% endif %}"
-       hx-target="#wish-content-container"
-       hx-swap="innerHTML"
-       hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'IN_PROGRESS' %}tab-active{% else %}tab-inactive{% endif %}">
-      In Progress
-    </a>
-    
-    <!-- Blocked Tab -->
-    <a hx-get="{% url 'staff:wish-list' %}?status=BLOCKED{% if non_status_params %}&{{ non_status_params }}{% endif %}"
-       hx-target="#wish-content-container"
-       hx-swap="innerHTML"
-       hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'BLOCKED' %}tab-active{% else %}tab-inactive{% endif %}">
-      Blocked
-    </a>
-    
-    <!-- Done Tab -->
-    <a hx-get="{% url 'staff:wish-list' %}?status=DONE{% if non_status_params %}&{{ non_status_params }}{% endif %}"
-       hx-target="#wish-content-container"
-       hx-swap="innerHTML"
-       hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'DONE' %}tab-active{% else %}tab-inactive{% endif %}">
-      Done
-    </a>
-    {% endwith %}
-  </nav>
-</div>
+<!-- Include tab navigation partial -->
+{% include "staff/wishes/partials/wish_tabs.html" %}
 
 <!-- Include the content partial -->
 {% include "staff/wishes/partials/wish_list_content.html" %}

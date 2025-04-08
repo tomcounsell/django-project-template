@@ -28,6 +28,7 @@ class WishListView(StaffRequiredMixin, MainContentView):
 
     template_name = "staff/wishes/wish_list.html"
     partial_template_name = "staff/wishes/partials/wish_list_content.html"
+    tabs_template_name = "staff/wishes/partials/wish_tabs.html"
     
     # Wish status constants
     STATUS_ALL = "ALL"
@@ -46,6 +47,13 @@ class WishListView(StaffRequiredMixin, MainContentView):
         priority_list = request.GET.getlist("priority")
         effort_list = request.GET.getlist("effort")
         value_list = request.GET.getlist("value")
+        
+        # Determine active tab
+        active_tab = None
+        if not status_list:
+            active_tab = "all"
+        elif len(status_list) == 1:
+            active_tab = status_list[0].lower()
         
         # Filter by status if provided
         if status_list:
@@ -105,9 +113,8 @@ class WishListView(StaffRequiredMixin, MainContentView):
         self.context["effort_choices"] = Wish.EFFORT_CHOICES
         self.context["value_choices"] = Wish.VALUE_CHOICES
         
-        # Convert status_list to a single string value if it has only one item
         # This helps with making tab selection logic simpler in the template
-        status_filter = status_list[0] if len(status_list) == 1 else status_list
+        status_filter = status_list[0] if status_list and len(status_list) == 1 else status_list
         
         self.context["current_filters"] = {
             "status_list": status_filter,
@@ -118,12 +125,33 @@ class WishListView(StaffRequiredMixin, MainContentView):
             "cost_min": cost_min,
             "cost_max": cost_max,
             "has_active_filters": has_active_filters,
+            "active_tab": active_tab,  # Add explicit active tab tracking
         }
 
         # Handle HTMX requests
-        if getattr(request, "htmx", False) and request.htmx.target == "wish-content-container":
-            # For HTMX requests targeting the content container, render only the content partial
-            return self.render(request, template_name=self.partial_template_name)
+        if getattr(request, "htmx", False):
+            if request.htmx.target == "wish-content-container":
+                # For HTMX requests targeting the content container
+                return self.render(request, template_name=self.partial_template_name)
+            elif request.htmx.target == "wish-tabs":
+                # For HTMX requests targeting the tabs
+                return self.render(request, template_name=self.tabs_template_name)
+            else:
+                # For HTMX requests to update both content and tabs
+                # Use OOB to update both parts
+                content_html = render_to_string(
+                    self.partial_template_name, 
+                    self.context,
+                    request=request
+                )
+                tabs_html = render_to_string(
+                    self.tabs_template_name,
+                    self.context,
+                    request=request
+                )
+                response = HttpResponse(content_html)
+                response["HX-Trigger"] = json.dumps({"updateTabs": tabs_html})
+                return response
         
         # For regular requests, render the full page
         return self.render(request)
