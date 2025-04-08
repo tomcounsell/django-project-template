@@ -150,6 +150,34 @@ class User(AbstractUser, Timestampable):
         elif value is False and self.is_agreed_to_terms:
             self.agreed_to_terms_at = None
 
+    @property
+    def initials(self) -> str:
+        """
+        Get the user's initials for display in the UI.
+        
+        Returns the first letter of each word in the user's string representation,
+        up to 2 characters. Handles edge cases like parentheses and empty names.
+        
+        Returns:
+            str: User's initials (1-2 characters, uppercase)
+        """
+        user_str = str(self)
+        
+        # If the name contains parentheses (like "email@example.com (unverified)")
+        # only use the part before the parentheses
+        if "(" in user_str:
+            user_str = user_str.split("(")[0].strip()
+            
+        # Split by spaces and get first letter of each part
+        parts = [x for x in user_str.split(" ") if x]
+        if not parts:
+            return "U"  # Default to "U" for User if nothing else available
+            
+        # Get first letter of each word, uppercase it, join, and limit to 2 chars
+        initials = "".join([p[0].upper() for p in parts if p])[:2]
+        return initials if initials else "U"
+
+
     def get_login_url(self, next_url=None) -> str:
         """
         Generate a magic login URL for this user.
