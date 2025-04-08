@@ -111,115 +111,76 @@
 <div id="modal-container" class="modal-container"></div>
 
 <!-- Status Tabs Navigation -->
-<div class="border-b border-gray-200 mb-6">
+<div id="wish-tabs" class="border-b border-gray-200 mb-6">
   <nav class="-mb-px flex space-x-6 px-2">
     {% with non_status_params=request.GET.urlencode|cut:"status=DRAFT&"|cut:"status=TODO&"|cut:"status=IN_PROGRESS&"|cut:"status=BLOCKED&"|cut:"status=DONE&"|cut:"&status=DRAFT"|cut:"&status=TODO"|cut:"&status=IN_PROGRESS"|cut:"&status=BLOCKED"|cut:"&status=DONE" %}
-    <a href="{% url 'staff:wish-list' %}{% if non_status_params %}?{{ non_status_params }}{% endif %}" 
-       class="{% if not current_filters.status_list %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+    <!-- Define tab-active class for consistent styling -->
+    <style>
+      .tab-active {
+        @apply border-slate-500 text-slate-700 font-medium;
+      }
+      .tab-inactive {
+        @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
+      }
+    </style>
+    
+    <!-- All Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}{% if non_status_params %}?{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if not current_filters.status_list %}tab-active{% else %}tab-inactive{% endif %}">
       All
     </a>
-    <a href="{% url 'staff:wish-list' %}?status=DRAFT{% if non_status_params %}&{{ non_status_params }}{% endif %}" 
-       class="{% if current_filters.status_list == 'DRAFT' %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+    
+    <!-- Draft Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=DRAFT{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'DRAFT' %}tab-active{% else %}tab-inactive{% endif %}">
       Draft
     </a>
-    <a href="{% url 'staff:wish-list' %}?status=TODO{% if non_status_params %}&{{ non_status_params }}{% endif %}" 
-       class="{% if current_filters.status_list == 'TODO' %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+    
+    <!-- To Do Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=TODO{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'TODO' %}tab-active{% else %}tab-inactive{% endif %}">
       To Do
     </a>
-    <a href="{% url 'staff:wish-list' %}?status=IN_PROGRESS{% if non_status_params %}&{{ non_status_params }}{% endif %}" 
-       class="{% if current_filters.status_list == 'IN_PROGRESS' %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+    
+    <!-- In Progress Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=IN_PROGRESS{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'IN_PROGRESS' %}tab-active{% else %}tab-inactive{% endif %}">
       In Progress
     </a>
-    <a href="{% url 'staff:wish-list' %}?status=BLOCKED{% if non_status_params %}&{{ non_status_params }}{% endif %}" 
-       class="{% if current_filters.status_list == 'BLOCKED' %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+    
+    <!-- Blocked Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=BLOCKED{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'BLOCKED' %}tab-active{% else %}tab-inactive{% endif %}">
       Blocked
     </a>
-    <a href="{% url 'staff:wish-list' %}?status=DONE{% if non_status_params %}&{{ non_status_params }}{% endif %}" 
-       class="{% if current_filters.status_list == 'DONE' %}border-slate-500 text-slate-700 font-medium{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} whitespace-nowrap pb-3 px-1 border-b-2 text-sm">
+    
+    <!-- Done Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=DONE{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 border-b-2 text-sm {% if current_filters.status_list == 'DONE' %}tab-active{% else %}tab-inactive{% endif %}">
       Done
     </a>
     {% endwith %}
   </nav>
 </div>
 
-<!-- Wish List -->
-{% if wishes %}
-<div class="bg-white shadow-xs overflow-hidden rounded-xs">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-        <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Priority
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Tags
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Effort
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Value
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cost
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Due Date
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-            </th>
-        </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-        {% for wish in wishes %}
-        <tr id="wish-row-{{ wish.id }}" class="hover:bg-gray-50">
-            {% include "staff/wishes/partials/wish_row.html" with wish=wish %}
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% else %}
-<div class="bg-white shadow-xs rounded-xs overflow-hidden text-center">
-    <div class="py-12 px-6">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-             aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        </svg>
-        <h3 class="mt-2 text-base font-semibold text-gray-900">No wishes found</h3>
-        <p class="mt-1 text-sm text-gray-500">Get started by creating your first wish item.</p>
-        <div class="mt-6">
-            <button
-                    hx-get="{% url 'staff:wish-create-modal' %}"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-indicator="#empty-create-wish-indicator"
-                    class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                          clip-rule="evenodd"></path>
-                </svg>
-                Create First Wish
-            </button>
-            <div id="empty-create-wish-indicator" class="htmx-indicator mt-2">
-                <svg class="animate-spin mx-auto h-5 w-5 text-slate-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                     viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
+<!-- Include the content partial -->
+{% include "staff/wishes/partials/wish_list_content.html" %}
 {% endblock %}

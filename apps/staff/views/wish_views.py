@@ -27,6 +27,15 @@ class WishListView(StaffRequiredMixin, MainContentView):
     """View for listing all wish items (staff only)."""
 
     template_name = "staff/wishes/wish_list.html"
+    partial_template_name = "staff/wishes/partials/wish_list_content.html"
+    
+    # Wish status constants
+    STATUS_ALL = "ALL"
+    STATUS_DRAFT = "DRAFT"
+    STATUS_TODO = "TODO"
+    STATUS_IN_PROGRESS = "IN_PROGRESS"
+    STATUS_BLOCKED = "BLOCKED"
+    STATUS_DONE = "DONE"
 
     def get(self, request, *args, **kwargs):
         """Get all wishes with filtering options."""
@@ -111,6 +120,12 @@ class WishListView(StaffRequiredMixin, MainContentView):
             "has_active_filters": has_active_filters,
         }
 
+        # Handle HTMX requests
+        if getattr(request, "htmx", False) and request.htmx.target == "wish-content-container":
+            # For HTMX requests targeting the content container, render only the content partial
+            return self.render(request, template_name=self.partial_template_name)
+        
+        # For regular requests, render the full page
         return self.render(request)
 
 
