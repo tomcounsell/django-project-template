@@ -6,7 +6,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.decorators.http import require_POST
 
 from apps.common.forms.wish import WishForm
 from apps.public.views.helpers.main_content_view import MainContentView
@@ -29,7 +28,7 @@ class WishListView(StaffRequiredMixin, MainContentView):
     template_name = "staff/wishes/wish_list.html"
     partial_template_name = "staff/wishes/partials/wish_list_content.html"
     tabs_template_name = "staff/wishes/partials/wish_tabs.html"
-    
+
     # Wish status constants
     STATUS_ALL = "ALL"
     STATUS_DRAFT = "DRAFT"
@@ -47,14 +46,14 @@ class WishListView(StaffRequiredMixin, MainContentView):
         priority_list = request.GET.getlist("priority")
         effort_list = request.GET.getlist("effort")
         value_list = request.GET.getlist("value")
-        
+
         # Determine active tab
         active_tab = None
         if not status_list:
             active_tab = "all"
         elif len(status_list) == 1:
             active_tab = status_list[0].lower()
-        
+
         # Filter by status if provided
         if status_list:
             queryset = queryset.filter(status__in=status_list)
@@ -62,32 +61,32 @@ class WishListView(StaffRequiredMixin, MainContentView):
         # Filter by priority if provided
         if priority_list:
             queryset = queryset.filter(priority__in=priority_list)
-            
+
         # Filter by tag if provided
         tag = request.GET.get("tag")
         if tag:
             # JSONField lookup to find wishes where the tag exists in the tags list
             queryset = queryset.filter(tags__contains=[tag.lower()])
-            
+
         # Filter by effort if provided
         if effort_list:
             queryset = queryset.filter(effort__in=effort_list)
-            
+
         # Filter by value if provided
         if value_list:
             queryset = queryset.filter(value__in=value_list)
-            
+
         # Filter by cost range if provided
         cost_min = request.GET.get("cost_min")
         cost_max = request.GET.get("cost_max")
-        
+
         if cost_min:
             try:
                 cost_min = int(cost_min)
                 queryset = queryset.filter(cost_estimate__gte=cost_min)
             except (ValueError, TypeError):
                 pass
-                
+
         if cost_max:
             try:
                 cost_max = int(cost_max)
@@ -97,25 +96,27 @@ class WishListView(StaffRequiredMixin, MainContentView):
 
         # Check if any filters are active
         has_active_filters = (
-            status_list 
-            or priority_list 
-            or tag 
-            or effort_list 
-            or value_list 
-            or cost_min 
+            status_list
+            or priority_list
+            or tag
+            or effort_list
+            or value_list
+            or cost_min
             or cost_max
         )
-        
+
         # Set the context
         self.context["wishes"] = queryset
         self.context["status_choices"] = Wish.STATUS_CHOICES
         self.context["priority_choices"] = Wish.PRIORITY_CHOICES
         self.context["effort_choices"] = Wish.EFFORT_CHOICES
         self.context["value_choices"] = Wish.VALUE_CHOICES
-        
+
         # This helps with making tab selection logic simpler in the template
-        status_filter = status_list[0] if status_list and len(status_list) == 1 else status_list
-        
+        status_filter = (
+            status_list[0] if status_list and len(status_list) == 1 else status_list
+        )
+
         self.context["current_filters"] = {
             "status_list": status_filter,
             "priority_list": priority_list,
@@ -140,19 +141,15 @@ class WishListView(StaffRequiredMixin, MainContentView):
                 # For HTMX requests to update both content and tabs
                 # Use OOB to update both parts
                 content_html = render_to_string(
-                    self.partial_template_name, 
-                    self.context,
-                    request=request
+                    self.partial_template_name, self.context, request=request
                 )
                 tabs_html = render_to_string(
-                    self.tabs_template_name,
-                    self.context,
-                    request=request
+                    self.tabs_template_name, self.context, request=request
                 )
                 response = HttpResponse(content_html)
                 response["HX-Trigger"] = json.dumps({"updateTabs": tabs_html})
                 return response
-        
+
         # For regular requests, render the full page
         return self.render(request)
 
@@ -193,7 +190,7 @@ class WishCreateView(StaffRequiredMixin, MainContentView):
             # Set status to DRAFT explicitly for new wishes
             wish.status = Wish.STATUS_DRAFT
             wish.save()
-            
+
             messages.success(request, f"Wish '{wish.title}' was created successfully.")
             return redirect("staff:wish-list")
 
@@ -355,77 +352,85 @@ class WishDeleteView(StaffRequiredMixin, HTMXView):
 
 class WishCreateModalView(StaffRequiredMixin, HTMXView):
     """HTMX view for showing the create wish form in a modal."""
-    
+
     template_name = "components/modals/modal_form.html"
-    
+
     def get(self, request, *args, **kwargs):
         """Show the create wish form in a modal."""
         form = WishForm()
-        
-        self.context.update({
-            "modal_id": "create-wish-modal",
-            "modal_title": "Create New Wish",
-            "form": form,
-            "submit_url": reverse("staff:wish-create-submit"),
-            "submit_text": "Create",
-            "cancel_text": "Cancel",
-            "target": "#modal-container",
-            "trigger": "submit",
-            "form_id": "create-wish-form",
-            "modal_size": "xl",
-        })
-        
+
+        self.context.update(
+            {
+                "modal_id": "create-wish-modal",
+                "modal_title": "Create New Wish",
+                "form": form,
+                "submit_url": reverse("staff:wish-create-submit"),
+                "submit_text": "Create",
+                "cancel_text": "Cancel",
+                "target": "#modal-container",
+                "trigger": "submit",
+                "form_id": "create-wish-form",
+                "modal_size": "xl",
+            }
+        )
+
         return self.render(request)
 
 
 class WishCreateSubmitView(StaffRequiredMixin, HTMXView):
     """HTMX view to handle the submission of the create wish form."""
-    
+
     def post(self, request, *args, **kwargs):
         """Process the wish form submission from the modal."""
         form = WishForm(request.POST)
-        
+
         if form.is_valid():
             # Save the form but don't commit
             wish = form.save(commit=False)
             # Set status to DRAFT explicitly for new wishes
             wish.status = Wish.STATUS_DRAFT
             wish.save()
-            
+
             messages.success(request, f"Wish '{wish.title}' was created successfully.")
-            
+
             # Return a response that will close the modal and refresh the page
             response = HttpResponse()
             response["HX-Refresh"] = "true"
             return response
-        
+
         # If form is invalid, re-render the modal with errors
-        self.context.update({
-            "modal_id": "create-wish-modal",
-            "modal_title": "Create New Wish",
-            "form": form,
-            "submit_url": reverse("staff:wish-create-submit"),
-            "submit_text": "Create",
-            "cancel_text": "Cancel",
-            "target": "#modal-container",
-            "trigger": "submit",
-            "form_id": "create-wish-form",
-            "modal_size": "xl",
-        })
-        
+        self.context.update(
+            {
+                "modal_id": "create-wish-modal",
+                "modal_title": "Create New Wish",
+                "form": form,
+                "submit_url": reverse("staff:wish-create-submit"),
+                "submit_text": "Create",
+                "cancel_text": "Cancel",
+                "target": "#modal-container",
+                "trigger": "submit",
+                "form_id": "create-wish-form",
+                "modal_size": "xl",
+            }
+        )
+
         # Render the form with validation errors
         self.template_name = "components/modals/modal_form.html"
         response = self.render(request)
-        
+
         # Add a toast notification for validation errors via htmx
         if getattr(request, "htmx", False):
-            error_toast = render_to_string("components/common/error_message.html", {
-                "error_code": "form_validation",
-                "status_code": 400,
-                "error_message": "Please correct the errors in the form and try again.",
-            }, request=request)
+            error_toast = render_to_string(
+                "components/common/error_message.html",
+                {
+                    "error_code": "form_validation",
+                    "status_code": 400,
+                    "error_message": "Please correct the errors in the form and try again.",
+                },
+                request=request,
+            )
             response["HX-Trigger"] = json.dumps({"showToast": error_toast})
-            
+
         return response
 
 
@@ -439,7 +444,7 @@ class WishCompleteView(StaffRequiredMixin, HTMXView):
 
         # Check if we're marking as incomplete
         mark_incomplete = request.GET.get("mark_incomplete", False)
-        
+
         # Check if we're setting a specific status
         set_status = request.GET.get("set_status")
 
@@ -459,7 +464,8 @@ class WishCompleteView(StaffRequiredMixin, HTMXView):
                 wish.status = set_status
                 wish.save()
                 messages.success(
-                    request, f"Wish '{wish.title}' was moved from '{old_status}' to '{wish.get_status_display()}'."
+                    request,
+                    f"Wish '{wish.title}' was moved from '{old_status}' to '{wish.get_status_display()}'.",
                 )
         else:
             # Use the model's complete method to mark as done

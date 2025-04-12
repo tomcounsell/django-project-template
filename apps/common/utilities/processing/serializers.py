@@ -13,7 +13,6 @@ class TimeZoneField(serializers.ChoiceField):
 
 # https://github.com/encode/django-rest-framework/issues/2734#issuecomment-478077325
 class WritableSerializerMethodField(serializers.SerializerMethodField):
-
     def __init__(self, method_name=None, **kwargs):
         self.method_name = method_name
         self.setter_method_name = kwargs.pop("setter_method_name", None)

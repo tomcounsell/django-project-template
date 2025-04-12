@@ -19,7 +19,7 @@ class AccountSettingsFormTestCase(TestCase):
             email="test@example.com",
             password="password123",
             first_name="Test",
-            last_name="User"
+            last_name="User",
         )
         self.client = Client()
         self.client.login(username="testuser", password="password123")
@@ -29,37 +29,37 @@ class AccountSettingsFormTestCase(TestCase):
         """Test that the account settings form has the correct layout."""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that first name field exists
         self.assertContains(response, 'name="first_name"')
         self.assertContains(response, 'id="id_first_name"')
-        
+
         # Check that last name field exists
         self.assertContains(response, 'name="last_name"')
         self.assertContains(response, 'id="id_last_name"')
-        
+
         # Check responsive grid layout for inline fields
-        self.assertContains(response, 'sm:grid-cols-6')
-        self.assertContains(response, 'sm:col-span-3')
-        
+        self.assertContains(response, "sm:grid-cols-6")
+        self.assertContains(response, "sm:col-span-3")
+
         # Check for appropriate styling classes
-        self.assertContains(response, 'w-full')
-        self.assertContains(response, 'rounded-xs')
-        
+        self.assertContains(response, "w-full")
+        self.assertContains(response, "rounded-xs")
+
     def test_form_submission(self):
         """Test that the account settings form can be submitted successfully."""
         data = {
             "first_name": "Updated",
             "last_name": "Name",
             "email": "updated@example.com",
-            "update_info": True  # Simulating the button being clicked
+            "update_info": True,  # Simulating the button being clicked
         }
         response = self.client.post(self.url, data, follow=True)
         self.assertEqual(response.status_code, 200)
-        
+
         # Refresh user from database
         self.user.refresh_from_db()
-        
+
         # Check that user details were updated
         self.assertEqual(self.user.first_name, "Updated")
         self.assertEqual(self.user.last_name, "Name")

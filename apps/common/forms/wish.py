@@ -10,7 +10,9 @@ class WishForm(forms.ModelForm):
     tags = forms.CharField(
         required=False,
         help_text="Enter tags separated by commas",
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. frontend, api, bug"}),
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "e.g. frontend, api, bug"}
+        ),
     )
 
     due_at = forms.DateTimeField(
@@ -24,9 +26,11 @@ class WishForm(forms.ModelForm):
         required=False,
         min_value=0,
         help_text="Estimated cost in dollars (whole numbers only)",
-        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "e.g. 500"}),
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "placeholder": "e.g. 500"}
+        ),
     )
-    
+
     class Meta:
         model = Wish
         fields = [
@@ -66,16 +70,16 @@ class WishForm(forms.ModelForm):
             # Clear completed timestamp if reopening
             self.instance.completed_at = None
         return status
-        
+
     def clean_tags(self):
         """Convert comma-separated tags string to list."""
         tags_input = self.cleaned_data.get("tags", "")
         if not tags_input:
             return []
-            
+
         # Split by comma, strip whitespace, convert to lowercase, and filter out empty strings
         tags = [tag.strip().lower() for tag in tags_input.split(",") if tag.strip()]
-        
+
         # Remove duplicates by converting to set and back to list
         return list(dict.fromkeys(tags))
 
@@ -88,13 +92,13 @@ class WishForm(forms.ModelForm):
                 kwargs["initial"] = {}
             # Convert tags list to comma-separated string
             kwargs["initial"]["tags"] = ", ".join(instance.tags)
-            
+
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
         """Save the form and process tags."""
         instance = super().save(commit=False)
-        
+
         # Process tags from form data
         if "tags" in self.cleaned_data:
             instance.tags = self.cleaned_data["tags"]

@@ -29,32 +29,29 @@ class WishDraftStatusModelTestCase(TestCase):
             description="This wish should have DRAFT as default status",
         )
         self.assertEqual(wish.status, "DRAFT")
-        
+
     def test_set_status_method_accepts_draft(self):
         """Test that set_status method accepts DRAFT as a valid status."""
-        wish = Wish.objects.create(
-            title="Test Set Status",
-            status="TODO"
-        )
+        wish = Wish.objects.create(title="Test Set Status", status="TODO")
         wish.set_status("DRAFT")
         self.assertEqual(wish.status, "DRAFT")
 
 
 class WishFormTestCase(TestCase):
     """Test the WishForm without status field for creation."""
-    
+
     def test_form_excludes_status_field(self):
         """Test that the WishForm doesn't include the status field."""
         form = WishForm()
-        self.assertNotIn('status', form.fields)
-        
+        self.assertNotIn("status", form.fields)
+
     def test_form_create_with_draft_status(self):
         """Test that a wish created with the form gets DRAFT status."""
         form_data = {
-            'title': 'Form Created Wish',
-            'description': 'This wish should get DRAFT status',
-            'priority': 'MEDIUM',
-            'tags': 'test, form',
+            "title": "Form Created Wish",
+            "description": "This wish should get DRAFT status",
+            "priority": "MEDIUM",
+            "tags": "test, form",
         }
         form = WishForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -79,39 +76,39 @@ class WishCreateViewTestCase(TestCase):
         )
         self.client = Client()
         self.client.login(username="staffuser", password="testpassword")
-        
+
     def test_create_view_sets_draft_status(self):
         """Test that the create view sets DRAFT status."""
-        url = reverse('staff:wish-create')
+        url = reverse("staff:wish-create")
         data = {
-            'title': 'Test Create View',
-            'description': 'This wish should get DRAFT status',
-            'priority': 'MEDIUM',
-            'tags': 'test, view',
-            'effort': 'sm',
-            'value': '⭐️⭐️⭐️',
+            "title": "Test Create View",
+            "description": "This wish should get DRAFT status",
+            "priority": "MEDIUM",
+            "tags": "test, view",
+            "effort": "sm",
+            "value": "⭐️⭐️⭐️",
         }
         response = self.client.post(url, data, follow=True)
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that the wish was created with DRAFT status
-        wish = Wish.objects.get(title='Test Create View')
+        wish = Wish.objects.get(title="Test Create View")
         self.assertEqual(wish.status, "DRAFT")
-    
+
     def test_complete_view_can_change_draft_to_todo(self):
         """Test that the complete view can change a wish from DRAFT to TODO."""
         # Create a wish in DRAFT status
         wish = Wish.objects.create(
             title="Test Ready Button",
             description="This wish should move from DRAFT to TODO",
-            status="DRAFT"
+            status="DRAFT",
         )
-        
+
         # Call the complete view to set status to TODO
-        url = reverse('staff:wish-complete', kwargs={'pk': wish.pk})
+        url = reverse("staff:wish-complete", kwargs={"pk": wish.pk})
         response = self.client.post(f"{url}?set_status=TODO", follow=True)
         self.assertEqual(response.status_code, 200)
-        
+
         # Refresh the wish from database
         wish.refresh_from_db()
         self.assertEqual(wish.status, "TODO")
@@ -130,53 +127,43 @@ class WishListViewTabsTestCase(TestCase):
         )
         self.client = Client()
         self.client.login(username="staffuser", password="testpassword")
-        
+
         # Create wishes with different statuses
-        self.draft_wish = Wish.objects.create(
-            title="Draft Wish",
-            status="DRAFT"
-        )
-        self.todo_wish = Wish.objects.create(
-            title="Todo Wish",
-            status="TODO"
-        )
+        self.draft_wish = Wish.objects.create(title="Draft Wish", status="DRAFT")
+        self.todo_wish = Wish.objects.create(title="Todo Wish", status="TODO")
         self.in_progress_wish = Wish.objects.create(
-            title="In Progress Wish",
-            status="IN_PROGRESS"
+            title="In Progress Wish", status="IN_PROGRESS"
         )
-        self.done_wish = Wish.objects.create(
-            title="Done Wish",
-            status="DONE"
-        )
-        
+        self.done_wish = Wish.objects.create(title="Done Wish", status="DONE")
+
     def test_list_view_has_tabs(self):
         """Test that the list view has tabs for different statuses."""
-        url = reverse('staff:wish-list')
+        url = reverse("staff:wish-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        
+
         # Check that the tabs are present in the response
-        content = response.content.decode('utf-8')
-        self.assertIn('All', content)
-        self.assertIn('Draft', content)
-        self.assertIn('To Do', content)
-        self.assertIn('In Progress', content)
-        self.assertIn('Done', content)
-        
+        content = response.content.decode("utf-8")
+        self.assertIn("All", content)
+        self.assertIn("Draft", content)
+        self.assertIn("To Do", content)
+        self.assertIn("In Progress", content)
+        self.assertIn("Done", content)
+
     def test_filtering_by_tab(self):
         """Test that clicking on a tab filters wishes by status."""
         # Test Draft tab
-        url = reverse('staff:wish-list') + '?status=DRAFT'
+        url = reverse("staff:wish-list") + "?status=DRAFT"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        content = response.content.decode('utf-8')
-        self.assertIn('Draft Wish', content)
-        self.assertNotIn('Todo Wish', content)
-        
+        content = response.content.decode("utf-8")
+        self.assertIn("Draft Wish", content)
+        self.assertNotIn("Todo Wish", content)
+
         # Test Todo tab
-        url = reverse('staff:wish-list') + '?status=TODO'
+        url = reverse("staff:wish-list") + "?status=TODO"
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        content = response.content.decode('utf-8')
-        self.assertIn('Todo Wish', content)
-        self.assertNotIn('Draft Wish', content)
+        content = response.content.decode("utf-8")
+        self.assertIn("Todo Wish", content)
+        self.assertNotIn("Draft Wish", content)

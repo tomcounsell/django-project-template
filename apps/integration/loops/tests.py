@@ -7,7 +7,6 @@ from apps.integration.loops.shortcuts import send_waiver_signing_request
 
 
 class LoopsClientTestCase(TestCase):
-
     @override_settings(DEBUG=True)
     def test_debug_mode_disables_email_sending(self):
         """Test that in DEBUG mode, emails are not sent but logged instead"""
@@ -71,7 +70,6 @@ class LoopsClientTestCase(TestCase):
 
 
 class WaiverEmailTests(TestCase):
-
     def test_send_waiver_signing_request(self):
         """Test the waiver signing request function with patching."""
         # Set up mock objects

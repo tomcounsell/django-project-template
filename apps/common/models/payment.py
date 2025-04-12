@@ -160,7 +160,7 @@ class Payment(Timestampable, models.Model):
         Returns:
             str: A formatted string with payment ID, amount, and status
         """
-        return f"Payment {self.id} - {self.amount/100:.2f} ({self.status})"
+        return f"Payment {self.id} - {self.amount / 100:.2f} ({self.status})"
 
     @property
     def amount_display(self) -> str:
@@ -173,7 +173,7 @@ class Payment(Timestampable, models.Model):
         Returns:
             str: Formatted dollar amount with currency (e.g., "$19.99 USD")
         """
-        return f"${self.amount/100:.2f} {self.currency}"
+        return f"${self.amount / 100:.2f} {self.currency}"
 
     @property
     def is_successful(self) -> bool:

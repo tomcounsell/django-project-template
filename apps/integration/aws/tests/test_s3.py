@@ -7,7 +7,6 @@ import tempfile
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
-import pytest
 from botocore.exceptions import ClientError
 from django.test import TestCase, override_settings
 

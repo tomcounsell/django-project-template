@@ -47,7 +47,7 @@ class Wish(Timestampable, models.Model):
         (STATUS_BLOCKED, "Blocked"),
         (STATUS_DONE, "Done"),
     ]
-    
+
     # Effort choices
     EFFORT_SMALL = "sm"
     EFFORT_ONE = "1"
@@ -63,7 +63,7 @@ class Wish(Timestampable, models.Model):
         (EFFORT_EIGHT, "8 points"),
         (EFFORT_BREAKDOWN, "Needs breakdown"),
     ]
-    
+
     # Value choices
     VALUE_ONE = "⭐️"
     VALUE_TWO = "⭐️⭐️"
@@ -107,9 +107,7 @@ class Wish(Timestampable, models.Model):
         blank=True,
     )
     cost_estimate = models.PositiveIntegerField(
-        null=True, 
-        blank=True,
-        help_text="Estimated cost in dollars (no cents)"
+        null=True, blank=True, help_text="Estimated cost in dollars (no cents)"
     )
     due_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -153,7 +151,7 @@ class Wish(Timestampable, models.Model):
             return "Overdue by 1 day"
         else:
             return f"Overdue by {abs(days)} days"
-            
+
     @property
     def formatted_cost(self):
         """Returns the cost estimate formatted as currency."""
@@ -199,42 +197,42 @@ class Wish(Timestampable, models.Model):
             raise ValueError(f"Invalid priority: {priority}")
         self.priority = priority
         self.save()
-        
+
     def add_tag(self, tag):
         """Add a tag to this wish if it doesn't already exist."""
         if not isinstance(self.tags, list):
             self.tags = []
-        
+
         tag = tag.strip().lower()
         if tag and tag not in self.tags:
             self.tags.append(tag)
             self.save()
-            
+
     def remove_tag(self, tag):
         """Remove a tag from this wish."""
         if not isinstance(self.tags, list):
             self.tags = []
             return
-            
+
         tag = tag.strip().lower()
         if tag in self.tags:
             self.tags.remove(tag)
             self.save()
-            
+
     def set_effort(self, effort):
         """Set the effort estimation for this wish."""
         if effort not in dict(self.EFFORT_CHOICES):
             raise ValueError(f"Invalid effort: {effort}")
         self.effort = effort
         self.save()
-        
+
     def set_value(self, value):
         """Set the business value for this wish."""
         if value not in dict(self.VALUE_CHOICES):
             raise ValueError(f"Invalid value: {value}")
         self.value = value
         self.save()
-        
+
     def set_cost_estimate(self, cost_estimate):
         """Set the cost estimate for this wish in dollars."""
         if cost_estimate is not None:
@@ -245,7 +243,7 @@ class Wish(Timestampable, models.Model):
                     raise ValueError("Cost estimate cannot be negative")
             except (ValueError, TypeError):
                 raise ValueError("Cost estimate must be a positive integer or None")
-                
+
         self.cost_estimate = cost_estimate
         self.save()
 

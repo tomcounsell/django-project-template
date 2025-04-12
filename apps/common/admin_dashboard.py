@@ -43,7 +43,7 @@ def get_admin_dashboard(request, context=None):
     user_count = User.objects.count()
     active_users = User.objects.filter(is_active=True).count()
     staff_users = User.objects.filter(is_staff=True).count()
-    superusers = User.objects.filter(is_superuser=True).count()
+    # superuser count removed as unused
 
     # Make sure we use a timezone-aware datetime
     today = now().date()
@@ -56,8 +56,7 @@ def get_admin_dashboard(request, context=None):
     staff_percentage = round((staff_users / user_count) * 100) if user_count > 0 else 0
 
     # Calculate user growth data
-    last_month = today.replace(day=1) - datetime.timedelta(days=1)
-    last_month_start = last_month.replace(day=1)
+    # Get users from previous month
     users_last_month = User.objects.filter(date_joined__lt=today.replace(day=1)).count()
     user_growth = (
         round(((user_count - users_last_month) / users_last_month) * 100)
@@ -275,7 +274,7 @@ def get_admin_dashboard(request, context=None):
                                     </div>
                                     
                                     <div class="mt-3">
-                                        <a href="{reverse('admin:common_email_changelist')}" 
+                                        <a href="{reverse("admin:common_email_changelist")}" 
                                            class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
                                             View all emails
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
@@ -306,7 +305,7 @@ def get_admin_dashboard(request, context=None):
                                     </div>
                                     
                                     <div class="mt-3">
-                                        <a href="{reverse('admin:common_sms_changelist')}" 
+                                        <a href="{reverse("admin:common_sms_changelist")}" 
                                            class="text-green-500 hover:text-green-700 text-sm flex items-center">
                                             View all SMS
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
@@ -332,7 +331,7 @@ def get_admin_dashboard(request, context=None):
                                             <div class="text-sm text-gray-500">Total Payments</div>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-lg font-semibold text-green-600">${total_revenue/100:.2f}</div>
+                                            <div class="text-lg font-semibold text-green-600">${total_revenue / 100:.2f}</div>
                                             <div class="text-xs text-gray-500">Total Revenue</div>
                                         </div>
                                     </div>
@@ -343,33 +342,33 @@ def get_admin_dashboard(request, context=None):
                                                 <span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
                                                 Succeeded
                                             </span>
-                                            <span class="font-medium">{payment_stats['succeeded']}</span>
+                                            <span class="font-medium">{payment_stats["succeeded"]}</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
                                                 <span class="w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>
                                                 Pending
                                             </span>
-                                            <span class="font-medium">{payment_stats['pending']}</span>
+                                            <span class="font-medium">{payment_stats["pending"]}</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
                                                 <span class="w-2 h-2 rounded-full bg-red-500 mr-1"></span>
                                                 Failed
                                             </span>
-                                            <span class="font-medium">{payment_stats['failed']}</span>
+                                            <span class="font-medium">{payment_stats["failed"]}</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
                                                 <span class="w-2 h-2 rounded-full bg-purple-500 mr-1"></span>
                                                 Refunded
                                             </span>
-                                            <span class="font-medium">{payment_stats['refunded']}</span>
+                                            <span class="font-medium">{payment_stats["refunded"]}</span>
                                         </div>
                                     </div>
                                     
                                     <div class="mt-3">
-                                        <a href="{reverse('admin:common_payment_changelist')}" 
+                                        <a href="{reverse("admin:common_payment_changelist")}" 
                                            class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
                                             View all payments
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
@@ -384,7 +383,7 @@ def get_admin_dashboard(request, context=None):
                                             <div class="text-sm text-gray-500">Subscriptions</div>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-lg font-semibold text-green-600">{subscription_stats['active']}</div>
+                                            <div class="text-lg font-semibold text-green-600">{subscription_stats["active"]}</div>
                                             <div class="text-xs text-gray-500">Active</div>
                                         </div>
                                     </div>
@@ -395,33 +394,33 @@ def get_admin_dashboard(request, context=None):
                                                 <span class="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
                                                 Active
                                             </span>
-                                            <span class="font-medium">{subscription_stats['active']}</span>
+                                            <span class="font-medium">{subscription_stats["active"]}</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
                                                 <span class="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
                                                 Trialing
                                             </span>
-                                            <span class="font-medium">{subscription_stats['trialing']}</span>
+                                            <span class="font-medium">{subscription_stats["trialing"]}</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
                                                 <span class="w-2 h-2 rounded-full bg-orange-500 mr-1"></span>
                                                 Past Due
                                             </span>
-                                            <span class="font-medium">{subscription_stats['past_due']}</span>
+                                            <span class="font-medium">{subscription_stats["past_due"]}</span>
                                         </div>
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
                                                 <span class="w-2 h-2 rounded-full bg-red-500 mr-1"></span>
                                                 Canceled
                                             </span>
-                                            <span class="font-medium">{subscription_stats['canceled']}</span>
+                                            <span class="font-medium">{subscription_stats["canceled"]}</span>
                                         </div>
                                     </div>
                                     
                                     <div class="mt-3">
-                                        <a href="{reverse('admin:common_subscription_changelist')}" 
+                                        <a href="{reverse("admin:common_subscription_changelist")}" 
                                            class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
                                             View all subscriptions
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
@@ -448,20 +447,34 @@ def get_admin_dashboard(request, context=None):
                             <div class="mb-4">
                                 <h3 class="text-lg font-semibold mb-2">Main Navigation</h3>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                    {" ".join([f'<a href="{reverse(f"admin:common_{model.lower()}_changelist")}" class="bg-gray-100 dark:bg-gray-800 p-2 text-center rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition">{model}</a>' for model in MAIN_NAV_MODELS])}
+                                    {
+                        " ".join(
+                            [
+                                f'<a href="{reverse(f"admin:common_{model.lower()}_changelist")}" class="bg-gray-100 dark:bg-gray-800 p-2 text-center rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition">{model}</a>'
+                                for model in MAIN_NAV_MODELS
+                            ]
+                        )
+                    }
                                 </div>
                             </div>
                             
                             <div class="mb-3">
                                 <h3 class="text-lg font-semibold mb-2">Categories</h3>
                                 <div class="space-y-3">
-                                    {" ".join([f'''
+                                    {
+                        " ".join(
+                            [
+                                f'''
                                     <div>
                                         <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-1">{category}</h4>
                                         <div class="grid grid-cols-2 md:grid-cols-3 gap-1 text-sm">
                                             {" ".join([f'<a href="{reverse(f"admin:common_{model.lower()}_changelist")}" class="text-blue-600 dark:text-blue-400 hover:underline">{model}</a>' for model in models])}
                                         </div>
-                                    </div>''' for category, models in ADMIN_CATEGORIES.items()])}
+                                    </div>'''
+                                for category, models in ADMIN_CATEGORIES.items()
+                            ]
+                        )
+                    }
                                 </div>
                             </div>
                             

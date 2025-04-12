@@ -140,7 +140,9 @@ class AccountSettingsTestCase(TestCase):
 
         # Submit the password change form
         response = self.client.post(
-            change_password_url, password_data, follow=True  # Follow redirects
+            change_password_url,
+            password_data,
+            follow=True,  # Follow redirects
         )
 
         # Check the response is successful

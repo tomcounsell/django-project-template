@@ -271,20 +271,24 @@ class WishAdmin(ModelAdmin):
     def tags_display(self, obj):
         if not obj.tags or not isinstance(obj.tags, list) or len(obj.tags) == 0:
             return "-"
-            
+
         tags_html = []
         for tag in obj.tags[:3]:  # Show first 3 tags
             tags_html.append(
                 format_html(
                     '<span class="unfold-badge bg-blue-500 text-white mr-1">{}</span>',
-                    tag
+                    tag,
                 )
             )
-            
+
         if len(obj.tags) > 3:
-            tags_html.append(format_html('<span class="text-gray-500">+{} more</span>', len(obj.tags) - 3))
-            
-        return format_html(''.join([str(tag) for tag in tags_html]))
+            tags_html.append(
+                format_html(
+                    '<span class="text-gray-500">+{} more</span>', len(obj.tags) - 3
+                )
+            )
+
+        return format_html("".join([str(tag) for tag in tags_html]))
 
     def status_badge(self, obj):
         colors = {
@@ -298,29 +302,29 @@ class WishAdmin(ModelAdmin):
             colors.get(obj.status, "bg-gray-500"),
             obj.get_status_display(),
         )
-        
+
     def effort_display(self, obj):
         if not obj.effort:
             return "-"
-            
+
         return format_html(
             '<span class="unfold-badge bg-slate-500 text-white">{}</span>',
-            obj.get_effort_display()
+            obj.get_effort_display(),
         )
-        
+
     def value_display(self, obj):
         if not obj.value:
             return "-"
-            
+
         return obj.value
-        
+
     def cost_display(self, obj):
         if obj.cost_estimate is None:
             return "-"
-            
+
         return format_html(
             '<span class="unfold-badge bg-green-500 text-white">{}</span>',
-            obj.formatted_cost
+            obj.formatted_cost,
         )
 
     def due_date_display(self, obj):

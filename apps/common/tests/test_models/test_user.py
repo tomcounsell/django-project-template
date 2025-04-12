@@ -198,17 +198,17 @@ class UserModelTestCase(TimestampableTest, TestCase):
 
             # The fallback should use the user ID
             self.assertEqual(str(user), f"User {user.id}")
-            
+
     def test_initials_property_with_first_and_last_name(self):
         """Test the initials property with first and last name."""
         self.assertEqual(self.user.initials, "TU")
-        
+
     def test_initials_property_with_only_first_name(self):
         """Test the initials property with only first name."""
         self.user.last_name = ""
         self.user.save()
         self.assertEqual(self.user.initials, "T")
-        
+
     def test_initials_property_with_unverified_email(self):
         """Test the initials property with unverified email."""
         # Create a new user with email-like username
@@ -219,13 +219,13 @@ class UserModelTestCase(TimestampableTest, TestCase):
             password="password123",
             is_email_verified=False,
         )
-        
+
         # Initials should extract from the part before the parentheses
         self.assertEqual(email_user.initials, "E")  # First letter of the email
-        
+
     def test_initials_empty_fallback(self):
         """Test the initials property with empty string representation."""
         from unittest import mock
-        
+
         with mock.patch("apps.common.models.user.User.__str__", return_value=""):
             self.assertEqual(self.user.initials, "U")  # Default fallback

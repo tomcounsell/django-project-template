@@ -141,7 +141,8 @@ class StripeShortcutsTestCase(TestCase):
 
         # Verify client was called correctly
         self.mock_client.cancel_subscription.assert_called_once_with(
-            subscription_id="sub_test123", at_period_end=True  # Default value
+            subscription_id="sub_test123",
+            at_period_end=True,  # Default value
         )
 
         # Test with at_period_end=False

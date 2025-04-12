@@ -4,33 +4,57 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('staff', '0001_initial'),
+        ("staff", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='wish',
-            name='assignee',
+            model_name="wish",
+            name="assignee",
         ),
         migrations.RemoveField(
-            model_name='wish',
-            name='category',
+            model_name="wish",
+            name="category",
         ),
         migrations.AddField(
-            model_name='wish',
-            name='effort',
-            field=models.CharField(blank=True, choices=[('sm', 'Small'), ('1', '1 point'), ('2', '2 points'), ('4', '4 points'), ('8', '8 points'), ('breakdown', 'Needs breakdown')], default='sm', max_length=10, null=True),
+            model_name="wish",
+            name="effort",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("sm", "Small"),
+                    ("1", "1 point"),
+                    ("2", "2 points"),
+                    ("4", "4 points"),
+                    ("8", "8 points"),
+                    ("breakdown", "Needs breakdown"),
+                ],
+                default="sm",
+                max_length=10,
+                null=True,
+            ),
         ),
         migrations.AddField(
-            model_name='wish',
-            name='tags',
+            model_name="wish",
+            name="tags",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AddField(
-            model_name='wish',
-            name='value',
-            field=models.CharField(blank=True, choices=[('⭐️', '1 star'), ('⭐️⭐️', '2 stars'), ('⭐️⭐️⭐️', '3 stars'), ('⭐️⭐️⭐️⭐️', '4 stars'), ('⭐️⭐️⭐️⭐️⭐️', '5 stars')], default='⭐️⭐️⭐️', max_length=10, null=True),
+            model_name="wish",
+            name="value",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("⭐️", "1 star"),
+                    ("⭐️⭐️", "2 stars"),
+                    ("⭐️⭐️⭐️", "3 stars"),
+                    ("⭐️⭐️⭐️⭐️", "4 stars"),
+                    ("⭐️⭐️⭐️⭐️⭐️", "5 stars"),
+                ],
+                default="⭐️⭐️⭐️",
+                max_length=10,
+                null=True,
+            ),
         ),
     ]

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from apps.integration.loops.client import LoopsAPIError, LoopsClient
 

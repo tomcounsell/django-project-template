@@ -183,84 +183,95 @@ class WishModelTestCase(TestCase):
         # Test with invalid status
         with self.assertRaises(ValueError):
             self.wish.set_status("INVALID")
-            
+
     def test_tag_methods(self):
         """Test the add_tag and remove_tag methods."""
         # Start with existing tags from setUp
         self.assertEqual(self.wish.tags, ["api", "backend", "error-handling"])
-        
+
         # Add a new tag
         self.wish.add_tag("documentation")
-        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling", "documentation"])
-        
+        self.assertEqual(
+            self.wish.tags, ["api", "backend", "error-handling", "documentation"]
+        )
+
         # Add a duplicate tag (should not add)
         self.wish.add_tag("api")
-        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling", "documentation"])
-        
+        self.assertEqual(
+            self.wish.tags, ["api", "backend", "error-handling", "documentation"]
+        )
+
         # Add a tag with uppercase (should be converted to lowercase)
         self.wish.add_tag("HIGH-PRIORITY")
-        self.assertEqual(self.wish.tags, ["api", "backend", "error-handling", "documentation", "high-priority"])
-        
+        self.assertEqual(
+            self.wish.tags,
+            ["api", "backend", "error-handling", "documentation", "high-priority"],
+        )
+
         # Remove a tag
         self.wish.remove_tag("backend")
-        self.assertEqual(self.wish.tags, ["api", "error-handling", "documentation", "high-priority"])
-        
+        self.assertEqual(
+            self.wish.tags, ["api", "error-handling", "documentation", "high-priority"]
+        )
+
         # Remove a non-existent tag (should not error)
         self.wish.remove_tag("nonexistent")
-        self.assertEqual(self.wish.tags, ["api", "error-handling", "documentation", "high-priority"])
-        
+        self.assertEqual(
+            self.wish.tags, ["api", "error-handling", "documentation", "high-priority"]
+        )
+
     def test_effort_and_value_methods(self):
         """Test the set_effort and set_value methods."""
         # Test set_effort
         self.assertEqual(self.wish.effort, "2")
-        
+
         self.wish.set_effort("4")
         self.assertEqual(self.wish.effort, "4")
-        
+
         self.wish.set_effort("breakdown")
         self.assertEqual(self.wish.effort, "breakdown")
-        
+
         # Test with invalid effort
         with self.assertRaises(ValueError):
             self.wish.set_effort("invalid")
-            
+
         # Test set_value
         self.assertEqual(self.wish.value, "⭐️⭐️⭐️⭐️")
-        
+
         self.wish.set_value("⭐️⭐️⭐️")
         self.assertEqual(self.wish.value, "⭐️⭐️⭐️")
-        
+
         self.wish.set_value("⭐️")
         self.assertEqual(self.wish.value, "⭐️")
-        
+
         # Test with invalid value
         with self.assertRaises(ValueError):
             self.wish.set_value("invalid")
-            
+
     def test_cost_estimate_methods(self):
         """Test the cost_estimate property and methods."""
         # Test formatted_cost property
         self.assertEqual(self.wish.cost_estimate, 500)
         self.assertEqual(self.wish.formatted_cost, "$500")
-        
+
         # Test set_cost_estimate method
         self.wish.set_cost_estimate(1000)
         self.assertEqual(self.wish.cost_estimate, 1000)
         self.assertEqual(self.wish.formatted_cost, "$1,000")
-        
+
         # Test with string value (should convert to int)
         self.wish.set_cost_estimate("2500")
         self.assertEqual(self.wish.cost_estimate, 2500)
-        
+
         # Test with None (clear cost)
         self.wish.set_cost_estimate(None)
         self.assertIsNone(self.wish.cost_estimate)
         self.assertIsNone(self.wish.formatted_cost)
-        
+
         # Test with negative value (should raise error)
         with self.assertRaises(ValueError):
             self.wish.set_cost_estimate(-100)
-            
+
         # Test with invalid value
         with self.assertRaises(ValueError):
             self.wish.set_cost_estimate("not a number")
