@@ -52,9 +52,9 @@
   >
     {% csrf_token %}
     
-    <div class="pb-6">
+    <div class="p-4 bg-gray-50 rounded-xs">
       {% if form.non_field_errors %}
-        <div class="rounded-xs bg-red-50 p-4 mb-6 border border-red-100 shadow-sm">
+        <div class="rounded-xs bg-red-50 p-4 mb-6 border border-red-200 shadow-xs">
           <div class="flex">
             <div class="shrink-0">
               <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -77,65 +77,45 @@
         </div>
       {% endif %}
       
-      <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-6">
+      <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+        {# Process specific fields in order #}
+        
+        {# First field - Title (full width) #}
         {% for field in form %}
-          {% if field.is_hidden %}
-            {{ field }}
-          {% else %}
-            {% if field.name == 'title' %}
-              <div class="col-span-full">
-                <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
-                  {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
-                </label>
-                
-                <input 
-                  type="text" 
-                  id="id_{{ field.name }}" 
-                  name="{{ field.name }}" 
-                  value="{% if field.value %}{{ field.value }}{% endif %}" 
-                  class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                  placeholder="Enter wish title"
-                  {% if field.field.required %}required{% endif %}
-                  autocomplete="off"
-                >
-                
-                {% if field.errors %}
-                  <p class="text-red-500 text-xs mt-1 flex items-center">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ field.errors.0 }}
-                  </p>
-                {% endif %}
-              </div>
-            
-            {% elif field.name == 'description' %}
-              <div class="col-span-full">
-                <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
-                  {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
-                </label>
-                
-                <textarea 
-                  id="id_{{ field.name }}" 
-                  name="{{ field.name }}" 
-                  rows="4" 
-                  class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                  placeholder="Describe this wish in detail"
-                  {% if field.field.required %}required{% endif %}
-                >{% if field.value %}{{ field.value }}{% endif %}</textarea>
-                
-                {% if field.errors %}
-                  <p class="text-red-500 text-xs mt-1 flex items-center">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ field.errors.0 }}
-                  </p>
-                {% endif %}
-              </div>
-            
-            {% elif field.name == 'status' or field.name == 'priority' %}
-              <div class="sm:col-span-3 col-span-full">
+          {% if field.name == 'title' %}
+            <div class="col-span-full">
+              <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
+                {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+              </label>
+              
+              <input 
+                type="text" 
+                id="id_{{ field.name }}" 
+                name="{{ field.name }}" 
+                value="{% if field.value %}{{ field.value }}{% endif %}" 
+                class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                placeholder="Enter wish title"
+                {% if field.field.required %}required{% endif %}
+                autocomplete="off"
+              >
+              
+              {% if field.errors %}
+                <p class="text-red-500 text-xs mt-1 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ field.errors.0 }}
+                </p>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        
+        {# Status, Priority and Cost Estimate row #}
+        <div class="col-span-full grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {% for field in form %}
+            {% if field.name == 'status' %}
+              <div>
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
@@ -144,22 +124,54 @@
                   <select 
                     id="id_{{ field.name }}" 
                     name="{{ field.name }}" 
-                    class="appearance-none block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    class="appearance-none block w-full rounded-xs border-gray-300 {% if field.field.disabled %}bg-gray-100 text-gray-500{% else %}bg-white{% endif %} focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs py-2 text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    {% if field.field.required %}required{% endif %}
+                    {% if field.field.disabled %}disabled{% endif %}
+                  >
+                    {% for status_value, status_label in form.fields.status.choices %}
+                      <option value="{{ status_value }}" {% if field.value|stringformat:"s" == status_value|stringformat:"s" %}selected{% endif %}>
+                        {{ status_label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                {% if field.errors %}
+                  <p class="text-red-500 text-xs mt-1 flex items-center">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ field.errors.0 }}
+                  </p>
+                {% endif %}
+                
+                {% if field.name == 'status' and show_draft_status %}
+                  <p class="text-xs text-slate-500 mt-1">New wishes start as drafts</p>
+                {% endif %}
+              </div>
+            {% elif field.name == 'priority' %}
+              <div>
+                <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
+                  {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+                </label>
+                
+                <div class="relative">
+                  <select 
+                    id="id_{{ field.name }}" 
+                    name="{{ field.name }}" 
+                    class="appearance-none block w-full rounded-xs border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs py-2 text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                   >
-                    {% if field.name == 'status' %}
-                      {% for status_value, status_label in form.fields.status.choices %}
-                        <option value="{{ status_value }}" {% if field.value|stringformat:"s" == status_value|stringformat:"s" %}selected{% endif %}>
-                          {{ status_label }}
-                        </option>
-                      {% endfor %}
-                    {% else %}
-                      {% for priority_value, priority_label in form.fields.priority.choices %}
-                        <option value="{{ priority_value }}" {% if field.value|stringformat:"s" == priority_value|stringformat:"s" %}selected{% endif %}>
-                          {{ priority_label }}
-                        </option>
-                      {% endfor %}
-                    {% endif %}
+                    {% for priority_value, priority_label in form.fields.priority.choices %}
+                      <option value="{{ priority_value }}" {% if field.value|stringformat:"s" == priority_value|stringformat:"s" %}selected{% endif %}>
+                        {{ priority_label }}
+                      </option>
+                    {% endfor %}
                   </select>
                   <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -177,61 +189,29 @@
                   </p>
                 {% endif %}
               </div>
-            
-            {% elif field.name == 'effort' or field.name == 'value' or field.name == 'cost_estimate' %}
-              <div class="sm:col-span-2 col-span-full">
+            {% elif field.name == 'cost_estimate' %}
+              <div>
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
                 
-                {% if field.name == 'effort' or field.name == 'value' %}
-                  <div class="relative">
-                    <select 
-                      id="id_{{ field.name }}" 
-                      name="{{ field.name }}" 
-                      class="appearance-none block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                      {% if field.field.required %}required{% endif %}
-                    >
-                      <option value="">{% if field.name == 'effort' %}Select Effort{% else %}Select Value{% endif %}</option>
-                      {% if field.name == 'effort' %}
-                        {% for effort_value, effort_label in form.fields.effort.choices %}
-                          <option value="{{ effort_value }}" {% if field.value|stringformat:"s" == effort_value|stringformat:"s" %}selected{% endif %}>
-                            {{ effort_label }}
-                          </option>
-                        {% endfor %}
-                      {% else %}
-                        {% for value_code, value_label in form.fields.value.choices %}
-                          <option value="{{ value_code }}" {% if field.value|stringformat:"s" == value_code|stringformat:"s" %}selected{% endif %}>
-                            {{ value_label }}
-                          </option>
-                        {% endfor %}
-                      {% endif %}
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                      </svg>
-                    </div>
+                <!-- Cost Estimate with $ prefix -->
+                <div class="relative rounded-xs shadow-xs">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span class="text-slate-500 sm:text-sm">$</span>
                   </div>
-                {% else %}
-                  <!-- Cost Estimate with $ prefix -->
-                  <div class="relative rounded-xs shadow-xs">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <span class="text-slate-500 sm:text-sm">$</span>
-                    </div>
-                    <input 
-                      type="number" 
-                      id="id_{{ field.name }}" 
-                      name="{{ field.name }}" 
-                      value="{% if field.value %}{{ field.value }}{% endif %}" 
-                      class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 pl-7 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                      min="0"
-                      step="1"
-                      placeholder="0"
-                      {% if field.field.required %}required{% endif %}
-                    >
-                  </div>
-                {% endif %}
+                  <input 
+                    type="number" 
+                    id="id_{{ field.name }}" 
+                    name="{{ field.name }}" 
+                    value="{% if field.value %}{{ field.value }}{% endif %}" 
+                    class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 pl-7 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                    {% if field.field.required %}required{% endif %}
+                  >
+                </div>
                 
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
@@ -246,9 +226,123 @@
                   <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
                 {% endif %}
               </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        
+        {# Description field (full width) #}
+        {% for field in form %}
+          {% if field.name == 'description' %}
+            <div class="col-span-full">
+              <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
+                {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+              </label>
               
-            {% elif field.name == 'tags' %}
-              <div class="sm:col-span-3 col-span-full">
+              <textarea 
+                id="id_{{ field.name }}" 
+                name="{{ field.name }}" 
+                rows="4" 
+                class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                placeholder="Describe this wish in detail"
+                {% if field.field.required %}required{% endif %}
+              >{% if field.value %}{{ field.value }}{% endif %}</textarea>
+              
+              {% if field.errors %}
+                <p class="text-red-500 text-xs mt-1 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ field.errors.0 }}
+                </p>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        
+        {# Effort and Value row (2 columns) #}
+        <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {% for field in form %}
+            {% if field.name == 'effort' %}
+              <div>
+                <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
+                  {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+                </label>
+                
+                <div class="relative">
+                  <select 
+                    id="id_{{ field.name }}" 
+                    name="{{ field.name }}" 
+                    class="appearance-none block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    {% if field.field.required %}required{% endif %}
+                  >
+                    <option value="">Select Effort</option>
+                    {% for effort_value, effort_label in form.fields.effort.choices %}
+                      <option value="{{ effort_value }}" {% if field.value|stringformat:"s" == effort_value|stringformat:"s" %}selected{% endif %}>
+                        {{ effort_label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                {% if field.errors %}
+                  <p class="text-red-500 text-xs mt-1 flex items-center">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ field.errors.0 }}
+                  </p>
+                {% endif %}
+              </div>
+            {% elif field.name == 'value' %}
+              <div>
+                <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
+                  {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+                </label>
+                
+                <div class="relative">
+                  <select 
+                    id="id_{{ field.name }}" 
+                    name="{{ field.name }}" 
+                    class="appearance-none block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    {% if field.field.required %}required{% endif %}
+                  >
+                    <option value="">Select Value</option>
+                    {% for value_code, value_label in form.fields.value.choices %}
+                      <option value="{{ value_code }}" {% if field.value|stringformat:"s" == value_code|stringformat:"s" %}selected{% endif %}>
+                        {{ value_label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                {% if field.errors %}
+                  <p class="text-red-500 text-xs mt-1 flex items-center">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    {{ field.errors.0 }}
+                  </p>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        
+        {# Tags and Due Date row (2 columns) #}
+        <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {% for field in form %}
+            {% if field.name == 'tags' %}
+              <div>
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
@@ -264,7 +358,7 @@
                     id="id_{{ field.name }}" 
                     name="{{ field.name }}" 
                     value="{% if field.value %}{{ field.value|join:", " }}{% endif %}" 
-                    class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pl-10 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pl-10 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     placeholder="Enter comma-separated tags"
                     {% if field.field.required %}required{% endif %}
                   >
@@ -288,9 +382,8 @@
                   </p>
                 {% endif %}
               </div>
-              
             {% elif field.name == 'due_at' %}
-              <div class="sm:col-span-3 col-span-full">
+              <div>
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
@@ -306,7 +399,7 @@
                     id="id_{{ field.name }}" 
                     name="{{ field.name }}" 
                     value="{% if field.value %}{{ field.value|date:'Y-m-d' }}{% endif %}" 
-                    class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm pl-10 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                    class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pl-10 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                   >
                 </div>
@@ -320,36 +413,42 @@
                   </p>
                 {% endif %}
               </div>
-              
-            {% else %}
-              <div class="sm:col-span-4 col-span-full">
-                <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
-                  {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
-                </label>
-                
-                <input 
-                  type="text" 
-                  id="id_{{ field.name }}" 
-                  name="{{ field.name }}" 
-                  value="{% if field.value %}{{ field.value }}{% endif %}" 
-                  class="block w-full rounded-xs border-slate-300 focus:border-slate-500 focus:ring focus:ring-slate-200 focus:ring-opacity-50 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                  {% if field.field.required %}required{% endif %}
-                >
-                
-                {% if field.errors %}
-                  <p class="text-red-500 text-xs mt-1 flex items-center">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    {{ field.errors.0 }}
-                  </p>
-                {% endif %}
-                
-                {% if field.help_text %}
-                  <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
-                {% endif %}
-              </div>
             {% endif %}
+          {% endfor %}
+        </div>
+        
+        {# Process any remaining fields that don't fit into the sections above #}
+        {% for field in form %}
+          {% if field.is_hidden %}
+            {{ field }}
+          {% elif field.name != 'title' and field.name != 'description' and field.name != 'status' and field.name != 'priority' and field.name != 'cost_estimate' and field.name != 'effort' and field.name != 'value' and field.name != 'tags' and field.name != 'due_at' %}
+            <div class="sm:col-span-4 col-span-full">
+              <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
+                {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+              </label>
+              
+              <input 
+                type="text" 
+                id="id_{{ field.name }}" 
+                name="{{ field.name }}" 
+                value="{% if field.value %}{{ field.value }}{% endif %}" 
+                class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
+                {% if field.field.required %}required{% endif %}
+              >
+              
+              {% if field.errors %}
+                <p class="text-red-500 text-xs mt-1 flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                  {{ field.errors.0 }}
+                </p>
+              {% endif %}
+              
+              {% if field.help_text %}
+                <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+              {% endif %}
+            </div>
           {% endif %}
         {% endfor %}
         
@@ -362,11 +461,11 @@
 {% endblock modal_body %}
 
 {% block modal_footer %}
-  <div class="flex flex-col-reverse sm:flex-row-reverse sm:gap-x-3 gap-y-3">
+  <div class="flex flex-col-reverse sm:flex-row-reverse sm:gap-x-4 gap-y-3 p-1">
     <button
       type="button"
       id="{{ form_id|default:modal_id|add:'-submit' }}"
-      class="inline-flex w-full items-center justify-center rounded-xs bg-slate-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-500 transition-colors sm:w-auto"
+      class="inline-flex w-full items-center justify-center rounded-xs border border-transparent bg-slate-700 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-600 sm:w-auto"
       onclick="document.getElementById('{{ form_id|default:modal_id|add:'-form' }}').requestSubmit(); setTimeout(() => { if (!document.querySelector('.field-errors')) this.closest('.modal-container').innerHTML = '' }, 300)"
     >
       <span>{{ submit_text|default:"Submit" }}</span>
@@ -381,7 +480,7 @@
     <button
       type="button"
       id="{{ form_id|default:modal_id|add:'-cancel' }}"
-      class="inline-flex w-full items-center justify-center rounded-xs bg-white px-4 py-2.5 text-sm font-medium text-slate-700 ring-1 shadow-sm ring-slate-300 ring-inset hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-500 transition-colors sm:w-auto"
+      class="inline-flex w-full items-center justify-center rounded-xs border border-gray-300 shadow-xs text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 px-4 py-2 sm:w-auto"
       onclick="this.closest('.modal-container').innerHTML = ''"
     >
       <svg class="h-4 w-4 mr-1.5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

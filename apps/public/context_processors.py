@@ -41,5 +41,7 @@ def active_navigation(request: HttpRequest) -> Dict[str, Any]:
         active_section = "pricing"
     elif path.startswith("/blog"):
         active_section = "blog"
+    elif path.startswith("/staff/wishes"):
+        active_section = "wishes"
 
     return {"active_section": active_section}

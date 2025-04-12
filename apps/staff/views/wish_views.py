@@ -1,5 +1,6 @@
 import json
 
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -357,7 +358,29 @@ class WishCreateModalView(StaffRequiredMixin, HTMXView):
 
     def get(self, request, *args, **kwargs):
         """Show the create wish form in a modal."""
-        form = WishForm()
+        # Create a custom form class that includes the status field
+        class WishCreateForm(WishForm):
+            status = forms.CharField(
+                required=False,
+                disabled=True,  # Make it disabled so it can't be changed
+                initial=Wish.STATUS_DRAFT,
+                widget=forms.Select(
+                    attrs={
+                        "class": "form-select",
+                        "disabled": "disabled",  # Add HTML disabled attribute
+                    },
+                    choices=Wish.STATUS_CHOICES,
+                ),
+            )
+            
+            class Meta(WishForm.Meta):
+                fields = ["title", "description", "status", "priority", "effort", 
+                          "value", "cost_estimate", "tags", "due_at"]
+
+        form = WishCreateForm()
+        
+        # Set initial value for status field to show "Draft"
+        form.initial["status"] = Wish.STATUS_DRAFT
 
         self.context.update(
             {
@@ -371,6 +394,7 @@ class WishCreateModalView(StaffRequiredMixin, HTMXView):
                 "trigger": "submit",
                 "form_id": "create-wish-form",
                 "modal_size": "xl",
+                "show_draft_status": True,  # Add flag to indicate we're showing a draft status
             }
         )
 
@@ -382,7 +406,26 @@ class WishCreateSubmitView(StaffRequiredMixin, HTMXView):
 
     def post(self, request, *args, **kwargs):
         """Process the wish form submission from the modal."""
-        form = WishForm(request.POST)
+        # Use the same custom form class as in WishCreateModalView
+        class WishCreateForm(WishForm):
+            status = forms.CharField(
+                required=False,
+                disabled=True,
+                initial=Wish.STATUS_DRAFT,
+                widget=forms.Select(
+                    attrs={
+                        "class": "form-select",
+                        "disabled": "disabled",
+                    },
+                    choices=Wish.STATUS_CHOICES,
+                ),
+            )
+            
+            class Meta(WishForm.Meta):
+                fields = ["title", "description", "status", "priority", "effort", 
+                          "value", "cost_estimate", "tags", "due_at"]
+        
+        form = WishCreateForm(request.POST)
 
         if form.is_valid():
             # Save the form but don't commit
@@ -411,6 +454,7 @@ class WishCreateSubmitView(StaffRequiredMixin, HTMXView):
                 "trigger": "submit",
                 "form_id": "create-wish-form",
                 "modal_size": "xl",
+                "show_draft_status": True,  # Add flag to indicate we're showing a draft status
             }
         )
 
