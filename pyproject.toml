@@ -47,6 +47,7 @@ dependencies = [
     "django-htmx",
     "django-unfold",
     "selenium",
+    "repo-map",
 ]
 
 [project.optional-dependencies]

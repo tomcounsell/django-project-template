@@ -8,19 +8,19 @@
     
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-xs text-center">
-            <div class="text-2xl font-bold text-blue-800 dark:text-blue-200">{{ todo_stats.TODO }}</div>
+            <div class="text-2xl font-bold text-blue-800 dark:text-blue-200">{{ wish_stats.TODO }}</div>
             <div class="text-sm text-blue-800 dark:text-blue-200">{% trans "To Do" %}</div>
         </div>
         <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-xs text-center">
-            <div class="text-2xl font-bold text-yellow-800 dark:text-yellow-200">{{ todo_stats.IN_PROGRESS }}</div>
+            <div class="text-2xl font-bold text-yellow-800 dark:text-yellow-200">{{ wish_stats.IN_PROGRESS }}</div>
             <div class="text-sm text-yellow-800 dark:text-yellow-200">{% trans "In Progress" %}</div>
         </div>
         <div class="bg-red-100 dark:bg-red-900 p-3 rounded-xs text-center">
-            <div class="text-2xl font-bold text-red-800 dark:text-red-200">{{ todo_stats.BLOCKED }}</div>
+            <div class="text-2xl font-bold text-red-800 dark:text-red-200">{{ wish_stats.BLOCKED }}</div>
             <div class="text-sm text-red-800 dark:text-red-200">{% trans "Blocked" %}</div>
         </div>
         <div class="bg-green-100 dark:bg-green-900 p-3 rounded-xs text-center">
-            <div class="text-2xl font-bold text-green-800 dark:text-green-200">{{ todo_stats.DONE }}</div>
+            <div class="text-2xl font-bold text-green-800 dark:text-green-200">{{ wish_stats.DONE }}</div>
             <div class="text-sm text-green-800 dark:text-green-200">{% trans "Done" %}</div>
         </div>
     </div>
@@ -28,11 +28,11 @@
     {% if total > 0 %}
     <div class="mb-6">
         <div class="flex justify-between mb-1">
-            <span class="text-sm font-medium">{% trans "Progress" %}: {% widthratio todo_stats.DONE total 100 %}%</span>
-            <span class="text-sm font-medium">{{ todo_stats.DONE }} / {{ total }}</span>
+            <span class="text-sm font-medium">{% trans "Progress" %}: {% widthratio wish_stats.DONE total 100 %}%</span>
+            <span class="text-sm font-medium">{{ wish_stats.DONE }} / {{ total }}</span>
         </div>
         <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {% widthratio todo_stats.DONE total 100 %}%"></div>
+            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {% widthratio wish_stats.DONE total 100 %}%"></div>
         </div>
     </div>
     {% endif %}

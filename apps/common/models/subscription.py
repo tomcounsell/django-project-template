@@ -174,7 +174,7 @@ class Subscription(Timestampable, models.Model):
         """
         Display the price in dollars rather than cents.
         """
-        return f"${self.price/100:.2f}/{self.interval}"
+        return f"${self.price / 100:.2f}/{self.interval}"
 
     @property
     def days_until_expiration(self):

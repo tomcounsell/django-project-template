@@ -19,9 +19,11 @@ admin.site.site_title = ADMIN_SITE_TITLE
 admin.site.site_url = ADMIN_SITE_URL
 admin.site.index_title = ADMIN_INDEX_TITLE
 
+
 def get_docs_base_path():
     """Return the absolute path to the docs directory."""
-    return os.path.join(os.path.dirname(os.path.dirname(__file__)), 'docs')
+    return os.path.join(os.path.dirname(os.path.dirname(__file__)), "docs")
+
 
 def list_markdown_files(directory):
     """List all markdown files in a directory recursively."""
@@ -29,78 +31,75 @@ def list_markdown_files(directory):
     for root, _, files in os.walk(directory):
         rel_path = os.path.relpath(root, directory)
         rel_path = "" if rel_path == "." else rel_path
-        
+
         for file in files:
             if file.endswith(".md"):
                 file_path = os.path.join(rel_path, file[:-3]) if rel_path else file[:-3]
                 markdown_files.append(file_path)
-                
+
     return sorted(markdown_files)
+
 
 def serve_docs_index(request):
     """Serve an index of available markdown documentation files."""
     base_path = get_docs_base_path()
     markdown_files = list_markdown_files(base_path)
-    
+
     # Group files by directory
-    grouped_files = {
-        'root': [],
-        'advanced': [],
-        'guides': []
-    }
-    
+    grouped_files = {"root": [], "advanced": [], "guides": []}
+
     for file_path in markdown_files:
-        if '/' in file_path:
-            directory, _ = file_path.split('/', 1)
+        if "/" in file_path:
+            directory, _ = file_path.split("/", 1)
             if directory in grouped_files:
                 grouped_files[directory].append(file_path)
             else:
-                grouped_files['root'].append(file_path)
+                grouped_files["root"].append(file_path)
         else:
-            grouped_files['root'].append(file_path)
-    
+            grouped_files["root"].append(file_path)
+
     return JsonResponse(grouped_files)
+
 
 def serve_markdown_file(request, filename):
     """Serve a markdown file from the docs directory as plain text."""
     base_path = get_docs_base_path()
-    
+
     # Handle optional .md extension in the URL
-    if filename.endswith('.md'):
+    if filename.endswith(".md"):
         filename = filename[:-3]
-    
+
     # Support for docs/guides/ and nested paths
-    path_components = filename.split('/')
+    path_components = filename.split("/")
     if len(path_components) > 1:
         # Handle nested paths like "guides/SETUP_GUIDE"
-        nested_dir = '/'.join(path_components[:-1])
+        nested_dir = "/".join(path_components[:-1])
         filename = path_components[-1]
-        
+
         # Remove .md extension from the last component if present
-        if filename.endswith('.md'):
+        if filename.endswith(".md"):
             filename = filename[:-3]
-            
-        potential_paths = [
-            os.path.join(base_path, nested_dir, f"{filename}.md")
-        ]
+
+        potential_paths = [os.path.join(base_path, nested_dir, f"{filename}.md")]
     else:
         # Regular paths in root and advanced directories
         potential_paths = [
             os.path.join(base_path, f"{filename}.md"),
             os.path.join(base_path, "advanced", f"{filename}.md"),
-            os.path.join(base_path, "guides", f"{filename}.md")
+            os.path.join(base_path, "guides", f"{filename}.md"),
         ]
-    
+
     # Try to find the file in potential locations
     for file_path in potential_paths:
         if os.path.exists(file_path) and os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 content = f.read()
             # Set proper content type for markdown
-            return HttpResponse(content, content_type='text/markdown; charset=utf-8')
-    
+            return HttpResponse(content, content_type="text/markdown; charset=utf-8")
+
     # File not found
     raise Http404(f"Markdown file '{filename}' not found")
+
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),

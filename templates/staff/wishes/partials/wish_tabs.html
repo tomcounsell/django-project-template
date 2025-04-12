@@ -1,0 +1,80 @@
+{% extends "partial.html" %}
+
+{% block content %}
+<div id="wish-tabs" class="border-b border-gray-200 mb-6">
+  <nav class="-mb-px flex space-x-6 px-2">
+    {% with non_status_params=request.GET.urlencode|cut:"status=DRAFT&"|cut:"status=TODO&"|cut:"status=IN_PROGRESS&"|cut:"status=BLOCKED&"|cut:"status=DONE&"|cut:"&status=DRAFT"|cut:"&status=TODO"|cut:"&status=IN_PROGRESS"|cut:"&status=BLOCKED"|cut:"&status=DONE" %}
+    <!-- Define tab-active class for consistent styling -->
+    <style>
+      .tab-active {
+        border-bottom: 2px solid #64748b; /* slate-500 */
+        color: #334155; /* slate-700 */
+        font-weight: 500;
+      }
+      .tab-inactive {
+        border-bottom: 2px solid transparent;
+        color: #6b7280; /* gray-500 */
+      }
+      .tab-inactive:hover {
+        color: #374151; /* gray-700 */
+        border-bottom-color: #d1d5db; /* gray-300 */
+      }
+    </style>
+    
+    <!-- All Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}{% if non_status_params %}?{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'all' %}tab-active{% else %}tab-inactive{% endif %}">
+      All
+    </a>
+    
+    <!-- Draft Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=DRAFT{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'draft' %}tab-active{% else %}tab-inactive{% endif %}">
+      Draft
+    </a>
+    
+    <!-- To Do Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=TODO{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'todo' %}tab-active{% else %}tab-inactive{% endif %}">
+      To Do
+    </a>
+    
+    <!-- In Progress Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=IN_PROGRESS{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'in_progress' %}tab-active{% else %}tab-inactive{% endif %}">
+      In Progress
+    </a>
+    
+    <!-- Blocked Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=BLOCKED{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'blocked' %}tab-active{% else %}tab-inactive{% endif %}">
+      Blocked
+    </a>
+    
+    <!-- Done Tab -->
+    <a hx-get="{% url 'staff:wish-list' %}?status=DONE{% if non_status_params %}&{{ non_status_params }}{% endif %}"
+       hx-target="#wish-content-container"
+       hx-swap="innerHTML"
+       hx-push-url="true"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'done' %}tab-active{% else %}tab-inactive{% endif %}">
+      Done
+    </a>
+    {% endwith %}
+  </nav>
+</div>
+{% endblock %}

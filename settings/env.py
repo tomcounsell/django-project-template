@@ -6,13 +6,11 @@ Handles loading environment variables and determining deployment type.
 import os
 import socket
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 SITE_ROOT = BASE_DIR
-
-# Load environment variables from .env file
-from dotenv import load_dotenv
 
 # Determine the correct .env file based on environment
 env_file = ".env.local"
@@ -69,7 +67,7 @@ elif STAGE:
 else:
     try:
         HOSTNAME = socket.gethostname()
-    except:
+    except Exception:  # More specific exceptions are better
         HOSTNAME = "localhost"
 
 # Internal IPs for debug toolbar

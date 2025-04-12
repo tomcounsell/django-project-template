@@ -14,7 +14,7 @@ names with "Test" or "TestCase" suffix.
 """
 
 # Import test classes for easy access
-from apps.common.tests.behaviors import (
+from apps.common.tests.behaviors import (  # noqa: F401
     AnnotatableTest,
     AuthorableTest,
     ExpirableTest,

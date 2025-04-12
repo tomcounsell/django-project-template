@@ -43,6 +43,9 @@ class Expirable(models.Model):
             self.expired_at = now()
         elif value is False and self.is_expired:
             self.expired_at = None
+        elif value is None:
+            # Handle None case by removing expiration
+            self.expired_at = None
 
     class Meta:
         abstract = True

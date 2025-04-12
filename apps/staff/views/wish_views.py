@@ -1,3 +1,6 @@
+import json
+
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -24,45 +27,131 @@ class WishListView(StaffRequiredMixin, MainContentView):
     """View for listing all wish items (staff only)."""
 
     template_name = "staff/wishes/wish_list.html"
+    partial_template_name = "staff/wishes/partials/wish_list_content.html"
+    tabs_template_name = "staff/wishes/partials/wish_tabs.html"
+
+    # Wish status constants
+    STATUS_ALL = "ALL"
+    STATUS_DRAFT = "DRAFT"
+    STATUS_TODO = "TODO"
+    STATUS_IN_PROGRESS = "IN_PROGRESS"
+    STATUS_BLOCKED = "BLOCKED"
+    STATUS_DONE = "DONE"
 
     def get(self, request, *args, **kwargs):
         """Get all wishes with filtering options."""
         queryset = Wish.objects.all()
 
+        # Get multi-select filter values
+        status_list = request.GET.getlist("status")
+        priority_list = request.GET.getlist("priority")
+        effort_list = request.GET.getlist("effort")
+        value_list = request.GET.getlist("value")
+
+        # Determine active tab
+        active_tab = None
+        if not status_list:
+            active_tab = "all"
+        elif len(status_list) == 1:
+            active_tab = status_list[0].lower()
+
         # Filter by status if provided
-        status = request.GET.get("status")
-        if status:
-            queryset = queryset.filter(status=status)
+        if status_list:
+            queryset = queryset.filter(status__in=status_list)
 
         # Filter by priority if provided
-        priority = request.GET.get("priority")
-        if priority:
-            queryset = queryset.filter(priority=priority)
+        if priority_list:
+            queryset = queryset.filter(priority__in=priority_list)
 
-        # Filter by category if provided
-        category = request.GET.get("category")
-        if category:
-            queryset = queryset.filter(category=category)
+        # Filter by tag if provided
+        tag = request.GET.get("tag")
+        if tag:
+            # JSONField lookup to find wishes where the tag exists in the tags list
+            queryset = queryset.filter(tags__contains=[tag.lower()])
 
-        # Filter by assignee if provided
-        assignee = request.GET.get("assignee")
-        if assignee == "me":
-            queryset = queryset.filter(assignee=request.user)
-        elif assignee == "unassigned":
-            queryset = queryset.filter(assignee__isnull=True)
+        # Filter by effort if provided
+        if effort_list:
+            queryset = queryset.filter(effort__in=effort_list)
+
+        # Filter by value if provided
+        if value_list:
+            queryset = queryset.filter(value__in=value_list)
+
+        # Filter by cost range if provided
+        cost_min = request.GET.get("cost_min")
+        cost_max = request.GET.get("cost_max")
+
+        if cost_min:
+            try:
+                cost_min = int(cost_min)
+                queryset = queryset.filter(cost_estimate__gte=cost_min)
+            except (ValueError, TypeError):
+                pass
+
+        if cost_max:
+            try:
+                cost_max = int(cost_max)
+                queryset = queryset.filter(cost_estimate__lte=cost_max)
+            except (ValueError, TypeError):
+                pass
+
+        # Check if any filters are active
+        has_active_filters = (
+            status_list
+            or priority_list
+            or tag
+            or effort_list
+            or value_list
+            or cost_min
+            or cost_max
+        )
 
         # Set the context
         self.context["wishes"] = queryset
         self.context["status_choices"] = Wish.STATUS_CHOICES
         self.context["priority_choices"] = Wish.PRIORITY_CHOICES
-        self.context["category_choices"] = Wish.CATEGORY_CHOICES
+        self.context["effort_choices"] = Wish.EFFORT_CHOICES
+        self.context["value_choices"] = Wish.VALUE_CHOICES
+
+        # This helps with making tab selection logic simpler in the template
+        status_filter = (
+            status_list[0] if status_list and len(status_list) == 1 else status_list
+        )
+
         self.context["current_filters"] = {
-            "status": status,
-            "priority": priority,
-            "category": category,
-            "assignee": assignee,
+            "status_list": status_filter,
+            "priority_list": priority_list,
+            "tag": tag,
+            "effort_list": effort_list,
+            "value_list": value_list,
+            "cost_min": cost_min,
+            "cost_max": cost_max,
+            "has_active_filters": has_active_filters,
+            "active_tab": active_tab,  # Add explicit active tab tracking
         }
 
+        # Handle HTMX requests
+        if getattr(request, "htmx", False):
+            if request.htmx.target == "wish-content-container":
+                # For HTMX requests targeting the content container
+                return self.render(request, template_name=self.partial_template_name)
+            elif request.htmx.target == "wish-tabs":
+                # For HTMX requests targeting the tabs
+                return self.render(request, template_name=self.tabs_template_name)
+            else:
+                # For HTMX requests to update both content and tabs
+                # Use OOB to update both parts
+                content_html = render_to_string(
+                    self.partial_template_name, self.context, request=request
+                )
+                tabs_html = render_to_string(
+                    self.tabs_template_name, self.context, request=request
+                )
+                response = HttpResponse(content_html)
+                response["HX-Trigger"] = json.dumps({"updateTabs": tabs_html})
+                return response
+
+        # For regular requests, render the full page
         return self.render(request)
 
 
@@ -97,8 +186,12 @@ class WishCreateView(StaffRequiredMixin, MainContentView):
         form = WishForm(request.POST)
 
         if form.is_valid():
-            # Save and set the current user as assignee if not specified
-            wish = form.save(user=request.user)
+            # Save the form but don't commit
+            wish = form.save(commit=False)
+            # Set status to DRAFT explicitly for new wishes
+            wish.status = Wish.STATUS_DRAFT
+            wish.save()
+
             messages.success(request, f"Wish '{wish.title}' was created successfully.")
             return redirect("staff:wish-list")
 
@@ -118,7 +211,12 @@ class WishUpdateView(StaffRequiredMixin, MainContentView):
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
-        form = WishForm(instance=wish)
+        # For updates, we need to use a form class that includes the status field
+        class WishUpdateForm(WishForm):
+            class Meta(WishForm.Meta):
+                fields = WishForm.Meta.fields + ["status"]
+
+        form = WishUpdateForm(instance=wish)
         self.context["form"] = form
         self.context["form_title"] = f"Edit Wish: {wish.title}"
         self.context["form_submit_url"] = reverse(
@@ -132,7 +230,12 @@ class WishUpdateView(StaffRequiredMixin, MainContentView):
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
-        form = WishForm(request.POST, instance=wish)
+        # For updates, we need to use a form class that includes the status field
+        class WishUpdateForm(WishForm):
+            class Meta(WishForm.Meta):
+                fields = WishForm.Meta.fields + ["status"]
+
+        form = WishUpdateForm(request.POST, instance=wish)
 
         if form.is_valid():
             wish = form.save()
@@ -248,16 +351,146 @@ class WishDeleteView(StaffRequiredMixin, HTMXView):
         return redirect(redirect_url)
 
 
+class WishCreateModalView(StaffRequiredMixin, HTMXView):
+    """HTMX view for showing the create wish form in a modal."""
+
+    template_name = "components/modals/modal_form.html"
+
+    def get(self, request, *args, **kwargs):
+        """Show the create wish form in a modal."""
+        # Create a custom form class that includes the status field
+        class WishCreateForm(WishForm):
+            status = forms.CharField(
+                required=False,
+                disabled=True,  # Make it disabled so it can't be changed
+                initial=Wish.STATUS_DRAFT,
+                widget=forms.Select(
+                    attrs={
+                        "class": "form-select",
+                        "disabled": "disabled",  # Add HTML disabled attribute
+                    },
+                    choices=Wish.STATUS_CHOICES,
+                ),
+            )
+            
+            class Meta(WishForm.Meta):
+                fields = ["title", "description", "status", "priority", "effort", 
+                          "value", "cost_estimate", "tags", "due_at"]
+
+        form = WishCreateForm()
+        
+        # Set initial value for status field to show "Draft"
+        form.initial["status"] = Wish.STATUS_DRAFT
+
+        self.context.update(
+            {
+                "modal_id": "create-wish-modal",
+                "modal_title": "Create New Wish",
+                "form": form,
+                "submit_url": reverse("staff:wish-create-submit"),
+                "submit_text": "Create",
+                "cancel_text": "Cancel",
+                "target": "#modal-container",
+                "trigger": "submit",
+                "form_id": "create-wish-form",
+                "modal_size": "xl",
+                "show_draft_status": True,  # Add flag to indicate we're showing a draft status
+            }
+        )
+
+        return self.render(request)
+
+
+class WishCreateSubmitView(StaffRequiredMixin, HTMXView):
+    """HTMX view to handle the submission of the create wish form."""
+
+    def post(self, request, *args, **kwargs):
+        """Process the wish form submission from the modal."""
+        # Use the same custom form class as in WishCreateModalView
+        class WishCreateForm(WishForm):
+            status = forms.CharField(
+                required=False,
+                disabled=True,
+                initial=Wish.STATUS_DRAFT,
+                widget=forms.Select(
+                    attrs={
+                        "class": "form-select",
+                        "disabled": "disabled",
+                    },
+                    choices=Wish.STATUS_CHOICES,
+                ),
+            )
+            
+            class Meta(WishForm.Meta):
+                fields = ["title", "description", "status", "priority", "effort", 
+                          "value", "cost_estimate", "tags", "due_at"]
+        
+        form = WishCreateForm(request.POST)
+
+        if form.is_valid():
+            # Save the form but don't commit
+            wish = form.save(commit=False)
+            # Set status to DRAFT explicitly for new wishes
+            wish.status = Wish.STATUS_DRAFT
+            wish.save()
+
+            messages.success(request, f"Wish '{wish.title}' was created successfully.")
+
+            # Return a response that will close the modal and refresh the page
+            response = HttpResponse()
+            response["HX-Refresh"] = "true"
+            return response
+
+        # If form is invalid, re-render the modal with errors
+        self.context.update(
+            {
+                "modal_id": "create-wish-modal",
+                "modal_title": "Create New Wish",
+                "form": form,
+                "submit_url": reverse("staff:wish-create-submit"),
+                "submit_text": "Create",
+                "cancel_text": "Cancel",
+                "target": "#modal-container",
+                "trigger": "submit",
+                "form_id": "create-wish-form",
+                "modal_size": "xl",
+                "show_draft_status": True,  # Add flag to indicate we're showing a draft status
+            }
+        )
+
+        # Render the form with validation errors
+        self.template_name = "components/modals/modal_form.html"
+        response = self.render(request)
+
+        # Add a toast notification for validation errors via htmx
+        if getattr(request, "htmx", False):
+            error_toast = render_to_string(
+                "components/common/error_message.html",
+                {
+                    "error_code": "form_validation",
+                    "status_code": 400,
+                    "error_message": "Please correct the errors in the form and try again.",
+                },
+                request=request,
+            )
+            response["HX-Trigger"] = json.dumps({"showToast": error_toast})
+
+        return response
+
+
 class WishCompleteView(StaffRequiredMixin, HTMXView):
     """View for marking a wish item as done or not done (staff only)."""
 
     def post(self, request, *args, **kwargs):
-        """Mark the wish item as done or not done."""
+        """Mark the wish item as done or not done, or set a specific status."""
         wish_id = kwargs.get("pk")
         wish = get_object_or_404(Wish, id=wish_id)
 
         # Check if we're marking as incomplete
         mark_incomplete = request.GET.get("mark_incomplete", False)
+
+        # Check if we're setting a specific status
+        set_status = request.GET.get("set_status")
 
         if mark_incomplete:
             # Mark as incomplete (reopen)
@@ -267,6 +500,16 @@ class WishCompleteView(StaffRequiredMixin, HTMXView):
                 wish.save()
                 messages.success(
                     request, f"Wish '{wish.title}' was marked as not done."
+                )
+        elif set_status:
+            # Set a specific status (e.g., move from DRAFT to TODO)
+            if set_status in dict(Wish.STATUS_CHOICES):
+                old_status = wish.get_status_display()
+                wish.status = set_status
+                wish.save()
+                messages.success(
+                    request,
+                    f"Wish '{wish.title}' was moved from '{old_status}' to '{wish.get_status_display()}'.",
                 )
         else:
             # Use the model's complete method to mark as done

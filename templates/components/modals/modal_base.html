@@ -21,7 +21,7 @@
   
   HTMX Integration:
   - Designed to be loaded via HTMX into a dedicated modal container
-  - Use hx-target="#primary-modal-container" or "#secondary-modal-container"
+  - Use hx-target="#modal-container" or "#secondary-modal-container"
   - Always use hx-swap="innerHTML"
 {% endcomment %}
 
@@ -35,13 +35,13 @@
        aria-modal="true">
     
     {% block modal_header %}
-    <div class="modal-header flex justify-between items-center border-b border-gray-200 p-4">
-      <h3 id="{{ modal_id }}-title" class="text-lg font-medium text-gray-900">
+    <div class="modal-header flex justify-between items-center border-b border-gray-200 p-5 bg-white">
+      <h3 id="{{ modal_id }}-title" class="text-xl font-semibold text-slate-700">
         {{ modal_title }}
       </h3>
       {% if show_close_button|default:True %}
       <button type="button" 
-              class="text-gray-400 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="text-gray-400 hover:text-gray-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 rounded-full p-1 hover:bg-gray-100"
               aria-label="Close"
               onclick="this.closest('.modal-container').innerHTML = ''">
         <span class="sr-only">Close</span>
@@ -53,13 +53,13 @@
     </div>
     {% endblock modal_header %}
     
-    <div class="modal-body p-4 overflow-y-auto max-h-[calc(85vh-10rem)]">
+    <div class="modal-body p-4 overflow-y-auto max-h-[calc(85vh-10rem)] bg-gray-50">
       {% block modal_body %}
       <!-- Modal body content goes here -->
       {% endblock modal_body %}
     </div>
     
-    <div class="modal-footer flex items-center justify-end gap-3 border-t border-gray-200 p-4">
+    <div class="modal-footer flex items-center justify-end gap-3 border-t border-gray-200 p-6 bg-gray-50">
       {% block modal_footer %}
       <!-- Modal footer content goes here -->
       {% endblock modal_footer %}

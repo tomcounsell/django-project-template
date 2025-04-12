@@ -122,7 +122,7 @@ async def analyze_test_failure(failure_report: Dict[str, Any]) -> str:
     prompt = f"""
     Analyze this browser test failure and suggest fixes:
     
-    TEST: {failure_report.get('test_name', 'Unknown test')}
+    TEST: {failure_report.get("test_name", "Unknown test")}
     
     STEPS EXECUTED:
     {json.dumps(steps, indent=2)}

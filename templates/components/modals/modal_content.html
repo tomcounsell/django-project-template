@@ -1,3 +1,5 @@
+{% extends "components/modals/modal_base.html" %}
+
 {% comment %}
   Content Modal
   ============
@@ -22,14 +24,12 @@
   
   <button
     hx-get="{% url 'load_content_modal' %}"
-    hx-target="#primary-modal-container"
+    hx-target="#modal-container"
     hx-swap="innerHTML"
   >
     Show Content
   </button>
 {% endcomment %}
-
-{% extends "components/modals/modal_base.html" %}
 
 {% block modal_body %}
 <div class="prose prose-sm sm:prose max-w-none">

@@ -2,168 +2,94 @@
 
 {% block title %}Staff: Wish List Management{% endblock %}
 
+{% block extra_css %}
+<style>
+    .htmx-indicator {
+        display: none;
+    }
+
+    .htmx-request .htmx-indicator {
+        display: inline-block;
+    }
+
+    .htmx-request.htmx-indicator {
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('updateTabs', function(evt) {
+        // Update the tabs content when triggered by HTMX
+        const tabsContainer = document.getElementById('wish-tabs');
+        if (tabsContainer && evt.detail) {
+            tabsContainer.innerHTML = evt.detail;
+        }
+    });
+</script>
+{% endblock %}
+
 {% block main_header %}
-  <h1 class="text-3xl font-bold tracking-tight text-slate-600">Wish List Management</h1>
-  <p class="text-gray-500 mt-1">Staff tools for managing wish items</p>
+<!-- Admin Actions and Buttons -->
+<div class="bg-white shadow-xs rounded-xs overflow-hidden mb-6">
+    <div class="px-6 py-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-600">Wish Management</h1>
+                <p class="text-gray-500 mt-1">Manage requests for new features and track progress</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <!-- Create New Wish Button -->
+                <button
+                        hx-get="{% url 'staff:wish-create-modal' %}"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        hx-indicator="#create-wish-indicator"
+                        class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                    <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    Create New Wish
+                </button>
+                <div id="create-wish-indicator" class="htmx-indicator">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                         fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+
+
+                <!-- Django Admin Button -->
+                <a href="{% url 'admin:staff_wish_changelist' %}"
+                   class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                    <svg class="h-5 w-5 mr-2 text-slate-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    Django Admin
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
-  <div class="flex justify-between items-center mb-6">
-    <div class="flex-1"></div>
-    <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-      <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-      </svg>
-      Create New Wish
-    </a>
-  </div>
+<!-- Primary Modal Container -->
+<div id="modal-container" class="modal-container"></div>
 
-  <!-- Filters -->
-  <div class="bg-white shadow-xs rounded-xs overflow-hidden mb-6">
-    <form method="get">
-      <div class="space-y-12">
-        <div class="pb-12 p-6">
-          <h2 class="text-base/7 font-semibold text-gray-900">Filter Wishes</h2>
-          <p class="mt-1 text-sm/6 text-gray-600">Apply filters to narrow down the wish list results.</p>
-          
-          <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select id="status" name="status" class="block w-full rounded-xs border-gray-300 shadow-xs text-sm">
-                <option value="">All Statuses</option>
-                {% for status_value, status_label in status_choices %}
-                  <option value="{{ status_value }}" {% if current_filters.status == status_value %}selected{% endif %}>
-                    {{ status_label }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-            
-            <div>
-              <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-              <select id="priority" name="priority" class="block w-full rounded-xs border-gray-300 shadow-xs text-sm">
-                <option value="">All Priorities</option>
-                {% for priority_value, priority_label in priority_choices %}
-                  <option value="{{ priority_value }}" {% if current_filters.priority == priority_value %}selected{% endif %}>
-                    {{ priority_label }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-            
-            <div>
-              <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select id="category" name="category" class="block w-full rounded-xs border-gray-300 shadow-xs text-sm">
-                <option value="">All Categories</option>
-                {% for category_value, category_label in category_choices %}
-                  <option value="{{ category_value }}" {% if current_filters.category == category_value %}selected{% endif %}>
-                    {{ category_label }}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-            
-            <div>
-              <label for="assignee" class="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
-              <select id="assignee" name="assignee" class="block w-full rounded-xs border-gray-300 shadow-xs text-sm">
-                <option value="">Everyone</option>
-                <option value="me" {% if current_filters.assignee == "me" %}selected{% endif %}>Assigned to me</option>
-                <option value="unassigned" {% if current_filters.assignee == "unassigned" %}selected{% endif %}>Unassigned</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="mt-6 flex items-center justify-end gap-x-6 p-6 bg-white border-t border-gray-100">
-        <a href="{% url 'staff:wish-list' %}" class="text-sm/6 font-semibold text-gray-900">
-          Clear Filters
-        </a>
-        <button type="submit" class="rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-          Apply Filters
-        </button>
-      </div>
-    </form>
-  </div>
+<!-- Include tab navigation partial -->
+{% include "staff/wishes/partials/wish_tabs.html" %}
 
-  <!-- Admin Actions -->
-  <div class="bg-white shadow-xs rounded-xs overflow-hidden mb-6">
-    <div class="pb-6 pt-6 px-6">
-      <h2 class="text-base/7 font-semibold text-gray-900">Admin Actions</h2>
-      <p class="mt-1 text-sm/6 text-gray-600">Additional management options for administrators.</p>
-    </div>
-    
-    <div class="px-6 py-4 flex flex-wrap gap-4">
-      <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-        <svg class="mr-2 size-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-        </svg>
-        View Public Wish List
-      </a>
-      <a href="{% url 'admin:staff_wish_changelist' %}" class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600">
-        <svg class="mr-2 size-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
-        </svg>
-        Django Admin
-      </a>
-    </div>
-  </div>
-
-  <!-- Wish List -->
-  {% if wishes %}
-    <div class="bg-white shadow-xs overflow-hidden rounded-xs">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Title
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Priority
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Category
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Assignee
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Due Date
-            </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {% for wish in wishes %}
-            <tr id="wish-row-{{ wish.id }}" class="hover:bg-gray-50">
-              {% include "staff/wishes/partials/wish_row.html" with wish=wish %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  {% else %}
-    <div class="bg-white shadow-xs rounded-xs overflow-hidden text-center">
-      <div class="py-12 px-6">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <h3 class="mt-2 text-base font-semibold text-gray-900">No wishes found</h3>
-        <p class="mt-1 text-sm text-gray-500">Get started by creating your first wish item.</p>
-        <div class="mt-6">
-          <a href="{% url 'staff:wish-create' %}" class="inline-flex items-center justify-center rounded-xs bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
-            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-            </svg>
-            Create First Wish
-          </a>
-        </div>
-      </div>
-    </div>
-  {% endif %}
+<!-- Include the content partial -->
+{% include "staff/wishes/partials/wish_list_content.html" %}
 {% endblock %}

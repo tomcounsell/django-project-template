@@ -53,6 +53,25 @@ git clone https://github.com/yudame/django-project-template.git
 
 # Change to the project directory
 cd django-project-template
+
+# Optional: Add the original repository as upstream remote for future updates
+git remote add upstream https://github.com/yudame/django-project-template.git
+
+# Verify remotes
+git remote -v
+```
+
+Setting up the upstream remote allows you to fetch future improvements to the template:
+
+```bash
+# Fetch updates from the upstream repository
+git fetch upstream
+
+# View new commits on main branch
+git log main..upstream/main
+
+# Selectively apply specific improvements
+git cherry-pick <commit-hash>
 ```
 
 ### Step 2: Set Up Python Environment and Dependencies

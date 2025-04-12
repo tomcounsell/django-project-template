@@ -13,7 +13,13 @@
   {% endif %}
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
-  {{ wish.get_category_display }}
+  <div class="flex flex-wrap gap-1">
+    {% for tag in wish.tags %}
+      <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">{{ tag }}</span>
+    {% empty %}
+      <span class="text-gray-400">No tags</span>
+    {% endfor %}
+  </div>
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
   {% if wish.status == "DONE" %}
@@ -22,15 +28,33 @@
     <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">In Progress</span>
   {% elif wish.status == "BLOCKED" %}
     <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">Blocked</span>
+  {% elif wish.status == "DRAFT" %}
+    <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">Draft</span>
   {% else %}
     <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-gray-50 text-gray-700 border border-gray-200">To Do</span>
   {% endif %}
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
-  {% if wish.assignee %}
-    {{ wish.assignee.get_full_name|default:wish.assignee.username }}
+  {% if wish.effort %}
+    <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-slate-50 text-slate-700 border border-slate-200">
+      {{ wish.get_effort_display }}
+    </span>
   {% else %}
-    <span class="text-gray-400">Unassigned</span>
+    <span class="text-gray-400">Not set</span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if wish.value %}
+    <span>{{ wish.value }}</span>
+  {% else %}
+    <span class="text-gray-400">Not set</span>
+  {% endif %}
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+  {% if wish.cost_estimate is not None %}
+    <span class="inline-flex items-center text-xs px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">{{ wish.formatted_cost }}</span>
+  {% else %}
+    <span class="text-gray-400">Not set</span>
   {% endif %}
 </td>
 <td class="px-6 py-4 whitespace-nowrap">
@@ -54,7 +78,19 @@
       Edit
     </a>
     
-    {% if wish.status != "DONE" %}
+    {% if wish.status == "DRAFT" %}
+      <button
+         hx-post="{% url 'staff:wish-complete' wish.id %}?set_status=TODO"
+         hx-target="#wish-row-{{ wish.id }}"
+         hx-swap="outerHTML"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'  
+         class="inline-flex items-center justify-center rounded-xs bg-blue-50 px-2.5 py-1.5 text-sm font-semibold text-blue-700 ring-1 shadow-xs ring-blue-300 ring-inset hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+        <svg class="mr-1.5 size-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+        Ready
+      </button>
+    {% elif wish.status != "DONE" %}
       <button
          hx-post="{% url 'staff:wish-complete' wish.id %}"
          hx-target="#wish-row-{{ wish.id }}"
@@ -91,7 +127,7 @@
       Delete
     </button>
     
-    <a href="{% url 'public:wish-detail' wish.id %}" 
+    <a href="{% url 'staff:wish-detail' wish.id %}"
        class="inline-flex items-center justify-center rounded-xs bg-slate-50 px-2.5 py-1.5 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
       <svg class="mr-1.5 size-4 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>

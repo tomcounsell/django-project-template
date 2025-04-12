@@ -804,9 +804,9 @@ class UploadAdmin(ModelAdmin):
             if obj.size < 1024:
                 return f"{obj.size} B"
             elif obj.size < 1024 * 1024:
-                return f"{obj.size/1024:.1f} KB"
+                return f"{obj.size / 1024:.1f} KB"
             else:
-                return f"{obj.size/(1024*1024):.1f} MB"
+                return f"{obj.size / (1024 * 1024):.1f} MB"
         return "-"
 
     def status_badge(self, obj):

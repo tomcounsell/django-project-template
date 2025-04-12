@@ -13,11 +13,7 @@ Each test verifies a specific aspect of the Payment model's functionality:
 - payment_type_display for distinguishing subscription vs one-time payments
 """
 
-from unittest.mock import MagicMock, patch
-
-import pytest
-from django.test import TestCase, override_settings
-from django.utils import timezone
+from django.test import TestCase
 
 from apps.common.models import Subscription, User
 
@@ -44,7 +40,7 @@ class MockPayment:
     @property
     def amount_display(self):
         """Format amount as currency."""
-        return f"${self.amount/100:.2f} {self.currency}"
+        return f"${self.amount / 100:.2f} {self.currency}"
 
     @property
     def is_successful(self):

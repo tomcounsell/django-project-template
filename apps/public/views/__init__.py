@@ -1,1 +1,1 @@
-from .components.examples_view import ComponentExamplesView
+from .components.examples_view import ComponentExamplesView  # noqa: F401
