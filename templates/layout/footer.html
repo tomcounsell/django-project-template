@@ -177,16 +177,14 @@ Provides links to important pages, legal information, and site metadata.
             <h3 class="text-sm/6 font-semibold text-white">About</h3>
             <ul role="list" class="mt-6 space-y-4">
               <li>
-                <a href="#" class="text-sm/6 text-gray-400 hover:text-white">About Us</a>
+                <a href="{% url 'public:blog' %}" class="text-sm/6 text-gray-400 hover:text-white">
+                  <i class="fas fa-newspaper fa-fw mr-1"></i> Blog
+                </a>
               </li>
               <li>
-                <a href="#" class="text-sm/6 text-gray-400 hover:text-white">Blog</a>
-              </li>
-              <li>
-                <a href="#" class="text-sm/6 text-gray-400 hover:text-white">Careers</a>
-              </li>
-              <li>
-                <a href="#" class="text-sm/6 text-gray-400 hover:text-white">Contact</a>
+                <a href="{% url 'public:pricing' %}" class="text-sm/6 text-gray-400 hover:text-white">
+                  <i class="fas fa-tags fa-fw mr-1"></i> Pricing
+                </a>
               </li>
             </ul>
           </div>

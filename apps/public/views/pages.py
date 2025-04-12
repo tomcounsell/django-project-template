@@ -17,9 +17,14 @@ class LandingView(MainContentView):
     template_name = "pages/landing.html"
     active_nav = "home"  # Use home as the active nav
 
+    def get(self, request, *args, **kwargs):
+        """Get method to load landing page context."""
+        self.context.update(self.get_context_data())
+        return self.render(request)
+
     def get_context_data(self, **kwargs):
         """Add additional context for the landing page."""
-        context = super().get_context_data(**kwargs)
+        context = {}
 
         # Features list for landing page
         context["features"] = [
@@ -68,9 +73,14 @@ class PricingView(MainContentView):
     template_name = "pages/pricing.html"
     active_nav = "pricing"  # Add this to active_navigation context processor
 
+    def get(self, request, *args, **kwargs):
+        """Get method to load pricing plans into context."""
+        self.context.update(self.get_context_data())
+        return self.render(request)
+
     def get_context_data(self, **kwargs):
         """Add pricing plans to the context."""
-        context = super().get_context_data(**kwargs)
+        context = {}
 
         # Pricing plans
         context["plans"] = [
@@ -154,9 +164,14 @@ class BlogView(MainContentView):
     template_name = "pages/blog.html"
     active_nav = "blog"  # Add this to active_navigation context processor
 
+    def get(self, request, *args, **kwargs):
+        """Get method to load blog content into context."""
+        self.context.update(self.get_context_data())
+        return self.render(request)
+
     def get_context_data(self, **kwargs):
         """Add blog posts to the context."""
-        context = super().get_context_data(**kwargs)
+        context = {}
 
         # Example blog posts - in a real app, these would come from a database
         context["posts"] = [
@@ -166,7 +181,7 @@ class BlogView(MainContentView):
                 "excerpt": "Learn how to get up and running with our platform in just a few minutes.",
                 "published_at": timezone.now() - timezone.timedelta(days=2),
                 "author": "Jane Smith",
-                "image": "https://via.placeholder.com/800x450",
+                "image": "https://placehold.co/800x450/354a96/FFFFFF/png?text=Getting+Started",
                 "tags": ["tutorial", "beginners"],
                 "category": "Tutorials",
             },
@@ -176,7 +191,7 @@ class BlogView(MainContentView):
                 "excerpt": "Discover these powerful but often overlooked features to supercharge your workflow.",
                 "published_at": timezone.now() - timezone.timedelta(days=7),
                 "author": "John Davis",
-                "image": "https://via.placeholder.com/800x450",
+                "image": "https://placehold.co/800x450/2a6546/FFFFFF/png?text=Advanced+Features",
                 "tags": ["advanced", "tips"],
                 "category": "Tips & Tricks",
             },
@@ -186,7 +201,7 @@ class BlogView(MainContentView):
                 "excerpt": "See how Company X used our platform to revolutionize their workflow and achieve amazing results.",
                 "published_at": timezone.now() - timezone.timedelta(days=14),
                 "author": "Sarah Johnson",
-                "image": "https://via.placeholder.com/800x450",
+                "image": "https://placehold.co/800x450/8b4513/FFFFFF/png?text=Success+Story",
                 "tags": ["case study", "success story"],
                 "category": "Case Studies",
             },
@@ -196,7 +211,7 @@ class BlogView(MainContentView):
                 "excerpt": "Get a sneak peek at the exciting new features we're launching in the next quarter.",
                 "published_at": timezone.now() - timezone.timedelta(days=21),
                 "author": "Michael Brown",
-                "image": "https://via.placeholder.com/800x450",
+                "image": "https://placehold.co/800x450/793963/FFFFFF/png?text=New+Features",
                 "tags": ["roadmap", "features"],
                 "category": "Announcements",
             },
@@ -206,7 +221,7 @@ class BlogView(MainContentView):
                 "excerpt": "Simple but effective strategies to make the most of our platform and boost your productivity.",
                 "published_at": timezone.now() - timezone.timedelta(days=30),
                 "author": "Lisa Chen",
-                "image": "https://via.placeholder.com/800x450",
+                "image": "https://placehold.co/800x450/3d5a80/FFFFFF/png?text=5+Tips",
                 "tags": ["productivity", "tips"],
                 "category": "Tips & Tricks",
             },
@@ -258,7 +273,7 @@ class BlogPostView(MainContentView):
         """
         slug = kwargs.get("slug")
         self.context["post"] = self._get_post_by_slug(slug)
-        return self.render()
+        return self.render(request)
 
     def _get_post_by_slug(self, slug):
         """
@@ -317,27 +332,27 @@ class BlogPostView(MainContentView):
                 "published_at": timezone.now() - timezone.timedelta(days=2),
                 "author": {
                     "name": "Jane Smith",
-                    "avatar": "https://via.placeholder.com/48x48",
+                    "avatar": "https://placehold.co/48x48/555555/FFFFFF/png?text=JS",
                     "bio": "Jane is a senior developer and technical writer with over 10 years of experience.",
                 },
-                "image": "https://via.placeholder.com/1200x600",
+                "image": "https://placehold.co/1200x600/4a5859/FFFFFF/png?text=Sample+Blog+Post",
                 "tags": ["tutorial", "beginners"],
                 "category": "Tutorials",
                 "related_posts": [
                     {
                         "title": "Getting Started with Our Platform",
                         "slug": "getting-started",
-                        "image": "https://via.placeholder.com/400x225",
+                        "image": "https://placehold.co/400x225/354a96/FFFFFF/png?text=Getting+Started",
                     },
                     {
                         "title": "5 Tips to Optimize Your Workflow",
                         "slug": "optimize-workflow",
-                        "image": "https://via.placeholder.com/400x225",
+                        "image": "https://placehold.co/400x225/3d5a80/FFFFFF/png?text=5+Tips",
                     },
                     {
                         "title": "Advanced Features You Might Have Missed",
                         "slug": "advanced-features",
-                        "image": "https://via.placeholder.com/400x225",
+                        "image": "https://placehold.co/400x225/2a6546/FFFFFF/png?text=Advanced+Features",
                     },
                 ],
             }
