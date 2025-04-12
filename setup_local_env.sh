@@ -45,7 +45,27 @@ print_header "Django Project Template - Setup Script"
 echo "This script will set up your local development environment."
 
 # Step 1: Check Python version
-print_header "1. Checking Python version"
+# Option for adding the upstream remote for template updates
+print_header "1. Setting up Git remotes"
+if [ -d ".git" ]; then
+    if git remote | grep -q "upstream"; then
+        print_success "Upstream remote already exists."
+    else
+        echo "Would you like to add the original template repository as an upstream remote? (y/n)"
+        read add_upstream
+        if [[ $add_upstream == "y" || $add_upstream == "Y" ]]; then
+            git remote add upstream https://github.com/yudame/django-project-template.git
+            print_success "Added upstream remote for future template updates."
+            echo "You can fetch updates with 'git fetch upstream' and cherry-pick specific improvements."
+        else
+            print_warning "Skipping upstream remote setup."
+        fi
+    fi
+else
+    print_warning "Not a git repository. Skipping remote setup."
+fi
+
+print_header "2. Checking Python version"
 python_version=$(python3 --version 2>&1)
 if [[ $python_version == Python\ 3.* ]]; then
     version_number=${python_version:7}

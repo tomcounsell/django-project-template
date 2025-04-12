@@ -15,6 +15,9 @@ Thank you for your interest in contributing to this Django project template! Thi
    ```bash
    git clone https://github.com/yourusername/django-project-template.git
    cd django-project-template
+   
+   # Add original repository as upstream remote for future improvements
+   git remote add upstream https://github.com/original/django-project-template.git
    ```
 
 2. **Set up the environment**
