@@ -102,12 +102,11 @@ Thank you for your interest in contributing to this Django project template! Thi
 
 ## High Priority Contributions
 
-See [docs/TODO.md](docs/TODO.md) for our current priorities, especially:
-1. Improving test coverage
-2. Template and static file consolidation
-3. Removing component framework dependencies
-4. Implementing uv for dependency management
-5. App restructuring
-6. Team model implementation
+See [docs/TODO.md](../TODO.md) for our current priorities, including:
+1. Documentation improvements
+2. Performance optimizations
+3. Accessibility enhancements
+4. Admin interface improvements
+5. API expansion
 
 Thank you for contributing to making this project better!

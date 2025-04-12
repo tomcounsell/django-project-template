@@ -137,7 +137,7 @@ For detailed conventions on templates and views, see:
 - [docs/advanced/TEST_TROUBLESHOOTING.md](docs/advanced/TEST_TROUBLESHOOTING.md) - Troubleshooting test failures
 
 ## Development Process
-1. Check [docs/TODO.md](docs/TODO.md) to identify next priority item
+1. Check [docs/TODO.md](docs/TODO.md) to identify enhancement opportunities
 2. Think deeply to plan out next steps and how to implement the feature
 3. Write tests covering all expected behaviors
 4. Run tests to verify they fail (proving tests work correctly)
