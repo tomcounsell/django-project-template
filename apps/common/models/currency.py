@@ -1,6 +1,8 @@
 import uuid
 
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 from apps.common.behaviors import Timestampable
 
@@ -79,10 +81,6 @@ class Currency(Timestampable, models.Model):
 
     class Meta:
         verbose_name_plural = "currencies"
-
-
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 
 @receiver(pre_save, sender=Currency)

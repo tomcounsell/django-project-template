@@ -201,7 +201,7 @@ def handle_view_exception(
         try:
             message_level = messages.ERROR
             messages.add_message(request, message_level, message)
-        except:
+        except Exception:
             # Ignore message framework errors in tests
             pass
 

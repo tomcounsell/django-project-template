@@ -27,14 +27,14 @@ def build_english_list(items):
 
 
 def cap_first_word(arg):
-    if type(arg) == str:
+    if isinstance(arg, str):
         s = arg.strip()
         return s[0].upper() + s[1:None]
 
-    if type(arg) == list:
+    if isinstance(arg, list):
         return [string.capwords(arg[0])] + arg[1:None]
 
-    raise TypeError("Invalid type passed to function: " + type(arg))
+    raise TypeError("Invalid type passed to function: " + str(type(arg)))
 
 
 def last_char(s):

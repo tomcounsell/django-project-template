@@ -15,6 +15,7 @@ This script can be run directly without the Django environment for quick behavio
 """
 
 import datetime
+import django
 import os
 import sys
 import unittest
@@ -29,8 +30,6 @@ sys.path.insert(0, str(PROJECT_ROOT))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 # Setup Django
-import django
-
 django.setup()
 
 

@@ -4,7 +4,7 @@ Django Rest Framework permissions.
 
 from rest_framework import permissions
 
-from apps.common.utilities.drf_permissions.api_key import (
+from apps.common.utilities.drf_permissions.api_key import (  # noqa: F401
     HasAnyAPIKey,
     HasTeamAPIKey,
     HasUserAPIKey,
