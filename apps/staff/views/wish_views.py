@@ -94,6 +94,16 @@ class WishListView(StaffRequiredMixin, MainContentView):
                 queryset = queryset.filter(cost_estimate__lte=cost_max)
             except (ValueError, TypeError):
                 pass
+                
+        # Search by title or description
+        search_query = request.GET.get("search")
+        if search_query:
+            # Use Q objects to search in both title and description
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) | 
+                Q(description__icontains=search_query)
+            )
 
         # Check if any filters are active
         has_active_filters = (
@@ -104,7 +114,16 @@ class WishListView(StaffRequiredMixin, MainContentView):
             or value_list
             or cost_min
             or cost_max
+            or search_query
         )
+
+        # Count wishes by status for tab indicators
+        status_counts = {}
+        for status_code, status_name in Wish.STATUS_CHOICES:
+            status_counts[status_code.lower()] = Wish.objects.filter(status=status_code).count()
+        
+        # Add total count for "all" tab
+        status_counts['all'] = Wish.objects.count()
 
         # Set the context
         self.context["wishes"] = queryset
@@ -112,6 +131,7 @@ class WishListView(StaffRequiredMixin, MainContentView):
         self.context["priority_choices"] = Wish.PRIORITY_CHOICES
         self.context["effort_choices"] = Wish.EFFORT_CHOICES
         self.context["value_choices"] = Wish.VALUE_CHOICES
+        self.context["status_counts"] = status_counts
 
         # This helps with making tab selection logic simpler in the template
         status_filter = (
@@ -126,30 +146,24 @@ class WishListView(StaffRequiredMixin, MainContentView):
             "value_list": value_list,
             "cost_min": cost_min,
             "cost_max": cost_max,
+            "search_query": search_query,
             "has_active_filters": has_active_filters,
             "active_tab": active_tab,  # Add explicit active tab tracking
         }
 
         # Handle HTMX requests
         if getattr(request, "htmx", False):
-            if request.htmx.target == "wish-content-container":
-                # For HTMX requests targeting the content container
-                return self.render(request, template_name=self.partial_template_name)
-            elif request.htmx.target == "wish-tabs":
-                # For HTMX requests targeting the tabs
-                return self.render(request, template_name=self.tabs_template_name)
-            else:
-                # For HTMX requests to update both content and tabs
-                # Use OOB to update both parts
-                content_html = render_to_string(
-                    self.partial_template_name, self.context, request=request
-                )
-                tabs_html = render_to_string(
-                    self.tabs_template_name, self.context, request=request
-                )
-                response = HttpResponse(content_html)
-                response["HX-Trigger"] = json.dumps({"updateTabs": tabs_html})
-                return response
+            # For all HTMX requests, always update content and tabs together
+            # Use OOB to update both parts when any request comes in
+            content_html = render_to_string(
+                self.partial_template_name, self.context, request=request
+            )
+            tabs_html = render_to_string(
+                self.tabs_template_name, self.context, request=request
+            )
+            response = HttpResponse(content_html)
+            response["HX-Trigger"] = json.dumps({"updateTabs": tabs_html})
+            return response
 
         # For regular requests, render the full page
         return self.render(request)

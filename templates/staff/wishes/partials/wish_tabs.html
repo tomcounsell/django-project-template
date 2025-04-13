@@ -26,8 +26,12 @@
        hx-target="#wish-content-container"
        hx-swap="innerHTML"
        hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'all' %}tab-active{% else %}tab-inactive{% endif %}">
-      All
+       hx-trigger="click"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm flex items-center {% if current_filters.active_tab == 'all' %}tab-active{% else %}tab-inactive{% endif %}">
+      <span>All</span>
+      <span class="ml-2 px-2 py-0.5 text-xs rounded-full {% if current_filters.active_tab == 'all' %}bg-slate-200 text-slate-800{% else %}bg-gray-100 text-gray-600{% endif %}">
+        {{ status_counts.all|default:"0" }}
+      </span>
     </a>
     
     <!-- Draft Tab -->
@@ -35,8 +39,12 @@
        hx-target="#wish-content-container"
        hx-swap="innerHTML"
        hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'draft' %}tab-active{% else %}tab-inactive{% endif %}">
-      Draft
+       hx-trigger="click"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm flex items-center {% if current_filters.active_tab == 'draft' %}tab-active{% else %}tab-inactive{% endif %}">
+      <span>Draft</span>
+      <span class="ml-2 px-2 py-0.5 text-xs rounded-full {% if current_filters.active_tab == 'draft' %}bg-purple-200 text-purple-800{% else %}bg-purple-50 text-purple-600{% endif %}">
+        {{ status_counts.draft|default:"0" }}
+      </span>
     </a>
     
     <!-- To Do Tab -->
@@ -44,8 +52,12 @@
        hx-target="#wish-content-container"
        hx-swap="innerHTML"
        hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'todo' %}tab-active{% else %}tab-inactive{% endif %}">
-      To Do
+       hx-trigger="click"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm flex items-center {% if current_filters.active_tab == 'todo' %}tab-active{% else %}tab-inactive{% endif %}">
+      <span>To Do</span>
+      <span class="ml-2 px-2 py-0.5 text-xs rounded-full {% if current_filters.active_tab == 'todo' %}bg-gray-200 text-gray-800{% else %}bg-gray-100 text-gray-600{% endif %}">
+        {{ status_counts.todo|default:"0" }}
+      </span>
     </a>
     
     <!-- In Progress Tab -->
@@ -53,8 +65,12 @@
        hx-target="#wish-content-container"
        hx-swap="innerHTML"
        hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'in_progress' %}tab-active{% else %}tab-inactive{% endif %}">
-      In Progress
+       hx-trigger="click"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm flex items-center {% if current_filters.active_tab == 'in_progress' %}tab-active{% else %}tab-inactive{% endif %}">
+      <span>In Progress</span>
+      <span class="ml-2 px-2 py-0.5 text-xs rounded-full {% if current_filters.active_tab == 'in_progress' %}bg-blue-200 text-blue-800{% else %}bg-blue-50 text-blue-600{% endif %}">
+        {{ status_counts.in_progress|default:"0" }}
+      </span>
     </a>
     
     <!-- Blocked Tab -->
@@ -62,8 +78,12 @@
        hx-target="#wish-content-container"
        hx-swap="innerHTML"
        hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'blocked' %}tab-active{% else %}tab-inactive{% endif %}">
-      Blocked
+       hx-trigger="click"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm flex items-center {% if current_filters.active_tab == 'blocked' %}tab-active{% else %}tab-inactive{% endif %}">
+      <span>Blocked</span>
+      <span class="ml-2 px-2 py-0.5 text-xs rounded-full {% if current_filters.active_tab == 'blocked' %}bg-red-200 text-red-800{% else %}bg-red-50 text-red-600{% endif %}">
+        {{ status_counts.blocked|default:"0" }}
+      </span>
     </a>
     
     <!-- Done Tab -->
@@ -71,8 +91,12 @@
        hx-target="#wish-content-container"
        hx-swap="innerHTML"
        hx-push-url="true"
-       class="tab-item whitespace-nowrap pb-3 px-1 text-sm {% if current_filters.active_tab == 'done' %}tab-active{% else %}tab-inactive{% endif %}">
-      Done
+       hx-trigger="click"
+       class="tab-item whitespace-nowrap pb-3 px-1 text-sm flex items-center {% if current_filters.active_tab == 'done' %}tab-active{% else %}tab-inactive{% endif %}">
+      <span>Done</span>
+      <span class="ml-2 px-2 py-0.5 text-xs rounded-full {% if current_filters.active_tab == 'done' %}bg-green-200 text-green-800{% else %}bg-green-50 text-green-600{% endif %}">
+        {{ status_counts.done|default:"0" }}
+      </span>
     </a>
     {% endwith %}
   </nav>

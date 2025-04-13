@@ -260,12 +260,28 @@ The project uses behavior mixins to add common functionality to models. For deta
 
 ## Troubleshooting
 
-### Database Connection Issues
+### Database Setup
 
-If you encounter problems connecting to the database:
-1. Verify PostgreSQL is running: `pg_isready`
-2. Check your database URL in `.env.local`
-3. Ensure the database exists: `psql -c '\l'`
+After copying the local settings template in Step 3, you need to configure your database connection:
+
+1. Edit your `settings/local.py` file
+2. Set the database name to match your project name:
+   ```python
+   DATABASES = {
+     'default': {
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'django_project_template',  # Change this to your project name
+       'USER': 'your_username',  # Your computer username
+       'PASSWORD': '',  # Empty string for local development
+       'HOST': 'localhost',
+       'PORT': '5432',
+     }
+   }
+   ```
+3. Create the PostgreSQL database with your chosen name:
+   ```bash
+   createdb django_project_template  # Use the same name as in settings/local.py
+   ```
 
 ### Missing Migrations
 
@@ -296,3 +312,103 @@ After setting up your development environment:
 3. Look at existing models to understand patterns and conventions
 4. Read up on HTMX integration for adding interactive frontend features
 5. Check the [TODO.md](TODO.md) file to identify areas where you can contribute
+
+### PyCharm Configuration
+
+If you're using PyCharm as your IDE:
+
+1. After setting up the project, ask Claude to help you configure the project in PyCharm
+2. Point Claude to the [PYCHARM_CONFIG.MD](PYCHARM_CONFIG.MD) file
+3. Claude can help you set up run configurations for:
+   - Django Server
+   - Running Tests
+   - Code Linting
+   - Tailwind CSS compilation
+   - And more
+
+This will create the necessary run configurations in your `.idea/` directory and make development with PyCharm more efficient.
+
+### Project Customization and Branding
+
+After setting up the basic environment, you should personalize the project with your own branding and naming. Use an AI assistant like Claude with the following prompt to help with this process:
+
+```
+# Project Customization Task: Rename Django Template to [YOUR_PROJECT_NAME]
+
+Help me customize this Django project template for my new project called "[YOUR_PROJECT_NAME]".
+
+## Tasks:
+1. Create a fresh TODO.md file specific to my project (replace the template's TODO.md) that includes:
+   - Major feature milestones for the MVP
+   - Current development priorities in order
+   - Known issues that need addressing
+   - Code quality and testing improvements
+   - Documentation needs
+   - Integration requirements
+   - Deployment plans (include specific steps for Render for web server and Redis, Neon for PostgreSQL)
+   - Organize these into clear sections with target timelines where possible
+2. Systematically rename all occurrences of "Django Project Template" and "Yudame" to "[YOUR_PROJECT_NAME]" across the codebase, including:
+   - Project titles in HTML templates
+   - README.md and documentation files
+   - Settings files
+   - Database configuration
+   - Git repository references and URLs
+   - Browser tab titles and meta descriptions
+
+3. Update branding elements:
+   - Page titles
+   - Navigation menu items
+   - Footer content
+   - Copyright notices
+   - Email templates and notification text
+   - SEO metadata
+   - Replace branding assets:
+     - Replace the Yudame logo in `static/assets/img/logo-yudame.png` with your project logo
+     - Update the favicon in `static/assets/favicon.png`
+     - Replace any Yudame-specific images or icons
+     - For temporary placeholders, suggest appropriate placeholder.co URLs (e.g., https://placehold.co/600x400/[HEX_COLOR]/[TEXT_COLOR]?text=[YOUR_PROJECT_NAME])
+
+4. Prepare additional branding assets:
+   - If a square favicon isn't provided, crop the main logo to create a square favicon
+   - Optimize all image assets for web use (proper size and compression)
+
+5. Update website navigation and footer:
+   - Scrape the company's existing website for page links (Home, About, Features, etc.)
+   - Add any relevant social media links from the company's online presence
+   - Update the footer with company-specific content, links and contact information
+
+6. Suggest a color scheme based on my project's domain and purpose
+
+## Project Context:
+- Project Name: "[YOUR_PROJECT_NAME]"
+- Purpose: [Brief description of what your project does]
+- Target Audience: [Who will use this product]
+- Key Features: [Main functionality you plan to build]
+
+Please provide a list of files changed, with specific edits made, and any follow-up tasks I should consider.
+```
+
+This will help establish your project's identity and remove all generic template references.
+
+After completing the customization process, don't forget to:
+
+1. Create and migrate the database with your new project name:
+   ```bash
+   # Create the database (if you haven't already)
+   createdb your_project_name
+   
+   # Apply migrations to set up the database schema
+   python manage.py migrate
+   ```
+
+2. Create a superuser to access the admin interface:
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+3. Start the development server and verify your changes:
+   ```bash
+   python manage.py runserver
+   ```
+
+4. Navigate to http://127.0.0.1:8000/ in your browser to see your customized project.

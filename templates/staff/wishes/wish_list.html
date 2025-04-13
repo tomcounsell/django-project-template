@@ -24,8 +24,39 @@
         // Update the tabs content when triggered by HTMX
         const tabsContainer = document.getElementById('wish-tabs');
         if (tabsContainer && evt.detail) {
-            tabsContainer.innerHTML = evt.detail;
+            // Replace the entire tabs container with the new HTML
+            tabsContainer.outerHTML = evt.detail;
         }
+    });
+    
+    // Make sure event listeners are set up again after tab updates
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        // This ensures the tabs are properly highlighted after content is swapped
+        const url = new URL(window.location.href);
+        const status = url.searchParams.get('status');
+        
+        // Find all tab items and update their active state based on URL
+        const tabs = document.querySelectorAll('.tab-item');
+        tabs.forEach(tab => {
+            // Reset all tabs first
+            tab.classList.remove('tab-active');
+            tab.classList.add('tab-inactive');
+            
+            // Get tab type from class list or data attribute
+            const tabHref = tab.getAttribute('hx-get');
+            if (tabHref) {
+                // Determine which tab should be active based on URL
+                if (!status && tabHref.indexOf('status=') === -1) {
+                    // "All" tab should be active when no status filter
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+                } else if (status && tabHref.indexOf(`status=${status}`) > -1) {
+                    // Status-specific tab should be active when that status is filtered
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('tab-inactive');
+                }
+            }
+        });
     });
 </script>
 {% endblock %}
@@ -65,7 +96,6 @@
                     </svg>
                 </div>
 
-
                 <!-- Django Admin Button -->
                 <a href="{% url 'admin:staff_wish_changelist' %}"
                    class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 shadow-xs ring-slate-300 ring-inset hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
@@ -78,6 +108,82 @@
                 </a>
 
             </div>
+        </div>
+        
+        <!-- Search and Advanced Filters -->
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <form id="search-form" class="flex flex-wrap gap-4 items-end"
+                  hx-get="{% url 'staff:wish-list' %}"
+                  hx-target="#wish-content-container"
+                  hx-swap="innerHTML"
+                  hx-trigger="submit, change from:#priority-filter"
+                  hx-push-url="true">
+                
+                <!-- Search Box -->
+                <div class="flex-1 min-w-64">
+                    <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                    <div class="relative">
+                        <input type="text" name="search" id="search" placeholder="Search by title or description"
+                               value="{{ current_filters.search_query|default:'' }}"
+                               class="block w-full rounded-xs border-gray-300 py-1.5 pl-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        {% if current_filters.search_query %}
+                            <button type="button" 
+                                    onclick="document.getElementById('search').value = ''; document.getElementById('search-form').dispatchEvent(new Event('submit'))"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <svg class="h-4 w-4 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Priority Filter -->
+                <div class="w-48">
+                    <label for="priority-filter" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                    <select id="priority-filter" name="priority" 
+                            class="block w-full rounded-xs border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-slate-600 sm:text-sm">
+                        <option value="">All Priorities</option>
+                        {% for code, name in priority_choices %}
+                            <option value="{{ code }}" {% if code in current_filters.priority_list %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Apply/Reset Buttons -->
+                <div class="flex space-x-2">
+                    <button type="submit" 
+                            class="inline-flex items-center justify-center rounded-xs bg-slate-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-slate-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600">
+                        <svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"></path>
+                        </svg>
+                        Apply
+                    </button>
+                    <a href="{% url 'staff:wish-list' %}" 
+                       class="inline-flex items-center justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-gray-700 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500">
+                        <svg class="h-5 w-5 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                        </svg>
+                        Reset
+                    </a>
+                </div>
+                
+                <!-- Preserve current tab in form submission -->
+                {% if current_filters.status_list %}
+                    {% if current_filters.status_list|length == 1 %}
+                        <input type="hidden" name="status" value="{{ current_filters.status_list }}">
+                    {% else %}
+                        {% for status in current_filters.status_list %}
+                            <input type="hidden" name="status" value="{{ status }}">
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            </form>
         </div>
     </div>
 </div>
