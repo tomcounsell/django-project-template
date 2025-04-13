@@ -54,7 +54,7 @@ if [ -d ".git" ]; then
         echo "Would you like to add the original template repository as an upstream remote? (y/n)"
         read add_upstream
         if [[ $add_upstream == "y" || $add_upstream == "Y" ]]; then
-            git remote add upstream https://github.com/yudame/django-project-template.git
+            git remote add upstream https://github.com/tomcounsell/django-project-template.git
             print_success "Added upstream remote for future template updates."
             echo "You can fetch updates with 'git fetch upstream' and cherry-pick specific improvements."
         else

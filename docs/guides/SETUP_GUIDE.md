@@ -17,7 +17,7 @@ The project includes an automated setup script that handles most of the setup pr
 
 ```bash
 # Clone the main repository
-git clone https://github.com/yudame/django-project-template.git
+git clone https://github.com/tomcounsell/django-project-template.git
 
 # Change to the project directory
 cd django-project-template
@@ -49,13 +49,13 @@ If you prefer to set up manually or need more control over the process, follow t
 
 ```bash
 # Clone the main repository
-git clone https://github.com/yudame/django-project-template.git
+git clone https://github.com/tomcounsell/django-project-template.git
 
 # Change to the project directory
 cd django-project-template
 
 # Optional: Add the original repository as upstream remote for future updates
-git remote add upstream https://github.com/yudame/django-project-template.git
+git remote add upstream https://github.com/tomcounsell/django-project-template.git
 
 # Verify remotes
 git remote -v
