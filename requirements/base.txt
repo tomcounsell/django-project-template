@@ -5,6 +5,7 @@ django-debug-toolbar
 django-extensions
 django-filter
 django-htmx
+django-redis
 django-storages
 django-tailwind-cli
 django-timezone-field

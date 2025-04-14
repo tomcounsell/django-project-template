@@ -34,6 +34,7 @@ django==5.2
     #   django-extensions
     #   django-filter
     #   django-htmx
+    #   django-redis
     #   django-storages
     #   django-tailwind-cli
     #   django-timezone-field
@@ -50,6 +51,8 @@ django-extensions==4.1
 django-filter==25.1
     # via -r requirements/base.txt
 django-htmx==1.23.0
+    # via -r requirements/base.txt
+django-redis==5.4.0
     # via -r requirements/base.txt
 django-storages==1.14.6
     # via -r requirements/base.txt
@@ -144,6 +147,8 @@ pyyaml==6.0.2
     # via
     #   -r requirements/base.txt
     #   drf-yasg
+redis==5.2.1
+    # via django-redis
 requests==2.32.3
     # via
     #   django-tailwind-cli
