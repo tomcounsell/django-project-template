@@ -107,8 +107,33 @@ class UserAdmin(ModelAdmin):
     ]
     list_filter_submit = True
 
+    # Define fieldsets for the add form to include password fields
+    add_fieldsets = (
+        (None, {"fields": ("username", "password1", "password2")}),
+        (
+            "Personal info",
+            {
+                "fields": (("first_name", "last_name"), "email", "biography"),
+                "classes": ["tab"],
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                ),
+                "classes": ["tab"],
+            },
+        ),
+    )
+    
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
+        (None, {"fields": ("username",)}),
         (
             "Personal info",
             {
@@ -138,12 +163,31 @@ class UserAdmin(ModelAdmin):
         ),
     )
     readonly_fields = ["last_login", "date_joined"]
+    
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
+        return super().get_fieldsets(request, obj)
+        
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Use special form during user creation
+        """
+        defaults = {}
+        if obj is None:
+            defaults['form'] = self.add_form
+        defaults.update(kwargs)
+        return super().get_form(request, obj, **defaults)
+        
+    def save_model(self, request, obj, form, change):
+        if not change:  # This is a new user
+            # The password will be set properly by UserCreationForm
+            pass
+        super().save_model(request, obj, form, change)
 
     # Add actions to the admin interface
     actions_detail = [
-        "reset_user_password",
         "deactivate_user",
-        {"title": _("More Actions"), "items": ["activate_user", "toggle_superuser"]},
     ]
 
     # Custom helper displays with the @display decorator
@@ -185,14 +229,6 @@ class UserAdmin(ModelAdmin):
     status_badge.short_description = "Status"
 
     # Custom actions
-    @action(description=_("Reset Password"))
-    def reset_user_password(self, request, object_id):
-        # Action to send a password reset email to the user
-        user = User.objects.get(pk=object_id)
-        # Logic to send password reset would go here
-        messages.success(request, f"Password reset email sent to {user.email}")
-        return redirect("admin:common_user_change", object_id)
-
     @action(description=_("Deactivate User"))
     def deactivate_user(self, request, object_id):
         user = User.objects.get(pk=object_id)
