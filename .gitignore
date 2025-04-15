@@ -160,3 +160,4 @@ test_reports/
 reports/
 .repo_map_structure.json
 .django_tailwind_cli/tailwindcss-macos-arm64-4.1.3
+.django_tailwind_cli/tailwindcss-macos-arm64-4.1.4
