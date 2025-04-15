@@ -54,8 +54,6 @@ django-htmx==1.23.0
     # via -r requirements/base.txt
 django-redis==5.4.0
     # via -r requirements/base.txt
-django-storages==1.14.5
-    # via -r requirements/base.txt
 django-storages==1.14.6
     # via -r requirements/base.txt
 django-tailwind-cli==4.2.3
@@ -64,7 +62,7 @@ django-timezone-field==7.1
     # via -r requirements/base.txt
 django-typer==3.1.0
     # via django-tailwind-cli
-django-unfold==0.55.1
+django-unfold==0.55.2
     # via -r requirements/base.txt
 django-widget-tweaks==1.5.0
     # via -r requirements/base.txt
@@ -189,7 +187,7 @@ uritemplate==4.1.1
     #   drf-yasg
 urllib3==2.4.0
     # via requests
-uvicorn==0.34.0
+uvicorn==0.34.1
     # via -r requirements/prod.txt
 wcwidth==0.2.13
     # via prompt-toolkit
