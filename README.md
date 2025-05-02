@@ -22,7 +22,7 @@ Planned Integrations:
 
 ### Getting Started
 - **Quick Start**: Run `source setup_local_env.sh` for automated local environment setup with activated virtual environment
-- For detailed setup instructions, see [Setup Guide](docs/SETUP_GUIDE.md)
+- For detailed setup instructions, see [Setup Guide](docs/guides/SETUP_GUIDE.md)
 - For contribution guidelines, see [Contributing Guide](docs/guides/CONTRIBUTING.md)
 - For enhancement roadmap, see [TODO List](docs/TODO.md)
 - For development practices, see [Development Guide](CLAUDE.md)
