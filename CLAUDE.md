@@ -233,3 +233,5 @@ Reusable model mixins that add common functionality:
 - Run formatters before committing: `black . && isort .`
 - Check changes with `git status` before committing
 - Don't include co-authors in commit messages
+- do not document legacy systems
+- do not document system migrations. only document new current state
