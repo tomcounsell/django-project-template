@@ -1,66 +1,79 @@
-# Dependency Management with uv
+# Requirements Directory
 
-This project uses [uv](https://github.com/astral-sh/uv) for dependency management. uv is a fast, modern Python package installer and resolver that replaces pip-tools with significant performance improvements.
+This project uses **uv** for dependency management with `pyproject.toml` as the single source of truth.
 
-## Files
-
-- `base.txt` - Core dependencies for all environments
-- `dev.txt` - Additional dependencies for development
-- `prod.txt` - Production dependencies
-- `base.lock.txt` - Locked dependencies for base
-- `dev.lock.txt` - Locked dependencies for development
-- `prod.lock.txt` - Locked dependencies for production
-- `install.sh` - Helper script to install dependencies
-- `generate_deployment_requirements.sh` - Script to create requirements.txt
-- `test.sh` - Test script for validating setup
-
-## Installation
+## Quick Start
 
 ```bash
-# Install uv
-pip install uv
+# Install all dependencies (including dev, test, e2e)
+uv sync --all-extras
 
-# Install development dependencies
-./requirements/install.sh dev
+# Install only production dependencies
+uv sync
 
-# For production
-./requirements/install.sh prod
+# Install with specific extras
+uv sync --extra dev --extra test
 ```
 
-## Updating Dependencies
+## Files in this Directory
 
-To update lockfiles after changing requirements:
+- `README.md` - This file
+- `setup.sh` - Quick setup script for new developers
+- `legacy/` - Old pip-tools based requirements (archived)
+
+## Dependency Management
+
+All dependencies are defined in `/pyproject.toml`:
+- **[project.dependencies]** - Production dependencies
+- **[project.optional-dependencies.dev]** - Development tools
+- **[project.optional-dependencies.test]** - Testing libraries
+- **[project.optional-dependencies.e2e]** - End-to-end testing tools
+
+The `uv.lock` file in the root directory ensures reproducible installs.
+
+## Common Tasks
+
+### Adding Dependencies
 
 ```bash
-# Update base lockfile
-uv pip compile requirements/base.txt -o requirements/base.lock.txt
+# Add a production dependency
+uv add package-name
 
-# Update development lockfile
-uv pip compile requirements/dev.txt -o requirements/dev.lock.txt
+# Add a development dependency
+uv add --dev package-name
 
-# Update production lockfile
-uv pip compile requirements/prod.txt -o requirements/prod.lock.txt
+# Add to a specific extra group
+uv add --optional test package-name
 ```
 
-## For Deployments
-
-Generate a requirements.txt file for deployment platforms:
+### Updating Dependencies
 
 ```bash
-./requirements/generate_deployment_requirements.sh
+# Update all dependencies
+uv lock --upgrade
+
+# Update a specific package
+uv add package-name --upgrade-package package-name
 ```
 
-This creates a `requirements.txt` file in the project root that can be used by deployment platforms like Render or Heroku.
+### For Deployment
 
-## Using Virtual Environments with uv
+Most modern platforms support `pyproject.toml` directly. If you need a `requirements.txt`:
 
 ```bash
-# Create a virtual environment in the current directory
-uv venv
+# Export production dependencies
+uv export --no-dev > requirements.txt
 
-# Activate it
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
-./requirements/install.sh dev
+# Export all dependencies
+uv export > requirements-all.txt
 ```
+
+## Migration from Old System
+
+The project has migrated from pip-tools to uv. Old requirements files are archived in `legacy/` for reference.
+
+Key changes:
+- Single source of truth: `pyproject.toml`
+- Lock file: `uv.lock` (replaces multiple .lock.txt files)
+- Faster installs: uv is 10-100x faster than pip
+- Better dependency resolution
