@@ -228,6 +228,50 @@ Reusable model mixins that add common functionality:
 - Do not create or run migrations without approval
 - Wait for repository owner to handle migrations
 
+## Documentation Reference
+
+### Core Documentation (`docs/`)
+Read these documents when working on specific areas:
+
+#### Architecture & Design
+- **ARCHITECTURE.md** - System design, app relationships, data flow
+- **REPO_MAP.md** - Complete repository structure and file organization
+- **MODEL_CONVENTIONS.md** - Model design patterns and naming standards
+- **BEHAVIOR_MIXINS.md** - How to use and extend behavior mixins
+
+#### Frontend Development
+- **HTMX_INTEGRATION.md** - HTMX patterns, partial rendering, AJAX
+- **TAILWIND_V4.md** - Tailwind CSS v4 configuration and usage
+- **TEMPLATE_CONVENTIONS.md** - Template structure, inheritance, naming
+- **VIEW_CONVENTIONS.md** - View patterns, MainContentView, HTMXView
+- **MODAL_PATTERNS.md** - Modal implementation with HTMX
+
+#### Error Handling & Testing
+- **ERROR_HANDLING.md** - Error management strategies
+- **advanced/TEST_CONVENTIONS.md** - Testing patterns and organization
+- **advanced/E2E_TESTING.md** - End-to-end test implementation
+- **advanced/BROWSER_TESTING.md** - Browser automation testing
+- **advanced/TEST_TROUBLESHOOTING.md** - Common test issues and solutions
+
+#### Setup & Configuration
+- **guides/SETUP_GUIDE.md** - Detailed setup instructions
+- **guides/CONTRIBUTING.md** - Contribution guidelines
+- **guides/PYCHARM_CONFIG.MD** - PyCharm IDE configuration
+
+#### Examples
+- **examples/modal_example_view.py** - Modal view implementation
+- **examples/item_list_example.html** - List view template
+- **examples/list_items_partial.html** - HTMX partial template
+
+### When to Read Documentation
+
+1. **Before starting a new feature**: Read relevant architecture and convention docs
+2. **When implementing models**: Review MODEL_CONVENTIONS.md and BEHAVIOR_MIXINS.md
+3. **For frontend work**: Check HTMX_INTEGRATION.md and TEMPLATE_CONVENTIONS.md
+4. **When writing tests**: Consult TEST_CONVENTIONS.md and relevant testing docs
+5. **For troubleshooting**: Check ERROR_HANDLING.md and TEST_TROUBLESHOOTING.md
+6. **Setting up development**: Follow SETUP_GUIDE.md
+
 ## Commit Guidelines
 - Create detailed, focused commits
 - Run formatters before committing: `black . && isort .`
