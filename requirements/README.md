@@ -19,7 +19,7 @@ uv sync --extra dev --extra test
 
 - `README.md` - This file
 - `setup.sh` - Quick setup script for new developers
-- `legacy/` - Old pip-tools based requirements (archived)
+- `export.sh` - Export requirements.txt for legacy deployment platforms
 
 ## Dependency Management
 
@@ -68,12 +68,3 @@ uv export --no-dev > requirements.txt
 uv export > requirements-all.txt
 ```
 
-## Migration from Old System
-
-The project has migrated from pip-tools to uv. Old requirements files are archived in `legacy/` for reference.
-
-Key changes:
-- Single source of truth: `pyproject.toml`
-- Lock file: `uv.lock` (replaces multiple .lock.txt files)
-- Faster installs: uv is 10-100x faster than pip
-- Better dependency resolution
