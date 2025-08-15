@@ -2,6 +2,9 @@
 requires = ["setuptools>=64.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["apps"]
+
 [project]
 name = "django-project-template"
 version = "0.1.0"
@@ -10,25 +13,21 @@ readme = "README.md"
 authors = [
     {name = "Valor Engels", email = "your_email@example.com"}
 ]
-license = {text = "MIT"}
+license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Web Environment",
     "Framework :: Django",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dependencies = [
     "Django>=4.0",
     "django-extensions",
@@ -47,7 +46,8 @@ dependencies = [
     "django-htmx",
     "django-unfold",
     "selenium",
-    "repo-map",
+    "django-tailwind-cli>=4.3.0",
+    "drf-yasg>=1.21.10",
 ]
 
 [project.optional-dependencies]

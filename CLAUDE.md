@@ -1,188 +1,237 @@
-# Django Project Template - Development Guide
+# CLAUDE.md
 
-This guide complements the main [README.md](README.md) and provides specific instructions for developers contributing to this project. For project overview, structure, and features, see the [README.md](README.md).
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Package Management
-- **ONLY use uv**: For all package and dependency management
-- **Installation**: `uv add package`
-- **Run tools**: `uv run tool`
-- **Upgrading packages**: `uv add --dev package --upgrade-package package`
-- **FORBIDDEN**: `uv pip install`, `@latest` syntax
+## Core Commands
 
-## Commands
-- **Setup**: `python -m venv venv && source venv/bin/activate && pip install uv && ./requirements/install.sh dev`
-- **Environment**: `cp .env.example .env.local` (then edit with your private keys)
-- **Run server**: `python manage.py runserver`
-- **Migrations**: `python manage.py makemigrations && python manage.py migrate`
+### Development Setup
+```bash
+# Initial setup (only needed once)
+python3 -m venv venv && source venv/bin/activate && pip install uv
+uv sync --all-extras  # Install all dependencies
+cp .env.example .env.local
+# Edit .env.local with: DATABASE_URL=postgres://$(whoami)@localhost:5432/django-project-template
+createdb django-project-template
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
 
-### Testing Commands
-- **Run all tests**: `DJANGO_SETTINGS_MODULE=settings pytest`
-- **Single test file**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py -v`
-- **Single test class**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase -v`
-- **Single test method**: `DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase::test_string_representation -v`
-- **Run tests by keyword**: `DJANGO_SETTINGS_MODULE=settings pytest -k "user and not stripe" -v`
-- **Run with detailed errors**: `DJANGO_SETTINGS_MODULE=settings pytest -vxs`
-- **Run only failing tests**: `DJANGO_SETTINGS_MODULE=settings pytest --failed-first`
-- **Coverage**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps`
-- **HTML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report`
-- **XML Coverage Report**: `DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=xml:apps/common/tests/coverage.xml` (for CI integrations)
+# Alternative: Use the setup script
+./requirements/setup.sh  # Installs all dev dependencies
+```
+
+### Daily Development
+```bash
+# Start development server
+uv run python manage.py runserver
+
+# Run Django shell
+uv run python manage.py shell
+
+# Make and apply migrations
+uv run python manage.py makemigrations
+uv run python manage.py migrate
+
+# Collect static files
+uv run python manage.py collectstatic --noinput
+```
+
+### Testing
+```bash
+# Run all tests
+DJANGO_SETTINGS_MODULE=settings pytest
+
+# Run specific test file
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py -v
+
+# Run specific test class
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase -v
+
+# Run specific test method
+DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_address.py::AddressModelTestCase::test_string_representation -v
+
+# Run tests by keyword
+DJANGO_SETTINGS_MODULE=settings pytest -k "user and not stripe" -v
+
+# Run with coverage
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report
+
+# Run E2E tests
+python tools/testing/browser_test_runner.py apps/**/tests/test_e2e_*.py
+
+# Run visual tests  
+python tools/testing/browser_test_runner.py apps/**/tests/test_visual_*.py
+```
 
 ### Code Quality
-- **Format code**: `black . && isort .`
-- **Lint & type check**: `flake8 . && mypy .`
+```bash
+# Format code (use before committing)
+black . && isort .
 
-## Code Style
-- **Python**: PEP 8 with Black formatter (line length 88); use type hints with mypy
-- **Models**: Follow [behavior mixins](docs/MODEL_CONVENTIONS.md) pattern; datetime fields end with `_at`
-  - See [README.md](README.md#behavior-mixins) for full list of available behavior mixins
-- **Imports**: Group by standard lib, third-party, Django, local apps
-- **Methods**: Verb phrases for methods, nouns for properties
-- **HTMX**: Use `HTMXView` for HTMX-specific views and `MainContentView` for standard pages
-- **Error handling**: Explicit error messages; form validation; use message framework
-- **HTML/CSS**: Kebab-case for CSS classes, snake_case for ids; Tailwind for styling
-- **Documentation**: Docstrings for models, complex functions, and behavior mixins
-- **Functions**: Must be focused and small (single responsibility)
-- **Type hints**: Required for all code
-- **Formatting guidelines**:
-  - Line length: 88 chars maximum
-  - Strings: use parentheses for line wrapping
-  - Function calls: multi-line with proper indentation
-  - Imports: split into multiple lines when needed
+# Run linting
+flake8 . && mypy .
 
-## Frontend Guidelines
-- **HTMX**: Preferred for interactive functionality over JavaScript
-- **View Classes**:
-  - Use `MainContentView` for standard pages (from `apps.public.helpers`)
-  - Use `HTMXView` for HTMX-specific components (from `apps.public.helpers`)
-  - Add `TeamSessionMixin` when team context is needed
-- **JavaScript**: Only use inline attributes (onclick, etc.) when necessary
-- **No Scripts**: Avoid adding `<script>` tags unless explicitly required
-- **Tailwind CSS v4**: Use for styling with django-tailwind-cli instead of custom CSS where possible
-- **Templates**: Place in root `/templates` directory, not in app directories
+# Alternative: Use Ruff
+uv run ruff format .
+uv run ruff check . --fix
 
-For detailed conventions on templates and views, see:
-- [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
-- [View Conventions](docs/VIEW_CONVENTIONS.md)
+# Type checking
+uv run pyright
+```
 
-## Testing Practice
-- **TDD Approach**: Write tests BEFORE implementing features
-- **Database**: Never use SQLite for tests since app uses Postgres JSON fields
-- **Test Categories**:
-  - **Unit Tests**: Test individual functions, classes, or small components
-  - **Integration Tests**: Test interactions between components
-  - **E2E Tests**: Test complete user workflows with browser automation
-  - **Visual Tests**: Test the visual appearance of UI components
-  - **API Tests**: Test REST API endpoints and responses
-- **Organization**:
-  - Model tests: `apps/{app_name}/tests/test_models/`
-  - View tests: `apps/{app_name}/tests/test_views/`
-  - Behavior tests: `apps/common/tests/behaviors.py` (consolidated approach with both database and direct tests)
-  - E2E tests: `apps/{app_name}/tests/test_e2e_*.py`
-  - Visual tests: `apps/{app_name}/tests/test_visual_*.py`
-  - Factory classes: `apps/common/tests/factories.py`
-- **Running Tests**:
-  - All tests: `./test.sh`
-  - Specific type: `./test.sh --type unit|integration|e2e|visual|api`
-  - With coverage: `./test.sh --coverage`
-  - With HTML report: `./test.sh --html-report`
-  - Browser tests: `./test.sh --browser --no-headless`
-  - For detailed test management: `python tools/testing/test_manager.py run|list|report --category all|unit|integration|e2e|visual|api`
-- **Browser Testing**:
-  - E2E tests: `python tools/testing/browser_test_runner.py apps/**/tests/test_e2e_*.py`
-  - Visual tests: `python tools/testing/browser_test_runner.py apps/**/tests/test_visual_*.py`
-- **Python 3.12**: Use standalone behavior tests (`apps/common/behaviors/tests/test_behaviors.py`) for Python 3.12 compatibility
-- **Coverage**: 
-  - Aim for 100% test coverage for models and behavior mixins
-  - Generate HTML reports with `./test.sh --html-report`
-  - Check coverage in CI pipelines with `./test.sh --xml-report`
-- **Test Requirements**:
-  - New features require tests
-  - Bug fixes must include regression tests
-  - Test edge cases and error conditions
-  - For async code, use anyio (not asyncio)
-  - Use pytest markers to categorize tests (e.g., `@pytest.mark.e2e`)
+### Package Management (MUST use uv)
+```bash
+# Add production dependency
+uv add package-name
 
-## Documentation
-- [README.md](README.md) - Project overview, features and structure
+# Add dev dependency
+uv add --dev package-name
+
+# Add to optional group (test, e2e)
+uv add --optional test package-name
+
+# Upgrade specific package
+uv add package-name --upgrade-package package-name
+
+# Sync dependencies
+uv sync --all-extras     # Install everything
+uv sync                  # Production only
+uv sync --extra dev      # Production + dev
+
+# NEVER use: pip install, uv pip install, or @latest syntax
+```
+
+## Architecture Overview
 
 ### Project Structure
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Project architecture and app relationships
-- [docs/TODO.md](docs/TODO.md) - Current tasks and priorities
+```
+django-project-template/
+├── apps/                    # Django applications
+│   ├── common/             # Core models, behaviors, utilities
+│   ├── public/             # Web UI, templates, HTMX views  
+│   ├── api/                # REST API endpoints
+│   ├── integration/        # Third-party service integrations
+│   └── ai/                 # AI model integrations
+├── settings/               # Modular Django settings
+│   ├── __init__.py        # Settings orchestrator
+│   ├── env.py             # Environment detection
+│   ├── base.py            # Core Django settings
+│   ├── database.py        # Database configuration
+│   ├── third_party.py     # External service settings
+│   ├── local.py           # Local development overrides
+│   └── production.py      # Production settings
+├── templates/              # All HTML templates (no app-specific)
+├── static/                 # All static files (no app-specific)
+└── staticfiles/           # Collected static files (gitignored)
+```
 
-### Development Guides
-- [docs/guides/SETUP_GUIDE.md](docs/guides/SETUP_GUIDE.md) - Detailed setup instructions
-- [docs/guides/CONTRIBUTING.md](docs/guides/CONTRIBUTING.md) - Contribution guidelines
-- [docs/guides/PYCHARM_CONFIG.md](docs/guides/PYCHARM_CONFIG.md) - PyCharm IDE configuration
-- [docs/guides/TAILWIND_V4_MIGRATION_CHECKLIST.md](docs/guides/TAILWIND_V4_MIGRATION_CHECKLIST.md) - Tailwind v4 migration guide
-- [docs/guides/TAILWIND_V4_UPGRADE.md](docs/guides/TAILWIND_V4_UPGRADE.md) - Tailwind v4 upgrade process
+### Settings Architecture
+Settings are loaded in a specific order via `settings/__init__.py`:
+1. **env.py** - Environment detection (LOCAL, STAGE, PRODUCTION)
+2. **base.py** - Core Django configuration
+3. **database.py** - Database setup using DATABASE_URL
+4. **third_party.py** - External service configurations
+5. **production.py** - Production-specific settings (if PRODUCTION)
+6. **local.py** - Local development overrides (if LOCAL)
 
-### Code Conventions
-- [docs/BEHAVIOR_MIXINS.md](docs/BEHAVIOR_MIXINS.md) - Details on behavior mixins
-- [docs/ERROR_HANDLING.md](docs/ERROR_HANDLING.md) - Error handling guidelines
-- [docs/HTMX_INTEGRATION.md](docs/HTMX_INTEGRATION.md) - HTMX integration patterns
-- [docs/MODAL_PATTERNS.md](docs/MODAL_PATTERNS.md) - Modal dialog implementation patterns
-- [docs/MODEL_CONVENTIONS.md](docs/MODEL_CONVENTIONS.md) - Model conventions
-- [docs/TAILWIND_V4.md](docs/TAILWIND_V4.md) - Tailwind CSS v4 usage guidelines
-- [docs/TEMPLATE_CONVENTIONS.md](docs/TEMPLATE_CONVENTIONS.md) - Template guidelines and patterns
-- [docs/VIEW_CONVENTIONS.md](docs/VIEW_CONVENTIONS.md) - View classes and HTMX integration
+Environment is determined by `DEPLOYMENT_TYPE` in `.env.local` file.
 
-### Advanced Topics
-- [docs/advanced/AI_BROWSER_TESTING.md](docs/advanced/AI_BROWSER_TESTING.md) - AI-assisted browser testing
-- [docs/advanced/BROWSER_TESTING.md](docs/advanced/BROWSER_TESTING.md) - Browser testing with Playwright/Selenium
-- [docs/advanced/CICD.md](docs/advanced/CICD.md) - CI/CD pipeline configuration
-- [docs/advanced/E2E_TESTING.md](docs/advanced/E2E_TESTING.md) - End-to-end testing guidelines
-- [docs/advanced/HTMX_AND_RESPONSIVE_TESTING.md](docs/advanced/HTMX_AND_RESPONSIVE_TESTING.md) - Testing HTMX and responsive design
-- [docs/advanced/SCREENSHOT_SERVICE.md](docs/advanced/SCREENSHOT_SERVICE.md) - Screenshot service implementation
-- [docs/advanced/TEST_CONVENTIONS.md](docs/advanced/TEST_CONVENTIONS.md) - Testing practices and organization
-- [docs/advanced/TEST_TROUBLESHOOTING.md](docs/advanced/TEST_TROUBLESHOOTING.md) - Troubleshooting test failures
+### App Dependencies
+- **common**: Foundation app with User model, behavior mixins, utilities
+- **public**: Depends on common, provides web UI with HTMX
+- **api**: Depends on common, provides REST endpoints
+- **integration**: Depends on common, handles external services
+- **ai**: Depends on common, handles AI integrations
 
-## Development Process
-1. Check [docs/TODO.md](docs/TODO.md) to identify enhancement opportunities
-2. Think deeply to plan out next steps and how to implement the feature
-3. Write tests covering all expected behaviors
-4. Run tests to verify they fail (proving tests work correctly)
-5. Implement just enough code to make tests pass
-6. Commit changes to your working branch
-7. Review and Refactor your work. Simplify if possible without sacrificing functionality
-8. Commit changes when all tests are passing
-9. Continue to achieve 100% test coverage
-10. Update [docs/TODO.md](docs/TODO.md) with updated plans and marking items completed when they have 100% test coverage
+### Behavior Mixins (apps/common/behaviors/)
+Reusable model mixins that add common functionality:
+- **Timestampable**: `created_at`, `modified_at` fields
+- **Authorable**: Track content authors
+- **Publishable**: Publishing workflow management
+- **Expirable**: Content expiration handling
+- **Permalinkable**: URL slug generation
+- **Locatable**: Location/address fields
+- **Annotatable**: Notes relationship
+
+## Critical Development Guidelines
+
+### Package Management
+- **ONLY use uv** for all package operations
+- Dependencies defined in `pyproject.toml`
+- Python version requirement: >=3.11
+- NEVER use pip directly or `uv pip install`
+
+### Templates and Frontend
+- All templates in `/templates` directory (NOT in apps)
+- Use template inheritance with base templates
+- HTMX preferred over JavaScript for interactivity
+- Tailwind CSS v4 with django-tailwind-cli
+- View classes: `MainContentView` for pages, `HTMXView` for HTMX components
+
+### Testing Requirements
+- Write tests BEFORE implementing features (TDD)
+- Never use SQLite for tests (app uses Postgres JSON fields)
+- Tests organized by type in `apps/{app_name}/tests/`
+- Factory classes in `apps/common/tests/factories.py`
+- 100% coverage goal for models and behaviors
+
+### Code Style
+- Black formatter (line length 88)
+- Type hints required for all code
+- Datetime fields must end with `_at`
+- Follow PEP 8 with Black formatting
+- Group imports: stdlib, third-party, Django, local
+
+### Database
+- PostgreSQL required (JSON field support)
+- Migrations: Don't run without approval
+- Use behavior mixins for common model patterns
+- Connection configured via DATABASE_URL
+
+### Environment Configuration
+- Local settings in `.env.local` (not committed)
+- Copy from `.env.example` for initial setup
+- Key variables:
+  - `DATABASE_URL`: PostgreSQL connection string
+  - `DEPLOYMENT_TYPE`: LOCAL/STAGE/PRODUCTION
+  - `SECRET_KEY`: Django secret key
+  - `DEBUG`: True for local development
+
+## Common Development Tasks
+
+### Adding a New Model
+1. Create model in appropriate app's `models/` directory
+2. Use behavior mixins from `apps/common/behaviors/`
+3. Write tests first in `tests/test_models/`
+4. Create and apply migrations
+5. Register in admin if needed
+
+### Creating HTMX Views
+1. Inherit from `HTMXView` in `apps.public.helpers`
+2. Create partial template in `/templates/`
+3. Handle both full page and partial responses
+4. Add URL pattern to app's `urls.py`
+
+### Adding API Endpoints
+1. Create serializer in `apps/api/serializers/`
+2. Create viewset/view in `apps/api/views/`
+3. Write tests in `apps/api/tests/`
+4. Add to `apps/api/urls.py`
+
+### Integrating Third-Party Services
+1. Add configuration to `settings/third_party.py`
+2. Create integration module in `apps/integration/`
+3. Define interface methods for the integration
+4. Keep all integration logic isolated
+
+## Migration Guidelines
+- You are not yet trusted to manage migrations
+- Do not create or run migrations without approval
+- Wait for repository owner to handle migrations
 
 ## Commit Guidelines
 - Create detailed, focused commits
-- Run code formatters before committing
-- Check all changes with `git status` before committing
+- Run formatters before committing: `black . && isort .`
+- Check changes with `git status` before committing
 - Don't include co-authors in commit messages
-
-## Architecture
-- Move away from component frameworks to standard Django templates
-- Consolidate static files and templates to root directories
-- Use uv for dependency management
-- Organize apps by domain (common, public, api, ai, integrations)
-
-## Code Quality Tools
-- **Ruff**: Code formatting and linting
-  - Format: `uv run ruff format .`
-  - Check: `uv run ruff check .`
-  - Fix: `uv run ruff check . --fix`
-- **Type Checking**:
-  - Tool: `uv run pyright`
-  - Requirements:
-    - Explicit None checks for Optional
-    - Type narrowing for strings
-
-For detailed project structure and app descriptions, refer to:
-- [Project Structure](README.md#project-structure) section in the README
-- [Architecture Document](docs/ARCHITECTURE.md) for a visual overview and app relationships
-
-## Key Technology Documentation
-- **Django**: https://docs.djangoproject.com/en/5.0/
-- **Django REST Framework**: https://www.django-rest-framework.org/
-- **HTMX**: https://htmx.org/docs/
-- **Tailwind CSS v4**: https://tailwindcss.com/docs
-- **Unfold Admin**: https://unfoldadmin.com/docs/
-- **Pytest Django**: https://pytest-django.readthedocs.io/en/latest/
-- **Browser-Use**: https://pypi.org/project/browser-use/
-- **uv Package Manager**: https://docs.astral.sh/uv/
-- **Ruff Linter**: https://docs.astral.sh/ruff/
-- **MCP Python SDK** https://raw.githubusercontent.com/modelcontextprotocol/python-sdk/refs/heads/main/README.md
+- do not document legacy systems
+- do not document system migrations. only document new current state

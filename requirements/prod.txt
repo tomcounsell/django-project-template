@@ -1,3 +1,0 @@
--r base.txt
-# Add any production-specific requirements here
-uvicorn
