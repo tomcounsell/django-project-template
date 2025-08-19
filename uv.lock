@@ -888,6 +888,9 @@ test = [
 ]
 
 [package.dev-dependencies]
+dev = [
+    { name = "django-browser-reload" },
+]
 e2e-testing = [
     { name = "browser-use" },
     { name = "playwright" },
@@ -934,6 +937,7 @@ requires-dist = [
 provides-extras = ["dev", "test", "e2e"]
 
 [package.metadata.requires-dev]
+dev = [{ name = "django-browser-reload", specifier = ">=1.18.0" }]
 e2e-testing = [
     { name = "browser-use", specifier = ">=0.1.40" },
     { name = "playwright", specifier = ">=1.40.0" },

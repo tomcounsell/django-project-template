@@ -107,6 +107,9 @@ filterwarnings = [
 ]
 
 [dependency-groups]
+dev = [
+    "django-browser-reload>=1.18.0",
+]
 e2e-testing = [
     "browser-use>=0.1.40",
     "playwright>=1.40.0",
