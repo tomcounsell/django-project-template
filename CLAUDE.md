@@ -119,7 +119,6 @@ django-project-template/
 │   ├── third_party.py     # External service settings
 │   ├── local.py           # Local development overrides
 │   └── production.py      # Production settings
-├── templates/              # All HTML templates (no app-specific)
 ├── static/                 # All static files (no app-specific)
 └── staticfiles/           # Collected static files (gitignored)
 ```
@@ -161,7 +160,7 @@ Reusable model mixins that add common functionality:
 - NEVER use pip directly or `uv pip install`
 
 ### Templates and Frontend
-- All templates in `/templates` directory (NOT in apps)
+- All templates in `apps/public/templates` directory
 - Use template inheritance with base templates
 - HTMX preferred over JavaScript for interactivity
 - Tailwind CSS v4 with django-tailwind-cli
@@ -207,7 +206,7 @@ Reusable model mixins that add common functionality:
 
 ### Creating HTMX Views
 1. Inherit from `HTMXView` in `apps.public.helpers`
-2. Create partial template in `/templates/`
+2. Create partial template in `apps/public/templates/`
 3. Handle both full page and partial responses
 4. Add URL pattern to app's `urls.py`
 

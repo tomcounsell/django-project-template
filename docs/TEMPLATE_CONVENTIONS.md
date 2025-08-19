@@ -8,11 +8,11 @@ This document outlines the conventions and best practices for templates in this 
 
 The project uses two primary base templates:
 
-1. `templates/base.html` - Main layout template for full pages
-2. `templates/partial.html` - Base template for HTMX partial updates
+1. `apps/public/templates/base.html` - Main layout template for full pages
+2. `apps/public/templates/partial.html` - Base template for HTMX partial updates
 
 Additionally, the project uses specialized base templates for components:
-- `templates/components/_component_base.html` - Base template for UI components
+- `apps/public/templates/components/_component_base.html` - Base template for UI components
 
 ### base.html
 

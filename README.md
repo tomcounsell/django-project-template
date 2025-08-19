@@ -53,7 +53,7 @@ This project uses standard Django templates with the following patterns:
 - **HTMX Integration**: HTMX is used for interactive elements, with partial updates handled by dedicated views.
 
 Templates are stored in a single location:
-- `/templates`: All HTML templates for the project
+- `apps/public/templates`: All HTML templates for the project
 
 For detailed template conventions, naming patterns, and best practices, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md).
 
@@ -86,7 +86,6 @@ For detailed testing conventions and practices, see [Test Conventions](docs/adva
 - `apps/`: Contains all applications that make up the project.
 - `settings/`: Configuration settings for the entire Django project.
 - `static/`: All static files (CSS, JS, images) for the project. No app-specific static directories.
-- `templates/`: All HTML templates for the project. No app-specific template directories.
 - `build.sh`: Build script for Render deployment
 - `requirements.txt`: Lists all Python dependencies.
 - `runtime.txt`: Specifies the Python runtime.
