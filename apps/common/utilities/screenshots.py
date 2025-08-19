@@ -37,7 +37,7 @@ class ScreenshotService:
         output_dir: str = "screenshots",
         use_browser_agent: bool = False,
         server_url: str = "http://localhost:8000",
-        viewport: Dict[str, int] = {"width": 1280, "height": 800},
+        viewport: dict[str, int] = {"width": 1280, "height": 800},
         headless: bool = True,
         wait_before_capture: int = 500,  # ms
     ):
@@ -65,10 +65,10 @@ class ScreenshotService:
     def capture(
         self,
         path: str,
-        filename: Optional[str] = None,
-        wait_for_selector: Optional[str] = None,
+        filename: str | None = None,
+        wait_for_selector: str | None = None,
         full_page: bool = False,
-        cookies: Optional[List[Dict[str, Any]]] = None,
+        cookies: list[dict[str, Any]] | None = None,
         extra_wait_ms: int = 0,
     ) -> str:
         """
@@ -143,8 +143,8 @@ class ScreenshotService:
     def capture_with_browser_agent(
         self,
         path: str,
-        instructions: Optional[str] = None,
-        filename: Optional[str] = None,
+        instructions: str | None = None,
+        filename: str | None = None,
     ) -> str:
         """
         Capture a screenshot using browser-use's BrowserAgent with AI assistance.
@@ -186,7 +186,7 @@ class ScreenshotService:
         )
 
     async def _async_capture_with_agent(
-        self, path: str, instructions: Optional[str] = None, output_path: str = ""
+        self, path: str, instructions: str | None = None, output_path: str = ""
     ) -> str:
         """Async implementation of capture_with_browser_agent."""
         if not instructions:
@@ -202,7 +202,7 @@ class ScreenshotService:
         # Create the specific task with the output path
         task = f"""
         {instructions}
-        
+
         Take a screenshot and save it to {output_path}
         """
 
@@ -279,7 +279,7 @@ class ScreenshotService:
             return False
 
 
-def capture_screenshot(path: str, filename: Optional[str] = None) -> str:
+def capture_screenshot(path: str, filename: str | None = None) -> str:
     """
     Convenience function to quickly capture a screenshot.
 

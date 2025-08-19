@@ -85,7 +85,7 @@ class AITestConfig:
     browser_type: str = "chromium"  # "chromium", "firefox", or "webkit"
 
     # Viewport configuration
-    viewports: List[Dict[str, int]] = [
+    viewports: list[dict[str, int]] = [
         {"width": 1280, "height": 800},  # Desktop
         {"width": 768, "height": 1024},  # Tablet
         {"width": 375, "height": 667},  # Mobile
@@ -120,12 +120,12 @@ class TestReport:
         self.test_name = test_name
         self.config = config
         self.start_time = datetime.now()
-        self.end_time: Optional[datetime] = None
+        self.end_time: datetime | None = None
         self.status = "running"
-        self.steps: List[Dict[str, Any]] = []
-        self.screenshots: List[str] = []
-        self.issues: List[Dict[str, Any]] = []
-        self.metadata: Dict[str, Any] = {
+        self.steps: list[dict[str, Any]] = []
+        self.screenshots: list[str] = []
+        self.issues: list[dict[str, Any]] = []
+        self.metadata: dict[str, Any] = {
             "browser": config.browser_type,
             "viewports": config.viewports,
             "headless": config.headless,
@@ -135,7 +135,7 @@ class TestReport:
         self,
         description: str,
         status: str = "pass",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         """Add a test step to the report."""
         step = {
@@ -161,7 +161,7 @@ class TestReport:
         self,
         issue_type: str,
         description: str,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         """Add an issue to the report."""
         issue = {
@@ -177,7 +177,7 @@ class TestReport:
         self.end_time = datetime.now()
         self.status = status
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert the report to a dictionary."""
         return {
             "test_name": self.test_name,
@@ -233,7 +233,7 @@ class AIBrowserTesting:
             )
 
     @staticmethod
-    async def create_test_user() -> Tuple[User, str, str]:
+    async def create_test_user() -> tuple[User, str, str]:
         """Create a test user with random credentials.
 
         Returns:
@@ -249,7 +249,7 @@ class AIBrowserTesting:
     @staticmethod
     async def generate_test_scenario(
         feature_description: str, config: AITestConfig
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate a test scenario using AI based on feature description.
 
         Args:
@@ -267,20 +267,20 @@ class AIBrowserTesting:
         # Define the prompt for generating test steps
         prompt = f"""
         Generate a detailed browser test scenario for the following feature:
-        
+
         FEATURE: {feature_description}
-        
+
         The test should:
         1. Be detailed enough for browser-use to execute
         2. Include specific UI element interactions (buttons, forms, etc.)
         3. Verify expected behavior at each step
         4. Include appropriate wait times for page loading
         5. Take screenshots at key points
-        
+
         Format each step as a specific instruction that browser-use can execute.
         Limit to {config.max_test_steps} steps maximum.
         Test scope level: {config.test_scope}
-        
+
         SERVER_URL: {config.server_url}
         """
 
@@ -302,10 +302,10 @@ class AIBrowserTesting:
 
     @staticmethod
     async def run_test_with_report(
-        steps: List[str],
+        steps: list[str],
         config: AITestConfig,
         test_name: str,
-        credentials: Optional[Tuple[User, str, str]] = None,
+        credentials: tuple[User, str, str] | None = None,
     ) -> TestReport:
         """Run a test scenario and generate a report.
 
@@ -406,8 +406,8 @@ class AIBrowserTesting:
 
     @staticmethod
     async def run_visual_regression_test(
-        baseline_dir: str, current_screenshots: List[str], threshold: float = 0.1
-    ) -> Dict[str, Any]:
+        baseline_dir: str, current_screenshots: list[str], threshold: float = 0.1
+    ) -> dict[str, Any]:
         """Run a visual regression test comparing screenshots.
 
         This is a placeholder - in a real implementation, you would use
@@ -446,7 +446,7 @@ class AIBrowserTesting:
     @staticmethod
     async def run_accessibility_test(
         page: Page, config: AITestConfig
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run accessibility tests on the current page.
 
         This is a placeholder - in a real implementation, you would use
@@ -563,14 +563,6 @@ class TestAIAutomatedTesting(AIBrowserTesting):
             "pass",
             "skip",
         ], f"Test failed with status: {report.status}"
-
-        # Verify the todo doesn't exist in the database
-        from apps.common.models import Wish
-
-        todos = Wish.objects.filter(title=todo_title)
-        assert (
-            not todos.exists()
-        ), f"Todo with title '{todo_title}' still exists in database"
 
         return report
 
@@ -699,7 +691,7 @@ class TestAIAssistantBrowserTesting(AIBrowserTesting):
         # Define the exploration prompt for the AI
         exploration_prompt = f"""
         You are a testing assistant. Your task is to:
-        
+
         1. Go to {self.config.server_url}
         2. Login with username "{username}" and password "{password}"
         3. Explore the application to discover key features
@@ -708,7 +700,7 @@ class TestAIAssistantBrowserTesting(AIBrowserTesting):
         6. Execute that test plan
         7. Take screenshots at key steps
         8. Report your findings
-        
+
         Focus on finding interactive elements and understanding user workflows.
         """
 

@@ -94,7 +94,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "templates",
+            BASE_DIR / "apps" / "public" / "templates",
         ],
         "OPTIONS": {
             "context_processors": [
@@ -134,7 +134,14 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Media files (User uploaded files)
 MEDIA_ROOT = BASE_DIR / "media"
@@ -149,7 +156,7 @@ LOGIN_URL = "/account/login"
 LOGIN_REDIRECT_URL = "/"
 
 # Password validation
-PASSWORD_RESET_TIMEOUT_DAYS = 7
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 7
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",

@@ -32,7 +32,7 @@ class TestScope(Enum):
 
 
 # Mapping of file patterns to test types
-FILE_PATTERN_TYPE_MAP: Dict[str, TestType] = {
+FILE_PATTERN_TYPE_MAP: dict[str, TestType] = {
     "test_e2e_": TestType.E2E,
     "test_browser": TestType.E2E,
     "test_visual_": TestType.VISUAL,
@@ -43,7 +43,7 @@ FILE_PATTERN_TYPE_MAP: Dict[str, TestType] = {
 }
 
 # Mapping of directory patterns to test scopes
-DIR_PATTERN_SCOPE_MAP: Dict[str, TestScope] = {
+DIR_PATTERN_SCOPE_MAP: dict[str, TestScope] = {
     "test_models": TestScope.MODEL,
     "test_views": TestScope.VIEW,
     "test_forms": TestScope.FORM,
@@ -53,7 +53,7 @@ DIR_PATTERN_SCOPE_MAP: Dict[str, TestScope] = {
 }
 
 # Pytest markers to apply to different test types
-MARKERS: Dict[TestType, str] = {
+MARKERS: dict[TestType, str] = {
     TestType.UNIT: "unit",
     TestType.INTEGRATION: "integration",
     TestType.E2E: "e2e",
@@ -63,13 +63,13 @@ MARKERS: Dict[TestType, str] = {
 }
 
 # Set of tests that require browser automation
-BROWSER_REQUIRED_TESTS: Set[TestType] = {
+BROWSER_REQUIRED_TESTS: set[TestType] = {
     TestType.E2E,
     TestType.VISUAL,
 }
 
 # Set of tests that should run in CI
-CI_TESTS: Set[TestType] = {
+CI_TESTS: set[TestType] = {
     TestType.UNIT,
     TestType.INTEGRATION,
     TestType.API,

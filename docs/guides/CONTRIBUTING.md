@@ -25,17 +25,27 @@ Thank you for your interest in contributing to this Django project template! Thi
    python -m venv venv
    source venv/bin/activate
    pip install uv
-   ./requirements/install.sh dev
+   uv sync --all-extras
    cp .env.example .env.local  # Edit with your private keys
    ```
 
-3. **Run migrations and start the server**
+3. **Install pre-commit hooks (REQUIRED)**
+   ```bash
+   # This ensures code quality for all commits
+   uv run pre-commit install
+   uv run pre-commit install --hook-type pre-push
+   
+   # Verify hooks are working
+   uv run pre-commit run --all-files
+   ```
+
+4. **Run migrations and start the server**
    ```bash
    python manage.py migrate
    python manage.py runserver
    ```
 
-4. **Create a feature branch**
+5. **Create a feature branch**
    ```bash
    git checkout -b feature/descriptive-name
    ```
@@ -44,10 +54,24 @@ Thank you for your interest in contributing to this Django project template! Thi
 
 ### Code Style and Quality
 
-- Run formatter and linter before committing:
-  ```bash
-  black . && isort . && flake8 . && mypy .
-  ```
+All code quality checks are **automatically enforced** by pre-commit hooks:
+
+- **On every commit**: Black, isort, Flake8, Bandit, Django checks
+- **On push**: Critical tests are run
+
+Manual commands (if needed):
+```bash
+# Run all pre-commit checks
+uv run pre-commit run --all-files
+
+# Or run individual tools
+uv run black .
+uv run isort .
+uv run flake8 .
+uv run mypy .
+```
+
+If hooks block your commit, fix the issues and try again. Only bypass with `--no-verify` in emergencies.
 - Use type hints for all function parameters and return values
 - Follow the model conventions in [MODEL_CONVENTIONS.md](../MODEL_CONVENTIONS.md)
 - Group imports: standard library, third-party, Django, local apps

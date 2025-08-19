@@ -52,8 +52,8 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_addres
 # Run tests by keyword
 DJANGO_SETTINGS_MODULE=settings pytest -k "user and not stripe" -v
 
-# Run with coverage
-DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report
+# Run with HTML coverage report
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html
 
 # Run E2E tests
 python tools/testing/browser_test_runner.py apps/**/tests/test_e2e_*.py
@@ -63,12 +63,36 @@ python tools/testing/browser_test_runner.py apps/**/tests/test_visual_*.py
 ```
 
 ### Code Quality
+
+#### Pre-commit Hooks (Recommended)
+```bash
+# Install pre-commit hooks (one-time setup)
+uv run pre-commit install
+uv run pre-commit install --hook-type pre-push
+
+# Run all hooks manually
+uv run pre-commit run --all-files
+
+# Run specific hook
+uv run pre-commit run black --all-files
+uv run pre-commit run flake8 --all-files
+
+# Update hook versions
+uv run pre-commit autoupdate
+
+# Skip hooks temporarily (use sparingly!)
+git commit -m "message" --no-verify
+```
+
+#### Manual Code Quality Checks
 ```bash
 # Format code (use before committing)
-black . && isort .
+uv run black .
+uv run isort . --profile black
 
 # Run linting
-flake8 . && mypy .
+uv run flake8 . --max-line-length=88 --extend-ignore=E203,W503,E501
+uv run mypy .
 
 # Alternative: Use Ruff
 uv run ruff format .
@@ -119,7 +143,6 @@ django-project-template/
 │   ├── third_party.py     # External service settings
 │   ├── local.py           # Local development overrides
 │   └── production.py      # Production settings
-├── templates/              # All HTML templates (no app-specific)
 ├── static/                 # All static files (no app-specific)
 └── staticfiles/           # Collected static files (gitignored)
 ```
@@ -161,7 +184,7 @@ Reusable model mixins that add common functionality:
 - NEVER use pip directly or `uv pip install`
 
 ### Templates and Frontend
-- All templates in `/templates` directory (NOT in apps)
+- All templates in `apps/public/templates` directory
 - Use template inheritance with base templates
 - HTMX preferred over JavaScript for interactivity
 - Tailwind CSS v4 with django-tailwind-cli
@@ -207,7 +230,7 @@ Reusable model mixins that add common functionality:
 
 ### Creating HTMX Views
 1. Inherit from `HTMXView` in `apps.public.helpers`
-2. Create partial template in `/templates/`
+2. Create partial template in `apps/public/templates/`
 3. Handle both full page and partial responses
 4. Add URL pattern to app's `urls.py`
 
@@ -227,6 +250,54 @@ Reusable model mixins that add common functionality:
 - You are not yet trusted to manage migrations
 - Do not create or run migrations without approval
 - Wait for repository owner to handle migrations
+
+## Documentation Reference
+
+### Core Documentation (`docs/`)
+Read these documents when working on specific areas:
+
+#### Architecture & Design
+- **ARCHITECTURE.md** - System design, app relationships, data flow
+- **REPO_MAP.md** - Complete repository structure and file organization
+- **MODEL_CONVENTIONS.md** - Model design patterns and naming standards
+- **BEHAVIOR_MIXINS.md** - How to use and extend behavior mixins
+
+#### Frontend Development
+- **HTMX_INTEGRATION.md** - HTMX patterns, partial rendering, AJAX
+- **TAILWIND_V4.md** - Tailwind CSS v4 configuration and usage
+- **TEMPLATE_CONVENTIONS.md** - Template structure, inheritance, naming
+- **VIEW_CONVENTIONS.md** - View patterns, MainContentView, HTMXView
+- **MODAL_PATTERNS.md** - Modal implementation with HTMX
+
+#### Error Handling & Testing
+- **ERROR_HANDLING.md** - Error management strategies
+- **TEST_CONVENTIONS.md** - Testing patterns and organization
+- **TEST_TROUBLESHOOTING.md** - Common test issues and solutions
+- **guides/E2E_TESTING.md** - End-to-end test implementation
+- **guides/BROWSER_TESTING.md** - Browser automation testing
+- **guides/AI_BROWSER_TESTING.md** - AI-assisted test generation
+
+#### Setup & Configuration
+- **guides/SETUP_GUIDE.md** - Detailed setup instructions
+- **guides/CONTRIBUTING.md** - Contribution guidelines
+- **guides/CICD.md** - CI/CD pipeline configuration
+- **guides/SCREENSHOT_SERVICE.md** - Visual testing service
+- **guides/HTMX_AND_RESPONSIVE_TESTING.md** - Responsive design testing
+
+#### Code Examples (in guides/)
+- **guides/modal_example_view.py** - Modal view implementation
+- **guides/item_list_example.html** - List view template
+- **guides/list_items_partial.html** - HTMX partial template
+- **guides/example_unfold_admin.py** - Admin customization
+
+### When to Read Documentation
+
+1. **Before starting a new feature**: Read relevant architecture and convention docs
+2. **When implementing models**: Review MODEL_CONVENTIONS.md and BEHAVIOR_MIXINS.md
+3. **For frontend work**: Check HTMX_INTEGRATION.md and TEMPLATE_CONVENTIONS.md
+4. **When writing tests**: Consult TEST_CONVENTIONS.md and relevant testing docs
+5. **For troubleshooting**: Check ERROR_HANDLING.md and TEST_TROUBLESHOOTING.md
+6. **Setting up development**: Follow SETUP_GUIDE.md
 
 ## Commit Guidelines
 - Create detailed, focused commits

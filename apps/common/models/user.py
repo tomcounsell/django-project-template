@@ -71,7 +71,7 @@ class User(AbstractUser, Timestampable):
         active_statuses = ["active", "trialing"]
         return self.subscriptions.filter(status__in=active_statuses)
 
-    def get_active_subscription(self) -> Optional[Any]:
+    def get_active_subscription(self) -> Any | None:
         """
         Get the first active subscription for the user.
 
@@ -95,7 +95,7 @@ class User(AbstractUser, Timestampable):
 
     # MODEL PROPERTIES
     @property
-    def serialized(self) -> Dict[str, Any]:
+    def serialized(self) -> dict[str, Any]:
         """
         Serializes basic user information into a dictionary.
 

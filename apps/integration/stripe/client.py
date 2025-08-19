@@ -30,9 +30,7 @@ class StripeClient:
     Handles payment processing, subscriptions, and webhook events.
     """
 
-    def __init__(
-        self, api_key: Optional[str] = None, webhook_secret: Optional[str] = None
-    ):
+    def __init__(self, api_key: str | None = None, webhook_secret: str | None = None):
         """
         Initialize the Stripe client.
 
@@ -76,13 +74,13 @@ class StripeClient:
         price_id: str,
         success_url: str,
         cancel_url: str,
-        customer_email: Optional[str] = None,
+        customer_email: str | None = None,
         mode: str = "payment",
-        payment_method_types: Optional[List[str]] = None,
-        metadata: Optional[Dict[str, str]] = None,
-        customer_id: Optional[str] = None,
+        payment_method_types: list[str] | None = None,
+        metadata: dict[str, str] | None = None,
+        customer_id: str | None = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a Stripe Checkout Session.
 
@@ -177,10 +175,10 @@ class StripeClient:
         self,
         customer_id: str,
         price_id: str,
-        trial_days: Optional[int] = None,
-        metadata: Optional[Dict[str, str]] = None,
+        trial_days: int | None = None,
+        metadata: dict[str, str] | None = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a subscription for a customer.
 
@@ -258,7 +256,7 @@ class StripeClient:
 
     def cancel_subscription(
         self, subscription_id: str, at_period_end: bool = False, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Cancel a subscription.
 
@@ -321,10 +319,10 @@ class StripeClient:
     def create_customer(
         self,
         email: str,
-        name: Optional[str] = None,
-        metadata: Optional[Dict[str, str]] = None,
+        name: str | None = None,
+        metadata: dict[str, str] | None = None,
         **kwargs,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a Stripe customer.
 
@@ -394,8 +392,8 @@ class StripeClient:
             return {"success": False, "error": str(e)}
 
     def verify_webhook_signature(
-        self, payload: Union[str, bytes], signature: str
-    ) -> Dict[str, Any]:
+        self, payload: str | bytes, signature: str
+    ) -> dict[str, Any]:
         """
         Verify a webhook signature from Stripe.
 

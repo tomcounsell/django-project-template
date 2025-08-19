@@ -301,7 +301,7 @@ class E2ETestBase(LiveServerMixin):
 
     async def create_user_and_login(
         self, page: Page, live_server=None
-    ) -> Tuple[User, bool]:
+    ) -> tuple[User, bool]:
         """
         Create a test user and log them in.
 
@@ -459,7 +459,7 @@ class TestHTMXInteractions(E2ETestBase):
         server_url = self.get_server_url(live_server)
 
         # Navigate to a page with HTMX components
-        await page.goto(f"{server_url}/staff/wishes/")
+        await page.goto(f"{server_url}/")
 
         # Find an element with hx-get attribute that loads content
         htmx_trigger = page.locator("[hx-get]").first
@@ -587,12 +587,8 @@ class TestBrowserAgentAutomation(E2ETestBase):
             f"Fill in the password field with {password}",
             "Click the Submit or Login button",
             "Wait for page to load",
-            "Navigate to the wish list page by clicking on Wish List in the navigation",
-            "Look for a 'Create' or 'Add' button and click it",
-            "Fill in the title field with 'Test Wish'",
-            "Submit the form",
-            "Verify that 'Test Wish' appears on the page",
-            "Find a checkbox or complete button next to 'Test Wish' and click it",
+            "Navigate to your team page",
+            "Verify the team information is displayed",
             "Look for a Logout link or button in the navigation or account menu and click it",
         ]
 

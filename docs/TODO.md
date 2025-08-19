@@ -13,7 +13,6 @@ This template is ready for use with all core functionality implemented and teste
 - **Admin**: Unfold admin theme with custom dashboard
 - **Integrations**: AWS S3, Twilio SMS, Loops Email, Stripe Payments
 - **DevOps**: CI/CD workflows, Docker setup, Render deployment
-- **Staff Tools**: Wish management system with workflow states
 
 ## Enhancement Roadmap
 

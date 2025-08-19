@@ -29,7 +29,7 @@ except ImportError:
 
 async def create_test_scenario(
     feature_name: str, complexity: str = "basic"
-) -> List[str]:
+) -> list[str]:
     """
     Generate a test scenario using AI for the given feature.
 
@@ -61,20 +61,20 @@ async def create_test_scenario(
     # Define test scenario prompt
     prompt = f"""
     {base_prompt} for the following feature in a Django web application:
-    
+
     FEATURE: {feature_name}
-    
+
     Create a detailed browser test scenario that:
     1. Uses specific step-by-step instructions for browser-use to execute
     2. Tests the full workflow of this feature
     3. Verifies expected results at each step
     4. Takes screenshots at important moments
     5. Has at most {max_steps} steps
-    
+
     Format each step as a specific instruction that browser-use can execute.
     Use [USERNAME] and [PASSWORD] placeholders for credentials.
     Use [TODO_TITLE] or similar placeholders for dynamic content.
-    
+
     Examples of good steps:
     - "Go to http://localhost:8000/account/login/"
     - "Fill in the username field with [USERNAME]"
@@ -100,7 +100,7 @@ async def create_test_scenario(
     return steps
 
 
-async def analyze_test_failure(failure_report: Dict[str, Any]) -> str:
+async def analyze_test_failure(failure_report: dict[str, Any]) -> str:
     """
     Use AI to analyze a test failure and suggest potential fixes.
 
@@ -121,17 +121,17 @@ async def analyze_test_failure(failure_report: Dict[str, Any]) -> str:
     # Create a prompt for analysis
     prompt = f"""
     Analyze this browser test failure and suggest fixes:
-    
+
     TEST: {failure_report.get("test_name", "Unknown test")}
-    
+
     STEPS EXECUTED:
     {json.dumps(steps, indent=2)}
-    
+
     ISSUES REPORTED:
     {json.dumps(issues, indent=2)}
-    
+
     {len(screenshots)} screenshots were captured during the test.
-    
+
     Based on this information, provide:
     1. The most likely cause of the failure
     2. Specific suggestions to fix the test
@@ -145,7 +145,7 @@ async def analyze_test_failure(failure_report: Dict[str, Any]) -> str:
     return analysis
 
 
-async def prepare_test_data(data_requirements: List[str]) -> Dict[str, Any]:
+async def prepare_test_data(data_requirements: list[str]) -> dict[str, Any]:
     """
     Use AI to help prepare test data based on requirements.
 
@@ -163,13 +163,13 @@ async def prepare_test_data(data_requirements: List[str]) -> Dict[str, Any]:
 
     prompt = f"""
     Prepare test data according to these requirements:
-    
+
     {requirements_text}
-    
+
     For each requirement, generate appropriate test data.
     Return the data in a structured format suitable for testing.
     Include variations for different test cases where appropriate.
-    
+
     Format your response as a valid JSON object with meaningful keys.
     """
 
@@ -204,8 +204,8 @@ async def prepare_test_data(data_requirements: List[str]) -> Dict[str, Any]:
 
 
 async def generate_data_for_model(
-    model_name: str, field_specs: Optional[Dict[str, str]] = None
-) -> Dict[str, Any]:
+    model_name: str, field_specs: dict[str, str] | None = None
+) -> dict[str, Any]:
     """
     Generate test data for a Django model.
 
@@ -227,14 +227,14 @@ async def generate_data_for_model(
 
     prompt = f"""
     Generate appropriate test data for a Django model named "{model_name}".
-    
+
     Field specifications:
     {field_specs_text if field_specs else "No specific requirements - generate reasonable values for typical fields"}
-    
+
     Create a complete set of field values that would be valid for this model.
     Return the data as a JSON object with field names as keys.
     Include realistic values for common fields like names, emails, descriptions, etc.
-    
+
     Format your response as a valid JSON object.
     """
 
@@ -297,7 +297,7 @@ class TestDataGenerator:
         return f"https://example.com/{uuid.uuid4().hex[:8]}"
 
     @staticmethod
-    def random_address() -> Dict[str, str]:
+    def random_address() -> dict[str, str]:
         """Generate a random address."""
         return {
             "street": f"{uuid.uuid4().hex[:3]} Main St",

@@ -55,7 +55,7 @@ class Permalinkable(models.Model):
     class Meta:
         abstract = True
 
-    def get_url_kwargs(self, **kwargs) -> Dict[str, Any]:
+    def get_url_kwargs(self, **kwargs) -> dict[str, Any]:
         """
         Get URL keyword arguments for use in URL patterns.
 

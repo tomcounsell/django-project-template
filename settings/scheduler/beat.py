@@ -17,4 +17,4 @@ class DatabaseSchedulerWithCleanup(DatabaseScheduler):
             logging.info("Removed %d obsolete periodic tasks.", num)
             if num > 0:
                 PeriodicTasks.update_changed()
-        super(DatabaseSchedulerWithCleanup, self).setup_schedule()
+        super().setup_schedule()

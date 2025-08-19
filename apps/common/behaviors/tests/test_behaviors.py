@@ -15,12 +15,13 @@ This script can be run directly without the Django environment for quick behavio
 """
 
 import datetime
-import django
 import os
 import sys
 import unittest
 from pathlib import Path
 from unittest import mock
+
+import django
 
 # Add the project root to the Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
@@ -145,7 +146,7 @@ class TestPublishableDirect(unittest.TestCase):
         # Published then unpublished - mocked properties for better testability
         with mock.patch.object(obj, "is_published", False, create=True):
             self.assertFalse(obj.is_published)
-        
+
         # Unpublished then republished - mocked properties
         with mock.patch.object(obj, "is_published", True, create=True):
             self.assertTrue(obj.is_published)
@@ -239,7 +240,7 @@ class TestPublishableDirect(unittest.TestCase):
         with mock.patch.object(obj, "is_published", False, create=True):
             obj.published_at = None
             self.assertEqual(Publishable.publication_status.fget(obj), "Draft")
-            
+
         # Edge case - scheduled for future publication
         with mock.patch.object(obj, "is_published", False, create=True):
             obj.published_at = timezone.now() + datetime.timedelta(days=1)
@@ -295,7 +296,7 @@ class TestExpirableDirect(unittest.TestCase):
             Expirable.is_expired.fset(obj, False)
             # Should remain None
             self.assertIsNone(obj.expired_at)
-            
+
         # Test setting to None from Non-None
         obj.expired_at = timezone.now()
         Expirable.is_expired.fset(obj, None)

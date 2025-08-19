@@ -297,34 +297,34 @@ class BlogPostView(MainContentView):
                 "excerpt": "A sample blog post demonstrating the formatting and structure.",
                 "content": """
                 <p>This is a sample blog post with multiple paragraphs and formatting.</p>
-                
+
                 <h2>Section Heading</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, 
-                nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl 
-                nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl 
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod,
+                nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl
+                nunc quis nisl. Nullam euismod, nisl eget aliquam ultricies, nunc nisl
                 aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
-                
-                <p>Nulla facilisi. Nullam euismod, nisl eget aliquam ultricies, nunc nisl 
-                aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget 
+
+                <p>Nulla facilisi. Nullam euismod, nisl eget aliquam ultricies, nunc nisl
+                aliquet nunc, quis aliquam nisl nunc quis nisl. Nullam euismod, nisl eget
                 aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.</p>
-                
+
                 <h2>Another Section</h2>
                 <p>Here's some code example:</p>
                 <pre><code>def hello_world():
     print("Hello, world!")
                 </code></pre>
-                
+
                 <p>And here's a list of key points:</p>
                 <ul>
                     <li>First important point</li>
                     <li>Second important point</li>
                     <li>Third important point with more detail and explanation</li>
                 </ul>
-                
+
                 <blockquote>
                     This is a blockquote with an important insight or quote from an expert.
                 </blockquote>
-                
+
                 <h2>Conclusion</h2>
                 <p>In conclusion, this is a sample blog post that demonstrates the formatting
                 and structure of blog posts on our platform.</p>

@@ -35,10 +35,10 @@ class CoverageReporter:
 
     def generate_report(
         self,
-        test_paths: List[str],
+        test_paths: list[str],
         report_type: str = "html",
         report_name: str = "coverage",
-    ) -> Tuple[bool, str]:
+    ) -> tuple[bool, str]:
         """Generate a coverage report for the specified test paths."""
         if not test_paths:
             return False, "No test paths provided"

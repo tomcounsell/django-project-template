@@ -25,10 +25,10 @@ class S3Client:
 
     def __init__(
         self,
-        aws_access_key_id: Optional[str] = None,
-        aws_secret_access_key: Optional[str] = None,
-        aws_s3_bucket_name: Optional[str] = None,
-        region_name: Optional[str] = None,
+        aws_access_key_id: str | None = None,
+        aws_secret_access_key: str | None = None,
+        aws_s3_bucket_name: str | None = None,
+        region_name: str | None = None,
     ):
         """
         Initialize S3 client with credentials.
@@ -92,10 +92,10 @@ class S3Client:
     def upload_file(
         self,
         file_path: str,
-        object_key: Optional[str] = None,
+        object_key: str | None = None,
         public: bool = True,
-        extra_args: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        extra_args: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Upload a file to S3.
 
@@ -160,8 +160,8 @@ class S3Client:
         file_obj,
         object_key: str,
         public: bool = True,
-        extra_args: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        extra_args: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Upload a file-like object to S3.
 
@@ -214,7 +214,7 @@ class S3Client:
             logger.error(f"Failed to upload file object to S3: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def download_file(self, object_key: str, destination: str) -> Dict[str, Any]:
+    def download_file(self, object_key: str, destination: str) -> dict[str, Any]:
         """
         Download a file from S3.
 
@@ -243,7 +243,7 @@ class S3Client:
             logger.error(f"Failed to download file from S3: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def get_object_metadata(self, object_key: str) -> Dict[str, Any]:
+    def get_object_metadata(self, object_key: str) -> dict[str, Any]:
         """
         Get metadata for an S3 object.
 
@@ -278,7 +278,7 @@ class S3Client:
             logger.error(f"Failed to get object metadata: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def delete_object(self, object_key: str) -> Dict[str, Any]:
+    def delete_object(self, object_key: str) -> dict[str, Any]:
         """
         Delete an object from S3.
 
@@ -301,7 +301,7 @@ class S3Client:
             logger.error(f"Failed to delete object from S3: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def list_objects(self, prefix: str = "", max_keys: int = 1000) -> Dict[str, Any]:
+    def list_objects(self, prefix: str = "", max_keys: int = 1000) -> dict[str, Any]:
         """
         List objects in the S3 bucket.
 
@@ -346,7 +346,7 @@ class S3Client:
 
     def generate_presigned_url(
         self, object_key: str, expiration: int = 3600, http_method: str = "GET"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate a pre-signed URL for an S3 object.
 
@@ -385,10 +385,10 @@ class S3Client:
         self,
         object_key: str,
         expiration: int = 3600,
-        conditions: Optional[List[Any]] = None,
-        fields: Optional[Dict[str, Any]] = None,
-        success_action_redirect: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        conditions: list[Any] | None = None,
+        fields: dict[str, Any] | None = None,
+        success_action_redirect: str | None = None,
+    ) -> dict[str, Any]:
         """
         Generate a pre-signed POST for direct browser upload to S3.
 
@@ -471,7 +471,7 @@ class S3Client:
         """
         return f"https://{self.bucket_name}.s3.amazonaws.com/{object_key}"
 
-    def parse_s3_url(self, url: str) -> Tuple[str, str]:
+    def parse_s3_url(self, url: str) -> tuple[str, str]:
         """
         Parse an S3 URL into bucket name and object key.
 
@@ -536,7 +536,7 @@ def get_file_upload_presigned_post(
     original_filename: str,
     prefix: str = "uploads",
     max_file_size: int = 10485760,  # 10MB
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generate a pre-signed POST for uploading a file directly to S3.
 

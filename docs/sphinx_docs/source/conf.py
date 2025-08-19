@@ -5,39 +5,39 @@ from datetime import datetime
 import django
 
 # Path setup
-sys.path.insert(0, os.path.abspath('../../..'))
+sys.path.insert(0, os.path.abspath("../../.."))
 
 # Django setup
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
 # Project information
-project = 'Django Project Template'
-copyright = f'{datetime.now().year}, Your Organization'
-author = 'Your Organization'
-release = '0.1.0'
+project = "Django Project Template"
+copyright = f"{datetime.now().year}, Your Organization"
+author = "Your Organization"
+release = "0.1.0"
 
 # General configuration
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.intersphinx',
-    'sphinx_autodoc_typehints',
-    'myst_parser',
-    'sphinxcontrib_django',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+    "sphinx_autodoc_typehints",
+    "myst_parser",
+    "sphinxcontrib_django",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
 # Autodoc configuration
 autodoc_default_options = {
-    'members': True,
-    'member-order': 'bysource',
-    'special-members': '__init__',
-    'undoc-members': True,
-    'exclude-members': '__weakref__',
+    "members": True,
+    "member-order": "bysource",
+    "special-members": "__init__",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
 }
 
 # Napoleon settings
@@ -56,14 +56,17 @@ napoleon_use_keyword = True
 napoleon_custom_sections = None
 
 # HTML output
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
 html_css_files = [
-    'css/custom.css',
+    "css/custom.css",
 ]
 
 # Intersphinx mapping
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
-    'django': ('https://docs.djangoproject.com/en/stable/', 'https://docs.djangoproject.com/en/stable/_objects/'),
+    "python": ("https://docs.python.org/3", None),
+    "django": (
+        "https://docs.djangoproject.com/en/stable/",
+        "https://docs.djangoproject.com/en/stable/_objects/",
+    ),
 }

@@ -7,8 +7,9 @@ It ensures consistent error reporting, formatting, and handling across all appli
 
 import logging
 import traceback
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 from django.conf import settings
 from django.contrib import messages
@@ -42,7 +43,7 @@ class AppError(Exception):
         message: str = "An unexpected error occurred",
         code: str = "error_unknown",
         status_code: int = 500,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         self.message = message
         self.code = code
@@ -58,8 +59,8 @@ class ValidationError(AppError):
         self,
         message: str = "Invalid data provided",
         code: str = "validation_error",
-        field_errors: Optional[Dict[str, List[str]]] = None,
-        details: Optional[Dict[str, Any]] = None,
+        field_errors: dict[str, list[str]] | None = None,
+        details: dict[str, Any] | None = None,
     ):
         status_code = 400
         details = details or {}
@@ -77,7 +78,7 @@ class AuthenticationError(AppError):
         self,
         message: str = "Authentication failed",
         code: str = "authentication_error",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message=message, code=code, status_code=401, details=details)
 
@@ -89,7 +90,7 @@ class PermissionError(AppError):
         self,
         message: str = "Permission denied",
         code: str = "permission_error",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message=message, code=code, status_code=403, details=details)
 
@@ -101,7 +102,7 @@ class NotFoundError(AppError):
         self,
         message: str = "Resource not found",
         code: str = "not_found",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message=message, code=code, status_code=404, details=details)
 
@@ -113,14 +114,14 @@ class ConflictError(AppError):
         self,
         message: str = "Resource conflict",
         code: str = "conflict",
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         super().__init__(message=message, code=code, status_code=409, details=details)
 
 
 def log_error(
     exc: Exception,
-    request: Optional[HttpRequest] = None,
+    request: HttpRequest | None = None,
     level: int = logging.ERROR,
     include_traceback: bool = True,
 ) -> None:
@@ -197,7 +198,7 @@ def handle_view_exception(
     log_error(exc, request)
 
     # Add error message to Django messages framework for HTML responses
-    if "text/html" in request.META.get("HTTP_ACCEPT", ""):
+    if "text/html" in request.headers.get("accept", ""):
         try:
             message_level = messages.ERROR
             messages.add_message(request, message_level, message)
@@ -207,7 +208,7 @@ def handle_view_exception(
 
     # Determine the response format based on request
     is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
-    accepts_json = "application/json" in request.META.get("HTTP_ACCEPT", "")
+    accepts_json = "application/json" in request.headers.get("accept", "")
     is_htmx = getattr(request, "htmx", False)
 
     # For API and AJAX requests, return JSON response
@@ -245,7 +246,7 @@ def handle_view_exception(
         return render(request, template_name, context, status=status_code)
 
 
-def api_exception_handler(exc: Exception, context: Dict) -> Response:
+def api_exception_handler(exc: Exception, context: dict) -> Response:
     """DRF exception handler that provides consistent API error responses.
 
     Args:
@@ -360,11 +361,11 @@ class ErrorHandlingMixin:
 
 
 def raises_app_error(
-    exc_class: Type[AppError] = AppError,
+    exc_class: type[AppError] = AppError,
     message: str = None,
     code: str = None,
     status_code: int = None,
-    details: Dict = None,
+    details: dict = None,
 ) -> Callable[[Callable[..., R]], Callable[..., R]]:
     """Decorator to transform exceptions into standardized application errors.
 

@@ -35,10 +35,10 @@ class TestReport:
     """Store and summarize test results."""
 
     def __init__(self):
-        self.passed: List[str] = []
-        self.failed: List[str] = []
-        self.skipped: List[str] = []
-        self.coverage: Dict[str, float] = {}
+        self.passed: list[str] = []
+        self.failed: list[str] = []
+        self.skipped: list[str] = []
+        self.coverage: dict[str, float] = {}
 
     def add_result(self, test_path: str, result: str):
         """Add a test result to the report."""
@@ -73,7 +73,7 @@ class TestManager:
 
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
-        self.test_files: Dict[str, List[str]] = {
+        self.test_files: dict[str, list[str]] = {
             TestCategory.UNIT: [],
             TestCategory.INTEGRATION: [],
             TestCategory.E2E: [],

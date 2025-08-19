@@ -51,7 +51,7 @@ class FormValidationMixin:
             # Re-raise as Django's ValidationError for form handling
             raise
 
-    def _validate_required_fields(self, cleaned_data: Dict[str, Any]) -> None:
+    def _validate_required_fields(self, cleaned_data: dict[str, Any]) -> None:
         """Validate that all required fields have values."""
         if not hasattr(self, "required_fields"):
             return
@@ -66,7 +66,7 @@ class FormValidationMixin:
         """Add a non-field error with standardized formatting."""
         self.add_error(None, message)
 
-    def get_error_dict(self) -> Dict[str, List[str]]:
+    def get_error_dict(self) -> dict[str, list[str]]:
         """Return a dictionary of field errors in a standardized format."""
         if not hasattr(self, "errors"):
             return {}
@@ -122,7 +122,7 @@ class BaseModelForm(FormValidationMixin, ModelForm):
         return instance
 
 
-def clean_form_data(data: Dict[str, Any]) -> Dict[str, Any]:
+def clean_form_data(data: dict[str, Any]) -> dict[str, Any]:
     """
     Clean form data for consistent processing.
 
@@ -162,11 +162,11 @@ def clean_form_data(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def validate_form_data(
-    form_class: Type[forms.Form],
-    data: Dict[str, Any],
-    request: Optional[HttpRequest] = None,
+    form_class: type[forms.Form],
+    data: dict[str, Any],
+    request: HttpRequest | None = None,
     instance: Any = None,
-) -> Tuple[Any, Dict[str, Any]]:
+) -> tuple[Any, dict[str, Any]]:
     """
     Validate form data using a Django form.
 

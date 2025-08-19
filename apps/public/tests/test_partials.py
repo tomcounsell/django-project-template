@@ -66,7 +66,7 @@ class PartialsDirectoryTestCase(TestCase):
         )
 
         # Check content of the base component template
-        with open(component_base_path, "r") as f:
+        with open(component_base_path) as f:
             content = f.read()
 
         # Verify that it has the required block(s)
@@ -156,7 +156,7 @@ class PartialsDirectoryTestCase(TestCase):
 
                 if file.endswith(".html") and not file.startswith("_"):
                     file_path = os.path.join(root, file)
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
 
                     # Check if the file has an extends statement

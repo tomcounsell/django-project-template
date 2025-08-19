@@ -23,11 +23,11 @@ class HTMXView(MainContentView):
         include_modals: Whether to include modal container in OOB
     """
 
-    template_name: Optional[str] = None
-    oob_templates: Optional[Dict[str, str]] = None  # Maps target IDs to template paths
-    push_url: Optional[str] = None  # URL to push to browser history
+    template_name: str | None = None
+    oob_templates: dict[str, str] | None = None  # Maps target IDs to template paths
+    push_url: str | None = None  # URL to push to browser history
     has_oob: bool = True  # Whether to use OOB swaps
-    active_nav: Optional[str] = None  # Active navigation section
+    active_nav: str | None = None  # Active navigation section
     show_toast: bool = True  # Whether to include toast messages
     include_modals: bool = False  # Whether to include modal container
 
@@ -44,10 +44,10 @@ class HTMXView(MainContentView):
     def render(
         self,
         request: HttpRequest = None,
-        template_name: Optional[str] = None,
-        context: Optional[dict] = None,
-        oob_templates: Optional[Dict[str, str]] = None,
-        push_url: Optional[str] = None,
+        template_name: str | None = None,
+        context: dict | None = None,
+        oob_templates: dict[str, str] | None = None,
+        push_url: str | None = None,
     ) -> HttpResponse:
         """
         Render a main template with optional OOB templates in a combined response.
@@ -142,7 +142,7 @@ class TeamDashboardComponent(TeamSessionMixin, HTMXView):
         "toast-container": "layout/messages/toast.html"
     }
     push_url = "/teams/dashboard"
-    
+
     def get(self, request, *args, **kwargs):
         self.context["stats"] = get_team_stats(self.team)
         return self.render(request)
