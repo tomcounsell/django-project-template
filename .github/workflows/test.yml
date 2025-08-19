@@ -39,14 +39,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install uv
-        # Install project and dependencies with uv
+        # Install project and dependencies with uv (includes test dependencies)
         uv sync --all-extras
-        # Install additional required packages
-        uv pip install pytest pytest-django pytest-cov pytest-asyncio selenium boto3 browser-use playwright
         
     - name: List installed packages
       run: |
-        pip list | grep -E 'django|pytest'
+        uv pip list | grep -E 'django|pytest'
         
     - name: Run tests with coverage
       env:
@@ -55,7 +53,7 @@ jobs:
       run: |
         # Run only the core model tests and behaviors to ensure minimum build validation
         # This skips any tests that might cause build failures due to dependencies or setup
-        python -m pytest -vs apps/common/tests/test_behaviors.py apps/common/behaviors/tests/test_behaviors.py --cov=apps --cov-report=xml || true
+        uv run pytest -vs apps/common/tests/test_behaviors.py apps/common/behaviors/tests/test_behaviors.py --cov=apps --cov-report=xml || true
         
         # We use '|| true' to ensure the workflow continues even if some tests fail
         # This prevents breaking the build while still collecting coverage data

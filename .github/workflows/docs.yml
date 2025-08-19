@@ -66,10 +66,8 @@ jobs:
           pip install uv
           # Install project and dependencies with uv
           uv sync --all-extras
-          # Python-dotenv is a critical dependency
-          uv pip install python-dotenv
-          # Install documentation tools
-          uv pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints myst-parser sphinxcontrib-django requests sphinx-copybutton
+          # Install documentation tools separately (not part of project deps)
+          pip install sphinx sphinx-rtd-theme sphinx-autodoc-typehints myst-parser sphinxcontrib-django requests sphinx-copybutton
       
       - name: Set up environment variables
         run: |

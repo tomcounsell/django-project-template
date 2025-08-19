@@ -28,10 +28,8 @@ jobs:
           pip install uv
           # Install project and dependencies with uv
           uv sync --all-extras
-          # Python-dotenv is a critical dependency
-          uv pip install python-dotenv
-          # Install security tools
-          uv pip install bandit safety
+          # Install security tools separately (not part of project deps)
+          pip install bandit safety
       
       - name: Check for security vulnerabilities with Bandit
         run: |

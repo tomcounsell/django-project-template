@@ -26,19 +26,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install uv
-          # Install project and dependencies with uv
+          # Install project and dependencies with uv (includes dev dependencies)
           uv sync --all-extras
-          # Install additional linting tools
-          uv pip install black flake8 mypy django-stubs isort python-dotenv
       
       - name: Format code with Black
-        run: black . --check
+        run: uv run black . --check
 
       - name: Format imports with isort
-        run: isort --profile black . --check
+        run: uv run isort --profile black . --check
         
       - name: Lint with flake8
-        run: flake8 . || true  # Continue even if flake8 finds issues
+        run: uv run flake8 . || true  # Continue even if flake8 finds issues
       
       - name: Type check with mypy
-        run: mypy . || true  # Continue even if mypy finds issues
+        run: uv run mypy . || true  # Continue even if mypy finds issues
