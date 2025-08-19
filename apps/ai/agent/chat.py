@@ -13,10 +13,11 @@ from .simple_tools import run_python
 @dataclass
 class ChatDependencies:
     """Dependencies for the chat agent."""
+
     user_id: Optional[int] = None
     session_id: Optional[str] = None
     context: Optional[dict] = None
-    
+
     def __post_init__(self):
         if self.context is None:
             self.context = {}
@@ -24,6 +25,7 @@ class ChatDependencies:
 
 class ChatMessage(BaseModel):
     """A single chat message."""
+
     role: str  # 'user' or 'assistant'
     content: str
     timestamp: datetime = Field(default_factory=datetime.now)
@@ -32,34 +34,28 @@ class ChatMessage(BaseModel):
 
 class ChatSession(BaseModel):
     """A chat session with message history."""
+
     session_id: str
     user_id: Optional[int] = None
     messages: List[ChatMessage] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
-    
+
     def add_message(self, role: str, content: str, metadata: Optional[dict] = None):
         """Add a message to the session."""
-        message = ChatMessage(
-            role=role,
-            content=content,
-            metadata=metadata or {}
-        )
+        message = ChatMessage(role=role, content=content, metadata=metadata or {})
         self.messages.append(message)
         self.updated_at = datetime.now()
         return message
-    
+
     def get_conversation_history(self) -> List[dict]:
         """Get conversation history in a format suitable for the agent."""
-        return [
-            {"role": msg.role, "content": msg.content}
-            for msg in self.messages
-        ]
+        return [{"role": msg.role, "content": msg.content} for msg in self.messages]
 
 
 # Create the chat agent with tools
 chat_agent = Agent(
-    'openai:gpt-4.1',  # Using GPT-4.1 for best tool use and agentic capabilities
+    "openai:gpt-4.1",  # Using GPT-4.1 for best tool use and agentic capabilities
     deps_type=ChatDependencies,
     tools=[run_python],
     system_prompt=(
@@ -76,21 +72,20 @@ chat_agent = Agent(
 async def dynamic_system_prompt(ctx: RunContext[ChatDependencies]) -> str:
     """Generate a dynamic system prompt based on context."""
     base_prompt = (
-        "You are a helpful AI assistant. "
-        "Be concise, friendly, and knowledgeable."
+        "You are a helpful AI assistant. " "Be concise, friendly, and knowledgeable."
     )
-    
+
     if ctx.deps.user_id:
         base_prompt += f" You are chatting with user ID: {ctx.deps.user_id}."
-    
+
     if ctx.deps.session_id:
         base_prompt += f" This is session: {ctx.deps.session_id}."
-    
+
     # Add any custom context
     if ctx.deps.context:
         context_str = ", ".join(f"{k}: {v}" for k, v in ctx.deps.context.items())
         base_prompt += f" Additional context: {context_str}"
-    
+
     return base_prompt
 
 
@@ -98,65 +93,60 @@ async def process_chat_message(
     message: str,
     session: ChatSession,
     deps: Optional[ChatDependencies] = None,
-    model=None
+    model=None,
 ) -> str:
     """
     Process a chat message and return the assistant's response.
-    
+
     Args:
         message: The user's message
         session: The current chat session
         deps: Optional dependencies for the agent
         model: Optional model override
-        
+
     Returns:
         The assistant's response
     """
     # Add user message to session
     session.add_message("user", message)
-    
+
     # Prepare dependencies
     if deps is None:
         deps = ChatDependencies(
             user_id=session.user_id,
             session_id=session.session_id,
         )
-    
+
     # Get conversation history for context
-    history = session.get_conversation_history()[:-1]  # Exclude the message we just added
-    
+    history = session.get_conversation_history()[
+        :-1
+    ]  # Exclude the message we just added
+
     # Build the conversation context
     messages = []
     for msg in history[-10:]:  # Include last 10 messages for context
         messages.append(msg)
-    
+
     # Run the agent with the new message
     if model:
         result = await chat_agent.run(
-            message,
-            deps=deps,
-            model=model,
-            message_history=messages
+            message, deps=deps, model=model, message_history=messages
         )
     else:
-        result = await chat_agent.run(
-            message,
-            deps=deps,
-            message_history=messages
-        )
-    
+        result = await chat_agent.run(message, deps=deps, message_history=messages)
+
     # Add assistant response to session
     # Get the response text from the result
-    if hasattr(result, 'output'):
+    if hasattr(result, "output"):
         response = result.output
-    elif hasattr(result, 'text'):
+    elif hasattr(result, "text"):
         response = result.text
-    elif hasattr(result, 'data'):
+    elif hasattr(result, "data"):
         response = result.data
     else:
         response = str(result)
     session.add_message("assistant", response)
-    
+
     return response
 
 
@@ -165,26 +155,26 @@ def process_chat_message_sync(
     message: str,
     session: ChatSession,
     deps: Optional[ChatDependencies] = None,
-    model=None
+    model=None,
 ) -> str:
     """Synchronous wrapper for process_chat_message."""
     import asyncio
-    
+
     # Get or create event loop
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    
+
     # Run the async function
     if loop.is_running():
         # If loop is already running (e.g., in Jupyter), create a task
         import concurrent.futures
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(
-                asyncio.run,
-                process_chat_message(message, session, deps, model)
+                asyncio.run, process_chat_message(message, session, deps, model)
             )
             return future.result()
     else:

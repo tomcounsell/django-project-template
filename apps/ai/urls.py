@@ -17,9 +17,8 @@ app_name = "ai"
 
 urlpatterns: List[URLPattern] = [
     # Test endpoints (no database required)
-    path('test/', TestChatPageView.as_view(), name='test-page'),
-    path('test-chat/', TestChatView.as_view(), name='test-chat'),
-    
+    path("test/", TestChatPageView.as_view(), name="test-page"),
+    path("test-chat/", TestChatView.as_view(), name="test-chat"),
     # Chat interface (requires migrations)
     # path('chat/', ChatIndexView.as_view(), name='chat-index'),
     # path('chat/send/', ChatSendMessageView.as_view(), name='chat-send'),

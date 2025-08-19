@@ -2,4 +2,4 @@
 
 from .chat import ChatFeedback, ChatMessage, ChatSession
 
-__all__ = ['ChatSession', 'ChatMessage', 'ChatFeedback']
+__all__ = ["ChatSession", "ChatMessage", "ChatFeedback"]

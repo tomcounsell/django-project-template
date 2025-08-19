@@ -376,5 +376,3 @@ class SMSFactory(ModelFactory):
 
         data.update(kwargs)
         return super().create(**data)
-
-

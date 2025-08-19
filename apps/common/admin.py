@@ -131,7 +131,7 @@ class UserAdmin(ModelAdmin):
             },
         ),
     )
-    
+
     fieldsets = (
         (None, {"fields": ("username",)}),
         (
@@ -163,22 +163,22 @@ class UserAdmin(ModelAdmin):
         ),
     )
     readonly_fields = ["last_login", "date_joined"]
-    
+
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
-        
+
     def get_form(self, request, obj=None, **kwargs):
         """
         Use special form during user creation
         """
         defaults = {}
         if obj is None:
-            defaults['form'] = self.add_form
+            defaults["form"] = self.add_form
         defaults.update(kwargs)
         return super().get_form(request, obj, **defaults)
-        
+
     def save_model(self, request, obj, form, change):
         if not change:  # This is a new user
             # The password will be set properly by UserCreationForm

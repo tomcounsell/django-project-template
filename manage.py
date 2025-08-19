@@ -12,6 +12,7 @@ if __name__ == "__main__":
         # exceptions on Python 2.
         try:
             import importlib.util
+
             if not importlib.util.find_spec("django"):
                 raise ImportError()
         except ImportError:

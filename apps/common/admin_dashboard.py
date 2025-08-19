@@ -144,7 +144,6 @@ def get_admin_dashboard(request, context=None):
     # Get top teams by size
     top_teams = teams_with_members.order_by("-member_count")[:5]
 
-
     # Communications
     email_count = Email.objects.count()
     unsent_emails = Email.objects.filter(sent_at__isnull=True).count()

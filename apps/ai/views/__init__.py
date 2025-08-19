@@ -10,10 +10,10 @@ from .chat import (
 )
 
 __all__ = [
-    'ChatIndexView',
-    'ChatSendMessageView',
-    'ChatPollMessageView',
-    'ChatNewSessionView',
-    'ChatLoadSessionView',
-    'ChatClearView',
+    "ChatIndexView",
+    "ChatSendMessageView",
+    "ChatPollMessageView",
+    "ChatNewSessionView",
+    "ChatLoadSessionView",
+    "ChatClearView",
 ]

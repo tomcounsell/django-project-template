@@ -6,14 +6,16 @@ from typing import Optional
 from pydantic_ai.models.openai import OpenAIModel
 
 
-def get_openai_model(model_name: str = "gpt-4.1", api_key: Optional[str] = None) -> OpenAIModel:
+def get_openai_model(
+    model_name: str = "gpt-4.1", api_key: Optional[str] = None
+) -> OpenAIModel:
     """
     Get an OpenAI model instance.
-    
+
     Args:
         model_name: The OpenAI model to use (e.g., 'gpt-4.1', 'gpt-4o', 'gpt-4o-mini')
         api_key: Optional API key. If not provided, uses OPENAI_API_KEY env var
-        
+
     Returns:
         Configured OpenAI model instance
     """
@@ -25,7 +27,7 @@ def get_openai_model(model_name: str = "gpt-4.1", api_key: Optional[str] = None)
             "OpenAI API key not found. Please set OPENAI_API_KEY environment variable "
             "or pass api_key parameter."
         )
-    
+
     return OpenAIModel(model_name)
 
 
@@ -51,6 +53,7 @@ def get_gpt_4o_mini_model(api_key: Optional[str] = None) -> OpenAIModel:
 
 # Create a default model instance for use throughout the app
 default_model = None
+
 
 def initialize_default_model():
     """Initialize the default model. Call this after Django settings are loaded."""
