@@ -247,20 +247,24 @@ Read these documents when working on specific areas:
 
 #### Error Handling & Testing
 - **ERROR_HANDLING.md** - Error management strategies
-- **advanced/TEST_CONVENTIONS.md** - Testing patterns and organization
-- **advanced/E2E_TESTING.md** - End-to-end test implementation
-- **advanced/BROWSER_TESTING.md** - Browser automation testing
-- **advanced/TEST_TROUBLESHOOTING.md** - Common test issues and solutions
+- **TEST_CONVENTIONS.md** - Testing patterns and organization
+- **TEST_TROUBLESHOOTING.md** - Common test issues and solutions
+- **guides/E2E_TESTING.md** - End-to-end test implementation
+- **guides/BROWSER_TESTING.md** - Browser automation testing
+- **guides/AI_BROWSER_TESTING.md** - AI-assisted test generation
 
 #### Setup & Configuration
 - **guides/SETUP_GUIDE.md** - Detailed setup instructions
 - **guides/CONTRIBUTING.md** - Contribution guidelines
-- **guides/PYCHARM_CONFIG.MD** - PyCharm IDE configuration
+- **guides/CICD.md** - CI/CD pipeline configuration
+- **guides/SCREENSHOT_SERVICE.md** - Visual testing service
+- **guides/HTMX_AND_RESPONSIVE_TESTING.md** - Responsive design testing
 
-#### Examples
-- **examples/modal_example_view.py** - Modal view implementation
-- **examples/item_list_example.html** - List view template
-- **examples/list_items_partial.html** - HTMX partial template
+#### Code Examples (in guides/)
+- **guides/modal_example_view.py** - Modal view implementation
+- **guides/item_list_example.html** - List view template
+- **guides/list_items_partial.html** - HTMX partial template
+- **guides/example_unfold_admin.py** - Admin customization
 
 ### When to Read Documentation
 
