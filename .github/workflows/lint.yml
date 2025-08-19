@@ -26,11 +26,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install uv
-          # Install directly from requirements files
-          pip install -r requirements/base.lock.txt
-          pip install -r requirements/dev.lock.txt
+          # Install project and dependencies with uv
+          uv sync --all-extras
           # Install additional linting tools
-          pip install black flake8 mypy django-stubs isort python-dotenv
+          uv pip install black flake8 mypy django-stubs isort python-dotenv
       
       - name: Format code with Black
         run: black . --check
