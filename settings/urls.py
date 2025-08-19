@@ -105,6 +105,7 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path("", include("apps.public.urls", namespace="public")),
     path("staff/", include("apps.staff.urls", namespace="staff")),
+    path("ai/", include("apps.ai.urls", namespace="ai")),
     # Serve documentation index
     path("docs/", serve_docs_index, name="docs_index"),
     # Serve Markdown documentation directly - supports docs/FILENAME and nested paths
