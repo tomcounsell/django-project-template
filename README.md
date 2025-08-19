@@ -22,6 +22,7 @@ Planned Integrations:
 
 ### Getting Started
 - **Quick Start**: Run `source setup_local_env.sh` for automated local environment setup with activated virtual environment
+- **Code Quality**: Run `uv run pre-commit install` to set up automatic code quality checks
 - For detailed setup instructions, see [Setup Guide](docs/guides/SETUP_GUIDE.md)
 - For contribution guidelines, see [Contributing Guide](docs/guides/CONTRIBUTING.md)
 - For enhancement roadmap, see [TODO List](docs/TODO.md)
@@ -31,8 +32,26 @@ Planned Integrations:
 - **API and Code Documentation**: [API and Code Documentation](https://tomcounsell.github.io/django-project-template/) (generated with Sphinx and hosted on GitHub Pages)
 - Documentation is automatically built and published from the main branch
 
-### Coding Standards
-- **Pre-commit Hooks**: Run `uv run pre-commit install` to set up automatic code quality checks
+### Coding Standards & Quality
+
+#### Automated Code Quality
+This project uses **pre-commit hooks** to maintain code quality:
+- **Automatic formatting** with Black and isort
+- **Linting** with Flake8 and Django-specific plugins
+- **Security scanning** with Bandit
+- **Django checks** before every commit
+
+```bash
+# Install pre-commit hooks (required for all contributors)
+uv run pre-commit install
+
+# Run manually on all files
+uv run pre-commit run --all-files
+```
+
+See [CI/CD Guide](docs/guides/CICD.md) for complete pre-commit documentation.
+
+#### Development Guidelines
 - For model conventions and best practices, see [Model Conventions](docs/MODEL_CONVENTIONS.md)
 - For template guidelines and patterns, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
 - For view classes and HTMX integration, see [View Conventions](docs/VIEW_CONVENTIONS.md)

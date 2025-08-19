@@ -133,7 +133,23 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### Step 6: Run the Development Server
+### Step 6: Install Pre-commit Hooks (Required)
+
+```bash
+# Install pre-commit hooks for code quality
+uv run pre-commit install
+uv run pre-commit install --hook-type pre-push
+
+# Verify installation
+uv run pre-commit --version
+
+# Test the hooks
+uv run pre-commit run --all-files
+```
+
+This step is **required** for all contributors to maintain code quality standards.
+
+### Step 7: Run the Development Server
 
 ```bash
 # Start the Django development server
