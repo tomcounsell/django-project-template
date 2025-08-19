@@ -5,7 +5,7 @@
         <h3 class="text-lg font-semibold">{% trans "Team Members" %}</h3>
         <p class="text-sm text-gray-600 dark:text-gray-400">{% trans "Manage members and their roles" %}</p>
     </div>
-    
+
     <div class="mb-6 overflow-hidden bg-white dark:bg-gray-800 shadow-xs sm:rounded-xs">
         <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
             {% for member in original.teammember_set.all %}
@@ -65,14 +65,14 @@
             {% endfor %}
         </ul>
     </div>
-    
+
     <div class="mb-6 border rounded-xs p-4 bg-white dark:bg-gray-800">
         <h4 class="text-base font-semibold mb-3">{% trans "Add New Member" %}</h4>
-        
+
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
             {% trans "To add a new member, use the 'Add team member' button below." %}
         </p>
-        
+
         <div class="text-right">
             <a href="{% url 'admin:common_teammember_add' %}?team={{ original.pk }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-xs shadow-xs text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 <span class="material-symbols-outlined mr-1 text-base">person_add</span>
@@ -80,10 +80,10 @@
             </a>
         </div>
     </div>
-    
+
     <div class="mb-6 border rounded-xs p-4 bg-white dark:bg-gray-800">
         <h4 class="text-base font-semibold mb-3">{% trans "Role Permissions" %}</h4>
-        
+
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
                 <thead>

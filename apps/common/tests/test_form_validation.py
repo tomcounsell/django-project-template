@@ -6,10 +6,7 @@ from django.test import RequestFactory, TestCase
 
 from apps.common.forms.blog_post import BlogPostForm
 from apps.common.models import BlogPost, User
-from apps.common.utilities.forms import (
-    BaseModelForm,
-    clean_form_data,
-)
+from apps.common.utilities.forms import BaseModelForm, clean_form_data
 
 
 # Test form for validation utilities

@@ -15,12 +15,13 @@ This script can be run directly without the Django environment for quick behavio
 """
 
 import datetime
-import django
 import os
 import sys
 import unittest
 from pathlib import Path
 from unittest import mock
+
+import django
 
 # Add the project root to the Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent

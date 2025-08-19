@@ -10,18 +10,18 @@
       Please enter your new password twice to verify.
     </p>
   </div>
-  
+
   <div class="bg-white rounded-xs shadow-xs p-6">
     {% if validlink %}
       <form method="post">
         {% csrf_token %}
-        
+
         {% if form.non_field_errors %}
           <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-xs">
             {{ form.non_field_errors }}
           </div>
         {% endif %}
-        
+
         <div class="mb-4">
           <label for="{{ form.new_password1.id_for_label }}" class="block text-gray-700 font-semibold mb-2">
             New Password
@@ -42,7 +42,7 @@
             </div>
           {% endif %}
         </div>
-        
+
         <div class="mb-4">
           <label for="{{ form.new_password2.id_for_label }}" class="block text-gray-700 font-semibold mb-2">
             Confirm New Password
@@ -52,7 +52,7 @@
             <p class="text-red-500 text-sm mt-1">{{ form.new_password2.errors.0 }}</p>
           {% endif %}
         </div>
-        
+
         <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
           Change My Password
         </button>
@@ -65,7 +65,7 @@
           or has expired. Please request a new password reset.
         </p>
       </div>
-      
+
       <div class="mt-6 text-center">
         <a href="{% url 'public:account-login' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
           Return to Login

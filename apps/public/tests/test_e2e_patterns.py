@@ -301,7 +301,7 @@ class E2ETestBase(LiveServerMixin):
 
     async def create_user_and_login(
         self, page: Page, live_server=None
-    ) -> Tuple[User, bool]:
+    ) -> tuple[User, bool]:
         """
         Create a test user and log them in.
 

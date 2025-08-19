@@ -35,11 +35,10 @@ class ChatSessionAdmin(ModelAdmin):
         ),
     )
 
+    @admin.display(description="Messages")
     def message_count(self, obj):
         """Display the number of messages in the session."""
         return obj.message_count
-
-    message_count.short_description = "Messages"
 
 
 @admin.register(ChatMessage)
@@ -71,14 +70,13 @@ class ChatMessageAdmin(ModelAdmin):
         ),
     )
 
+    @admin.display(description="Content")
     def truncated_content(self, obj):
         """Display truncated content."""
         max_length = 100
         if len(obj.content) > max_length:
             return f"{obj.content[:max_length]}..."
         return obj.content
-
-    truncated_content.short_description = "Content"
 
 
 @admin.register(ChatFeedback)

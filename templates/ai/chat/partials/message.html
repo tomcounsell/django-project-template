@@ -14,13 +14,13 @@
                 </div>
                 {% endif %}
             </div>
-            
+
             <!-- Message Content -->
             <div class="flex-1">
                 <div class="{% if message.role == 'user' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-900{% endif %} rounded-lg px-4 py-2">
                     {% if not message.is_processed %}
                     <!-- Loading state for assistant messages -->
-                    <div 
+                    <div
                         hx-get="{% url 'ai:chat-poll' message.id %}"
                         hx-trigger="load, poll"
                         hx-swap="innerHTML"
@@ -40,7 +40,7 @@
                     <div class="whitespace-pre-wrap">{{ message.content }}</div>
                     {% endif %}
                 </div>
-                
+
                 <!-- Timestamp -->
                 <div class="text-xs text-gray-500 mt-1">
                     {{ message.created_at|date:"g:i A" }}

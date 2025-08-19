@@ -43,7 +43,7 @@ class BrowserTestRunner:
         self.verbose = verbose
         self.wait_time = wait_time
         self.slow_mo = slow_mo
-        self.server_process: Optional[subprocess.Popen] = None
+        self.server_process: subprocess.Popen | None = None
 
     def _start_server(self) -> bool:
         """Start the Django development server."""
@@ -73,8 +73,7 @@ class BrowserTestRunner:
             # Check if server is running by making a request
             check_process = subprocess.run(
                 ["curl", "-s", "http://localhost:8000/"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 text=True,
             )
 
@@ -128,7 +127,7 @@ class BrowserTestRunner:
 
         return env
 
-    def run_tests(self, test_paths: List[str]) -> Tuple[int, str]:
+    def run_tests(self, test_paths: list[str]) -> tuple[int, str]:
         """Run browser-based tests, starting and stopping the server."""
         if not test_paths:
             return 1, "No test paths provided"
@@ -136,8 +135,7 @@ class BrowserTestRunner:
         # Check if server is already running
         check_server = subprocess.run(
             ["curl", "-s", "http://localhost:8000/"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
 
         server_started_by_us = False

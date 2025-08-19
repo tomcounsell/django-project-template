@@ -12,22 +12,22 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-sm p-4">
                         <h2 class="text-lg font-semibold mb-4">Chat Sessions</h2>
-                        
+
                         <!-- New Chat Button -->
-                        <button 
+                        <button
                             hx-post="{% url 'ai:chat-new-session' %}"
                             hx-trigger="click"
                             class="w-full mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
                             New Chat
                         </button>
-                        
+
                         <!-- Recent Sessions -->
                         {% if recent_sessions %}
                         <div class="space-y-2">
                             <h3 class="text-sm font-medium text-gray-600 mb-2">Recent</h3>
                             {% for session in recent_sessions %}
-                            <a 
+                            <a
                                 href="#"
                                 hx-get="{% url 'ai:chat-load-session' session.id %}"
                                 hx-trigger="click"
@@ -45,7 +45,7 @@
                         {% endif %}
                     </div>
                 </div>
-                
+
                 <!-- Main Chat Area -->
                 <div class="lg:col-span-3">
                     <div class="bg-white rounded-lg shadow-sm flex flex-col h-[calc(100vh-12rem)]">
@@ -64,16 +64,16 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Messages Container -->
-                        <div 
-                            id="messages-container" 
+                        <div
+                            id="messages-container"
                             class="flex-1 overflow-y-auto px-6 py-4 space-y-4"
                         >
                             {% for message in messages %}
                                 {% include "ai/chat/partials/message.html" with message=message %}
                             {% endfor %}
-                            
+
                             {% if not messages %}
                             <div class="text-center py-12 text-gray-500">
                                 <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,10 +83,10 @@
                             </div>
                             {% endif %}
                         </div>
-                        
+
                         <!-- Input Form -->
                         <div class="border-t px-6 py-4">
-                            <form 
+                            <form
                                 hx-post="{% url 'ai:chat-send' %}"
                                 hx-target="#messages-container"
                                 hx-swap="beforeend"
@@ -126,7 +126,7 @@
             container.scrollTop = container.scrollHeight;
         }
     });
-    
+
     // Set up polling for unprocessed messages
     document.body.addEventListener('poll-message', function(evt) {
         setTimeout(function() {

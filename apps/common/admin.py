@@ -217,6 +217,7 @@ class UserAdmin(ModelAdmin):
     def display_created(self, instance):
         return instance.date_joined
 
+    @admin.display(description="Status")
     def status_badge(self, obj):
         if obj.is_active:
             return format_html(
@@ -225,8 +226,6 @@ class UserAdmin(ModelAdmin):
         return format_html(
             '<span class="unfold-badge bg-red-500 text-white">Inactive</span>'
         )
-
-    status_badge.short_description = "Status"
 
     # Custom actions
     @action(description=_("Deactivate User"))
@@ -271,6 +270,7 @@ class TeamMemberTableSection(TableSection):
     fields = ["user", "role_display", "joined_at"]
     height = 380  # Fixed height
 
+    @admin.display(description=_("Role"))
     def role_display(self, instance):
         colors = {
             "owner": "bg-purple-500",
@@ -285,8 +285,6 @@ class TeamMemberTableSection(TableSection):
             color,
             instance.get_role_display(),
         )
-
-    role_display.short_description = _("Role")
 
 
 # Register a custom component for team stats
@@ -381,6 +379,7 @@ class TeamAdmin(ModelAdmin):
             ),
         ]
 
+    @admin.display(description="Members")
     def member_count(self, obj):
         """Return the number of members in the team."""
         count = obj.members.count()
@@ -388,6 +387,7 @@ class TeamAdmin(ModelAdmin):
             '<span class="unfold-badge bg-blue-500 text-white">{}</span>', count
         )
 
+    @admin.display(description="Status")
     def status_badge(self, obj):
         if obj.is_active:
             return format_html(
@@ -396,9 +396,6 @@ class TeamAdmin(ModelAdmin):
         return format_html(
             '<span class="unfold-badge bg-red-500 text-white">Inactive</span>'
         )
-
-    member_count.short_description = "Members"
-    status_badge.short_description = "Status"
 
     # Custom actions
     @action(description=_("Export Teams"), icon="download")
@@ -458,6 +455,7 @@ class TeamMemberAdmin(ModelAdmin):
     search_fields = ("user__username", "user__email", "team__name")
     autocomplete_fields = ["user", "team"]
 
+    @admin.display(description="Role")
     def role_badge(self, obj):
         colors = {
             "owner": "bg-purple-500",
@@ -472,8 +470,6 @@ class TeamMemberAdmin(ModelAdmin):
             color,
             obj.get_role_display(),
         )
-
-    role_badge.short_description = "Role"
 
 
 @admin.register(BlogPost)
@@ -518,9 +514,11 @@ class BlogPostAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Author")
     def author_display(self, obj):
         return obj.author_display_name
 
+    @admin.display(description="Location")
     def location_display(self, obj):
         if obj.address:
             return format_html(
@@ -529,6 +527,7 @@ class BlogPostAdmin(ModelAdmin):
             )
         return "-"
 
+    @admin.display(description="Status")
     def publishing_status(self, obj):
         if obj.is_published:
             return format_html(
@@ -538,6 +537,7 @@ class BlogPostAdmin(ModelAdmin):
             '<span class="unfold-badge bg-gray-500 text-white">Draft</span>'
         )
 
+    @admin.display(description="Expiration")
     def expiration_status(self, obj):
         if obj.is_expired:
             return format_html(
@@ -546,11 +546,6 @@ class BlogPostAdmin(ModelAdmin):
         return format_html(
             '<span class="unfold-badge bg-green-500 text-white">Active</span>'
         )
-
-    author_display.short_description = "Author"
-    location_display.short_description = "Location"
-    publishing_status.short_description = "Status"
-    expiration_status.short_description = "Expiration"
 
 
 @admin.register(UserAPIKey)
@@ -598,6 +593,7 @@ class AddressAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Map")
     def map_link(self, obj):
         if obj.google_map_link:
             return format_html(
@@ -605,8 +601,6 @@ class AddressAdmin(ModelAdmin):
                 obj.google_map_url,
             )
         return "-"
-
-    map_link.short_description = "Map"
 
 
 @admin.register(City)
@@ -616,6 +610,7 @@ class CityAdmin(ModelAdmin):
     search_fields = ("name", "code", "country__name")
     autocomplete_fields = ["country"]
 
+    @admin.display(description="Currency")
     def currency_display(self, obj):
         if obj.currency:
             return format_html(
@@ -623,8 +618,6 @@ class CityAdmin(ModelAdmin):
                 obj.currency,
             )
         return "-"
-
-    currency_display.short_description = "Currency"
 
 
 @admin.register(Country)
@@ -634,6 +627,7 @@ class CountryAdmin(ModelAdmin):
     search_fields = ("name", "code")
     autocomplete_fields = ["currency"]
 
+    @admin.display(description="Calling Code")
     def calling_code_display(self, obj):
         if obj.calling_code:
             return format_html(
@@ -642,8 +636,6 @@ class CountryAdmin(ModelAdmin):
             )
         return "-"
 
-    calling_code_display.short_description = "Calling Code"
-
 
 @admin.register(Currency)
 class CurrencyAdmin(ModelAdmin):
@@ -651,13 +643,12 @@ class CurrencyAdmin(ModelAdmin):
     search_fields = ("name", "code")
     readonly_fields = ("created_at", "modified_at")
 
+    @admin.display(description="Code")
     def code_upper(self, obj):
         return format_html(
             '<span class="unfold-badge bg-green-500 text-white">{}</span>',
             obj.code.upper(),
         )
-
-    code_upper.short_description = "Code"
 
 
 @admin.register(Note)
@@ -667,12 +658,11 @@ class NoteAdmin(ModelAdmin):
     readonly_fields = ("created_at", "modified_at")
     autocomplete_fields = ["author"]
 
+    @admin.display(description="Text")
     def text_preview(self, obj):
         if obj.text:
             return obj.text[:50] + "..." if len(obj.text) > 50 else obj.text
         return "-"
-
-    text_preview.short_description = "Text"
 
 
 @admin.register(Email)
@@ -699,6 +689,7 @@ class EmailAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Type")
     def email_type(self, obj):
         type_colors = {
             0: "bg-blue-500",  # NOTIFICATION
@@ -711,6 +702,7 @@ class EmailAdmin(ModelAdmin):
             obj.get_type_display(),
         )
 
+    @admin.display(description="Sent")
     def sent_status(self, obj):
         if obj.sent_at:
             return format_html(
@@ -720,6 +712,7 @@ class EmailAdmin(ModelAdmin):
             '<span class="unfold-badge bg-yellow-500 text-white">Pending</span>'
         )
 
+    @admin.display(description="Read")
     def read_status(self, obj):
         if obj.read_at:
             return format_html(
@@ -728,10 +721,6 @@ class EmailAdmin(ModelAdmin):
         return format_html(
             '<span class="unfold-badge bg-gray-500 text-white">Unread</span>'
         )
-
-    email_type.short_description = "Type"
-    sent_status.short_description = "Sent"
-    read_status.short_description = "Read"
 
 
 @admin.register(SMS)
@@ -757,11 +746,13 @@ class SMSAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Message")
     def body_preview(self, obj):
         if obj.body:
             return obj.body[:30] + "..." if len(obj.body) > 30 else obj.body
         return "-"
 
+    @admin.display(description="Status")
     def delivery_status(self, obj):
         status_colors = {
             "queued": "bg-blue-500",
@@ -778,6 +769,7 @@ class SMSAdmin(ModelAdmin):
             )
         return "-"
 
+    @admin.display(description="Sent")
     def sent_status(self, obj):
         if obj.sent_at:
             return format_html(
@@ -786,10 +778,6 @@ class SMSAdmin(ModelAdmin):
         return format_html(
             '<span class="unfold-badge bg-yellow-500 text-white">Pending</span>'
         )
-
-    body_preview.short_description = "Message"
-    delivery_status.short_description = "Status"
-    sent_status.short_description = "Sent"
 
 
 @admin.register(Upload)
@@ -823,9 +811,11 @@ class UploadAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Name")
     def name_display(self, obj):
         return obj.name or f"Upload {obj.id}"
 
+    @admin.display(description="Type")
     def file_type_display(self, obj):
         if obj.file_type:
             return format_html(
@@ -834,6 +824,7 @@ class UploadAdmin(ModelAdmin):
             )
         return "-"
 
+    @admin.display(description="Size")
     def size_display(self, obj):
         if obj.size:
             # Convert bytes to KB or MB
@@ -845,6 +836,7 @@ class UploadAdmin(ModelAdmin):
                 return f"{obj.size / (1024 * 1024):.1f} MB"
         return "-"
 
+    @admin.display(description="Status")
     def status_badge(self, obj):
         status_colors = {
             "pending": "bg-blue-500",
@@ -858,12 +850,14 @@ class UploadAdmin(ModelAdmin):
             obj.status.capitalize(),
         )
 
+    @admin.display(description="Dimensions")
     def dimensions_display(self, obj):
         """Display image dimensions if available"""
         if obj.dimensions and all(obj.dimensions):
             return f"{obj.dimensions[0]} x {obj.dimensions[1]}"
         return "-"
 
+    @admin.display(description="Preview")
     def preview(self, obj):
         """Display a preview of the file if possible"""
         if obj.is_image and obj.original:
@@ -877,13 +871,6 @@ class UploadAdmin(ModelAdmin):
                 obj.original,
             )
         return "-"
-
-    name_display.short_description = "Name"
-    file_type_display.short_description = "Type"
-    size_display.short_description = "Size"
-    status_badge.short_description = "Status"
-    dimensions_display.short_description = "Dimensions"
-    preview.short_description = "Preview"
 
 
 @admin.register(Image)
@@ -907,11 +894,13 @@ class ImageAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Name")
     def display_name(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "name"):
             return obj.upload.name or f"Image {obj.id}"
         return f"Image {obj.id}"
 
+    @admin.display(description="Dimensions")
     def dimensions_display(self, obj):
         """Display image dimensions if available"""
         if (
@@ -923,6 +912,7 @@ class ImageAdmin(ModelAdmin):
             return f"{obj.width} x {obj.height}"
         return "-"
 
+    @admin.display(description="Preview")
     def preview(self, obj):
         """Display a preview of the image"""
         if hasattr(obj, "original") and obj.original:
@@ -932,21 +922,17 @@ class ImageAdmin(ModelAdmin):
             )
         return "-"
 
+    @admin.display(description="Created At")
     def created_at(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "created_at"):
             return obj.upload.created_at
         return None
 
+    @admin.display(description="Modified At")
     def modified_at(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "modified_at"):
             return obj.upload.modified_at
         return None
-
-    display_name.short_description = "Name"
-    dimensions_display.short_description = "Dimensions"
-    preview.short_description = "Preview"
-    created_at.short_description = "Created At"
-    modified_at.short_description = "Modified At"
 
 
 @admin.register(Payment)
@@ -980,6 +966,7 @@ class PaymentAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Status")
     def status_badge(self, obj):
         status_colors = {
             "pending": "bg-blue-500",
@@ -994,6 +981,7 @@ class PaymentAdmin(ModelAdmin):
             obj.status.capitalize(),
         )
 
+    @admin.display(description="Method")
     def payment_method_display(self, obj):
         if obj.payment_method:
             label = obj.payment_method
@@ -1003,9 +991,6 @@ class PaymentAdmin(ModelAdmin):
                 '<span class="unfold-badge bg-blue-500 text-white">{}</span>', label
             )
         return "-"
-
-    status_badge.short_description = "Status"
-    payment_method_display.short_description = "Method"
 
 
 @admin.register(Subscription)
@@ -1049,6 +1034,7 @@ class SubscriptionAdmin(ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "modified_at")}),
     )
 
+    @admin.display(description="Status")
     def status_badge(self, obj):
         status_colors = {
             "active": "bg-green-500",
@@ -1065,6 +1051,7 @@ class SubscriptionAdmin(ModelAdmin):
             obj.status.capitalize(),
         )
 
+    @admin.display(description="Renewal")
     def renewal_info(self, obj):
         if obj.current_period_end:
             if obj.cancel_at_period_end:
@@ -1079,6 +1066,7 @@ class SubscriptionAdmin(ModelAdmin):
                 )
         return "-"
 
+    @admin.display(description="Trial")
     def trial_badge(self, obj):
         if obj.is_trial:
             if obj.trial_end:
@@ -1090,10 +1078,6 @@ class SubscriptionAdmin(ModelAdmin):
                 '<span class="unfold-badge bg-purple-500 text-white">Trial</span>'
             )
         return "-"
-
-    status_badge.short_description = "Status"
-    renewal_info.short_description = "Renewal"
-    trial_badge.short_description = "Trial"
 
 
 @admin.register(Document)
@@ -1111,11 +1095,13 @@ class DocumentAdmin(ModelAdmin):
                 readonly_fields.append("modified_at")
         return readonly_fields
 
+    @admin.display(description="Name")
     def display_name(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "name"):
             return obj.upload.name or f"Document {obj.id}"
         return f"Document {obj.id}"
 
+    @admin.display(description="Type")
     def display_type(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "file_type"):
             file_type = obj.upload.file_type
@@ -1126,17 +1112,14 @@ class DocumentAdmin(ModelAdmin):
                 )
         return "-"
 
+    @admin.display(description="Created At")
     def created_at(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "created_at"):
             return obj.upload.created_at
         return None
 
+    @admin.display(description="Modified At")
     def modified_at(self, obj):
         if hasattr(obj, "upload") and obj.upload and hasattr(obj.upload, "modified_at"):
             return obj.upload.modified_at
         return None
-
-    display_name.short_description = "Name"
-    display_type.short_description = "Type"
-    created_at.short_description = "Created At"
-    modified_at.short_description = "Modified At"

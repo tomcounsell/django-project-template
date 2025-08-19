@@ -20,7 +20,7 @@ class ChatMCPServer:
         """Set up available tools for the MCP server."""
 
         @self.server.tool()
-        async def get_user_info(user_id: int) -> Dict[str, Any]:
+        async def get_user_info(user_id: int) -> dict[str, Any]:
             """
             Get information about a user.
 
@@ -49,7 +49,7 @@ class ChatMCPServer:
         @self.server.tool()
         async def search_knowledge_base(
             query: str, limit: int = 5
-        ) -> List[Dict[str, Any]]:
+        ) -> list[dict[str, Any]]:
             """
             Search the knowledge base for relevant information.
 
@@ -74,7 +74,7 @@ class ChatMCPServer:
         @self.server.tool()
         async def get_chat_history(
             session_id: str, limit: int = 10
-        ) -> List[Dict[str, Any]]:
+        ) -> list[dict[str, Any]]:
             """
             Get chat history for a session.
 
@@ -107,8 +107,8 @@ class ChatMCPServer:
             session_id: str,
             message_id: int,
             feedback: str,
-            rating: Optional[int] = None,
-        ) -> Dict[str, Any]:
+            rating: int | None = None,
+        ) -> dict[str, Any]:
             """
             Save user feedback for a message.
 
@@ -132,7 +132,7 @@ class ChatMCPServer:
         """Set up available resources for the MCP server."""
 
         @self.server.resource("chat://sessions")
-        async def list_sessions() -> List[Dict[str, Any]]:
+        async def list_sessions() -> list[dict[str, Any]]:
             """List all available chat sessions."""
             from apps.ai.models import ChatSession
 
@@ -148,7 +148,7 @@ class ChatMCPServer:
             ]
 
         @self.server.resource("chat://sessions/{session_id}")
-        async def get_session(session_id: str) -> Dict[str, Any]:
+        async def get_session(session_id: str) -> dict[str, Any]:
             """Get details of a specific chat session."""
             from apps.ai.models import ChatSession
 
@@ -165,7 +165,7 @@ class ChatMCPServer:
                 return {"error": f"Session {session_id} not found"}
 
         @self.server.resource("chat://prompts")
-        async def list_prompts() -> List[Dict[str, Any]]:
+        async def list_prompts() -> list[dict[str, Any]]:
             """List available prompt templates."""
             prompts = [
                 {

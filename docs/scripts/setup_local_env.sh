@@ -208,17 +208,17 @@ if [ -z "$db_name" ]; then
         echo "What database name would you like to use for this project?"
         read -p "Database name [django_project_template]: " user_db_name
         db_name=${user_db_name:-django_project_template}
-        
+
         # Ask for database username and password
         read -p "Database username [postgres]: " db_user
         db_user=${db_user:-postgres}
-        
+
         read -s -p "Database password (input will be hidden): " db_password
         echo ""
-        
+
         # Encode database name for URL if it contains hyphens
         db_name_url=$(url_encode_db_name "$db_name")
-        
+
         # Update the DATABASE_URL in .env.local
         if grep -q "^DATABASE_URL=" ".env.local"; then
             sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url|" ".env.local"
@@ -274,13 +274,13 @@ else
         DB_CONNECTION_SUCCESS=true
     else
         print_warning "Could not connect to database. Please check your database configuration in .env.local."
-        
+
         # Offer some common solutions
         echo "Common issues and solutions:"
         echo "1. Database password might be incorrect"
         echo "2. Database might not exist or user doesn't have access"
         echo "3. PostgreSQL service might not be running"
-        
+
         # Offer to edit the configuration
         echo "Would you like to update the database configuration? (y/n)"
         read update_db_config
@@ -288,13 +288,13 @@ else
             # Ask for database username and password
             read -p "Database username [postgres]: " db_user
             db_user=${db_user:-postgres}
-            
+
             read -s -p "Database password (input will be hidden): " db_password
             echo ""
-            
+
             # Encode database name for URL if it contains hyphens
             db_name_url=$(url_encode_db_name "$db_name")
-            
+
             # Update the DATABASE_URL in .env.local
             if grep -q "^DATABASE_URL=" ".env.local"; then
                 sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url|" ".env.local"
@@ -303,7 +303,7 @@ else
                 echo "DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url" >> ".env.local"
             fi
             print_success "Updated DATABASE_URL in .env.local"
-            
+
             # Try to connect again
             echo "Attempting to connect to database again..."
             if python -c "from django.db import connection; connection.cursor()" 2>/dev/null; then
@@ -447,11 +447,11 @@ fi
 echo -e "${GREEN}"
 cat << "EOF"
 
- __   __  _   _  ____    _    __  __  _____    
- \ \ / / | | | ||  _ \  / \  |  \/  || ____|   
-  \ V /  | | | || | | |/ _ \ | |\/| ||  _|     
-   | |   | |_| || |_| / ___ \| |  | || |___    
-   |_|    \___/ |____/_/   \_\_|  |_||_____|   
+ __   __  _   _  ____    _    __  __  _____
+ \ \ / / | | | ||  _ \  / \  |  \/  || ____|
+  \ V /  | | | || | | |/ _ \ | |\/| ||  _|
+   | |   | |_| || |_| / ___ \| |  | || |___
+   |_|    \___/ |____/_/   \_\_|  |_||_____|
 
  (o_o)   (^_^)   (*_*)   (>_<)   (o_O)
   /|\     _|_     /|\     /|\     _|_

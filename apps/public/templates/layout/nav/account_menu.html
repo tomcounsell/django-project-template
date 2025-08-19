@@ -1,24 +1,24 @@
 {% comment %}
   Account Menu Component
   =====================
-  
+
   Purpose:
   User account management dropdown menu that provides access to account-related
   functions and administrative tools based on user permissions.
-  
+
   Authenticated User View:
   - Account menu toggle: User avatar that expands the dropdown
   - Settings link: Access to user profile and account settings
   - Admin link: Access to Django admin (staff users only)
   - Logout link: Option to end the user session
-  
+
   Non-Authenticated User View:
   - Login link: Direct link to the login page
-  
+
   States:
   - Collapsed: Only shows the menu toggle (avatar)
   - Expanded: Shows all available options in a dropdown
-  
+
   Integration:
   This component is included in the navbar and handles all user account
   management navigation. It adapts its display based on authentication state
@@ -42,7 +42,7 @@
         <span class="text-sm font-medium text-white">{{ user.initials|default:"U" }}</span>
       </span>
     </button>
-    
+
     <!-- Dropdown menu -->
     <!--
       Show/hide this element based on the dropdown state

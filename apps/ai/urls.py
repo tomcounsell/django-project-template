@@ -15,7 +15,7 @@ from apps.ai.views.test_page import TestChatPageView
 
 app_name = "ai"
 
-urlpatterns: List[URLPattern] = [
+urlpatterns: list[URLPattern] = [
     # Test endpoints (no database required)
     path("test/", TestChatPageView.as_view(), name="test-page"),
     path("test-chat/", TestChatView.as_view(), name="test-chat"),

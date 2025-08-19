@@ -3,23 +3,23 @@
 {% comment %}
   Pricing Page
   =============
-  
+
   Purpose:
   Showcases subscription plans and pricing options to encourage users
   to choose a plan that fits their needs and convert to paying customers.
-  
+
   Content:
   - Price comparison table/cards for all plans
   - Feature comparison
   - FAQ section
   - Call to action for sales inquiries
-  
+
   User Experience:
   - Clear breakdown of plan features and limitations
   - Visual emphasis on recommended plan
   - Easy-to-understand pricing structure
   - Clear next steps for users to take action
-  
+
   Integration:
   Displays in the main content area of the base template.
   Does not require authentication to view.
@@ -47,7 +47,7 @@
   <div class="bg-white py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Pricing toggle (monthly/annual) could go here in the future -->
-      
+
       <!-- Pricing cards -->
       <div class="mt-12 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-y-0">
         {% for plan in plans %}
@@ -57,7 +57,7 @@
                 Popular
               </div>
             {% endif %}
-            
+
             <div class="flex-1">
               <h3 class="text-xl font-semibold text-gray-900">{{ plan.name }}</h3>
               <p class="mt-4 flex items-baseline text-gray-900">

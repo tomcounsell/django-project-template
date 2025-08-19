@@ -13,7 +13,7 @@ class MainContentView(View):
     """
 
     url: str = ""
-    template_name: Optional[str] = None
+    template_name: str | None = None
 
     # Default base templates - don't override these in most cases
     base_template: str = "base.html"
@@ -53,8 +53,8 @@ class MainContentView(View):
     def render(
         self,
         request: HttpRequest = None,
-        template_name: Optional[str] = None,
-        context: Optional[dict] = None,
+        template_name: str | None = None,
+        context: dict | None = None,
     ) -> HttpResponse:
         """
         Render the template with the provided or default context.

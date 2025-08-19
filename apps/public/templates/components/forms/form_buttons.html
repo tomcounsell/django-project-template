@@ -26,11 +26,11 @@ Usage:
 {% endcomment %}
 
 {% with btn_align=align|default:"right" %}
-<div class="mt-6 flex {% if btn_align == 'center' %}justify-center{% elif btn_align == 'left' %}justify-start{% elif btn_align == 'right' %}justify-end{% elif btn_align == 'between' %}justify-between{% endif %} 
+<div class="mt-6 flex {% if btn_align == 'center' %}justify-center{% elif btn_align == 'left' %}justify-start{% elif btn_align == 'right' %}justify-end{% elif btn_align == 'between' %}justify-between{% endif %}
           items-center space-x-4">
-  
+
   {% if cancel_url %}
-    <a href="{{ cancel_url }}" 
+    <a href="{{ cancel_url }}"
        class="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-xs text-sm font-medium rounded-xs text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 {{ cancel_class }}">
       {% if not cancel_icon_none %}
       <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
@@ -40,8 +40,8 @@ Usage:
       {{ cancel_text|default:"Cancel" }}
     </a>
   {% endif %}
-  
-  <button type="submit" 
+
+  <button type="submit"
           class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-xs text-sm font-medium rounded-xs text-white {% if secondary %}bg-gray-600 hover:bg-gray-500 focus:ring-gray-500{% else %}bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-slate-700{% endif %} focus:outline-hidden focus:ring-2 focus:ring-offset-2 {{ submit_class }}">
       {% if not submit_icon_none %}
       <svg class="h-4 w-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">

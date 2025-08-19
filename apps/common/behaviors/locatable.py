@@ -58,7 +58,7 @@ class Locatable(models.Model):
         return self.latitude is not None and self.longitude is not None
 
     @property
-    def coordinates(self) -> Optional[tuple[float, float]]:
+    def coordinates(self) -> tuple[float, float] | None:
         """
         Get the coordinates as a latitude/longitude tuple.
 

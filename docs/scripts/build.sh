@@ -15,12 +15,12 @@ if [ -f pyproject.toml ]; then
 else
   # Fallback to requirements.txt if pyproject.toml doesn't exist
   echo "pyproject.toml not found, falling back to requirements.txt..."
-  
+
   # Generate requirements.txt if it doesn't exist
   if [ ! -f requirements.txt ]; then
     ./requirements/generate_deployment_requirements.sh
   fi
-  
+
   # Install dependencies from the generated requirements.txt
   uv pip install -r requirements.txt
 fi

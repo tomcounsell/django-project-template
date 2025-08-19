@@ -37,7 +37,7 @@ def generate_verification_code(length: int = 6) -> str:
     return "".join(random.choices(string.digits, k=length))
 
 
-def send_phone_verification(phone_number: str) -> Dict[str, Any]:
+def send_phone_verification(phone_number: str) -> dict[str, Any]:
     """
     Send a verification code to a phone number.
 
@@ -105,7 +105,7 @@ def send_phone_verification(phone_number: str) -> Dict[str, Any]:
         }
 
 
-def verify_phone_code(phone_number: str, code: str) -> Dict[str, Any]:
+def verify_phone_code(phone_number: str, code: str) -> dict[str, Any]:
     """
     Verify a phone verification code.
 

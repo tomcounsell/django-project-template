@@ -3,25 +3,25 @@
 {% comment %}
   Blog Post Detail Page
   ====================
-  
+
   Purpose:
-  Displays a single blog post with its full content, metadata, 
+  Displays a single blog post with its full content, metadata,
   and related navigation elements. This page focuses on readability
   and engagement with the content.
-  
+
   Content:
   - Blog post title, metadata, and full content
   - Author information
   - Related posts
   - Social sharing options
   - Content navigation/table of contents
-  
+
   User Experience:
   - Clean, distraction-free reading experience
   - Clear typography with appropriate spacing
   - Related content suggestions
   - Easy navigation back to blog index
-  
+
   Integration:
   Displays in the main content area of the base template.
   Sidebar is enabled for table of contents and related content.
@@ -64,12 +64,12 @@
   <div class="mb-8 rounded-xs overflow-hidden shadow-xs">
     <img src="{{ post.image }}" alt="{{ post.title }}" class="w-full h-auto">
   </div>
-  
+
   <!-- Post Content -->
   <article class="prose max-w-none bg-white shadow-xs rounded-xs p-8">
     {{ post.content|safe }}
   </article>
-  
+
   <!-- Author Bio -->
   <div class="mt-8 flex bg-gray-50 p-6 rounded-xs shadow-xs">
     <div class="shrink-0 mr-4">
@@ -82,7 +82,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Tags -->
   <div class="mt-8">
     <h3 class="text-lg font-medium text-gray-900 mb-3">Tags</h3>
@@ -94,7 +94,7 @@
       {% endfor %}
     </div>
   </div>
-  
+
   <!-- Share Buttons -->
   <div class="mt-8 flex items-center space-x-4">
     <span class="text-gray-700 font-medium">Share:</span>
@@ -115,7 +115,7 @@
       <span class="sr-only">Share via Email</span>
     </a>
   </div>
-  
+
   <!-- Related Posts -->
   <div class="mt-12">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
@@ -136,7 +136,7 @@
       {% endfor %}
     </div>
   </div>
-  
+
   <!-- Comments Section -->
   <div class="mt-12 bg-white shadow-xs rounded-xs p-6">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">Comments</h2>
@@ -182,7 +182,7 @@
       </nav>
     </div>
   </div>
-  
+
   <!-- Newsletter Signup -->
   <div class="bg-slate-700 shadow-xs overflow-hidden rounded-xs mb-6 text-white">
     <div class="px-4 py-5 sm:p-6">

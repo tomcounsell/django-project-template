@@ -2,7 +2,7 @@
 
 import io
 import sys
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from typing import Any
 
 from pydantic_ai import RunContext

@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 class LoopsClient:
     BASE_URL = "https://app.loops.so/api/v1"
 
-    def __init__(
-        self, api_key: Optional[str] = None, debug_mode: Optional[bool] = None
-    ):
+    def __init__(self, api_key: str | None = None, debug_mode: bool | None = None):
         self.api_key = api_key or LOOPS_API_KEY
         # Use provided debug_mode if specified, otherwise use Django's DEBUG setting
         self.debug_mode = debug_mode if debug_mode is not None else DEBUG
@@ -23,8 +21,8 @@ class LoopsClient:
         self,
         method: str,
         endpoint: str,
-        params: Optional[dict] = None,
-        json: Optional[dict] = None,
+        params: dict | None = None,
+        json: dict | None = None,
     ) -> dict:
         """
         Make an API request to Loops.so
@@ -124,7 +122,7 @@ class LoopsClient:
         )
 
     def event(
-        self, to_email: str, event_name: str, event_properties: Optional[dict] = None
+        self, to_email: str, event_name: str, event_properties: dict | None = None
     ) -> dict:
         """
         Send an event to Loops

@@ -3,11 +3,11 @@
 {% comment %}
   Content Modal
   ============
-  
+
   Purpose:
   A modal for displaying content or information to the user.
   This template can be loaded dynamically via HTMX.
-  
+
   Context Variables:
   - modal_id: Unique ID for the modal (default: "content-modal")
   - modal_title: Title of the dialog (required)
@@ -15,13 +15,13 @@
   - close_text: Text for close button (default: "Close")
   - modal_size: Size variant (options: 'sm', 'md', 'lg', 'xl', default: 'md')
   - actions: Additional buttons/actions to show in footer (optional HTML)
-  
+
   Blocks:
   - content_block: Alternative to passing content in context
-  
+
   HTMX Integration:
   Load this modal dynamically:
-  
+
   <button
     hx-get="{% url 'load_content_modal' %}"
     hx-target="#modal-container"

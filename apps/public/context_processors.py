@@ -10,7 +10,7 @@ from typing import Any, Dict
 from django.http import HttpRequest
 
 
-def active_navigation(request: HttpRequest) -> Dict[str, Any]:
+def active_navigation(request: HttpRequest) -> dict[str, Any]:
     """
     Determines the active navigation section based on the current URL path.
 

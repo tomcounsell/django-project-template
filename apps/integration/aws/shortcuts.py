@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 
 def get_direct_upload_form_data(
     original_filename: str,
-    content_type: Optional[str] = None,
+    content_type: str | None = None,
     max_file_size: int = 10485760,  # 10MB
     prefix: str = "uploads",
-    success_redirect_url: Optional[str] = None,
-    metadata: Optional[Dict[str, str]] = None,
-) -> Dict[str, Any]:
+    success_redirect_url: str | None = None,
+    metadata: dict[str, str] | None = None,
+) -> dict[str, Any]:
     """
     Generate form data for direct browser upload to S3.
 
@@ -102,10 +102,10 @@ def get_direct_upload_form_data(
 
 def complete_upload(
     upload_id: int,
-    file_size: Optional[int] = None,
+    file_size: int | None = None,
     status: str = Upload.STATUS_COMPLETE,
-    error: Optional[str] = None,
-) -> Dict[str, Any]:
+    error: str | None = None,
+) -> dict[str, Any]:
     """
     Complete an Upload by updating its status and metadata.
 
@@ -189,7 +189,7 @@ def complete_upload(
 
 def get_upload_file_url(
     upload_id: int, presigned: bool = False, expiration: int = 3600
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get the URL for an uploaded file.
 
@@ -228,7 +228,7 @@ def get_upload_file_url(
         return {"success": False, "error": str(e)}
 
 
-def delete_upload(upload_id: int) -> Dict[str, Any]:
+def delete_upload(upload_id: int) -> dict[str, Any]:
     """
     Delete an uploaded file.
 

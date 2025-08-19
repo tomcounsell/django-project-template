@@ -17,7 +17,7 @@ from apps.integration.stripe.shortcuts import handle_webhook_event
 logger = logging.getLogger(__name__)
 
 
-def handle_stripe_webhook(payload: bytes, signature: str) -> Dict[str, Any]:
+def handle_stripe_webhook(payload: bytes, signature: str) -> dict[str, Any]:
     """
     Process a webhook from Stripe.
 
@@ -74,7 +74,7 @@ def handle_stripe_webhook(payload: bytes, signature: str) -> Dict[str, Any]:
         }
 
 
-def handle_checkout_session_completed(event: Dict[str, Any]) -> Dict[str, Any]:
+def handle_checkout_session_completed(event: dict[str, Any]) -> dict[str, Any]:
     """
     Handle the checkout.session.completed event.
 
@@ -159,7 +159,7 @@ def handle_checkout_session_completed(event: Dict[str, Any]) -> Dict[str, Any]:
         raise
 
 
-def handle_subscription_created(event: Dict[str, Any]) -> Dict[str, Any]:
+def handle_subscription_created(event: dict[str, Any]) -> dict[str, Any]:
     """
     Handle the customer.subscription.created event.
 
@@ -243,7 +243,7 @@ def handle_subscription_created(event: Dict[str, Any]) -> Dict[str, Any]:
         raise
 
 
-def handle_subscription_updated(event: Dict[str, Any]) -> Dict[str, Any]:
+def handle_subscription_updated(event: dict[str, Any]) -> dict[str, Any]:
     """
     Handle the customer.subscription.updated event.
 
@@ -319,7 +319,7 @@ def handle_subscription_updated(event: Dict[str, Any]) -> Dict[str, Any]:
         raise
 
 
-def handle_subscription_deleted(event: Dict[str, Any]) -> Dict[str, Any]:
+def handle_subscription_deleted(event: dict[str, Any]) -> dict[str, Any]:
     """
     Handle the customer.subscription.deleted event.
 
@@ -373,7 +373,7 @@ def handle_subscription_deleted(event: Dict[str, Any]) -> Dict[str, Any]:
         raise
 
 
-def handle_payment_intent_succeeded(event: Dict[str, Any]) -> Dict[str, Any]:
+def handle_payment_intent_succeeded(event: dict[str, Any]) -> dict[str, Any]:
     """
     Handle the payment_intent.succeeded event.
 
@@ -455,7 +455,7 @@ def handle_payment_intent_succeeded(event: Dict[str, Any]) -> Dict[str, Any]:
         raise
 
 
-def handle_payment_intent_failed(event: Dict[str, Any]) -> Dict[str, Any]:
+def handle_payment_intent_failed(event: dict[str, Any]) -> dict[str, Any]:
     """
     Handle the payment_intent.payment_failed event.
 

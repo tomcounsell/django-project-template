@@ -14,9 +14,9 @@ from .simple_tools import run_python
 class ChatDependencies:
     """Dependencies for the chat agent."""
 
-    user_id: Optional[int] = None
-    session_id: Optional[str] = None
-    context: Optional[dict] = None
+    user_id: int | None = None
+    session_id: str | None = None
+    context: dict | None = None
 
     def __post_init__(self):
         if self.context is None:
@@ -36,19 +36,19 @@ class ChatSession(BaseModel):
     """A chat session with message history."""
 
     session_id: str
-    user_id: Optional[int] = None
-    messages: List[ChatMessage] = Field(default_factory=list)
+    user_id: int | None = None
+    messages: list[ChatMessage] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 
-    def add_message(self, role: str, content: str, metadata: Optional[dict] = None):
+    def add_message(self, role: str, content: str, metadata: dict | None = None):
         """Add a message to the session."""
         message = ChatMessage(role=role, content=content, metadata=metadata or {})
         self.messages.append(message)
         self.updated_at = datetime.now()
         return message
 
-    def get_conversation_history(self) -> List[dict]:
+    def get_conversation_history(self) -> list[dict]:
         """Get conversation history in a format suitable for the agent."""
         return [{"role": msg.role, "content": msg.content} for msg in self.messages]
 
@@ -92,7 +92,7 @@ async def dynamic_system_prompt(ctx: RunContext[ChatDependencies]) -> str:
 async def process_chat_message(
     message: str,
     session: ChatSession,
-    deps: Optional[ChatDependencies] = None,
+    deps: ChatDependencies | None = None,
     model=None,
 ) -> str:
     """
@@ -154,7 +154,7 @@ async def process_chat_message(
 def process_chat_message_sync(
     message: str,
     session: ChatSession,
-    deps: Optional[ChatDependencies] = None,
+    deps: ChatDependencies | None = None,
     model=None,
 ) -> str:
     """Synchronous wrapper for process_chat_message."""

@@ -4,13 +4,13 @@ import ast
 import io
 import sys
 import traceback
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from typing import Any, Dict
 
 from pydantic_ai import RunContext, Tool
 
 
-async def run_python_code(code: str) -> Dict[str, Any]:
+async def run_python_code(code: str) -> dict[str, Any]:
     """
     Execute Python code and return the results.
 
@@ -110,7 +110,7 @@ python_tool = Tool(
 )
 
 
-async def search_web(query: str, num_results: int = 5) -> Dict[str, Any]:
+async def search_web(query: str, num_results: int = 5) -> dict[str, Any]:
     """
     Search the web for information.
 

@@ -31,4 +31,4 @@ class MoneyField(models.IntegerField):
 
         defaults = {"form_class": FloatField}
         defaults.update(kwargs)
-        return super(MoneyField, self).formfield(**defaults)
+        return super().formfield(**defaults)

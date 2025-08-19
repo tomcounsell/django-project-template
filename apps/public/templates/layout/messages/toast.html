@@ -1,18 +1,18 @@
 {% comment %}
   Toast Messages Component
   =======================
-  
+
   Purpose:
   Notification system that displays feedback messages to users after actions
   or system events. This component uses Django's messages framework to show
   temporary notifications.
-  
+
   Message Types:
   - Success: Confirmation of successful actions (green)
   - Info: General information messages (blue)
   - Warning: Non-critical warnings (yellow)
   - Error: Critical errors or failed actions (red)
-  
+
   Features:
   - Auto-dismiss after timeout using CSS animations
   - Manual dismiss option with inline handlers
@@ -21,14 +21,14 @@
   - Accessible design with ARIA attributes
 {% endcomment %}
 
-<div id="toast-container" 
+<div id="toast-container"
      class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-xs"
      {% if not messages %}hidden{% endif %}
      hx-swap-oob="true">
-  
+
   {% for message in messages %}
     {% with message_type=message.tags|default:'info' %}
-      <div class="toast-message bg-white border-l-4 rounded-xs shadow-xs animate-toast 
+      <div class="toast-message bg-white border-l-4 rounded-xs shadow-xs animate-toast
                   {% if message_type == 'success' %}border-green-500
                   {% elif message_type == 'error' %}border-red-500
                   {% elif message_type == 'warning' %}border-yellow-500
@@ -58,7 +58,7 @@
               {{ message|safe }}
             </div>
           </div>
-          <button type="button" 
+          <button type="button"
                   onclick="this.closest('.toast-message').remove(); if(document.querySelectorAll('#toast-container .toast-message').length === 0) document.getElementById('toast-container').hidden = true;"
                   class="ml-4 inline-flex text-gray-400 hover:text-gray-500 focus:outline-hidden">
             <span class="sr-only">Close</span>
@@ -77,11 +77,11 @@
     0%, 80% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-10px); }
   }
-  
+
   .animate-toast {
     animation: toast-fade 5s ease-in-out forwards;
   }
-  
+
   .toast-message {
     transition: opacity 300ms ease-out, transform 300ms ease-out;
   }

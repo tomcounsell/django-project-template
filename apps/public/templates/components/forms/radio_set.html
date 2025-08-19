@@ -25,18 +25,18 @@ Usage:
       </p>
     {% endif %}
   {% endwith %}
-  
+
   <div class="space-y-2">
     {% for option in field.field.choices %}
       <div class="flex items-center">
-        <input 
-          type="radio" 
-          name="{{ field.html_name }}" 
-          id="{{ field_id }}_{{ forloop.counter }}" 
+        <input
+          type="radio"
+          name="{{ field.html_name }}"
+          id="{{ field_id }}_{{ forloop.counter }}"
           value="{{ option.0 }}"
           {% if option.0|stringformat:"s" == field.value|stringformat:"s" %}checked{% endif %}
           {% if required|default:field.field.required %}required{% endif %}
-          class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500 
+          class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-2 focus:ring-blue-500
                  {{ radio_class }}"
         >
         <label for="{{ field_id }}_{{ forloop.counter }}" class="ml-2 block text-gray-700 {{ option_label_class }}">
@@ -45,11 +45,11 @@ Usage:
       </div>
     {% endfor %}
   </div>
-  
+
   {% if field.errors %}
     <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
   {% endif %}
-  
+
   {% with help=help_text|default:field.help_text %}
     {% if help %}
       <p class="text-gray-500 text-sm mt-1">{{ help }}</p>

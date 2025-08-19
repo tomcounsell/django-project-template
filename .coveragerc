@@ -1,6 +1,6 @@
 [run]
 source = apps
-omit = 
+omit =
     */migrations/*
     */tests/*
     */venv/*

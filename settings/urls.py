@@ -1,8 +1,9 @@
+import os
+
 from django.contrib import admin
-from django.http import HttpResponse, Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.urls import include, path
 from django.views.generic import TemplateView
-import os
 
 from settings.env import DEBUG, LOCAL
 from settings.unfold import (
@@ -92,7 +93,7 @@ def serve_markdown_file(request, filename):
     # Try to find the file in potential locations
     for file_path in potential_paths:
         if os.path.exists(file_path) and os.path.isfile(file_path):
-            with open(file_path, "r") as f:
+            with open(file_path) as f:
                 content = f.read()
             # Set proper content type for markdown
             return HttpResponse(content, content_type="text/markdown; charset=utf-8")

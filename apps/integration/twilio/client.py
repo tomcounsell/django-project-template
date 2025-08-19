@@ -27,9 +27,9 @@ class TwilioClient:
 
     def __init__(
         self,
-        account_sid: Optional[str] = None,
-        auth_token: Optional[str] = None,
-        from_number: Optional[str] = None,
+        account_sid: str | None = None,
+        auth_token: str | None = None,
+        from_number: str | None = None,
     ):
         """
         Initialize the Twilio client.
@@ -52,7 +52,7 @@ class TwilioClient:
             except Exception as e:
                 logger.error(f"Failed to initialize Twilio client: {str(e)}")
 
-    def _make_request(self, func_name: str, **kwargs) -> Dict[str, Any]:
+    def _make_request(self, func_name: str, **kwargs) -> dict[str, Any]:
         """
         Make a request to the Twilio API.
 
@@ -98,9 +98,9 @@ class TwilioClient:
         self,
         to_number: str,
         body: str,
-        from_number: Optional[str] = None,
-        status_callback: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        from_number: str | None = None,
+        status_callback: str | None = None,
+    ) -> dict[str, Any]:
         """
         Send an SMS message using Twilio.
 
@@ -140,7 +140,7 @@ class TwilioClient:
         # Make API request to send message
         return self._make_request("messages.create", **params)
 
-    def verify_phone_number(self, phone_number: str) -> Dict[str, Any]:
+    def verify_phone_number(self, phone_number: str) -> dict[str, Any]:
         """
         Verify if a phone number is valid and can receive SMS.
 
@@ -185,7 +185,7 @@ class TwilioClient:
             logger.error(f"Error verifying phone number: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    def get_message_status(self, message_sid: str) -> Dict[str, Any]:
+    def get_message_status(self, message_sid: str) -> dict[str, Any]:
         """
         Get the current status of a message.
 

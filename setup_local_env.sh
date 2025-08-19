@@ -212,11 +212,11 @@ print_header "7b. Checking integration configurations"
 print_success "Checking AWS S3 configuration..."
 if grep -q "^AWS_ACCESS_KEY_ID=" "$env_file" && grep -q "^AWS_SECRET_ACCESS_KEY=" "$env_file" && \
    grep -q "^AWS_STORAGE_BUCKET_NAME=" "$env_file"; then
-    
+
     aws_key=$(grep "^AWS_ACCESS_KEY_ID=" "$env_file" | cut -d'=' -f2)
     aws_secret=$(grep "^AWS_SECRET_ACCESS_KEY=" "$env_file" | cut -d'=' -f2)
     aws_bucket=$(grep "^AWS_STORAGE_BUCKET_NAME=" "$env_file" | cut -d'=' -f2)
-    
+
     if [ -n "$aws_key" ] && [ -n "$aws_secret" ] && [ -n "$aws_bucket" ]; then
         print_success "AWS S3 configuration is set up for file uploads."
     else
@@ -232,12 +232,12 @@ fi
 print_success "Checking Twilio configuration..."
 if grep -q "^TWILIO_ENABLED=" "$env_file" && grep -q "^TWILIO_ACCOUNT_SID=" "$env_file" && \
    grep -q "^TWILIO_AUTH_TOKEN=" "$env_file" && grep -q "^TWILIO_PHONE_NUMBER=" "$env_file"; then
-    
+
     twilio_enabled=$(grep "^TWILIO_ENABLED=" "$env_file" | cut -d'=' -f2)
     twilio_sid=$(grep "^TWILIO_ACCOUNT_SID=" "$env_file" | cut -d'=' -f2)
     twilio_token=$(grep "^TWILIO_AUTH_TOKEN=" "$env_file" | cut -d'=' -f2)
     twilio_phone=$(grep "^TWILIO_PHONE_NUMBER=" "$env_file" | cut -d'=' -f2)
-    
+
     if [ "$twilio_enabled" = "True" ] || [ "$twilio_enabled" = "true" ]; then
         if [ -n "$twilio_sid" ] && [ -n "$twilio_token" ] && [ -n "$twilio_phone" ]; then
             print_success "Twilio SMS integration is enabled and configured."
@@ -257,7 +257,7 @@ fi
 print_success "Checking Loops email configuration..."
 if grep -q "^LOOPS_API_KEY=" "$env_file"; then
     loops_key=$(grep "^LOOPS_API_KEY=" "$env_file" | cut -d'=' -f2)
-    
+
     if [ -n "$loops_key" ]; then
         print_success "Loops email integration is configured."
     else
@@ -276,7 +276,7 @@ print_header "Checking AI integration configurations..."
 print_success "Checking OpenAI configuration..."
 if grep -q "^OPENAI_API_KEY=" "$env_file"; then
     openai_key=$(grep "^OPENAI_API_KEY=" "$env_file" | cut -d'=' -f2)
-    
+
     if [ -n "$openai_key" ]; then
         print_success "OpenAI API key is configured."
     else
@@ -292,7 +292,7 @@ fi
 print_success "Checking Anthropic configuration..."
 if grep -q "^ANTHROPIC_API_KEY=" "$env_file"; then
     anthropic_key=$(grep "^ANTHROPIC_API_KEY=" "$env_file" | cut -d'=' -f2)
-    
+
     if [ -n "$anthropic_key" ]; then
         print_success "Anthropic API key is configured."
     else
@@ -328,17 +328,17 @@ if [ -z "$db_name" ]; then
         echo "What database name would you like to use for this project?"
         read -p "Database name [django_project_template]: " user_db_name
         db_name=${user_db_name:-django_project_template}
-        
+
         # Ask for database username and password
         read -p "Database username [postgres]: " db_user
         db_user=${db_user:-postgres}
-        
+
         read -s -p "Database password (input will be hidden): " db_password
         echo ""
-        
+
         # Encode database name for URL if it contains hyphens
         db_name_url=$(url_encode_db_name "$db_name")
-        
+
         # Update the DATABASE_URL in .env.local
         if grep -q "^DATABASE_URL=" ".env.local"; then
             sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url|" ".env.local"
@@ -394,13 +394,13 @@ else
         DB_CONNECTION_SUCCESS=true
     else
         print_warning "Could not connect to database. Please check your database configuration in .env.local."
-        
+
         # Offer some common solutions
         echo "Common issues and solutions:"
         echo "1. Database password might be incorrect"
         echo "2. Database might not exist or user doesn't have access"
         echo "3. PostgreSQL service might not be running"
-        
+
         # Offer to edit the configuration
         echo "Would you like to update the database configuration? (y/n)"
         read update_db_config
@@ -408,13 +408,13 @@ else
             # Ask for database username and password
             read -p "Database username [postgres]: " db_user
             db_user=${db_user:-postgres}
-            
+
             read -s -p "Database password (input will be hidden): " db_password
             echo ""
-            
+
             # Encode database name for URL if it contains hyphens
             db_name_url=$(url_encode_db_name "$db_name")
-            
+
             # Update the DATABASE_URL in .env.local
             if grep -q "^DATABASE_URL=" ".env.local"; then
                 sed -i.bak "s|^DATABASE_URL=.*|DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url|" ".env.local"
@@ -423,7 +423,7 @@ else
                 echo "DATABASE_URL=postgres://$db_user:$db_password@localhost:5432/$db_name_url" >> ".env.local"
             fi
             print_success "Updated DATABASE_URL in .env.local"
-            
+
             # Try to connect again
             echo "Attempting to connect to database again..."
             if python -c "from django.db import connection; connection.cursor()" 2>/dev/null; then
@@ -567,11 +567,11 @@ fi
 echo -e "${GREEN}"
 cat << "EOF"
 
- __   __  _   _  ____    _    __  __  _____    
- \ \ / / | | | ||  _ \  / \  |  \/  || ____|   
-  \ V /  | | | || | | |/ _ \ | |\/| ||  _|     
-   | |   | |_| || |_| / ___ \| |  | || |___    
-   |_|    \___/ |____/_/   \_\_|  |_||_____|   
+ __   __  _   _  ____    _    __  __  _____
+ \ \ / / | | | ||  _ \  / \  |  \/  || ____|
+  \ V /  | | | || | | |/ _ \ | |\/| ||  _|
+   | |   | |_| || |_| / ___ \| |  | || |___
+   |_|    \___/ |____/_/   \_\_|  |_||_____|
 
  (o_o)   (^_^)   (*_*)   (>_<)   (o_O)
   /|\     _|_     /|\     /|\     _|_

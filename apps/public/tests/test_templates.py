@@ -21,7 +21,7 @@ class TemplateBlocksTestCase(TestCase):
             ),
             "templates",
         )
-        with open(os.path.join(templates_dir, "base.html"), "r") as f:
+        with open(os.path.join(templates_dir, "base.html")) as f:
             content = f.read()
 
         # Find all block tags
@@ -54,7 +54,7 @@ class TemplateBlocksTestCase(TestCase):
             ),
             "templates",
         )
-        with open(os.path.join(templates_dir, "base.html"), "r") as f:
+        with open(os.path.join(templates_dir, "base.html")) as f:
             content = f.read()
 
         # List of blocks that should be in the base template according to conventions
@@ -87,7 +87,7 @@ class TemplateBlocksTestCase(TestCase):
         )
         for file_name in os.listdir(templates_dir):
             if file_name.endswith(".html"):
-                with open(os.path.join(templates_dir, file_name), "r") as f:
+                with open(os.path.join(templates_dir, file_name)) as f:
                     content = f.read()
 
                 # Check if template extends base.html or partial.html
@@ -138,7 +138,7 @@ class TemplateBlocksTestCase(TestCase):
             for file_name in files:
                 if file_name.endswith(".html") and not file_name.startswith("_"):
                     file_path = os.path.join(root, file_name)
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
 
                     # Check if file already has multi-line docstring comments at the top
@@ -181,7 +181,7 @@ class TemplateBlocksTestCase(TestCase):
             for file_name in files:
                 if file_name.endswith(".html"):
                     file_path = os.path.join(root, file_name)
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
 
                     # Find empty blocks
@@ -224,7 +224,7 @@ class TemplateBlocksTestCase(TestCase):
             for file_name in files:
                 if file_name.endswith(".html"):
                     file_path = os.path.join(root, file_name)
-                    with open(file_path, "r") as f:
+                    with open(file_path) as f:
                         content = f.read()
 
                     # Find all blocks and check their names use snake_case

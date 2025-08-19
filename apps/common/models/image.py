@@ -74,7 +74,7 @@ class Image(models.Model):
 
     # MODEL PROPERTIES
     @property
-    def width(self) -> Optional[int]:
+    def width(self) -> int | None:
         """
         Get the width of the image in pixels.
 
@@ -92,7 +92,7 @@ class Image(models.Model):
         return None
 
     @property
-    def height(self) -> Optional[int]:
+    def height(self) -> int | None:
         """
         Get the height of the image in pixels.
 
@@ -110,7 +110,7 @@ class Image(models.Model):
         return None
 
     @property
-    def aspect_ratio(self) -> Optional[float]:
+    def aspect_ratio(self) -> float | None:
         """
         Calculate the aspect ratio of the image.
 
@@ -122,7 +122,7 @@ class Image(models.Model):
         return None
 
     @property
-    def orientation(self) -> Optional[str]:
+    def orientation(self) -> str | None:
         """
         Determine the orientation of the image.
 

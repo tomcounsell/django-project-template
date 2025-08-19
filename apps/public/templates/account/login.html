@@ -3,23 +3,23 @@
 {% comment %}
   Login Page
   ==========
-  
+
   Purpose:
   Provides user authentication functionality with a simple login form.
   This template follows the standard template conventions by extending base.html.
-  
+
   Form Elements:
   - Email field: Uses the username field from the authentication form
   - Password field: Masked input for secure password entry
   - Login button: Submits the form for authentication
   - Error display: Shows authentication errors or validation issues
-  
+
   User Experience:
   - Clean, focused interface with minimal distractions
   - Icon indicators for form fields (envelope for email, lock for password)
   - Clear error messaging when authentication fails
   - Visual feedback for form validation
-  
+
   Integration:
   This template displays in the main content area of the base template.
   It's part of the authentication flow that includes login, registration,
@@ -38,7 +38,7 @@
       <div class="bg-white shadow-xs rounded-xs overflow-hidden">
         <form action="{% url 'public:account-login' %}" method="post">
           {% load widget_tweaks %}{% csrf_token %}
-          
+
           <div class="p-6">
             <!-- Error Messages -->
             {% if form.non_field_errors %}
@@ -57,7 +57,7 @@
                 </div>
               </div>
             {% endif %}
-        
+
             <!-- Username/Email Field -->
             <div class="mb-4">
               <label for="id_username" class="block text-sm font-medium text-gray-700 mb-1">
@@ -73,7 +73,7 @@
                 <p class="text-red-500 text-xs mt-1">{{ form.username.errors.0 }}</p>
               {% endif %}
             </div>
-        
+
             <!-- Password Field -->
             <div class="mb-4">
               <label for="id_password" class="block text-sm font-medium text-gray-700 mb-1">
@@ -90,7 +90,7 @@
               {% endif %}
             </div>
           </div>
-          
+
           <div class="flex items-center justify-end p-6 bg-gray-50 border-t border-gray-200">
             <button type="submit" class="inline-flex justify-center rounded-xs border border-transparent bg-slate-700 px-3 py-1.5 text-sm font-medium text-white shadow-xs hover:bg-slate-600 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-600">
               Login

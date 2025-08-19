@@ -39,20 +39,20 @@ function trigger(target, eventName, detail = null) {
 function toggleDropdown(button) {
   const menuId = button.getAttribute('aria-controls');
   const menu = document.getElementById(menuId);
-  
+
   if (!menu) return;
-  
+
   const isExpanded = button.getAttribute('aria-expanded') === 'true';
   button.setAttribute('aria-expanded', !isExpanded);
   menu.classList.toggle('hidden', isExpanded);
-  
+
   // Toggle chevron icon rotation if present
   const chevron = button.querySelector('.fa-chevron-down');
   if (chevron) {
     chevron.classList.toggle('transform', !isExpanded);
     chevron.classList.toggle('rotate-180', !isExpanded);
   }
-  
+
   // Close dropdown when clicking outside
   if (!isExpanded) {
     document.addEventListener('click', function closeDropdown(e) {
@@ -73,9 +73,9 @@ function toggleDropdown(button) {
 function toggleMobileMenu() {
   const menu = document.getElementById('mobile-menu');
   const button = document.getElementById('mobile-menu-button');
-  
+
   if (!menu || !button) return;
-  
+
   const isExpanded = button.getAttribute('aria-expanded') === 'true';
   button.setAttribute('aria-expanded', !isExpanded);
   menu.classList.toggle('hidden', isExpanded);
@@ -95,7 +95,7 @@ htmx.defineExtension('remove-with-animation', {
                 elt.style.opacity = '0';
                 elt.style.maxHeight = '0';
                 elt.style.overflow = 'hidden';
-                
+
                 // After animation completes, actually remove the element
                 setTimeout(function() {
                     elt.remove();
@@ -109,15 +109,15 @@ htmx.defineExtension('remove-with-animation', {
 document.addEventListener('DOMContentLoaded', function() {
     // Find all logout buttons and add event listeners
     const logoutForms = document.querySelectorAll('.logout-form');
-    
+
     logoutForms.forEach(form => {
         form.addEventListener('submit', function(event) {
             // Prevent the default form behavior
             event.preventDefault();
-            
+
             // Create FormData object
             const formData = new FormData(form);
-            
+
             // Use fetch to submit the form via POST
             fetch(form.action, {
                 method: 'POST',

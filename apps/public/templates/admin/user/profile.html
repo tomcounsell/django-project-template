@@ -5,11 +5,11 @@
         <h3 class="text-lg font-semibold">{% trans "User Profile" %}</h3>
         <p class="text-sm text-gray-600 dark:text-gray-400">{% trans "User information and profile details" %}</p>
     </div>
-    
+
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="border rounded-xs p-4 bg-white dark:bg-gray-800">
             <h4 class="text-base font-semibold mb-3">{% trans "Personal Information" %}</h4>
-            
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{% trans "Full Name" %}</p>
@@ -29,10 +29,10 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="border rounded-xs p-4 bg-white dark:bg-gray-800">
             <h4 class="text-base font-semibold mb-3">{% trans "Account Information" %}</h4>
-            
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{% trans "Status" %}</p>
@@ -73,7 +73,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="mb-6 border rounded-xs p-4 bg-white dark:bg-gray-800">
         <h4 class="text-base font-semibold mb-3">{% trans "Biography" %}</h4>
         <div class="prose dark:prose-dark">
@@ -84,10 +84,10 @@
             {% endif %}
         </div>
     </div>
-    
+
     <div class="mb-6 border rounded-xs p-4 bg-white dark:bg-gray-800">
         <h4 class="text-base font-semibold mb-3">{% trans "System Permissions" %}</h4>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <div class="flex items-center">
@@ -124,7 +124,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="text-right">
         <a href="{% url 'admin:common_user_change' original.pk %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-xs shadow-xs text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             {% trans "Edit User" %}

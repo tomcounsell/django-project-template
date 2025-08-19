@@ -1,41 +1,41 @@
 {% extends "components/_component_base.html" %}
 
-{# 
+{#
   Toast Notification Component
   =========================
-  
+
   Purpose:
   Displays temporary notification messages to provide feedback to users.
   This component can be loaded dynamically via HTMX for out-of-band updates.
-  
+
   Context Variables:
   - messages: List of message objects from Django's message framework
-  
+
   HTMX Integration:
   - Auto-dismisses after a timeout using Hyperscript
   - Can be triggered via hx-trigger from other components
-  
+
   Usage:
   <!-- Direct inclusion -->
   {% include "components/common/notification_toast.html" %}
-  
+
   <!-- Out-of-band update -->
-  <div 
-    id="toast-container" 
-    hx-get="{% url 'messages' %}" 
+  <div
+    id="toast-container"
+    hx-get="{% url 'messages' %}"
     hx-trigger="showMessage from:body"
   ></div>
 #}
 
 {% block content %}
-<div 
+<div
   id="toast-container"
   class="fixed top-4 right-4 z-50 w-72 space-y-4"
   hx-swap-oob="true"
 >
   {% if messages %}
     {% for message in messages %}
-    <div 
+    <div
       class="rounded-xs shadow-xs overflow-hidden bg-white border-l-4 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}border-green-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}border-red-500{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}border-accent{% else %}border-slate-700{% endif %}"
       _="on load wait 5s then add .opacity-0 then wait 500ms then remove me"
       style="transition: opacity 0.5s ease-in-out"
@@ -60,12 +60,12 @@
             </svg>
           {% endif %}
         </div>
-        
+
         <div class="grow">
           <p class="text-sm text-gray-800">{{ message }}</p>
         </div>
-        
-        <button 
+
+        <button
           class="ml-4 text-gray-400 hover:text-gray-500 focus:outline-hidden"
           _="on click add .opacity-0 to closest div.rounded-lg then wait 500ms then remove closest div.rounded-lg"
         >

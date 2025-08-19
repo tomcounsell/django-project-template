@@ -1,22 +1,22 @@
 {% comment %}
   partial.html - Base Template for HTMX Partial Content
   ===================================================
-  
+
   Purpose:
   This template serves as the foundation for HTMX partial updates.
   It does not include any HTML structure tags (<html>, <head>, <body>)
   as it's intended to be loaded via HTMX requests for partial page updates.
-  
+
   Usage:
   {% extends "partial.html" %}
-  
+
   {% block content %}
     (Partial content here)
   {% endblock %}
-  
+
   Out-of-band (OOB) Updates:
   For HTMX OOB updates, set is_oob=True in the view context, then include elements with hx-swap-oob.
-  
+
   Example:
   {% if is_oob %}
     <div id="notification-count" hx-swap-oob="true">{{ count }}</div>

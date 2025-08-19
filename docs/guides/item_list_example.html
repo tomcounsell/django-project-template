@@ -6,7 +6,7 @@
 <div class="items-container">
   <div class="header-actions">
     <h1>Items</h1>
-    
+
     {# Create button that opens a form modal #}
     <button
       class="btn-primary"
@@ -17,7 +17,7 @@
       Add New Item
     </button>
   </div>
-  
+
   {# Item list that will be refreshed after actions #}
   <div id="item-list">
     {% include "components/lists/list_items.html" with items=items %}

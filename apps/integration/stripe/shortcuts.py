@@ -21,11 +21,11 @@ def create_checkout_session(
     price_id: str,
     success_url: str = None,
     cancel_url: str = None,
-    customer_email: Optional[str] = None,
+    customer_email: str | None = None,
     mode: str = "payment",
-    metadata: Optional[Dict[str, str]] = None,
-    user: Optional[User] = None,
-) -> Dict[str, Any]:
+    metadata: dict[str, str] | None = None,
+    user: User | None = None,
+) -> dict[str, Any]:
     """
     Create a Stripe Checkout Session for payment.
 
@@ -92,10 +92,10 @@ def create_subscription_checkout(
     price_id: str,
     success_url: str = None,
     cancel_url: str = None,
-    customer_email: Optional[str] = None,
-    metadata: Optional[Dict[str, str]] = None,
-    user: Optional[User] = None,
-) -> Dict[str, Any]:
+    customer_email: str | None = None,
+    metadata: dict[str, str] | None = None,
+    user: User | None = None,
+) -> dict[str, Any]:
     """
     Create a Stripe Checkout Session for subscription.
 
@@ -123,7 +123,7 @@ def create_subscription_checkout(
     )
 
 
-def create_customer_from_user(user: User) -> Dict[str, Any]:
+def create_customer_from_user(user: User) -> dict[str, Any]:
     """
     Create a Stripe customer from a User model instance.
 
@@ -156,7 +156,7 @@ def create_customer_from_user(user: User) -> Dict[str, Any]:
 def cancel_user_subscription(
     subscription_id: str,
     at_period_end: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Cancel a user's subscription.
 
@@ -182,7 +182,7 @@ def cancel_user_subscription(
     return result
 
 
-def handle_webhook_event(payload: bytes, signature: str) -> Dict[str, Any]:
+def handle_webhook_event(payload: bytes, signature: str) -> dict[str, Any]:
     """
     Handle a webhook event from Stripe.
 

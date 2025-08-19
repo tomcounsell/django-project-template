@@ -20,7 +20,7 @@
             Show Raw Output
         </button>
     </div>
-    
+
     <!-- Chat Container -->
     <div class="flex-1 overflow-hidden flex flex-col">
         <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-6 space-y-4">
@@ -31,7 +31,7 @@
                 <p>Start a conversation...</p>
             </div>
         </div>
-        
+
         <!-- Input Form -->
         <div class="bg-gray-800 border-t border-gray-700 px-4 py-4">
             {% if not openai_key_configured %}
@@ -41,24 +41,24 @@
                 </p>
             </div>
             {% endif %}
-            
-            <form 
+
+            <form
                 id="chat-form"
                 hx-post="/ai/test-chat/"
                 hx-target="#chat-messages"
                 hx-swap="beforeend"
                 class="flex gap-2"
             >
-                <input 
-                    type="text" 
-                    name="message" 
+                <input
+                    type="text"
+                    name="message"
                     id="message-input"
                     placeholder="Type your message..."
                     required
                     autocomplete="off"
                     class="flex-1 px-4 py-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
                 />
-                <button 
+                <button
                     type="submit"
                     class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
@@ -67,7 +67,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Raw Output Modal -->
     <div id="raw-output-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col">
@@ -84,60 +84,60 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         let rawOutputs = [];
         let showRawOutput = false;
-        
+
         // Toggle raw output display
         document.getElementById('toggle-raw').addEventListener('click', function() {
             showRawOutput = !showRawOutput;
             this.textContent = showRawOutput ? 'Hide Raw Output' : 'Show Raw Output';
-            
+
             if (showRawOutput && rawOutputs.length > 0) {
                 showRawModal();
             }
         });
-        
+
         function showRawModal() {
             if (rawOutputs.length > 0) {
                 document.getElementById('raw-output-content').textContent = JSON.stringify(rawOutputs, null, 2);
                 document.getElementById('raw-output-modal').classList.remove('hidden');
             }
         }
-        
+
         function closeRawModal() {
             document.getElementById('raw-output-modal').classList.add('hidden');
         }
-        
+
         // Close modal on escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeRawModal();
             }
         });
-        
+
         // Format text with line breaks
         function formatMessage(text) {
             return text
                 .replace(/\n/g, '<br>')
                 .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
         }
-        
+
         // Handle form submission
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             const input = document.getElementById('message-input');
             const message = input.value.trim();
-            
+
             if (message) {
                 const messagesDiv = document.getElementById('chat-messages');
-                
+
                 // Clear initial placeholder if it exists
                 const placeholder = messagesDiv.querySelector('.text-gray-400');
                 if (placeholder) {
                     placeholder.remove();
                 }
-                
+
                 // Immediately add user message to chat
                 const messageId = 'msg-' + Date.now();
                 messagesDiv.innerHTML += `
@@ -150,25 +150,25 @@
                         </div>
                     </div>
                 `;
-                
+
                 // Scroll to bottom
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             }
         });
-        
+
         // Handle HTMX responses
         document.body.addEventListener('htmx:beforeSwap', function(evt) {
             if (evt.detail.xhr.status === 200) {
                 const response = JSON.parse(evt.detail.xhr.response);
                 const messagesDiv = document.getElementById('chat-messages');
-                
+
                 // Store raw output
                 rawOutputs.push({
                     timestamp: new Date().toISOString(),
                     request: response.message,
                     response: response.response
                 });
-                
+
                 // Add AI response (user message already added)
                 const aiMessageHtml = `
                     <div class="flex justify-start mb-4">
@@ -180,27 +180,27 @@
                         </div>
                     </div>
                 `;
-                
+
                 // Append AI message directly to the DOM
                 messagesDiv.insertAdjacentHTML('beforeend', aiMessageHtml);
-                
+
                 // Clear input
                 document.getElementById('message-input').value = '';
-                
+
                 // Scroll to bottom
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
-                
+
                 // Show raw modal if toggle is on
                 if (showRawOutput) {
                     showRawModal();
                 }
-                
+
                 // Prevent HTMX from swapping the response
                 evt.detail.shouldSwap = false;
                 evt.preventDefault();
             }
         });
-        
+
         // Focus input on load
         document.getElementById('message-input').focus();
     </script>

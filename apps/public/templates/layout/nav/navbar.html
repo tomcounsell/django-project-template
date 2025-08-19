@@ -3,26 +3,26 @@
 {% comment %}
   Navbar Component
   ===============
-  
+
   Purpose:
   Primary navigation component that appears at the top of all pages.
   Provides access to main site sections and user account functions.
-  
+
   Elements:
   - Logo: Site branding that links to the homepage
   - Mobile menu toggle: Hamburger icon that expands navigation on small screens
   - Main navigation area: Contains links to primary site sections
   - Account menu: User-specific options (login/logout, settings, etc.)
-  
+
   Responsive Behavior:
   - On desktop: Horizontal navigation with full menu visible
   - On mobile: Collapsed menu with hamburger toggle for expansion
-  
+
   States:
   - Default: Standard navigation with branding and links
   - Authenticated: Shows user-specific navigation options
   - Mobile expanded: Shows full navigation menu on small screens
-  
+
   Integration:
   This component is included in the base template and appears on every page.
   It works with JavaScript functions for menu toggling functionality.
@@ -39,22 +39,22 @@
             <img class="h-8 w-auto" src="{% static 'assets/img/logo-yudame.png' %}" alt="Django Project Template">
           </a>
         </div>
-        
+
         <!-- Desktop navigation - visible on sm and up -->
         <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
           <!-- Current: "border-slate-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
           <a href="/" class="inline-flex items-center border-b-2 {% if active_section == 'home' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Home
           </a>
-          
+
           <a href="{% url 'public:pricing' %}" class="inline-flex items-center border-b-2 {% if active_section == 'pricing' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Pricing
           </a>
-          
+
           <a href="{% url 'public:blog' %}" class="inline-flex items-center border-b-2 {% if active_section == 'blog' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
             Blog
           </a>
-          
+
           {% if user.is_authenticated %}
             {% if user.teams.exists %}
             <a href="{% url 'public:team-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'teams' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
@@ -64,12 +64,12 @@
           {% endif %}
         </div>
       </div>
-      
+
       <!-- Right section with mobile menu button and account menu -->
       <div class="flex items-center">
         <!-- Mobile menu button - only visible on xs screens -->
         <div class="sm:hidden">
-          <button type="button" 
+          <button type="button"
                   id="mobile-menu-button"
                   class="relative inline-flex items-center justify-center rounded-xs p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-slate-500"
                   aria-controls="mobile-menu"
@@ -86,7 +86,7 @@
             </svg>
           </button>
         </div>
-        
+
         <!-- Account menu -->
         <div class="ml-2 sm:ml-6">
           {% include "layout/nav/account_menu.html" %}
@@ -102,15 +102,15 @@
       <a href="/" class="block rounded-xs {% if active_section == 'home' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Home
       </a>
-      
+
       <a href="{% url 'public:pricing' %}" class="block rounded-xs {% if active_section == 'pricing' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Pricing
       </a>
-      
+
       <a href="{% url 'public:blog' %}" class="block rounded-xs {% if active_section == 'blog' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
         Blog
       </a>
-      
+
       {% if user.is_authenticated %}
         {% if user.teams.exists %}
         <a href="{% url 'public:team-list' %}" class="block rounded-xs {% if active_section == 'teams' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
@@ -119,7 +119,7 @@
         {% endif %}
       {% endif %}
     </div>
-    
+
     {% if user.is_authenticated %}
       <div class="border-t border-gray-200 pb-3 pt-4">
         <div class="flex items-center px-4">

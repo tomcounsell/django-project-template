@@ -1,6 +1,6 @@
 {% if not message.is_processed %}
 <!-- Still processing -->
-<div 
+<div
     hx-get="{% url 'ai:chat-poll' message.id %}"
     hx-trigger="poll"
     hx-swap="innerHTML"

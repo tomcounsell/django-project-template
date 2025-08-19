@@ -5,8 +5,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from apps.ai.agent.chat import ChatDependencies
 from apps.ai.agent.chat import ChatSession as AgentChatSession
-from apps.ai.agent.chat import ChatDependencies, process_chat_message_sync
+from apps.ai.agent.chat import process_chat_message_sync
 from apps.ai.llm.providers import get_openai_model
 
 

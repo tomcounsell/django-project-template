@@ -44,10 +44,7 @@ from formula.resources import AnotherConstructorResource, ConstructorResource
 from formula.sites import formula_admin_site
 from formula.views import MyClassBasedView
 from guardian.admin import GuardedModelAdmin
-from import_export.admin import (
-    ExportActionModelAdmin,
-    ImportExportModelAdmin,
-)
+from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 from modeltranslation.admin import TabbedTranslationAdmin
 from simple_history.admin import SimpleHistoryAdmin
 from unfold.admin import ModelAdmin, StackedInline, TabularInline
@@ -285,7 +282,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
     )
     def custom_actions_list(self, request):
         messages.success(request, "List action has been successfully executed.")
-        return redirect(request.META["HTTP_REFERER"])
+        return redirect(request.headers["referer"])
 
     def has_custom_actions_list_permission(self, request):
         return request.user.is_superuser
@@ -306,7 +303,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
             request, f"Row action has been successfully executed. Object ID {object_id}"
         )
         return redirect(
-            request.META.get("HTTP_REFERER")
+            request.headers.get("referer")
             or reverse_lazy("admin:formula_constructor_changelist")
         )
 
@@ -322,7 +319,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
             request, f"Row action has been successfully executed. Object ID {object_id}"
         )
         return redirect(
-            request.META.get("HTTP_REFERER")
+            request.headers.get("referer")
             or reverse_lazy("admin:formula_constructor_changelist")
         )
 
@@ -332,7 +329,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
             request, f"Row action has been successfully executed. Object ID {object_id}"
         )
         return redirect(
-            request.META.get("HTTP_REFERER")
+            request.headers.get("referer")
             or reverse_lazy("admin:formula_constructor_changelist")
         )
 
@@ -342,7 +339,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
             request, f"Row action has been successfully executed. Object ID {object_id}"
         )
         return redirect(
-            request.META.get("HTTP_REFERER")
+            request.headers.get("referer")
             or reverse_lazy("admin:formula_constructor_changelist")
         )
 
@@ -356,7 +353,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
             request, f"Row action has been successfully executed. Object ID {object_id}"
         )
         return redirect(
-            request.META.get("HTTP_REFERER")
+            request.headers.get("referer")
             or reverse_lazy("admin:formula_constructor_changelist")
         )
 
@@ -376,7 +373,7 @@ class ConstructorAdmin(ModelAdmin, ImportExportModelAdmin, ExportActionModelAdmi
             request,
             f"Detail action has been successfully executed. Object ID {object_id}",
         )
-        return redirect(request.META["HTTP_REFERER"])
+        return redirect(request.headers["referer"])
 
     def has_custom_actions_detail_permission(self, request, object_id):
         return request.user.is_superuser
@@ -467,10 +464,9 @@ class ContructorTableSection(TableSection):
         "custom_field",
     ]
 
+    @admin.display(description=_("Points"))
     def custom_field(self, instance):
         return random.randint(0, 50)
-
-    custom_field.short_description = _("Points")
 
 
 class RaceTableSection(TableSection):

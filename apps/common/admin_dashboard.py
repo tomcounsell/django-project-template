@@ -227,7 +227,7 @@ def get_admin_dashboard(request, context=None):
                                         <div class="text-2xl font-bold">{email_count}</div>
                                     </div>
                                     <div class="text-sm text-gray-500 mb-3">Total Emails</div>
-                                    
+
                                     <div class="space-y-2">
                                         <div class="flex justify-between text-sm">
                                             <span>Sent:</span>
@@ -242,23 +242,23 @@ def get_admin_dashboard(request, context=None):
                                             <span class="font-medium">{read_emails}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mt-3">
-                                        <a href="{reverse("admin:common_email_changelist")}" 
+                                        <a href="{reverse("admin:common_email_changelist")}"
                                            class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
                                             View all emails
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
                                         </a>
                                     </div>
                                 </div>
-                                
+
                                 <div class="">
                                     <div class="flex items-baseline">
                                         <span class="material-symbols-outlined mr-2 text-green-500">sms</span>
                                         <div class="text-2xl font-bold">{sms_count}</div>
                                     </div>
                                     <div class="text-sm text-gray-500 mb-3">Total SMS</div>
-                                    
+
                                     <div class="space-y-2">
                                         <div class="flex justify-between text-sm">
                                             <span>Delivered:</span>
@@ -273,9 +273,9 @@ def get_admin_dashboard(request, context=None):
                                             <span class="font-medium">{sms_count - successful_sms - failed_sms}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mt-3">
-                                        <a href="{reverse("admin:common_sms_changelist")}" 
+                                        <a href="{reverse("admin:common_sms_changelist")}"
                                            class="text-green-500 hover:text-green-700 text-sm flex items-center">
                                             View all SMS
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
@@ -305,7 +305,7 @@ def get_admin_dashboard(request, context=None):
                                             <div class="text-xs text-gray-500">Total Revenue</div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mt-3 space-y-1">
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
@@ -336,16 +336,16 @@ def get_admin_dashboard(request, context=None):
                                             <span class="font-medium">{payment_stats["refunded"]}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mt-3">
-                                        <a href="{reverse("admin:common_payment_changelist")}" 
+                                        <a href="{reverse("admin:common_payment_changelist")}"
                                            class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
                                             View all payments
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
                                         </a>
                                     </div>
                                 </div>
-                                
+
                                 <div class="">
                                     <div class="flex justify-between items-baseline">
                                         <div>
@@ -357,7 +357,7 @@ def get_admin_dashboard(request, context=None):
                                             <div class="text-xs text-gray-500">Active</div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mt-3 space-y-1">
                                         <div class="flex justify-between text-sm">
                                             <span class="flex items-center">
@@ -388,9 +388,9 @@ def get_admin_dashboard(request, context=None):
                                             <span class="font-medium">{subscription_stats["canceled"]}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="mt-3">
-                                        <a href="{reverse("admin:common_subscription_changelist")}" 
+                                        <a href="{reverse("admin:common_subscription_changelist")}"
                                            class="text-blue-500 hover:text-blue-700 text-sm flex items-center">
                                             View all subscriptions
                                             <span class="material-symbols-outlined ml-1 text-base">chevron_right</span>
@@ -427,7 +427,7 @@ def get_admin_dashboard(request, context=None):
                     }
                                 </div>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <h3 class="text-lg font-semibold mb-2">Categories</h3>
                                 <div class="space-y-3">
@@ -447,7 +447,7 @@ def get_admin_dashboard(request, context=None):
                     }
                                 </div>
                             </div>
-                            
+
                             <div class="mt-4 text-sm text-gray-600 dark:text-gray-400 border-t pt-3">
                                 <p>Use the search feature to quickly find specific models or records. The sidebar navigation provides quick access to all models organized by category.</p>
                             </div>

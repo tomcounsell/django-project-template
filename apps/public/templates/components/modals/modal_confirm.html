@@ -3,11 +3,11 @@
 {% comment %}
   Confirmation Modal
   =================
-  
+
   Purpose:
   Provides a reusable confirmation dialog for actions that need user verification.
   This template can be loaded dynamically via HTMX.
-  
+
   Context Variables:
   - modal_id: Unique ID for the modal (default: "confirm-modal")
   - modal_title: Dialog title (default: "Confirm Action")
@@ -21,10 +21,10 @@
   - target: HTMX target for the confirmation action (default: '#content')
   - swap: HTMX swap method (optional)
   - icon: Type of icon to show (options: 'warning', 'danger', 'info', 'success')
-  
+
   HTMX Integration:
   Load this modal dynamically:
-  
+
   <button
     hx-get="{% url 'confirm_delete' item.id %}"
     hx-target="#primary-modal-container"
@@ -86,7 +86,7 @@
     >
       {{ confirm_text|default:"Confirm" }}
     </button>
-    
+
     <button
       type="button"
       class="inline-flex w-full justify-center rounded-xs bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600 sm:w-auto {{ cancel_class|default:'' }}"

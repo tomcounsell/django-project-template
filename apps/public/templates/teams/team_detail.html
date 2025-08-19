@@ -13,12 +13,12 @@
     </div>
     <div class="flex space-x-2">
       {% if can_manage %}
-        <a href="{% url 'public:team-edit' team_slug=team.slug %}" 
+        <a href="{% url 'public:team-edit' team_slug=team.slug %}"
            class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
           Edit Team
         </a>
       {% endif %}
-      
+
       <form method="post" action="{% url 'public:leave-team' team_slug=team.slug %}"
             onsubmit="return confirm('Are you sure you want to leave this team?')">
         {% csrf_token %}
@@ -26,9 +26,9 @@
           Leave Team
         </button>
       </form>
-      
+
       {% if can_delete %}
-        <a href="{% url 'public:team-delete' team_slug=team.slug %}" 
+        <a href="{% url 'public:team-delete' team_slug=team.slug %}"
            class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xs">
           Delete Team
         </a>
@@ -41,41 +41,41 @@
     <div class="lg:col-span-1">
       <div class="bg-white shadow-xs rounded-xs p-6 mb-6">
         <h2 class="text-xl font-semibold mb-4">Team Information</h2>
-        
+
         {% if team.description %}
           <div class="mb-4">
             <h3 class="text-sm font-semibold text-gray-500 uppercase">Description</h3>
             <p class="mt-1">{{ team.description }}</p>
           </div>
         {% endif %}
-        
+
         <div class="mb-4">
           <h3 class="text-sm font-semibold text-gray-500 uppercase">Created</h3>
           <p class="mt-1">{{ team.created_at|date }}</p>
         </div>
-        
+
         <div>
           <h3 class="text-sm font-semibold text-gray-500 uppercase">Members</h3>
           <p class="mt-1">{{ members|length }} total</p>
         </div>
       </div>
-      
+
       {% if can_manage %}
       <!-- Add Member Form -->
       <div class="bg-white shadow-xs rounded-xs p-6">
         <h2 class="text-xl font-semibold mb-4">Add Member</h2>
         <form method="post" action="{% url 'public:add-team-member' team_slug=team.slug %}">
           {% csrf_token %}
-          
+
           <div class="mb-4">
             <label for="email" class="block text-gray-700 font-semibold mb-2">
               Email Address
             </label>
             <input type="email" name="email" id="email" required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-xs" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-xs"
                   placeholder="user@example.com">
           </div>
-          
+
           <div class="mb-4">
             <label for="role" class="block text-gray-700 font-semibold mb-2">
               Role
@@ -88,7 +88,7 @@
               {% endif %}
             </select>
           </div>
-          
+
           <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xs">
             Add Member
           </button>
@@ -96,12 +96,12 @@
       </div>
       {% endif %}
     </div>
-    
+
     <!-- Team Members -->
     <div class="lg:col-span-2">
       <div class="bg-white shadow-xs rounded-xs p-6">
         <h2 class="text-xl font-semibold mb-4">Team Members</h2>
-        
+
         {% if owners %}
           <div class="mb-6">
             <h3 class="text-sm font-semibold text-gray-500 uppercase mb-3">Owners</h3>
@@ -117,19 +117,19 @@
                       <p class="text-gray-500 text-sm">{{ member.user.email }}</p>
                     </div>
                   </div>
-                  
+
                   {% if can_manage and member.user != request.user %}
                     <div class="flex items-center space-x-2">
                       <form method="post" action="{% url 'public:change-member-role' team_slug=team.slug member_id=member.id %}">
                         {% csrf_token %}
-                        <select name="role" onchange="this.form.submit()" 
+                        <select name="role" onchange="this.form.submit()"
                                 class="text-sm border border-gray-300 rounded-xs px-2 py-1">
                           <option value="owner" selected>Owner</option>
                           <option value="admin">Admin</option>
                           <option value="member">Member</option>
                         </select>
                       </form>
-                      
+
                       {% if can_delete %}
                         <form method="post" action="{% url 'public:remove-team-member' team_slug=team.slug member_id=member.id %}"
                               onsubmit="return confirm('Are you sure you want to remove this member?')">
@@ -148,7 +148,7 @@
             </div>
           </div>
         {% endif %}
-        
+
         {% if admins %}
           <div class="mb-6">
             <h3 class="text-sm font-semibold text-gray-500 uppercase mb-3">Admins</h3>
@@ -164,12 +164,12 @@
                       <p class="text-gray-500 text-sm">{{ member.user.email }}</p>
                     </div>
                   </div>
-                  
+
                   {% if can_manage %}
                     <div class="flex items-center space-x-2">
                       <form method="post" action="{% url 'public:change-member-role' team_slug=team.slug member_id=member.id %}">
                         {% csrf_token %}
-                        <select name="role" onchange="this.form.submit()" 
+                        <select name="role" onchange="this.form.submit()"
                                 class="text-sm border border-gray-300 rounded-xs px-2 py-1">
                           {% if can_delete %}
                             <option value="owner">Owner</option>
@@ -178,7 +178,7 @@
                           <option value="member">Member</option>
                         </select>
                       </form>
-                      
+
                       <form method="post" action="{% url 'public:remove-team-member' team_slug=team.slug member_id=member.id %}"
                             onsubmit="return confirm('Are you sure you want to remove this member?')">
                         {% csrf_token %}
@@ -195,7 +195,7 @@
             </div>
           </div>
         {% endif %}
-        
+
         {% if regular_members %}
           <div>
             <h3 class="text-sm font-semibold text-gray-500 uppercase mb-3">Members</h3>
@@ -211,12 +211,12 @@
                       <p class="text-gray-500 text-sm">{{ member.user.email }}</p>
                     </div>
                   </div>
-                  
+
                   {% if can_manage %}
                     <div class="flex items-center space-x-2">
                       <form method="post" action="{% url 'public:change-member-role' team_slug=team.slug member_id=member.id %}">
                         {% csrf_token %}
-                        <select name="role" onchange="this.form.submit()" 
+                        <select name="role" onchange="this.form.submit()"
                                 class="text-sm border border-gray-300 rounded-xs px-2 py-1">
                           {% if can_delete %}
                             <option value="owner">Owner</option>
@@ -225,7 +225,7 @@
                           <option value="member" selected>Member</option>
                         </select>
                       </form>
-                      
+
                       <form method="post" action="{% url 'public:remove-team-member' team_slug=team.slug member_id=member.id %}"
                             onsubmit="return confirm('Are you sure you want to remove this member?')">
                         {% csrf_token %}
@@ -242,7 +242,7 @@
             </div>
           </div>
         {% endif %}
-        
+
         {% if not members %}
           <div class="text-center py-8">
             <p class="text-gray-500">No members in this team yet.</p>

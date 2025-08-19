@@ -20,12 +20,12 @@ Usage:
 {% endcomment %}
 
 {% block content %}
-<div class="error-message-container {% if is_htmx %}htmx-error{% endif %}" 
+<div class="error-message-container {% if is_htmx %}htmx-error{% endif %}"
      id="error-message-{{ error_code|default:'unknown' }}"
      role="alert"
      data-status-code="{{ status_code|default:'500' }}"
      data-error-code="{{ error_code|default:'unknown_error' }}">
-    
+
   <div class="error-header">
     <div class="error-icon">
       {% if status_code == 404 %}
@@ -40,7 +40,7 @@ Usage:
         <i class="fas fa-exclamation-triangle"></i>
       {% endif %}
     </div>
-    
+
     <div class="error-title">
       {% if status_code == 404 %}
         Not Found
@@ -53,21 +53,21 @@ Usage:
       {% else %}
         Error
       {% endif %}
-      
+
       {% if status_code %}
         <span class="error-status-code">({{ status_code }})</span>
       {% endif %}
     </div>
   </div>
-  
+
   <div class="error-body">
     <p class="error-message">{{ error_message }}</p>
-    
+
     {% if error_code %}
     <p class="error-code">Error code: {{ error_code }}</p>
     {% endif %}
   </div>
-  
+
   {% if is_htmx %}
   <div class="error-actions">
     <button class="btn-primary" onclick="window.location.reload()">
@@ -78,7 +78,7 @@ Usage:
     </button>
   </div>
   {% endif %}
-  
+
   {% if debug and show_stack_trace and stack_trace %}
   <div class="error-debug">
     <details>

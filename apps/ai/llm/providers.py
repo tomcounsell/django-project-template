@@ -7,7 +7,7 @@ from pydantic_ai.models.openai import OpenAIModel
 
 
 def get_openai_model(
-    model_name: str = "gpt-4.1", api_key: Optional[str] = None
+    model_name: str = "gpt-4.1", api_key: str | None = None
 ) -> OpenAIModel:
     """
     Get an OpenAI model instance.
@@ -36,17 +36,17 @@ def get_default_model() -> OpenAIModel:
     return get_openai_model("gpt-4.1")
 
 
-def get_gpt_4_1_model(api_key: Optional[str] = None) -> OpenAIModel:
+def get_gpt_4_1_model(api_key: str | None = None) -> OpenAIModel:
     """Get GPT-4.1 model - best for tool use and agentic workflows."""
     return get_openai_model("gpt-4.1", api_key)
 
 
-def get_gpt_4o_model(api_key: Optional[str] = None) -> OpenAIModel:
+def get_gpt_4o_model(api_key: str | None = None) -> OpenAIModel:
     """Get GPT-4o model - balanced performance and cost."""
     return get_openai_model("gpt-4o", api_key)
 
 
-def get_gpt_4o_mini_model(api_key: Optional[str] = None) -> OpenAIModel:
+def get_gpt_4o_mini_model(api_key: str | None = None) -> OpenAIModel:
     """Get GPT-4o-mini model - cost-efficient for simple tasks."""
     return get_openai_model("gpt-4o-mini", api_key)
 

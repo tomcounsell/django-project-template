@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 def send_sms(
     to_number: str,
     body: str,
-    from_number: Optional[str] = None,
+    from_number: str | None = None,
     save_to_db: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Send an SMS using Twilio and optionally save to database.
 
@@ -74,7 +74,7 @@ def send_sms(
     return response
 
 
-def verify_phone_number(phone_number: str) -> Dict[str, Any]:
+def verify_phone_number(phone_number: str) -> dict[str, Any]:
     """
     Verify if a phone number is valid and can receive SMS.
 
@@ -88,7 +88,7 @@ def verify_phone_number(phone_number: str) -> Dict[str, Any]:
     return client.verify_phone_number(phone_number)
 
 
-def get_sms_status(sms_id: int) -> Dict[str, Any]:
+def get_sms_status(sms_id: int) -> dict[str, Any]:
     """
     Get the status of an SMS by its database ID.
 
@@ -135,7 +135,7 @@ def get_sms_status(sms_id: int) -> Dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-def send_verification_code(phone_number: str, code: str) -> Dict[str, Any]:
+def send_verification_code(phone_number: str, code: str) -> dict[str, Any]:
     """
     Send a verification code via SMS.
 

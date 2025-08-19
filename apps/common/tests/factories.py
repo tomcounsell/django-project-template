@@ -36,8 +36,8 @@ T = TypeVar("T", bound=models.Model)
 class ModelFactory:
     """Base factory class for creating model instances."""
 
-    model_class: Type[models.Model]
-    default_data: Dict[str, Any] = {}
+    model_class: type[models.Model]
+    default_data: dict[str, Any] = {}
 
     @classmethod
     def create(cls, **kwargs) -> T:
