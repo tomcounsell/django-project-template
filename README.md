@@ -32,11 +32,12 @@ Planned Integrations:
 - Documentation is automatically built and published from the main branch
 
 ### Coding Standards
+- **Pre-commit Hooks**: Run `uv run pre-commit install` to set up automatic code quality checks
 - For model conventions and best practices, see [Model Conventions](docs/MODEL_CONVENTIONS.md)
 - For template guidelines and patterns, see [Template Conventions](docs/TEMPLATE_CONVENTIONS.md)
 - For view classes and HTMX integration, see [View Conventions](docs/VIEW_CONVENTIONS.md)
 - For project architecture overview, see [Architecture](docs/ARCHITECTURE.md)
-- For end-to-end testing, see [E2E Testing](docs/advanced/E2E_TESTING.md)
+- For end-to-end testing, see [E2E Testing](docs/guides/E2E_TESTING.md)
 
 
 # Project Structure
@@ -157,4 +158,3 @@ Remove this app if you don't need a public-facing website. Note this is separate
   - `views/`: Views serving the public-facing parts of the project.
   - `__init__.py`: Initialization file for the public module.
   - `urls.py`: URL patterns for the public section.
-

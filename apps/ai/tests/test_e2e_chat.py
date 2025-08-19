@@ -8,7 +8,6 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from apps.ai.agent.chat import ChatSession as AgentChatSession
-from apps.ai.agent.chat import process_chat_message_sync
 
 
 class AITestChatE2ETestCase(TestCase):
@@ -155,9 +154,11 @@ class AIChagentUnitTestCase(TestCase):
             # Mock the agent response
             mock_result = Mock()
             mock_result.text = "Test response"
+
             # Make mock_run return a coroutine
             async def mock_async_run(*args, **kwargs):
                 return mock_result
+
             mock_run.return_value = mock_async_run()
 
             # Create test session
@@ -165,7 +166,9 @@ class AIChagentUnitTestCase(TestCase):
 
             # Process message synchronously
             response = process_chat_message_sync(
-                "Test message", session, ChatDependencies(user_id=1, session_id="test-123")
+                "Test message",
+                session,
+                ChatDependencies(user_id=1, session_id="test-123"),
             )
 
             self.assertEqual(response, "Test response")

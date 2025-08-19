@@ -63,12 +63,36 @@ python tools/testing/browser_test_runner.py apps/**/tests/test_visual_*.py
 ```
 
 ### Code Quality
+
+#### Pre-commit Hooks (Recommended)
+```bash
+# Install pre-commit hooks (one-time setup)
+uv run pre-commit install
+uv run pre-commit install --hook-type pre-push
+
+# Run all hooks manually
+uv run pre-commit run --all-files
+
+# Run specific hook
+uv run pre-commit run black --all-files
+uv run pre-commit run flake8 --all-files
+
+# Update hook versions
+uv run pre-commit autoupdate
+
+# Skip hooks temporarily (use sparingly!)
+git commit -m "message" --no-verify
+```
+
+#### Manual Code Quality Checks
 ```bash
 # Format code (use before committing)
-black . && isort .
+uv run black .
+uv run isort . --profile black
 
 # Run linting
-flake8 . && mypy .
+uv run flake8 . --max-line-length=88 --extend-ignore=E203,W503,E501
+uv run mypy .
 
 # Alternative: Use Ruff
 uv run ruff format .
