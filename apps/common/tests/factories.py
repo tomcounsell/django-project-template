@@ -28,7 +28,6 @@ from apps.common.models import (
     TeamMember,
     Upload,
 )
-from apps.staff.models import Wish
 
 User = get_user_model()
 T = TypeVar("T", bound=models.Model)
@@ -379,31 +378,3 @@ class SMSFactory(ModelFactory):
         return super().create(**data)
 
 
-# TodoItemFactory removed - replaced with WishFactory
-
-
-class WishFactory(ModelFactory):
-    """Factory for Wish model."""
-
-    model_class = Wish
-    default_data = {
-        "title": "Test Wish Item",
-        "description": "This is a test wish item with sample description.",
-        "priority": "MEDIUM",
-        "category": "GENERAL",
-        "status": "TODO",
-        "assignee": None,  # Will be set in create method if needed
-        "due_at": None,
-    }
-
-    @classmethod
-    def create(cls, **kwargs) -> Wish:
-        """Create a wish item with valid defaults."""
-        data = cls.default_data.copy()
-        data.update(kwargs)
-
-        # Create an assignee if one isn't provided
-        if not data.get("assignee"):
-            data["assignee"] = UserFactory.create()
-
-        return super().create(**data)

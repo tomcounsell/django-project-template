@@ -564,14 +564,6 @@ class TestAIAutomatedTesting(AIBrowserTesting):
             "skip",
         ], f"Test failed with status: {report.status}"
 
-        # Verify the todo doesn't exist in the database
-        from apps.common.models import Wish
-
-        todos = Wish.objects.filter(title=todo_title)
-        assert (
-            not todos.exists()
-        ), f"Todo with title '{todo_title}' still exists in database"
-
         return report
 
 

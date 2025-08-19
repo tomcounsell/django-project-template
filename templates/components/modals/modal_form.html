@@ -4,11 +4,11 @@
 {% comment %}
   Form Modal
   =========
-  
+
   Purpose:
   Reusable modal dialog containing a form.
   This template can be loaded dynamically via HTMX.
-  
+
   Context Variables:
   - modal_id: Unique ID for the modal (default: "form-modal")
   - modal_title: Title of the form dialog (required)
@@ -21,10 +21,10 @@
   - swap: HTMX swap method (optional)
   - trigger: HTMX trigger for form submission (optional)
   - form_id: ID attribute for the form element (default: "{modal_id}-form")
-  
+
   HTMX Integration:
   Load this modal dynamically:
-  
+
   <button
     hx-get="/path/to/load-form-modal/"
     hx-target="#modal-container"
@@ -32,7 +32,7 @@
   >
     Open Form
   </button>
-  
+
   Enhanced with:
   - Improved accessibility
   - Initial focus on the first form field
@@ -51,7 +51,7 @@
         class="space-y-6"
   >
     {% csrf_token %}
-    
+
     <div class="p-4 bg-gray-50 rounded-xs">
       {% if form.non_field_errors %}
         <div class="rounded-xs bg-red-50 p-4 mb-6 border border-red-200 shadow-xs">
@@ -76,10 +76,10 @@
           </div>
         </div>
       {% endif %}
-      
+
       <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
         {# Process specific fields in order #}
-        
+
         {# First field - Title (full width) #}
         {% for field in form %}
           {% if field.name == 'title' %}
@@ -87,18 +87,18 @@
               <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                 {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
               </label>
-              
-              <input 
-                type="text" 
-                id="id_{{ field.name }}" 
-                name="{{ field.name }}" 
-                value="{% if field.value %}{{ field.value }}{% endif %}" 
+
+              <input
+                type="text"
+                id="id_{{ field.name }}"
+                name="{{ field.name }}"
+                value="{% if field.value %}{{ field.value }}{% endif %}"
                 class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                placeholder="Enter wish title"
+                placeholder="Enter title"
                 {% if field.field.required %}required{% endif %}
                 autocomplete="off"
               >
-              
+
               {% if field.errors %}
                 <p class="text-red-500 text-xs mt-1 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -110,7 +110,7 @@
             </div>
           {% endif %}
         {% endfor %}
-        
+
         {# Status, Priority and Cost Estimate row #}
         <div class="col-span-full grid grid-cols-1 sm:grid-cols-3 gap-4">
           {% for field in form %}
@@ -119,11 +119,11 @@
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <div class="relative">
-                  <select 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
+                  <select
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
                     class="appearance-none block w-full rounded-xs border-gray-300 {% if field.field.disabled %}bg-gray-100 text-gray-500{% else %}bg-white{% endif %} focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs py-2 text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                     {% if field.field.disabled %}disabled{% endif %}
@@ -140,7 +140,7 @@
                     </svg>
                   </div>
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -149,21 +149,18 @@
                     {{ field.errors.0 }}
                   </p>
                 {% endif %}
-                
-                {% if field.name == 'status' and show_draft_status %}
-                  <p class="text-xs text-slate-500 mt-1">New wishes start as drafts</p>
-                {% endif %}
+
               </div>
             {% elif field.name == 'priority' %}
               <div>
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <div class="relative">
-                  <select 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
+                  <select
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
                     class="appearance-none block w-full rounded-xs border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs py-2 text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                   >
@@ -179,7 +176,7 @@
                     </svg>
                   </div>
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -194,17 +191,17 @@
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <!-- Cost Estimate with $ prefix -->
                 <div class="relative rounded-xs shadow-xs">
                   <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <span class="text-slate-500 sm:text-sm">$</span>
                   </div>
-                  <input 
-                    type="number" 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
-                    value="{% if field.value %}{{ field.value }}{% endif %}" 
+                  <input
+                    type="number"
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
+                    value="{% if field.value %}{{ field.value }}{% endif %}"
                     class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 pl-7 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     min="0"
                     step="1"
@@ -212,7 +209,7 @@
                     {% if field.field.required %}required{% endif %}
                   >
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -221,7 +218,7 @@
                     {{ field.errors.0 }}
                   </p>
                 {% endif %}
-                
+
                 {% if field.help_text %}
                   <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
                 {% endif %}
@@ -229,7 +226,7 @@
             {% endif %}
           {% endfor %}
         </div>
-        
+
         {# Description field (full width) #}
         {% for field in form %}
           {% if field.name == 'description' %}
@@ -237,16 +234,16 @@
               <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                 {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
               </label>
-              
-              <textarea 
-                id="id_{{ field.name }}" 
-                name="{{ field.name }}" 
-                rows="4" 
+
+              <textarea
+                id="id_{{ field.name }}"
+                name="{{ field.name }}"
+                rows="4"
                 class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
-                placeholder="Describe this wish in detail"
+                placeholder="Describe this in detail"
                 {% if field.field.required %}required{% endif %}
               >{% if field.value %}{{ field.value }}{% endif %}</textarea>
-              
+
               {% if field.errors %}
                 <p class="text-red-500 text-xs mt-1 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -258,7 +255,7 @@
             </div>
           {% endif %}
         {% endfor %}
-        
+
         {# Effort and Value row (2 columns) #}
         <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
           {% for field in form %}
@@ -267,11 +264,11 @@
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <div class="relative">
-                  <select 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
+                  <select
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
                     class="appearance-none block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                   >
@@ -288,7 +285,7 @@
                     </svg>
                   </div>
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -303,11 +300,11 @@
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <div class="relative">
-                  <select 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
+                  <select
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
                     class="appearance-none block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pr-8 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                   >
@@ -324,7 +321,7 @@
                     </svg>
                   </div>
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -337,7 +334,7 @@
             {% endif %}
           {% endfor %}
         </div>
-        
+
         {# Tags and Due Date row (2 columns) #}
         <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
           {% for field in form %}
@@ -346,24 +343,24 @@
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <div class="relative">
                   <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg class="h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
                   </div>
-                  <input 
-                    type="text" 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
-                    value="{% if field.value %}{{ field.value|join:", " }}{% endif %}" 
+                  <input
+                    type="text"
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
+                    value="{% if field.value %}{{ field.value|join:", " }}{% endif %}"
                     class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pl-10 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     placeholder="Enter comma-separated tags"
                     {% if field.field.required %}required{% endif %}
                   >
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -372,7 +369,7 @@
                     {{ field.errors.0 }}
                   </p>
                 {% endif %}
-                
+
                 {% if not field.errors %}
                   <p class="text-xs text-slate-500 mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
@@ -387,23 +384,23 @@
                 <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                   {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
                 </label>
-                
+
                 <div class="relative">
                   <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg class="h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <input 
-                    type="date" 
-                    id="id_{{ field.name }}" 
-                    name="{{ field.name }}" 
-                    value="{% if field.value %}{{ field.value|date:'Y-m-d' }}{% endif %}" 
+                  <input
+                    type="date"
+                    id="id_{{ field.name }}"
+                    name="{{ field.name }}"
+                    value="{% if field.value %}{{ field.value|date:'Y-m-d' }}{% endif %}"
                     class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm pl-10 {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                     {% if field.field.required %}required{% endif %}
                   >
                 </div>
-                
+
                 {% if field.errors %}
                   <p class="text-red-500 text-xs mt-1 flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -416,7 +413,7 @@
             {% endif %}
           {% endfor %}
         </div>
-        
+
         {# Process any remaining fields that don't fit into the sections above #}
         {% for field in form %}
           {% if field.is_hidden %}
@@ -426,16 +423,16 @@
               <label for="id_{{ field.name }}" class="block text-sm font-semibold text-slate-700 mb-1">
                 {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
               </label>
-              
-              <input 
-                type="text" 
-                id="id_{{ field.name }}" 
-                name="{{ field.name }}" 
-                value="{% if field.value %}{{ field.value }}{% endif %}" 
+
+              <input
+                type="text"
+                id="id_{{ field.name }}"
+                name="{{ field.name }}"
+                value="{% if field.value %}{{ field.value }}{% endif %}"
                 class="block w-full rounded-xs px-3 py-2 border border-gray-300 bg-white focus:outline-hidden focus:ring-2 focus:ring-slate-600 focus:border-slate-600 shadow-xs text-sm {% if field.errors %}border-red-500 focus:border-red-500 focus:ring-red-200{% endif %}"
                 {% if field.field.required %}required{% endif %}
               >
-              
+
               {% if field.errors %}
                 <p class="text-red-500 text-xs mt-1 flex items-center">
                   <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -444,14 +441,14 @@
                   {{ field.errors.0 }}
                 </p>
               {% endif %}
-              
+
               {% if field.help_text %}
                 <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
               {% endif %}
             </div>
           {% endif %}
         {% endfor %}
-        
+
         {% block form_extra_fields %}
           {% comment %}Add any additional form fields here{% endcomment %}
         {% endblock %}
@@ -476,7 +473,7 @@
         </svg>
       </span>
     </button>
-    
+
     <button
       type="button"
       id="{{ form_id|default:modal_id|add:'-cancel' }}"
@@ -489,14 +486,14 @@
       {{ cancel_text|default:"Cancel" }}
     </button>
   </div>
-  
+
   <script>
     // Set focus to the first input, select, or textarea element in the modal form
     (function() {
       // Get the first input field to focus on (title field is preferred if it exists)
       const titleInput = document.getElementById('id_title');
       const firstInput = titleInput || document.querySelector('#{{ form_id|default:modal_id|add:'-form' }} input:not([type="hidden"]), #{{ form_id|default:modal_id|add:'-form' }} select, #{{ form_id|default:modal_id|add:'-form' }} textarea');
-      
+
       if (firstInput) {
         setTimeout(() => {
           firstInput.focus();
@@ -507,7 +504,7 @@
           }
         }, 100);
       }
-      
+
       // Handle keyboard navigation - Escape key to close
       const keyHandler = function(e) {
         // Escape key to close modal
@@ -515,18 +512,18 @@
           document.querySelector('#modal-container').innerHTML = '';
           document.removeEventListener('keydown', keyHandler);
         }
-        
+
         // Enter key in inputs to move to next field (except in textarea)
-        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && 
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' &&
             !e.target.closest('button') && e.target.type !== 'submit') {
           e.preventDefault();
-          
+
           // Find all focusable elements in the form
           const focusable = [...document.querySelectorAll('#{{ form_id|default:modal_id|add:'-form' }} input:not([type="hidden"]), #{{ form_id|default:modal_id|add:'-form' }} select, #{{ form_id|default:modal_id|add:'-form' }} textarea, #{{ form_id|default:modal_id|add:'-form' }} button')];
-          
+
           // Find the index of the current active element
           const index = focusable.indexOf(document.activeElement);
-          
+
           // Move to the next element or submit if at the end
           if (index > -1 && index < focusable.length - 1) {
             focusable[index + 1].focus();
@@ -536,9 +533,9 @@
           }
         }
       };
-      
+
       document.addEventListener('keydown', keyHandler);
-      
+
       // Remove event listener when the modal is closed
       const modalContainer = document.querySelector('#modal-container');
       const observer = new MutationObserver((mutations) => {
@@ -549,7 +546,7 @@
           }
         });
       });
-      
+
       observer.observe(modalContainer, { childList: true });
     })();
   </script>

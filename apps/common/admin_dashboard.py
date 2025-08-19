@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.common.admin import ADMIN_CATEGORIES, MAIN_NAV_MODELS
 from apps.common.models import SMS, Email, Payment, Subscription, Team
-from apps.staff.models import Wish
 
 User = get_user_model()
 
@@ -145,17 +144,6 @@ def get_admin_dashboard(request, context=None):
     # Get top teams by size
     top_teams = teams_with_members.order_by("-member_count")[:5]
 
-    # Wish statistics
-    wish_count = Wish.objects.count()
-    wish_stats = {
-        "TODO": Wish.objects.filter(status="TODO").count(),
-        "IN_PROGRESS": Wish.objects.filter(status="IN_PROGRESS").count(),
-        "BLOCKED": Wish.objects.filter(status="BLOCKED").count(),
-        "DONE": Wish.objects.filter(status="DONE").count(),
-    }
-    overdue_wishes = Wish.objects.filter(
-        due_at__lt=now(), status__in=["TODO", "IN_PROGRESS", "BLOCKED"]
-    ).count()
 
     # Communications
     email_count = Email.objects.count()
@@ -227,23 +215,6 @@ def get_admin_dashboard(request, context=None):
                     },
                     "column": 1,
                     "order": 1,
-                },
-                # Wish Widget with status breakdown
-                {
-                    "title": _("Wish Items"),
-                    "template": "admin/dashboard/wish_stats.html",
-                    "context": {
-                        "wish_stats": wish_stats,  # Updated to use wish_stats
-                        "total": wish_count,
-                        "overdue_wishes": overdue_wishes,  # Updated to use overdue_wishes
-                        "active_wishes": wish_stats[
-                            "TODO"
-                        ]  # Updated to use active_wishes
-                        + wish_stats["IN_PROGRESS"]
-                        + wish_stats["BLOCKED"],
-                    },
-                    "column": 1,
-                    "order": 2,
                 },
                 # Communications Widget
                 {

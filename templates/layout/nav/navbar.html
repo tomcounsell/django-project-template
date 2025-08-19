@@ -61,9 +61,6 @@
               Team
             </a>
             {% endif %}
-            <a href="{% url 'staff:wish-list' %}" class="inline-flex items-center border-b-2 {% if active_section == 'wishes' %}border-slate-500 text-gray-900{% else %}border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700{% endif %} px-1 pt-1 text-sm font-medium">
-              Wishes
-            </a>
           {% endif %}
         </div>
       </div>
@@ -120,9 +117,6 @@
           Team
         </a>
         {% endif %}
-        <a href="{% url 'staff:wish-list' %}" class="block rounded-xs {% if active_section == 'wishes' %}bg-slate-50 text-slate-700{% else %}text-gray-500 hover:bg-gray-50 hover:text-gray-700{% endif %} px-3 py-2 text-base font-medium">
-          Wishes
-        </a>
       {% endif %}
     </div>
     
