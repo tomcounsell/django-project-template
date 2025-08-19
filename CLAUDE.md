@@ -52,8 +52,8 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/common/tests/test_models/test_addres
 # Run tests by keyword
 DJANGO_SETTINGS_MODULE=settings pytest -k "user and not stripe" -v
 
-# Run with coverage
-DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html:apps/common/tests/coverage_html_report
+# Run with HTML coverage report
+DJANGO_SETTINGS_MODULE=settings pytest --cov=apps --cov-report=html
 
 # Run E2E tests
 python tools/testing/browser_test_runner.py apps/**/tests/test_e2e_*.py

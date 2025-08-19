@@ -1,9 +1,8 @@
 
 # Django Project Template
 
-[![Test and Coverage](https://github.com/tomcounsell/django-project-template/actions/workflows/test.yml/badge.svg)](https://github.com/tomcounsell/django-project-template/actions/workflows/test.yml)
+[![Tests](https://github.com/tomcounsell/django-project-template/actions/workflows/test.yml/badge.svg)](https://github.com/tomcounsell/django-project-template/actions/workflows/test.yml)
 [![Documentation](https://github.com/tomcounsell/django-project-template/actions/workflows/docs.yml/badge.svg)](https://tomcounsell.github.io/django-project-template/)
-[![codecov](https://codecov.io/gh/tomcounsell/django-project-template/branch/main/graph/badge.svg)](https://codecov.io/gh/tomcounsell/django-project-template)
 
 Technologies: Python, Django, PostgreSQL, 
 API: Django Rest Framework

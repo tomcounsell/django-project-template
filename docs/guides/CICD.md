@@ -111,8 +111,7 @@ The project includes several GitHub Actions workflows that mirror and extend the
 - **Trigger**: Runs on pushes and pull requests to the `main` branch
 - **Jobs**:
   - Spins up a PostgreSQL database service
-  - Runs all tests with pytest and generates coverage reports
-  - Uploads coverage results to Codecov
+  - Runs core tests with pytest to validate basic functionality
 
 ### 2. Lint Workflow (`lint.yml`)
 
@@ -142,10 +141,7 @@ The project includes several GitHub Actions workflows that mirror and extend the
 
 ### GitHub Actions
 
-1. **Repository Secrets**:
-   - `CODECOV_TOKEN`: Token for uploading coverage reports to Codecov
-
-2. **GitHub Pages** (for documentation):
+1. **GitHub Pages** (for documentation):
    - In your repository settings, enable GitHub Pages
    - Select the source as "GitHub Actions"
 
@@ -178,7 +174,7 @@ To test CI workflows locally before pushing changes:
 2. **Run Full Test Suite**:
    ```bash
    # Simulates GitHub Actions test workflow
-   DJANGO_SETTINGS_MODULE=settings uv run pytest --cov=apps
+   DJANGO_SETTINGS_MODULE=settings uv run pytest
    ```
 
 3. **Check Security**:
@@ -222,7 +218,6 @@ Developer → Pre-commit Hooks → Git Commit → Push → GitHub Actions → De
 
 - [Pre-commit Documentation](https://pre-commit.com/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Codecov Documentation](https://docs.codecov.io/)
 - [Black Documentation](https://black.readthedocs.io/)
 - [Flake8 Documentation](https://flake8.pycqa.org/)
 - [Bandit Documentation](https://bandit.readthedocs.io/)
