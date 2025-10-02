@@ -1,354 +1,164 @@
 # MCP Development Guide
 
-A standardized approach for building Model Context Protocol (MCP) servers in our Django application.
+Standardized approach for building Model Context Protocol servers in Django apps.
 
-## Official Resources
+## Official Documentation
 
-**Primary Documentation:**
-- [MCP Specification](https://modelcontextprotocol.io/docs)
-- [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) - Official Python implementation
-- [FastMCP Documentation](https://github.com/modelcontextprotocol/python-sdk#fastmcp) - Simplified server API
+**Read these first:**
+- [MCP Quickstart](https://modelcontextprotocol.io/quickstart) - Core concepts
+- [Python SDK README](https://github.com/modelcontextprotocol/python-sdk#quickstart) - API reference
+- [FastMCP Section](https://github.com/modelcontextprotocol/python-sdk#fastmcp) - Decorator API
 
-**Version Tracking:**
-- Python SDK: `mcp>=1.13.0` (in `pyproject.toml`)
-- Update check: `uv add mcp --upgrade`
-
-## Quick Start
-
-### 1. Server Setup
-
-All MCP servers live in `apps/{app_name}/mcp/server.py`:
-
-```python
-from mcp.server.fastmcp import FastMCP, Context
-
-# Create server instance
-mcp = FastMCP(
-    "server-name",
-    instructions="Brief description of server capabilities"
-)
-```
-
-### 2. Register Tools (Functions AI Can Call)
-
-```python
-@mcp.tool()
-def my_tool(param: str, optional: int = 10) -> dict[str, Any]:
-    """Brief description shown to AI.
-
-    Args:
-        param: Parameter description
-        optional: Optional parameter with default
-
-    Returns:
-        Dictionary with results
-    """
-    # Import Django models on-demand
-    from apps.myapp.models import MyModel
-
-    # Perform operation
-    result = MyModel.objects.filter(field=param)[:optional]
-
-    return {"results": [item.to_dict() for item in result]}
-```
-
-**With async and progress tracking:**
-
-```python
-@mcp.tool()
-async def long_running_tool(param: str, ctx: Context) -> dict[str, Any]:
-    """Tool that reports progress."""
-    await ctx.info(f"Starting operation with {param}")
-
-    # Do work...
-
-    return {"status": "complete"}
-```
-
-### 3. Register Resources (Data Sources)
-
-```python
-@mcp.resource("myapp://items/{item_id}")
-def get_item_details(item_id: str) -> str:
-    """Get details about a specific item.
-
-    Args:
-        item_id: The item identifier
-
-    Returns:
-        Formatted string with item data
-    """
-    from apps.myapp.models import Item
-
-    try:
-        item = Item.objects.get(id=item_id)
-        return f"Item: {item.name}\nStatus: {item.status}\n..."
-    except Item.DoesNotExist:
-        return f"Error: Item {item_id} not found"
-```
-
-### 4. Register Prompts (Pre-configured Templates)
-
-```python
-@mcp.prompt()
-def analysis_prompt(item_id: str, depth: str = "brief") -> str:
-    """Generate analysis prompt for an item.
-
-    Args:
-        item_id: Item to analyze
-        depth: "brief" or "detailed"
-
-    Returns:
-        Formatted prompt string
-    """
-    if depth == "brief":
-        return f"Provide a brief analysis of item {item_id}"
-    return f"Provide detailed analysis of item {item_id} including history and trends"
-```
+**Version:**
+- Current: `mcp>=1.13.0` (see `pyproject.toml`)
+- Update: `uv add mcp --upgrade`
 
 ## Django-Specific Patterns
 
 ### Import Models On-Demand
 
-**Do this:**
+**Always import Django models inside functions**, not at module level:
+
 ```python
 @mcp.tool()
 def get_data(id: int):
-    from apps.myapp.models import MyModel  # Import inside function
+    from apps.myapp.models import MyModel  # ✅ Import here
     return MyModel.objects.get(id=id)
 ```
 
-**Not this:**
-```python
-from apps.myapp.models import MyModel  # Module-level import
+**Why:** Avoids Django app registry issues when MCP server loads.
 
-@mcp.tool()
-def get_data(id: int):
-    return MyModel.objects.get(id=id)
-```
-
-**Why:** Avoid Django app registry issues and reduce startup overhead.
-
-### Handle UUIDs Properly
+### Handle UUID Fields
 
 ```python
 from uuid import UUID
 
 @mcp.tool()
-def get_by_uuid(id: str) -> dict:
+def get_session(session_id: str):
     try:
-        uuid_obj = UUID(id)  # Validate and convert
+        uuid_obj = UUID(session_id)  # Validate format
     except ValueError:
-        return {"error": f"Invalid UUID format: {id}"}
+        return {"error": f"Invalid UUID: {session_id}"}
 
-    obj = MyModel.objects.get(id=uuid_obj)
-    return {"id": str(obj.id), ...}  # Convert back to string
+    from apps.ai.models import ChatSession
+    session = ChatSession.objects.get(id=uuid_obj)
+    return {"id": str(session.id), ...}  # Convert back to string
 ```
 
-### Use Select/Prefetch for Performance
+### Query Optimization
+
+Use Django ORM optimizations to avoid N+1 queries:
 
 ```python
 @mcp.tool()
-def get_with_relations(id: int):
-    from apps.myapp.models import Parent
+def list_items(limit: int = 20):
+    from apps.myapp.models import Item
 
-    obj = Parent.objects.select_related('user').prefetch_related('messages').get(id=id)
-    return {"user": obj.user.username, "message_count": obj.messages.count()}
+    items = (
+        Item.objects
+        .select_related('user')           # For ForeignKey
+        .prefetch_related('messages')     # For reverse FK/M2M
+        .only('id', 'name', 'status')     # Limit fields
+        [:limit]                          # Always limit results
+    )
+    return [item.to_dict() for item in items]
 ```
 
-### Error Handling
+## Project Conventions
 
-```python
-@mcp.tool()
-def safe_tool(id: int) -> dict[str, Any]:
-    """Tool with proper error handling."""
-    from apps.myapp.models import MyModel
+### File Structure
 
-    try:
-        obj = MyModel.objects.get(id=id)
-        return {"success": True, "data": obj.to_dict()}
-    except MyModel.DoesNotExist:
-        return {"error": f"Object {id} not found"}
-    except Exception as e:
-        return {"error": f"Unexpected error: {str(e)}"}
+```
+apps/
+└── {app_name}/
+    ├── mcp/
+    │   ├── __init__.py
+    │   ├── server.py      # MCP server implementation
+    │   └── README.md      # App-specific usage docs
+    └── tests/
+        └── test_mcp.py    # MCP server tests
 ```
 
-## Testing
+### Naming Standards
 
-### Test Django Integration
+- **Server:** `django-{app}-mcp` (e.g., `django-chat-mcp`)
+- **Tools:** Snake_case verbs (e.g., `get_user_info`, `list_sessions`)
+- **Resources:** URI scheme `{app}://{resource}` (e.g., `chat://sessions/123`)
+- **Prompts:** End with `_prompt` (e.g., `analysis_prompt`)
 
-```python
-# In apps/myapp/tests/test_mcp.py
-import pytest
-from apps.myapp.mcp.server import mcp
+### Security
 
-@pytest.mark.django_db
-def test_tool_with_database():
-    """Test MCP tool interacts correctly with Django ORM."""
-    # Setup test data
-    obj = MyModel.objects.create(name="test")
+- Never expose passwords, tokens, or API keys
+- Validate all input parameters
+- Always limit query results (default: 10-50 items)
+- Check user permissions before returning data
 
-    # Call tool
-    result = mcp.call_tool("my_tool", {"id": obj.id})
-
-    # Assert
-    assert result["success"] is True
-    assert result["name"] == "test"
-```
-
-### Test Without Database
-
-```python
-def test_tool_validation():
-    """Test tool parameter validation."""
-    result = mcp.call_tool("my_tool", {"id": "invalid"})
-    assert "error" in result
-```
-
-## Running the Server
+## Running Servers
 
 ### Development
 
 ```bash
-# With automatic reload
-uv run mcp dev apps/myapp/mcp/server.py
-
-# With Django settings
-DJANGO_SETTINGS_MODULE=settings uv run mcp dev apps/myapp/mcp/server.py
+DJANGO_SETTINGS_MODULE=settings uv run mcp dev apps/{app}/mcp/server.py
 ```
 
-### Testing with MCP Inspector
+### Claude Desktop Integration
 
-```bash
-# Install inspector
-npm install -g @modelcontextprotocol/inspector
-
-# Run inspector
-mcp-inspector uv run mcp dev apps/myapp/mcp/server.py
-```
-
-### Production (Stdio Transport)
-
-```bash
-DJANGO_SETTINGS_MODULE=settings python -m mcp run apps/myapp/mcp/server.py
-```
-
-## Integration with Claude Desktop
-
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "django-myapp": {
+    "django-{app}": {
       "command": "uv",
-      "args": [
-        "run",
-        "--with", "mcp",
-        "mcp", "run",
-        "apps/myapp/mcp/server.py"
-      ],
-      "env": {
-        "DJANGO_SETTINGS_MODULE": "settings"
-      },
-      "cwd": "/absolute/path/to/django-project-template"
+      "args": ["run", "--with", "mcp", "mcp", "run", "apps/{app}/mcp/server.py"],
+      "env": {"DJANGO_SETTINGS_MODULE": "settings"},
+      "cwd": "/absolute/path/to/project"
     }
   }
 }
 ```
 
-Restart Claude Desktop after configuration changes.
+Restart Claude Desktop after changes.
 
-## Best Practices
+## Testing
 
-### 1. Naming Conventions
-
-- **Server names:** `django-{app}-mcp` (e.g., `django-chat-mcp`)
-- **Tool names:** Use snake_case verbs (e.g., `get_user_info`, `list_sessions`)
-- **Resources:** Use URI schemes `{app}://{resource}/{param}` (e.g., `chat://sessions/123`)
-- **Prompts:** End with `_prompt` (e.g., `analysis_prompt`)
-
-### 2. Documentation
-
-- **Always** include docstrings with Args/Returns sections
-- Keep descriptions brief but informative (AI reads them)
-- Use type hints for all parameters and returns
-
-### 3. Response Format
-
-**Structured (preferred):**
 ```python
-return {"id": 123, "name": "value", "items": [...]}
-```
+# apps/myapp/tests/test_mcp.py
+import pytest
+from apps.myapp.mcp.server import mcp
 
-**Text (for resources):**
-```python
-return "Formatted text\nWith newlines\nFor readability"
-```
+@pytest.mark.django_db
+def test_tool_with_database():
+    from apps.myapp.models import MyModel
 
-### 4. Security
+    obj = MyModel.objects.create(name="test")
+    result = mcp.call_tool("my_tool", {"id": obj.id})
 
-- **Never** expose sensitive data (passwords, tokens, API keys)
-- **Validate** all input parameters
-- **Limit** query results (use `.[:limit]`)
-- **Check permissions** before returning user-specific data
-
-### 5. Performance
-
-- Use `select_related()` and `prefetch_related()`
-- Add `.only()` or `.defer()` for large models
-- Set reasonable default limits (10-50 items)
-- Consider caching for expensive operations
-
-## File Structure
-
-```
-apps/
-└── myapp/
-    ├── mcp/
-    │   ├── __init__.py
-    │   ├── server.py         # Main MCP server
-    │   └── README.md         # Usage instructions
-    └── tests/
-        └── test_mcp.py       # MCP server tests
+    assert result["success"] is True
 ```
 
 ## Troubleshooting
 
-### Import Errors
+**`AppRegistryNotReady` error:**
+- Import models inside functions, not at module level
 
-**Problem:** `django.core.exceptions.AppRegistryNotReady`
-
-**Solution:** Import models inside functions, not at module level.
-
-### UUID Validation Errors
-
-**Problem:** `ValueError: badly formed hexadecimal UUID string`
-
-**Solution:** Wrap in try/except and validate with `UUID(string)`.
-
-### Tool Not Showing in Claude
-
-**Problem:** Tool defined but not appearing.
-
-**Solution:**
-1. Check decorator is `@mcp.tool()` (not `@mcp.tool`)
+**Tool not appearing in Claude:**
+1. Verify decorator has parentheses: `@mcp.tool()` not `@mcp.tool`
 2. Restart Claude Desktop
-3. Verify server starts without errors: `uv run mcp dev apps/myapp/mcp/server.py`
+3. Check server starts: `uv run mcp dev apps/{app}/mcp/server.py`
+
+**UUID validation errors:**
+- Always validate UUIDs: `uuid_obj = UUID(string_param)`
+- Wrap in try/except for user-friendly errors
 
 ## Reference Implementation
 
-See `apps/ai/mcp/server.py` for a complete working example with:
-- 4 tools (user info, chat history, sessions, stats)
-- 3 resources (session listings and details)
-- 3 prompts (summaries, analysis, continuation)
+See `apps/ai/mcp/server.py` for complete working example with:
+- 4 tools, 3 resources, 3 prompts
+- Django ORM integration patterns
+- Error handling examples
+- UUID validation
 
 ## Version History
 
-- **2025-10-02:** Initial guide (MCP SDK 1.13.0, FastMCP API)
-
-## Related Documentation
-
-- `apps/ai/mcp/README.md` - Chat MCP server documentation
-- [MCP Quickstart](https://modelcontextprotocol.io/quickstart)
-- [FastMCP Examples](https://github.com/modelcontextprotocol/python-sdk/tree/main/examples)
+- **2025-10-02:** Initial guide (MCP SDK 1.13.0)
