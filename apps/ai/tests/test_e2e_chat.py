@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from apps.ai.agent.chat import ChatSession as AgentChatSession
+from apps.ai.pydantic_ai.agent.chat import ChatSession as AgentChatSession
 
 
 class AITestChatE2ETestCase(TestCase):
@@ -148,9 +148,12 @@ class AIChagentUnitTestCase(TestCase):
 
     def test_process_chat_message_sync(self):
         """Test the sync process_chat_message function."""
-        from apps.ai.agent.chat import ChatDependencies, process_chat_message_sync
+        from apps.ai.pydantic_ai.agent.chat import (
+            ChatDependencies,
+            process_chat_message_sync,
+        )
 
-        with patch("apps.ai.agent.chat.chat_agent.run") as mock_run:
+        with patch("apps.ai.pydantic_ai.agent.chat.chat_agent.run") as mock_run:
             # Mock the agent response
             mock_result = Mock()
             mock_result.text = "Test response"
@@ -202,7 +205,7 @@ class AIModelProviderTestCase(TestCase):
 
     def test_get_openai_model_requires_api_key(self):
         """Test that get_openai_model requires an API key."""
-        from apps.ai.llm.providers import get_openai_model
+        from apps.ai.pydantic_ai.llm.providers import get_openai_model
 
         with patch.dict(os.environ, {}, clear=True):
             with self.assertRaises(ValueError) as context:
@@ -213,14 +216,14 @@ class AIModelProviderTestCase(TestCase):
     @patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"})
     def test_get_openai_model_with_env_key(self):
         """Test getting OpenAI model with environment key."""
-        from apps.ai.llm.providers import get_openai_model
+        from apps.ai.pydantic_ai.llm.providers import get_openai_model
 
         model = get_openai_model("gpt-4o-mini")
         self.assertIsNotNone(model)
 
     def test_get_openai_model_with_explicit_key(self):
         """Test getting OpenAI model with explicit key."""
-        from apps.ai.llm.providers import get_openai_model
+        from apps.ai.pydantic_ai.llm.providers import get_openai_model
 
         with patch.dict(os.environ, {}, clear=True):
             model = get_openai_model("gpt-4o", api_key="explicit-key")

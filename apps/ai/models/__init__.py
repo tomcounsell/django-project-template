@@ -1,5 +1,5 @@
 # AI models package
 
-from .chat import ChatFeedback, ChatMessage, ChatSession
+from .chat import ChatMessage, ChatSession
 
-__all__ = ["ChatSession", "ChatMessage", "ChatFeedback"]
+__all__ = ["ChatSession", "ChatMessage"]

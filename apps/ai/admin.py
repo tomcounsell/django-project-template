@@ -3,7 +3,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from apps.ai.models import ChatFeedback, ChatMessage, ChatSession
+from apps.ai.models import ChatMessage, ChatSession
 
 
 @admin.register(ChatSession)
@@ -77,26 +77,3 @@ class ChatMessageAdmin(ModelAdmin):
         if len(obj.content) > max_length:
             return f"{obj.content[:max_length]}..."
         return obj.content
-
-
-@admin.register(ChatFeedback)
-class ChatFeedbackAdmin(ModelAdmin):
-    """Admin for ChatFeedback model."""
-
-    list_display = ["id", "message", "user", "rating", "is_helpful", "created_at"]
-    list_filter = ["rating", "is_helpful", "created_at"]
-    search_fields = ["id", "comment", "user__username", "message__id"]
-    readonly_fields = ["id", "created_at", "modified_at"]
-    date_hierarchy = "created_at"
-    raw_id_fields = ["message", "user"]
-
-    fieldsets = (
-        (None, {"fields": ("id", "message", "user")}),
-        ("Feedback", {"fields": ("rating", "is_helpful", "comment")}),
-        (
-            "Timestamps",
-            {
-                "fields": ("created_at", "modified_at"),
-            },
-        ),
-    )

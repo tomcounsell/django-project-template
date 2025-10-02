@@ -3,7 +3,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from apps.ai.models import ChatFeedback, ChatMessage, ChatSession
+from apps.ai.models import ChatMessage, ChatSession
 from apps.common.tests.factories import UserFactory
 
 
@@ -40,19 +40,6 @@ class ChatMessageFactory(DjangoModelFactory):
             "model": "gpt-4o-mini",
         }
     )
-
-
-class ChatFeedbackFactory(DjangoModelFactory):
-    """Factory for creating ChatFeedback instances."""
-
-    class Meta:
-        model = ChatFeedback
-
-    message = factory.SubFactory(ChatMessageFactory)
-    user = factory.SubFactory(UserFactory)
-    rating = factory.Faker("random_int", min=1, max=5)
-    comment = factory.Faker("text", max_nb_chars=200)
-    is_helpful = factory.Faker("boolean")
 
 
 class AnonymousChatSessionFactory(ChatSessionFactory):
