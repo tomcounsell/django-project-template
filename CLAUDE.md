@@ -299,10 +299,20 @@ Read these documents when working on specific areas:
 5. **For troubleshooting**: Check ERROR_HANDLING.md and TEST_TROUBLESHOOTING.md
 6. **Setting up development**: Follow SETUP_GUIDE.md
 
+## Documentation Philosophy
+
+**Always move forward. Forget the past.**
+
+- Document ONLY the current state of the system
+- Never mention "old ways", "removed features", or "previously"
+- Delete outdated content rather than marking it as deprecated
+- No migration guides - just document how things work now
+- No legacy system documentation
+- When updating docs, completely rewrite to reflect current reality
+
 ## Commit Guidelines
+
 - Create detailed, focused commits
 - Run formatters before committing: `black . && isort .`
 - Check changes with `git status` before committing
 - Don't include co-authors in commit messages
-- do not document legacy systems
-- do not document system migrations. only document new current state
