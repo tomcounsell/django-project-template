@@ -29,7 +29,7 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "Django>=4.0",
+    "django>=4.0",
     "django-extensions",
     "django-filter",
     "django-debug-toolbar",
@@ -52,6 +52,7 @@ dependencies = [
     "openai>=1.99.1",
     "mcp>=1.13.0",
     "mcp-python>=0.1.4",
+    "pre-commit>=4.4.0",
 ]
 
 [project.optional-dependencies]
@@ -112,7 +113,11 @@ filterwarnings = [
 
 [dependency-groups]
 dev = [
+    "black>=25.11.0",
     "django-browser-reload>=1.18.0",
+    "django-stubs>=5.2.7",
+    "ipython>=9.7.0",
+    "mypy>=1.18.2",
     "pre-commit>=4.3.0",
 ]
 e2e-testing = [

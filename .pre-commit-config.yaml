@@ -6,7 +6,7 @@
 repos:
   # General file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: '^.*\.(md|rst)$'
@@ -30,7 +30,7 @@ repos:
 
   # Python code formatting
   - repo: https://github.com/psf/black
-    rev: 24.8.0
+    rev: 25.11.0
     hooks:
       - id: black
         language_version: python3.12
@@ -38,14 +38,14 @@ repos:
 
   # Import sorting
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 7.0.0
     hooks:
       - id: isort
         args: ['--profile', 'black', '--line-length', '88']
 
   # Python linting
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+    rev: 7.3.0
     hooks:
       - id: flake8
         args: ['--max-line-length=88', '--extend-ignore=E203,W503,E501']
@@ -58,7 +58,7 @@ repos:
 
   # Security checks
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.10
+    rev: 1.9.1
     hooks:
       - id: bandit
         args: ['-ll', '--skip', 'B101,B601,B602,B607']
@@ -66,14 +66,14 @@ repos:
 
   # Django specific checks
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.22.1
+    rev: 1.29.1
     hooks:
       - id: django-upgrade
         args: ['--target-version', '5.1']
 
   # Python upgrade syntax
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: v3.21.1
     hooks:
       - id: pyupgrade
         args: ['--py312-plus']

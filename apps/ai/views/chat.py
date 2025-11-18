@@ -11,11 +11,11 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from apps.ai.models import ChatMessage, ChatSession
 from apps.ai.pydantic_ai.agent.chat import ChatDependencies
 from apps.ai.pydantic_ai.agent.chat import ChatSession as AgentChatSession
 from apps.ai.pydantic_ai.agent.chat import process_chat_message_sync
 from apps.ai.pydantic_ai.llm.providers import get_default_model
-from apps.ai.models import ChatMessage, ChatSession
 from apps.public.views.helpers import HTMXView, MainContentView
 
 
