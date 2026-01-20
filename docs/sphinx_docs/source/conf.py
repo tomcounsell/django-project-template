@@ -1,72 +1,53 @@
+# Minimal Sphinx configuration for CI builds
 import os
 import sys
-from datetime import datetime
-
-import django
 
 # Path setup
-sys.path.insert(0, os.path.abspath("../../.."))
-
-# Django setup
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
-django.setup()
+sys.path.insert(0, os.path.abspath('../../..'))
 
 # Project information
-project = "Django Project Template"
-copyright = f"{datetime.now().year}, Your Organization"
-author = "Your Organization"
-release = "0.1.0"
+project = 'Django Project Template'
+copyright = '2025, Project Contributors'
+author = 'Project Contributors'
+release = '0.1.0'
 
 # General configuration
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.intersphinx",
-    "sphinx_autodoc_typehints",
-    "myst_parser",
-    "sphinxcontrib_django",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
+    'myst_parser',
 ]
 
-templates_path = ["_templates"]
-exclude_patterns = []
+templates_path = ['_templates']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-# Autodoc configuration
-autodoc_default_options = {
-    "members": True,
-    "member-order": "bysource",
-    "special-members": "__init__",
-    "undoc-members": True,
-    "exclude-members": "__weakref__",
-}
+# HTML output
+html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
 
-# Napoleon settings
+# Napoleon settings (for Google-style docstrings)
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 napoleon_include_init_with_doc = True
-napoleon_include_private_with_doc = True
-napoleon_include_special_with_doc = True
-napoleon_use_admonition_for_examples = True
-napoleon_use_admonition_for_notes = True
-napoleon_use_admonition_for_references = True
-napoleon_use_ivar = True
-napoleon_use_param = True
-napoleon_use_rtype = True
-napoleon_use_keyword = True
-napoleon_custom_sections = None
 
-# HTML output
-html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
-html_css_files = [
-    "css/custom.css",
-]
-
-# Intersphinx mapping
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "django": (
-        "https://docs.djangoproject.com/en/stable/",
-        "https://docs.djangoproject.com/en/stable/_objects/",
-    ),
+# Autodoc settings
+autodoc_default_options = {
+    'members': True,
+    'member-order': 'bysource',
+    'undoc-members': True,
+    'exclude-members': '__weakref__'
 }
+
+# MyST settings
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "substitution",
+    "tasklist",
+]
