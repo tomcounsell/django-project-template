@@ -19,6 +19,8 @@ Planned Integrations:
 
 ## Setup and Documentation
 
+📚 **[View Full Documentation](https://tomcounsell.github.io/django-project-template/)** - Comprehensive guides, API reference, and tutorials
+
 ### Getting Started
 - **Quick Start**: Run `source setup_local_env.sh` for automated local environment setup with activated virtual environment
 - **Code Quality**: Run `uv run pre-commit install` to set up automatic code quality checks
