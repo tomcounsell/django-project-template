@@ -10,6 +10,7 @@ Welcome to the Django Project Template documentation. This project serves as a f
    overview
    installation
    architecture
+   guides/index
    apps/index
    models/index
    views/index
