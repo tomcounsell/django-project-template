@@ -29,7 +29,7 @@ classifiers = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "django>=5.2.8",
+    "django>=5.2.9",
     "django-extensions>=4.1",
     "django-filter>=25.2",
     "django-debug-toolbar>=6.1.0",
@@ -50,27 +50,31 @@ dependencies = [
     "drf-yasg>=1.21.11",
     "pydantic-ai>=0.7.0",
     "openai>=1.99.1",
-    "mcp>=1.22.0",
+    "mcp>=1.23.0",
     "mcp-python>=0.1.4",
     "pre-commit>=4.5.0",
     "cryptography>=46.0.0",
     "pillow>=11.3.0",
     "certifi>=2025.8.3",
-    "urllib3>=2.5.0",
+    "urllib3>=2.6.3",
     "requests>=2.32.4",
     "pyyaml>=6.0.2",
+    "aiohttp>=3.13.3",
+    "filelock>=3.20.3",
+    "pyasn1>=0.6.2",
+    "virtualenv>=20.36.1",
 ]
 
 [project.optional-dependencies]
 dev = [
     "django-browser-reload>=1.21.0",
-    "Werkzeug",
-    "aider-chat>=0.86.1",
+    "Werkzeug>=3.1.5",
     "black>=25.11.0",
     "flake8>=7.3.0",
     "mypy>=1.18.2",
     "django-stubs>=5.2.7",
     "ipython>=9.7.0",
+    "authlib>=1.6.6",
 ]
 test = [
     "pytest>=9.0.1",
