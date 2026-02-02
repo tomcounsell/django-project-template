@@ -127,6 +127,7 @@ dev = [
     "django-browser-reload>=1.21.0",
     "django-stubs>=5.2.7",
     "ipython>=9.7.0",
+    "isort>=7.0.0",
     "mypy>=1.18.2",
     "pre-commit>=4.5.0",
 ]
