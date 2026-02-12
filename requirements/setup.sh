@@ -45,6 +45,65 @@ fi
 
 echo ""
 echo "✅ Dependencies installed successfully!"
+
+# Zed editor setup
+echo ""
+read -p "Would you like to set up Zed editor configuration? (y/N) " setup_zed
+if [[ "$setup_zed" =~ ^[Yy]$ ]]; then
+    mkdir -p .zed
+    cat > .zed/tasks.json << 'TASKS'
+[
+  {
+    "label": "Django Server",
+    "command": "uv run python manage.py runserver",
+    "env": { "DJANGO_SETTINGS_MODULE": "settings", "PYTHONUNBUFFERED": "1" },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Tailwind Watch",
+    "command": "uv run python manage.py tailwind watch",
+    "env": { "DJANGO_SETTINGS_MODULE": "settings", "PYTHONUNBUFFERED": "1" },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Run Tests",
+    "command": "DJANGO_SETTINGS_MODULE=settings uv run pytest -v",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Run Tests (current file)",
+    "command": "DJANGO_SETTINGS_MODULE=settings uv run pytest -v $ZED_FILE",
+    "use_new_terminal": false
+  },
+  {
+    "label": "Django Shell",
+    "command": "uv run python manage.py shell",
+    "env": { "DJANGO_SETTINGS_MODULE": "settings", "PYTHONUNBUFFERED": "1" },
+    "use_new_terminal": true
+  },
+  {
+    "label": "Dev (Server + Tailwind)",
+    "command": "uv run python manage.py runserver & uv run python manage.py tailwind watch; wait",
+    "env": { "DJANGO_SETTINGS_MODULE": "settings", "PYTHONUNBUFFERED": "1" },
+    "use_new_terminal": true
+  }
+]
+TASKS
+    cat > .zed/settings.json << 'SETTINGS'
+{
+  "languages": {
+    "Python": {
+      "language_servers": ["pyright", "ruff"]
+    }
+  }
+}
+SETTINGS
+    echo "✅ Zed config created in .zed/ (tasks + settings)"
+    echo "   See docs/ZED_SETUP.md for keybindings and more details"
+fi
+
 echo ""
 echo "Next steps:"
 echo "  1. Copy .env.example to .env.local and configure"
