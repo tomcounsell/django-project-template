@@ -23,7 +23,7 @@ mkdir -p "$SPHINX_DIR/source/_static"
 # Function to create fallback API documentation
 create_fallback_api_docs() {
     echo "Creating fallback API documentation..."
-    
+
     cat << 'EOF' > "$API_DOCS_DIR/endpoints.rst"
 API Documentation
 ================
@@ -80,7 +80,7 @@ EOF
 # Function to create minimal Sphinx configuration if needed
 create_minimal_sphinx_config() {
     echo "Creating minimal Sphinx configuration..."
-    
+
     cat << 'EOF' > "$SPHINX_DIR/source/conf_minimal.py"
 # Minimal Sphinx configuration for CI builds
 import os
@@ -141,7 +141,7 @@ EOF
 # Function to ensure essential RST files exist
 ensure_rst_files() {
     echo "Ensuring essential RST files exist..."
-    
+
     # Main index file
     if [ ! -f "$SPHINX_DIR/source/index.rst" ]; then
         cat << 'EOF' > "$SPHINX_DIR/source/index.rst"
@@ -170,7 +170,7 @@ Indices and tables
 * :ref:`search`
 EOF
     fi
-    
+
     # Overview file
     if [ ! -f "$SPHINX_DIR/source/overview.rst" ]; then
         cat << 'EOF' > "$SPHINX_DIR/source/overview.rst"
@@ -215,7 +215,7 @@ Getting Started
 For detailed setup instructions, see the development section.
 EOF
     fi
-    
+
     # API index
     mkdir -p "$SPHINX_DIR/source/api"
     if [ ! -f "$SPHINX_DIR/source/api/index.rst" ]; then
@@ -249,7 +249,7 @@ The API uses token-based authentication. Obtain a token by:
 3. Including the token in your requests: ``Authorization: Token your-token-here``
 EOF
     fi
-    
+
     # Development index
     mkdir -p "$SPHINX_DIR/source/development"
     if [ ! -f "$SPHINX_DIR/source/development/index.rst" ]; then
@@ -304,7 +304,7 @@ Install pre-commit hooks::
     pre-commit install
 EOF
     fi
-    
+
     # Models index
     mkdir -p "$SPHINX_DIR/source/models"
     if [ ! -f "$SPHINX_DIR/source/models/index.rst" ]; then
@@ -325,7 +325,7 @@ Database Design
 The Django Project Template uses PostgreSQL as the primary database with:
 
 * **Behavior Mixins**: Reusable model behaviors
-* **Custom Managers**: Enhanced query capabilities  
+* **Custom Managers**: Enhanced query capabilities
 * **Migration Strategy**: Safe, reversible schema changes
 
 Behavior Mixins
@@ -386,15 +386,15 @@ if $PYTHON_CMD -m sphinx -b html source build/html -W --keep-going; then
     echo "Successfully built with original configuration!"
 else
     echo "Original configuration failed, trying minimal configuration..."
-    
+
     # Backup original config
     if [ -f "source/conf.py" ]; then
         mv "source/conf.py" "source/conf_original.py.backup"
     fi
-    
+
     # Use minimal config
     cp "source/conf_minimal.py" "source/conf.py"
-    
+
     # Build with minimal config
     $PYTHON_CMD -m sphinx -b html source build/html
     echo "Successfully built with minimal configuration!"
@@ -405,7 +405,7 @@ echo "Step 5: Verifying build output..."
 if [ -f "build/html/index.html" ]; then
     echo "✓ Documentation built successfully!"
     echo "✓ Main index page created: build/html/index.html"
-    
+
     # List generated files
     echo "Generated files:"
     find build/html -name "*.html" | head -10
