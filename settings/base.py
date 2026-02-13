@@ -105,6 +105,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.contrib.messages.context_processors.messages",
                 "apps.public.context_processors.active_navigation",
+                "apps.public.context_processors.debug_toolbar_toggle",
             ],
             "loaders": [
                 (
@@ -194,6 +195,9 @@ TEMPLATE_DIRS = [
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": "apps.common.utilities.django.middleware.show_debug_toolbar",
+}
 
 NPM_BIN_PATH = "npm"
 
