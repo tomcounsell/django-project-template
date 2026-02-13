@@ -3,28 +3,28 @@ import os
 import sys
 
 # Path setup
-sys.path.insert(0, os.path.abspath('../../..'))
+sys.path.insert(0, os.path.abspath("../../.."))
 
 # Project information
-project = 'Django Project Template'
-copyright = '2025, Project Contributors'
-author = 'Project Contributors'
-release = '0.1.0'
+project = "Django Project Template"
+copyright = "2025, Project Contributors"
+author = "Project Contributors"
+release = "0.1.0"
 
 # General configuration
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
-    'myst_parser',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "myst_parser",
 ]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # HTML output
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
 
 # Napoleon settings (for Google-style docstrings)
 napoleon_google_docstring = True
@@ -33,10 +33,10 @@ napoleon_include_init_with_doc = True
 
 # Autodoc settings
 autodoc_default_options = {
-    'members': True,
-    'member-order': 'bysource',
-    'undoc-members': True,
-    'exclude-members': '__weakref__'
+    "members": True,
+    "member-order": "bysource",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
 }
 
 # MyST settings

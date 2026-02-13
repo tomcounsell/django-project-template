@@ -12,7 +12,7 @@ on:
     branches:
       - main
     paths:
-      - 'apps/**' 
+      - 'apps/**'
       - 'docs/**'
       - '.github/workflows/docs*.yml'
   workflow_dispatch:
@@ -54,7 +54,7 @@ jobs:
         run: |
           # Make sure our robust build script is executable
           chmod +x docs/scripts/build_docs_ci_fixed.sh
-          
+
           # Run the robust build script
           ./docs/scripts/build_docs_ci_fixed.sh
 

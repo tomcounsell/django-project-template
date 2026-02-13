@@ -35,12 +35,12 @@ when using OS-level isolation.
 import signal
 import sys
 import time
+from collections.abc import Callable
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
-from typing import Any, Callable
+from typing import Any
 
 from ..exceptions import (
-    ResourceLimitError,
     SecurityViolationError,
 )
 from ..exceptions import TimeoutError as ExecutionTimeoutError
