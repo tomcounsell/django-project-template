@@ -3,6 +3,7 @@ from django.contrib.admin import SimpleListFilter
 from django.db.models import Count
 from django.shortcuts import redirect
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from rest_framework_api_key.admin import APIKeyModelAdmin
 from unfold.admin import ModelAdmin, TabularInline
@@ -220,10 +221,10 @@ class UserAdmin(ModelAdmin):
     @admin.display(description="Status")
     def status_badge(self, obj):
         if obj.is_active:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-green-500 text-white">Active</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-red-500 text-white">Inactive</span>'
         )
 
@@ -390,10 +391,10 @@ class TeamAdmin(ModelAdmin):
     @admin.display(description="Status")
     def status_badge(self, obj):
         if obj.is_active:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-green-500 text-white">Active</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-red-500 text-white">Inactive</span>'
         )
 
@@ -530,20 +531,20 @@ class BlogPostAdmin(ModelAdmin):
     @admin.display(description="Status")
     def publishing_status(self, obj):
         if obj.is_published:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-green-500 text-white">Published</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-gray-500 text-white">Draft</span>'
         )
 
     @admin.display(description="Expiration")
     def expiration_status(self, obj):
         if obj.is_expired:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-red-500 text-white">Expired</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-green-500 text-white">Active</span>'
         )
 
@@ -705,20 +706,20 @@ class EmailAdmin(ModelAdmin):
     @admin.display(description="Sent")
     def sent_status(self, obj):
         if obj.sent_at:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-green-500 text-white">Sent</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-yellow-500 text-white">Pending</span>'
         )
 
     @admin.display(description="Read")
     def read_status(self, obj):
         if obj.read_at:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-green-500 text-white">Read</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-gray-500 text-white">Unread</span>'
         )
 
@@ -772,10 +773,10 @@ class SMSAdmin(ModelAdmin):
     @admin.display(description="Sent")
     def sent_status(self, obj):
         if obj.sent_at:
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-green-500 text-white">Sent</span>'
             )
-        return format_html(
+        return mark_safe(
             '<span class="unfold-badge bg-yellow-500 text-white">Pending</span>'
         )
 
@@ -1074,7 +1075,7 @@ class SubscriptionAdmin(ModelAdmin):
                     '<span class="unfold-badge bg-purple-500 text-white">Trial ends {}</span>',
                     obj.trial_end.strftime("%Y-%m-%d"),
                 )
-            return format_html(
+            return mark_safe(
                 '<span class="unfold-badge bg-purple-500 text-white">Trial</span>'
             )
         return "-"

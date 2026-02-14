@@ -102,7 +102,7 @@ distro==1.9.0
     #   openai
 dj-database-url==3.1.0
     # via django-project-template (pyproject.toml)
-django==6.0.1
+django==6.0.2
     # via
     #   django-project-template (pyproject.toml)
     #   dj-database-url
