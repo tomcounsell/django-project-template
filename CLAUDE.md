@@ -316,3 +316,7 @@ Read these documents when working on specific areas:
 - Run formatters before committing: `black . && isort .`
 - Check changes with `git status` before committing
 - Don't include co-authors in commit messages
+
+## Business Context
+
+For business context, project notes, and assets see the work vault: `~/src/work-vault/Django Project Template/`
