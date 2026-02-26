@@ -11,8 +11,11 @@ import sys
 from pathlib import Path
 
 # Import base session
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "_base" / "scripts"))
-from mcp_session import MCPSession
+try:
+    from _base.scripts.mcp_session import MCPSession
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "_base" / "scripts"))
+    from mcp_session import MCPSession
 
 
 class PostgresSession(MCPSession):

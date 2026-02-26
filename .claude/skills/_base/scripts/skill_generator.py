@@ -17,9 +17,12 @@ import sys
 from pathlib import Path
 from textwrap import dedent
 
-# Add parent to path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-from mcp_session import introspect_mcp_server
+# Import from package or fall back to sys.path
+try:
+    from _base.scripts.mcp_session import introspect_mcp_server
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).parent))
+    from mcp_session import introspect_mcp_server
 
 
 def parse_mcp_source(source: str) -> dict:
