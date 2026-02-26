@@ -97,7 +97,11 @@ class PostgresSession(MCPSession):
             WHERE table_schema = 'public'
             ORDER BY table_name
         """)
-        return [row.get("table_name") for row in result] if isinstance(result, list) else []
+        return (
+            [row.get("table_name") for row in result]
+            if isinstance(result, list)
+            else []
+        )
 
     def describe_table(self, table_name: str) -> list[dict]:
         """Get column information for a table."""
@@ -136,7 +140,9 @@ def main():
     parser.add_argument("--sql", help="SQL query to execute")
     parser.add_argument("--tables", action="store_true", help="List all tables")
     parser.add_argument("--describe", help="Describe a table")
-    parser.add_argument("--interactive", action="store_true", help="Interactive SQL mode")
+    parser.add_argument(
+        "--interactive", action="store_true", help="Interactive SQL mode"
+    )
 
     args = parser.parse_args()
 
@@ -154,8 +160,14 @@ def main():
             print(f"Table: {args.describe}")
             for col in columns:
                 nullable = "NULL" if col.get("is_nullable") == "YES" else "NOT NULL"
-                default = f" DEFAULT {col.get('column_default')}" if col.get("column_default") else ""
-                print(f"  {col.get('column_name')}: {col.get('data_type')} {nullable}{default}")
+                default = (
+                    f" DEFAULT {col.get('column_default')}"
+                    if col.get("column_default")
+                    else ""
+                )
+                print(
+                    f"  {col.get('column_name')}: {col.get('data_type')} {nullable}{default}"
+                )
             return
 
         if args.sql:
@@ -165,7 +177,9 @@ def main():
 
         if args.interactive:
             print("PostgreSQL Interactive Mode")
-            print("Type SQL queries (read-only). Commands: \\dt (tables), \\d table (describe), \\q (quit)")
+            print(
+                "Type SQL queries (read-only). Commands: \\dt (tables), \\d table (describe), \\q (quit)"
+            )
             print()
 
             while True:

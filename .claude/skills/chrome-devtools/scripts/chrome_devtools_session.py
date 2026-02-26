@@ -59,7 +59,12 @@ def find_chrome() -> str:
         paths = []
 
     # Also check PATH
-    for cmd in ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"]:
+    for cmd in [
+        "google-chrome",
+        "google-chrome-stable",
+        "chromium",
+        "chromium-browser",
+    ]:
         if path := shutil.which(cmd):
             paths.insert(0, path)
 
@@ -125,7 +130,11 @@ class ChromeDevToolsSession(MCPSession):
 
         # Verify Chrome is running
         if self.chrome_process.poll() is not None:
-            stderr = self.chrome_process.stderr.read().decode() if self.chrome_process.stderr else ""
+            stderr = (
+                self.chrome_process.stderr.read().decode()
+                if self.chrome_process.stderr
+                else ""
+            )
             raise RuntimeError(f"Chrome failed to start: {stderr}")
 
         print(f"Chrome started on debug port {self.debug_port}", file=sys.stderr)
@@ -155,7 +164,9 @@ class ChromeDevToolsSession(MCPSession):
         # Update MCP command to connect to our Chrome instance
         # The MCP server needs to know the debug URL
         self.MCP_COMMAND = [
-            "npx", "-y", "@anthropic/mcp-server-chrome@0.1.0",
+            "npx",
+            "-y",
+            "@anthropic/mcp-server-chrome@0.1.0",
         ]
 
         # Set the debug URL for the MCP server
@@ -178,6 +189,7 @@ class ChromeDevToolsSession(MCPSession):
         # Start reader thread
         self._stop_reader = False
         import threading
+
         self.reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
         self.reader_thread.start()
 
@@ -194,7 +206,10 @@ class ChromeDevToolsSession(MCPSession):
         self._initialize()
         self._discover_tools()
 
-        print(f"Chrome DevTools session started with {len(self.tools)} tools", file=sys.stderr)
+        print(
+            f"Chrome DevTools session started with {len(self.tools)} tools",
+            file=sys.stderr,
+        )
         return self
 
     def stop(self) -> None:
@@ -244,12 +259,18 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Chrome DevTools MCP Skill")
-    parser.add_argument("--list-tools", action="store_true", help="List available tools")
+    parser.add_argument(
+        "--list-tools", action="store_true", help="List available tools"
+    )
     parser.add_argument("--tool", help="Tool name to call")
     parser.add_argument("--args", help="Tool arguments as JSON string")
     parser.add_argument("--interactive", action="store_true", help="Interactive mode")
-    parser.add_argument("--headless", default="true", help="Run Chrome headless (default: true)")
-    parser.add_argument("--port", type=int, default=9222, help="Chrome debug port (default: 9222)")
+    parser.add_argument(
+        "--headless", default="true", help="Run Chrome headless (default: true)"
+    )
+    parser.add_argument(
+        "--port", type=int, default=9222, help="Chrome debug port (default: 9222)"
+    )
 
     args = parser.parse_args()
 

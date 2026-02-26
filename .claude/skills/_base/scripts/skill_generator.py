@@ -33,8 +33,7 @@ def parse_mcp_source(source: str) -> dict:
 
     # npm package (starts with @ or is a simple package name)
     if source.startswith("@") or (
-        not source.startswith(("http", "git+", "/", "~", "."))
-        and "/" not in source
+        not source.startswith(("http", "git+", "/", "~", ".")) and "/" not in source
     ):
         package = source
         # Note: Pin to specific versions rather than using @latest
@@ -163,7 +162,9 @@ def generate_skill_md(
     # Build tool documentation
     tool_docs = []
     for category, category_tools in categories.items():
-        tool_docs.append(f"\n### {category.title()} Operations ({len(category_tools)} tools)\n")
+        tool_docs.append(
+            f"\n### {category.title()} Operations ({len(category_tools)} tools)\n"
+        )
         for tool in category_tools:
             tool_name = tool.get("name", "unknown")
             tool_desc = tool.get("description", "No description")
@@ -186,7 +187,7 @@ def generate_skill_md(
 Set these in `~/.env/services/.env` or `.env.local`
 """
 
-    return dedent(f'''
+    return dedent(f"""
 ---
 name: {name}
 description: {description}
@@ -251,7 +252,7 @@ with {snake_name.title().replace("_", "")}Session() as session:
 ## Tool Reference
 
 See the full tool schemas in `scripts/tool_schemas.json`.
-''').strip()
+""").strip()
 
 
 def generate_session_script(
@@ -390,7 +391,7 @@ result = session.call_tool("{tool_name}", {json.dumps(example_args, indent=4)})
 ```
 """)
 
-    return dedent(f'''
+    return dedent(f"""
 # {name.replace("-", " ").title()} Workflows
 
 Common usage patterns for the {name} skill.
@@ -420,7 +421,7 @@ python {snake_name}_session.py --tool tool_name --args '{{"arg": "value"}}'
 # Interactive mode
 python {snake_name}_session.py --interactive
 ```
-''').strip()
+""").strip()
 
 
 def generate_skill(

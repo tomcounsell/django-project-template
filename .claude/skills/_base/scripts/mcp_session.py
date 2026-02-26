@@ -342,7 +342,9 @@ if __name__ == "__main__":
     # Example: introspect an MCP server
     if len(sys.argv) < 2:
         print("Usage: python mcp_session.py <mcp-command> [args...]")
-        print("Example: python mcp_session.py npx -y @modelcontextprotocol/server-github")
+        print(
+            "Example: python mcp_session.py npx -y @modelcontextprotocol/server-github"
+        )
         sys.exit(1)
 
     command = sys.argv[1:]
@@ -354,7 +356,9 @@ if __name__ == "__main__":
         print(f"Tools found: {len(result['tools'])}\n")
 
         for tool in result["tools"]:
-            print(f"  - {tool.get('name')}: {tool.get('description', 'No description')[:60]}")
+            print(
+                f"  - {tool.get('name')}: {tool.get('description', 'No description')[:60]}"
+            )
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

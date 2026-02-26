@@ -26,10 +26,13 @@ class GitHubSession(MCPSession):
 
     def search_repositories(self, query: str, per_page: int = 10) -> list[dict]:
         """Search for GitHub repositories."""
-        return self.call_tool("search_repositories", {
-            "query": query,
-            "perPage": per_page,
-        })
+        return self.call_tool(
+            "search_repositories",
+            {
+                "query": query,
+                "perPage": per_page,
+            },
+        )
 
     def get_file_contents(
         self,
@@ -73,11 +76,14 @@ class GitHubSession(MCPSession):
 
     def get_issue(self, owner: str, repo: str, issue_number: int) -> dict:
         """Get a specific issue."""
-        return self.call_tool("get_issue", {
-            "owner": owner,
-            "repo": repo,
-            "issue_number": issue_number,
-        })
+        return self.call_tool(
+            "get_issue",
+            {
+                "owner": owner,
+                "repo": repo,
+                "issue_number": issue_number,
+            },
+        )
 
     def create_issue(
         self,
@@ -106,12 +112,15 @@ class GitHubSession(MCPSession):
         body: str,
     ) -> dict:
         """Add a comment to an issue."""
-        return self.call_tool("add_issue_comment", {
-            "owner": owner,
-            "repo": repo,
-            "issue_number": issue_number,
-            "body": body,
-        })
+        return self.call_tool(
+            "add_issue_comment",
+            {
+                "owner": owner,
+                "repo": repo,
+                "issue_number": issue_number,
+                "body": body,
+            },
+        )
 
     def list_pull_requests(
         self,
@@ -121,20 +130,26 @@ class GitHubSession(MCPSession):
         per_page: int = 30,
     ) -> list[dict]:
         """List pull requests."""
-        return self.call_tool("list_pull_requests", {
-            "owner": owner,
-            "repo": repo,
-            "state": state,
-            "per_page": per_page,
-        })
+        return self.call_tool(
+            "list_pull_requests",
+            {
+                "owner": owner,
+                "repo": repo,
+                "state": state,
+                "per_page": per_page,
+            },
+        )
 
     def get_pull_request(self, owner: str, repo: str, pull_number: int) -> dict:
         """Get a specific pull request."""
-        return self.call_tool("get_pull_request", {
-            "owner": owner,
-            "repo": repo,
-            "pull_number": pull_number,
-        })
+        return self.call_tool(
+            "get_pull_request",
+            {
+                "owner": owner,
+                "repo": repo,
+                "pull_number": pull_number,
+            },
+        )
 
     def create_pull_request(
         self,
@@ -147,15 +162,18 @@ class GitHubSession(MCPSession):
         draft: bool = False,
     ) -> dict:
         """Create a new pull request."""
-        return self.call_tool("create_pull_request", {
-            "owner": owner,
-            "repo": repo,
-            "title": title,
-            "head": head,
-            "base": base,
-            "body": body,
-            "draft": draft,
-        })
+        return self.call_tool(
+            "create_pull_request",
+            {
+                "owner": owner,
+                "repo": repo,
+                "title": title,
+                "head": head,
+                "base": base,
+                "body": body,
+                "draft": draft,
+            },
+        )
 
     def create_pull_request_review(
         self,
@@ -166,13 +184,16 @@ class GitHubSession(MCPSession):
         body: str = "",
     ) -> dict:
         """Submit a pull request review."""
-        return self.call_tool("create_pull_request_review", {
-            "owner": owner,
-            "repo": repo,
-            "pull_number": pull_number,
-            "event": event,  # APPROVE, REQUEST_CHANGES, COMMENT
-            "body": body,
-        })
+        return self.call_tool(
+            "create_pull_request_review",
+            {
+                "owner": owner,
+                "repo": repo,
+                "pull_number": pull_number,
+                "event": event,  # APPROVE, REQUEST_CHANGES, COMMENT
+                "body": body,
+            },
+        )
 
     def merge_pull_request(
         self,
@@ -182,12 +203,15 @@ class GitHubSession(MCPSession):
         merge_method: str = "merge",
     ) -> dict:
         """Merge a pull request."""
-        return self.call_tool("merge_pull_request", {
-            "owner": owner,
-            "repo": repo,
-            "pull_number": pull_number,
-            "merge_method": merge_method,  # merge, squash, rebase
-        })
+        return self.call_tool(
+            "merge_pull_request",
+            {
+                "owner": owner,
+                "repo": repo,
+                "pull_number": pull_number,
+                "merge_method": merge_method,  # merge, squash, rebase
+            },
+        )
 
     def search_code(self, query: str, per_page: int = 30) -> list[dict]:
         """Search code across GitHub."""
@@ -213,7 +237,9 @@ def main():
     parser = argparse.ArgumentParser(description="GitHub MCP Skill")
     parser.add_argument("--issues", metavar="OWNER/REPO", help="List issues")
     parser.add_argument("--prs", metavar="OWNER/REPO", help="List pull requests")
-    parser.add_argument("--pr", nargs=2, metavar=("OWNER/REPO", "NUMBER"), help="Get PR details")
+    parser.add_argument(
+        "--pr", nargs=2, metavar=("OWNER/REPO", "NUMBER"), help="Get PR details"
+    )
     parser.add_argument("--commits", metavar="OWNER/REPO", help="List commits")
     parser.add_argument("--search-repos", metavar="QUERY", help="Search repositories")
     parser.add_argument("--search-code", metavar="QUERY", help="Search code")
@@ -239,7 +265,9 @@ def main():
             print(f"Open PRs in {args.prs}:")
             for pr in prs:
                 print(f"  #{pr.get('number')}: {pr.get('title')[:50]}")
-                print(f"         {pr.get('head', {}).get('ref')} → {pr.get('base', {}).get('ref')}")
+                print(
+                    f"         {pr.get('head', {}).get('ref')} → {pr.get('base', {}).get('ref')}"
+                )
             return
 
         if args.pr:
@@ -248,7 +276,9 @@ def main():
             print(f"PR #{pr.get('number')}: {pr.get('title')}")
             print(f"  State: {pr.get('state')}")
             print(f"  Author: {pr.get('user', {}).get('login')}")
-            print(f"  Branch: {pr.get('head', {}).get('ref')} → {pr.get('base', {}).get('ref')}")
+            print(
+                f"  Branch: {pr.get('head', {}).get('ref')} → {pr.get('base', {}).get('ref')}"
+            )
             print(f"  Created: {pr.get('created_at')}")
             if pr.get("body"):
                 print(f"\n{pr.get('body')[:500]}")
@@ -280,7 +310,9 @@ def main():
             print(f"Code matching '{args.search_code}':")
             items = results.get("items", []) if isinstance(results, dict) else results
             for item in items[:10]:
-                print(f"  {item.get('repository', {}).get('full_name')}/{item.get('path')}")
+                print(
+                    f"  {item.get('repository', {}).get('full_name')}/{item.get('path')}"
+                )
             return
 
         if args.interactive:
@@ -308,7 +340,9 @@ def main():
                         owner, repo = parse_repo(arg)
                         issues = gh.list_issues(owner, repo)
                         for issue in issues[:10]:
-                            print(f"  #{issue.get('number')}: {issue.get('title')[:50]}")
+                            print(
+                                f"  #{issue.get('number')}: {issue.get('title')[:50]}"
+                            )
 
                     elif command == "prs" and arg:
                         owner, repo = parse_repo(arg)
@@ -318,7 +352,9 @@ def main():
 
                     elif command == "search" and arg:
                         repos = gh.search_repositories(arg)
-                        items = repos.get("items", []) if isinstance(repos, dict) else repos
+                        items = (
+                            repos.get("items", []) if isinstance(repos, dict) else repos
+                        )
                         for repo in items[:5]:
                             print(f"  {repo.get('full_name')}")
 

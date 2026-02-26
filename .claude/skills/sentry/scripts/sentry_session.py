@@ -14,10 +14,12 @@ from typing import Any
 # Try to import requests, fall back to urllib
 try:
     import requests
+
     HAS_REQUESTS = True
 except ImportError:
     import urllib.request
     import urllib.error
+
     HAS_REQUESTS = False
 
 
@@ -194,7 +196,9 @@ class SentrySession:
 
     def get_events(self, issue_id: str, limit: int = 10) -> list[dict]:
         """Get events for an issue."""
-        return self.call_tool("get_issue_events", {"issue_id": issue_id, "limit": limit})
+        return self.call_tool(
+            "get_issue_events", {"issue_id": issue_id, "limit": limit}
+        )
 
     def get_stacktrace(self, event_id: str) -> dict:
         """Get stack trace for an event."""
@@ -239,7 +243,9 @@ def main():
             print(f"Found {len(issues)} issues:")
             for issue in issues:
                 print(f"  [{issue.get('id')}] {issue.get('title')[:60]}")
-                print(f"       Count: {issue.get('count')} | Users: {issue.get('userCount')}")
+                print(
+                    f"       Count: {issue.get('count')} | Users: {issue.get('userCount')}"
+                )
             return
 
         if args.issue:
