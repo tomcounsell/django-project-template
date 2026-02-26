@@ -18,7 +18,7 @@ from mcp_session import MCPSession
 class GitHubSession(MCPSession):
     """Session manager for GitHub MCP skill."""
 
-    MCP_COMMAND = ["npx", "-y", "@modelcontextprotocol/server-github@latest"]
+    MCP_COMMAND = ["npx", "-y", "@modelcontextprotocol/server-github@2025.1.13"]
     REQUIRED_ENV = ["GITHUB_PERSONAL_ACCESS_TOKEN"]
     OPTIONAL_ENV = []
 

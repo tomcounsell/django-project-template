@@ -35,7 +35,7 @@ Each skill is a self-contained directory under `.claude/skills/`:
     ├── SKILL.md                      # Skill definition with tool docs
     ├── scripts/
     │   ├── {skill_name}_session.py   # Persistent session manager
-    │   └── introspect_tools.py       # Tool discovery utility
+    │   └── (additional scripts as needed)
     └── examples/
         └── workflows.md              # Common usage patterns
 ```
@@ -121,7 +121,6 @@ When you run `/mcp-skill {source}`, Claude will:
 4. **Generate files**
    - `SKILL.md`: Frontmatter, architecture diagram, tool docs
    - `{skill_name}_session.py`: Session manager with `start()`, `stop()`, `call_tool()`
-   - `introspect_tools.py`: Standalone tool discovery script
    - `examples/workflows.md`: Common usage patterns
 
 ### Example: Creating a Postgres Skill

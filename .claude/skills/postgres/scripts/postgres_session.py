@@ -18,7 +18,7 @@ from mcp_session import MCPSession
 class PostgresSession(MCPSession):
     """Session manager for PostgreSQL MCP skill."""
 
-    MCP_COMMAND = ["npx", "-y", "@modelcontextprotocol/server-postgres@latest"]
+    MCP_COMMAND = ["npx", "-y", "@modelcontextprotocol/server-postgres@0.6.2"]
     REQUIRED_ENV = ["DATABASE_URL"]
     OPTIONAL_ENV = []
 
@@ -41,10 +41,19 @@ class PostgresSession(MCPSession):
         r"\bTRUNCATE\b",
         r"\bGRANT\b",
         r"\bREVOKE\b",
+        r"\bCOPY\b",
+        r"\bCALL\b",
+        r"\bDO\b\s*\$",
+        r";.*\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE)\b",
     ]
 
     def _is_read_only(self, sql: str) -> bool:
-        """Check if SQL is read-only."""
+        """Check if SQL is read-only.
+
+        NOTE: This is a convenience check, not a security boundary.
+        For true read-only enforcement, use a read-only database user
+        or SET default_transaction_read_only = on at the connection level.
+        """
         sql_upper = sql.upper()
 
         # Check for forbidden operations

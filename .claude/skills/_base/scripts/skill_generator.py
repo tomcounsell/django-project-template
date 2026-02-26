@@ -37,8 +37,8 @@ def parse_mcp_source(source: str) -> dict:
         and "/" not in source
     ):
         package = source
-        if not package.endswith("@latest"):
-            package = f"{package}@latest"
+        # Note: Pin to specific versions rather than using @latest
+        # per project conventions. If no version specified, use as-is.
         return {
             "command": ["npx", "-y", package],
             "runtime": "npx",
@@ -457,10 +457,8 @@ def generate_skill(
     if mcp_command is None:
         raise NotImplementedError("HTTP MCP servers not yet supported")
 
-    # Set any provided env vars
-    if env_vars:
-        for key, value in env_vars.items():
-            os.environ[key] = value
+    # Env vars are passed to introspect_mcp_server which handles
+    # scoping them to the subprocess without polluting os.environ
 
     # Introspect the server
     print(f"Introspecting MCP server: {' '.join(mcp_command)}")

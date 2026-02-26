@@ -313,8 +313,11 @@ def introspect_mcp_server(command: list[str], env_vars: dict | None = None) -> d
     class TempSession(MCPSession):
         MCP_COMMAND = command
 
+    # Scope env vars to avoid polluting the global process environment
+    old_env = {}
     if env_vars:
         for key, value in env_vars.items():
+            old_env[key] = os.environ.get(key)
             os.environ[key] = value
 
     session = TempSession()
@@ -326,6 +329,13 @@ def introspect_mcp_server(command: list[str], env_vars: dict | None = None) -> d
         }
     finally:
         session.stop()
+        # Restore original environment
+        if env_vars:
+            for key in env_vars:
+                if old_env.get(key) is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = old_env[key]
 
 
 if __name__ == "__main__":

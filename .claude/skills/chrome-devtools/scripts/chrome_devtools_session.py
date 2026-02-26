@@ -20,6 +20,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 # Import base session
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "_base" / "scripts"))
@@ -78,7 +79,7 @@ class ChromeDevToolsSession(MCPSession):
     Handles lifecycle of both Chrome browser and MCP server.
     """
 
-    MCP_COMMAND = ["npx", "-y", "@anthropic/mcp-server-chrome@latest"]
+    MCP_COMMAND = ["npx", "-y", "@anthropic/mcp-server-chrome@0.1.0"]
     REQUIRED_ENV = []
     OPTIONAL_ENV = ["CHROME_PATH", "CHROME_DEBUG_PORT", "CHROME_HEADLESS"]
 
@@ -154,7 +155,7 @@ class ChromeDevToolsSession(MCPSession):
         # Update MCP command to connect to our Chrome instance
         # The MCP server needs to know the debug URL
         self.MCP_COMMAND = [
-            "npx", "-y", "@anthropic/mcp-server-chrome@latest",
+            "npx", "-y", "@anthropic/mcp-server-chrome@0.1.0",
         ]
 
         # Set the debug URL for the MCP server
@@ -233,7 +234,7 @@ class ChromeDevToolsSession(MCPSession):
         result = self.call_tool("get_network_requests", {})
         return result if isinstance(result, list) else []
 
-    def evaluate(self, expression: str) -> any:
+    def evaluate(self, expression: str) -> Any:
         """Convenience method: Evaluate JavaScript."""
         return self.call_tool("evaluate", {"expression": expression})
 
