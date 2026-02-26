@@ -70,8 +70,3 @@ else:
         HOSTNAME = socket.gethostname()
     except Exception:  # More specific exceptions are better
         HOSTNAME = "localhost"
-
-# Internal IPs for debug toolbar
-INTERNAL_IPS = [
-    "127.0.0.1",
-]

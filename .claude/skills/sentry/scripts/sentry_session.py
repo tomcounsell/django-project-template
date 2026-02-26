@@ -11,6 +11,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# Import shared utilities from _base
+try:
+    from _base.scripts.mcp_session import check_required_env, load_env_files
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "_base" / "scripts"))
+    from mcp_session import check_required_env, load_env_files
+
 # Try to import requests, fall back to urllib
 try:
     import requests
@@ -36,35 +43,6 @@ class SentrySession:
         self.token: str | None = None
         self.tools: list[dict] = []
         self.server_info: dict = {}
-
-    def _load_env_files(self) -> None:
-        """Load environment variables from common locations."""
-        env_paths = [
-            Path.home() / ".env" / "services" / ".env",
-            Path.home() / ".env" / ".env",
-            Path.cwd() / ".env.local",
-            Path.cwd() / ".env",
-        ]
-
-        for env_file in env_paths:
-            if env_file.exists():
-                with open(env_file) as f:
-                    for line in f:
-                        line = line.strip()
-                        if line and not line.startswith("#") and "=" in line:
-                            key, _, value = line.partition("=")
-                            key = key.strip()
-                            value = value.strip().strip("'\"")
-                            os.environ.setdefault(key, value)
-
-    def _check_required_env(self) -> None:
-        """Verify required environment variables."""
-        missing = [var for var in self.REQUIRED_ENV if not os.environ.get(var)]
-        if missing:
-            raise EnvironmentError(
-                f"Missing required environment variables: {', '.join(missing)}\n"
-                f"Get your Sentry token at: https://sentry.io/settings/account/api/auth-tokens/"
-            )
 
     def _make_request(self, method: str, params: dict | None = None) -> dict:
         """Make an HTTP JSON-RPC request to the Sentry MCP server."""
@@ -119,8 +97,8 @@ class SentrySession:
 
     def start(self) -> "SentrySession":
         """Initialize the Sentry MCP session."""
-        self._load_env_files()
-        self._check_required_env()
+        load_env_files()
+        check_required_env(self.REQUIRED_ENV)
 
         self.token = os.environ.get("SENTRY_AUTH_TOKEN")
 

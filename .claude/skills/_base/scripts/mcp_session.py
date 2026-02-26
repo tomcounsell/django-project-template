@@ -30,6 +30,48 @@ import time
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
+
+# --- Shared utility functions (used by MCPSession and SentrySession) ---
+
+ENV_FILE_PATHS = [
+    Path.home() / ".env" / "services" / ".env",
+    Path.home() / ".env" / ".env",
+    Path.cwd() / ".env.local",
+    Path.cwd() / ".env",
+]
+
+
+def load_env_files(paths: list[Path] | None = None) -> None:
+    """Load environment variables from common .env file locations.
+
+    Uses python-dotenv for robust parsing (handles export prefixes,
+    multi-line values, interpolation, and comments).
+
+    Args:
+        paths: Optional list of paths to check. Defaults to ENV_FILE_PATHS.
+    """
+    for env_file in paths or ENV_FILE_PATHS:
+        if env_file.exists():
+            load_dotenv(env_file, override=False)
+
+
+def check_required_env(required_vars: list[str]) -> None:
+    """Verify all required environment variables are set.
+
+    Args:
+        required_vars: List of environment variable names to check.
+
+    Raises:
+        EnvironmentError: If any required variables are missing.
+    """
+    missing = [var for var in required_vars if not os.environ.get(var)]
+    if missing:
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing)}\n"
+            f"Set them in ~/.env/services/.env or .env.local"
+        )
+
 
 class MCPSession:
     """Base class for MCP skill sessions."""
@@ -45,6 +87,7 @@ class MCPSession:
         self.process: subprocess.Popen | None = None
         self.msg_id = 0
         self.responses: dict[int, Any] = {}
+        self._responses_lock = threading.Lock()
         self.reader_thread: threading.Thread | None = None
         self._stop_reader = False
         self.tools: list[dict] = []
@@ -52,36 +95,11 @@ class MCPSession:
 
     def _load_env_files(self) -> None:
         """Load environment variables from common locations."""
-        env_paths = [
-            Path.home() / ".env" / "services" / ".env",
-            Path.home() / ".env" / ".env",
-            Path.cwd() / ".env.local",
-            Path.cwd() / ".env",
-        ]
-
-        for env_file in env_paths:
-            if env_file.exists():
-                self._parse_env_file(env_file)
-
-    def _parse_env_file(self, path: Path) -> None:
-        """Parse a .env file and set environment variables."""
-        with open(path) as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    key, _, value = line.partition("=")
-                    key = key.strip()
-                    value = value.strip().strip("'\"")
-                    os.environ.setdefault(key, value)
+        load_env_files()
 
     def _check_required_env(self) -> None:
         """Verify all required environment variables are set."""
-        missing = [var for var in self.REQUIRED_ENV if not os.environ.get(var)]
-        if missing:
-            raise EnvironmentError(
-                f"Missing required environment variables: {', '.join(missing)}\n"
-                f"Set them in ~/.env/services/.env or .env.local"
-            )
+        check_required_env(self.REQUIRED_ENV)
 
     def _build_subprocess_env(self) -> dict[str, str]:
         """Build environment dict for subprocess."""
@@ -110,7 +128,8 @@ class MCPSession:
                 response = json.loads(line)
                 msg_id = response.get("id")
                 if msg_id is not None:
-                    self.responses[msg_id] = response
+                    with self._responses_lock:
+                        self.responses[msg_id] = response
             except json.JSONDecodeError:
                 continue
             except Exception:
@@ -137,14 +156,15 @@ class MCPSession:
         # Wait for response
         start = time.time()
         while time.time() - start < self.TIMEOUT_SECONDS:
-            if self.msg_id in self.responses:
-                response = self.responses.pop(self.msg_id)
-                if "error" in response:
-                    error = response["error"]
-                    raise RuntimeError(
-                        f"MCP error {error.get('code')}: {error.get('message')}"
-                    )
-                return response.get("result", {})
+            with self._responses_lock:
+                if self.msg_id in self.responses:
+                    response = self.responses.pop(self.msg_id)
+                    if "error" in response:
+                        error = response["error"]
+                        raise RuntimeError(
+                            f"MCP error {error.get('code')}: {error.get('message')}"
+                        )
+                    return response.get("result", {})
             time.sleep(0.05)
 
         raise TimeoutError(f"No response for {method} after {self.TIMEOUT_SECONDS}s")
