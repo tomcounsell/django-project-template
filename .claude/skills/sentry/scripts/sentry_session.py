@@ -17,8 +17,8 @@ try:
 
     HAS_REQUESTS = True
 except ImportError:
-    import urllib.request
     import urllib.error
+    import urllib.request
 
     HAS_REQUESTS = False
 
