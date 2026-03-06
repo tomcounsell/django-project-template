@@ -1,7 +1,6 @@
 """LLM provider configuration for PydanticAI."""
 
 import os
-from typing import Optional
 
 from pydantic_ai.models.openai import OpenAIModel
 

@@ -1,5 +1,3 @@
-from typing import Dict, Optional
-
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string

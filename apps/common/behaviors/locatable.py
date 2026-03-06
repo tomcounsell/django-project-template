@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db import models
 
 # from timezone_field import TimeZoneField

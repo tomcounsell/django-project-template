@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db import models
 
 ACCEPTED_FILE_TYPES = ["jpg", "gif", "png"]

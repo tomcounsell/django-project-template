@@ -1,15 +1,7 @@
 """HTMX views for AI chat interface."""
 
-import json
-import uuid
-from typing import Optional
-
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
 from apps.ai.models import ChatMessage, ChatSession
 from apps.ai.pydantic_ai.agent.chat import ChatDependencies

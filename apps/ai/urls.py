@@ -1,15 +1,5 @@
-from typing import List
-
 from django.urls import URLPattern, path
 
-from apps.ai.views import (
-    ChatClearView,
-    ChatIndexView,
-    ChatLoadSessionView,
-    ChatNewSessionView,
-    ChatPollMessageView,
-    ChatSendMessageView,
-)
 from apps.ai.views.test_chat import TestChatView
 from apps.ai.views.test_page import TestChatPageView
 
