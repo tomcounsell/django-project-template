@@ -320,3 +320,21 @@ Read these documents when working on specific areas:
 ## Business Context
 
 For business context, project notes, and assets see the work vault: `~/src/work-vault/Django Project Template/`
+
+## Knowledge Base (KB)
+
+This project's knowledge has two sources. Pull from both before answering substantive questions.
+
+**1. Vault (curated docs, iCloud-synced)**
+- Location: `~/work-vault/Django Project Template/`
+- Index: see that directory's `README.md` for the file index
+- Source of truth for business context, project notes, decisions, and assets
+
+**2. Memory system (Redis, agent-learned observations)**
+- Project key: `django-project-template` (declared in `~/src/ai/config/projects.json`)
+- Search: `python -m tools.memory_search search "<query>" --project django-project-template` (run from `~/src/ai`)
+- Save: `python -m tools.memory_search save "<content>" --project django-project-template` (run from `~/src/ai`)
+
+Curated vault = what humans wrote. Memory = what the agent learned (corrections, decisions, patterns, surprises). Both partition by project — don't leak cross-project context.
+
+Convention reference: `~/src/ai/docs/conventions/knowledge-base-section.md`
