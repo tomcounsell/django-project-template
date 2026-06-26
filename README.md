@@ -178,3 +178,10 @@ Remove this app if you don't need a public-facing website. Note this is separate
   - `views/`: Views serving the public-facing parts of the project.
   - `__init__.py`: Initialization file for the public module.
   - `urls.py`: URL patterns for the public section.
+
+## Running
+
+```bash
+source setup_local_env.sh  # one-time: create venv and set environment
+python manage.py runserver
+```
